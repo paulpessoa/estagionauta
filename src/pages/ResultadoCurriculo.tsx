@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -46,11 +45,16 @@ export default function ResultadoCurriculo() {
 
   useEffect(() => {
     if (id) {
+      console.log('Fetching analysis with ID:', id)
       fetchAnalysis(id)
+    } else {
+      console.error('No analysis ID provided')
+      navigate('/')
     }
   }, [id])
 
   const fetchAnalysis = async (analysisId: string) => {
+    console.log('Starting to fetch analysis:', analysisId)
     try {
       const { data, error } = await supabase
         .from('curriculum_analysis')
@@ -69,14 +73,17 @@ export default function ResultadoCurriculo() {
         return
       }
 
+      console.log('Analysis data received:', data)
+
       const analysisWithTypedData = {
         ...data,
         analysis_data: data.analysis_data as unknown as AnalysisData
       }
 
+      console.log('Processed analysis data:', analysisWithTypedData)
       setAnalysis(analysisWithTypedData)
     } catch (error) {
-      console.error('Error:', error)
+      console.error('Unexpected error fetching analysis:', error)
       toast({
         title: "Erro",
         description: "Erro ao carregar análise.",

@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -105,12 +104,16 @@ export default function AnalyseCurriculoPage() {
     }
 
     setLoading(true)
+    console.log('Starting resume analysis process...')
 
     try {
       // Extract text from PDF
+      console.log('Extracting text from PDF:', formData.resumeFile.name)
       const resumeText = await extractTextFromPDF(formData.resumeFile)
+      console.log('Text extracted successfully')
 
       // Call the analysis function
+      console.log('Calling Supabase function for analysis...')
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: {
           resumeText,
@@ -123,16 +126,42 @@ export default function AnalyseCurriculoPage() {
         throw error
       }
 
+      console.log('Analysis completed successfully:', data)
+
+      // Save the analysis to the database
+      console.log('Saving analysis to database...')
+      const { data: savedAnalysis, error: saveError } = await supabase
+        .from('curriculum_analysis')
+        .insert([
+          {
+            user_id: user?.id,
+            name: formData.name,
+            email: formData.email,
+            course: formData.course,
+            university: formData.university,
+            analysis_data: data.analysis
+          }
+        ])
+        .select()
+        .single()
+
+      if (saveError) {
+        console.error('Error saving analysis:', saveError)
+        throw saveError
+      }
+
+      console.log('Analysis saved successfully:', savedAnalysis)
+
       toast({
         title: "Análise concluída!",
         description: "Seu currículo foi analisado com sucesso.",
       })
 
       // Redirect to results page
-      navigate(`/resultado-curriculo/${data.analysisId}`)
+      navigate(`/resultado-curriculo/${savedAnalysis.id}`)
 
     } catch (error) {
-      console.error('Error submitting analysis:', error)
+      console.error('Error in analysis process:', error)
       toast({
         title: "Erro na análise",
         description: "Ocorreu um erro ao analisar seu currículo. Tente novamente.",

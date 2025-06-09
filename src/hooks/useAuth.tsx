@@ -39,42 +39,58 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!isSupabaseAvailable) {
+      console.log('Supabase not configured, skipping auth initialization')
       setLoading(false)
       return
     }
 
+    console.log('Initializing auth...')
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session)
       setSession(session)
       setUser(session?.user ?? null)
       if (session?.user) {
+        console.log('User found in session, fetching profile for:', session.user.id)
         fetchProfile(session.user.id)
       } else {
+        console.log('No user in session')
         setLoading(false)
       }
     })
 
     // Listen for auth changes
+    console.log('Setting up auth state change listener')
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event, session)
         setSession(session)
         setUser(session?.user ?? null)
         
         if (session?.user) {
+          console.log('User authenticated, fetching profile for:', session.user.id)
           await fetchProfile(session.user.id)
         } else {
+          console.log('User signed out')
           setProfile(null)
           setLoading(false)
         }
       }
     )
 
-    return () => subscription.unsubscribe()
+    return () => {
+      console.log('Cleaning up auth subscription')
+      subscription.unsubscribe()
+    }
   }, [isSupabaseAvailable])
 
   const fetchProfile = async (userId: string) => {
-    if (!isSupabaseAvailable) return
+    if (!isSupabaseAvailable) {
+      console.log('Supabase not configured, skipping profile fetch')
+      return
+    }
     
+    console.log('Fetching profile for user:', userId)
     try {
       const response = await supabase
         .from('user_profiles')
@@ -84,18 +100,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (typeof response.then === 'function') {
         const { data, error } = await response
         
-        if (error && error.code !== 'PGRST116') {
+        if (error) {
           console.error('Error fetching profile:', error)
+          if (error.code !== 'PGRST116') {
+            console.error('Non-PGRST116 error:', error)
+          }
           return
         }
 
+        console.log('Profile data received:', data)
         if (data && data.length > 0) {
+          console.log('Setting profile:', data[0])
           setProfile(data[0] as Profile)
+        } else {
+          console.log('No profile found for user')
         }
       }
     } catch (error) {
-      console.error('Error fetching profile:', error)
+      console.error('Unexpected error fetching profile:', error)
     } finally {
+      console.log('Profile fetch completed')
       setLoading(false)
     }
   }
