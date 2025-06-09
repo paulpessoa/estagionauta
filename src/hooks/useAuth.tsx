@@ -1,7 +1,7 @@
-
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { supabase, isSupabaseConfigured } from '@/integrations/supabase/client'
+import { supabase } from '@/integrations/supabase/client'
+import { isSupabaseConfigured } from '@/lib/env'
 import { useToast } from '@/hooks/use-toast'
 
 interface Profile {
