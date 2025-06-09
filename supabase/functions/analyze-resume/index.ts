@@ -49,7 +49,8 @@ Critérios:
 - Personalização e diferencial
 - Habilidades técnicas e interpessoais visíveis
 
-Formato da resposta (JSON válido):
+IMPORTANTE: Responda APENAS com o JSON válido, sem formatação markdown, sem \`\`\`json no início ou fim.
+
 {
   "notas": {
     "organizacao": 7,
@@ -102,7 +103,7 @@ Informações adicionais do estudante:
         messages: [
           { 
             role: 'system', 
-            content: 'Você é um especialista em análise de currículos para estágios. Responda sempre em JSON válido.' 
+            content: 'Você é um especialista em análise de currículos para estágios. Responda SEMPRE com JSON válido, sem formatação markdown.' 
           },
           { role: 'user', content: prompt }
         ],
@@ -115,7 +116,10 @@ Informações adicionais do estudante:
     }
 
     const data = await response.json();
-    const analysisText = data.choices[0].message.content;
+    let analysisText = data.choices[0].message.content;
+    
+    // Remove formatação markdown se presente
+    analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
     
     let analysisData;
     try {
