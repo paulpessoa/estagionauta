@@ -1,9 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { Session, User } from '@supabase/supabase-js'
-import { supabase } from '@/integrations/supabase/client'
+import { createContext, useContext, ReactNode } from 'react'
+import { useUserSession } from './useUserSession'
+import { useUserProfile } from './useUserProfile'
+import { User } from '@supabase/supabase-js'
 import { Profile } from '@/types/profile'
 import { UserRole } from '@/types/permissions'
 import { isSupabaseConfigured } from '@/integrations/supabase/config'
+import { supabase } from '@/integrations/supabase/client'
 
 interface AuthContextType {
   user: User | null
@@ -19,78 +21,16 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
-  const [profile, setProfile] = useState<Profile | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
   const isSupabaseAvailable = isSupabaseConfigured()
+  const { user, isLoading: sessionLoading } = useUserSession()
+  const { data: profile, isLoading: profileLoading } = useUserProfile(user?.id ?? null)
 
-  useEffect(() => {
-    if (!isSupabaseAvailable) {
-      setIsLoading(false)
-      return
-    }
-
-    const fetchSessionAndProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-
-      if (session?.user) {
-        try {
-          const { data, error } = await supabase
-            .from('user_profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single()
-          
-          if (error) throw error
-          setProfile(data as Profile)
-        } catch (error) {
-          console.error('Erro ao buscar perfil inicial:', error)
-          setProfile(null)
-        }
-      }
-      setIsLoading(false)
-    }
-
-    fetchSessionAndProfile()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        const currentUser = session?.user ?? null
-        setUser(currentUser)
-
-        if (currentUser) {
-          setIsLoading(true)
-          try {
-            const { data, error } = await supabase
-              .from('user_profiles')
-              .select('*')
-              .eq('id', currentUser.id)
-              .single()
-            if (error) throw error
-            setProfile(data as Profile)
-          } catch (error) {
-            console.error('Erro ao buscar perfil na mudança de auth:', error)
-            setProfile(null)
-          } finally {
-            setIsLoading(false)
-          }
-        } else {
-          setProfile(null)
-          setIsLoading(false)
-        }
-      }
-    )
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [isSupabaseAvailable])
+  const isLoading = sessionLoading || profileLoading
 
   const hasPermission = (permission: string): boolean => {
     if (!profile) return false
-    
-    const userRole = profile.role
+
+    const userRole = (profile as Profile).role
 
     const rolePermissions: Record<UserRole, string[]> = {
       student: ['agencies.view', 'resumes.view', 'resumes.analyze', 'content.view'],
@@ -114,17 +54,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
-    await supabase.auth.signOut()
-    setUser(null)
-    setProfile(null)
+    try {
+      await supabase.auth.signOut()
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
   }
 
-  const isAdmin = profile?.role === 'admin'
-  const isModerator = profile?.role === 'moderator'
+  const isAdmin = (profile as Profile)?.role === 'admin'
+  const isModerator = (profile as Profile)?.role === 'moderator'
 
-  const value = {
+  const value: AuthContextType = {
     user,
-    profile,
+    profile: (profile as Profile) ?? null,
     hasPermission,
     signOut,
     isLoading,

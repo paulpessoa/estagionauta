@@ -15,12 +15,14 @@ import { User, Settings, LogOut, BarChart3, FileText, CreditCard, Menu, AlertCir
 import { useState } from 'react'
 import { Permission } from '@/types/permissions'
 import { useTheme } from 'next-themes'
+import { toast } from '@/components/ui/use-toast'
+import {toast as tototo } from 'sonner'
 
 const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) => {
   const { isSupabaseAvailable, isAdmin, isModerator } = useAuth()
   
   return (
-    <div className={mobile ? "flex flex-col space-y-4" : "hidden md:flex items-center space-x-6 text-sm font-medium"}>
+    <div className={mobile ? "flex flex-col space-y-4 text-sm" : "hidden md:flex items-center space-x-6 text-sm font-medium"}>
       <Link
         to="/mapa-agencias"
         className={`transition-colors hover:text-foreground/80 text-foreground/60`}
@@ -59,18 +61,18 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
         <>
           <Link
             to="/admin/agencias"
-            className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1 ${mobile ? 'text-lg' : ''}`}
+            className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
             onClick={onLinkClick}
           >
-            <Building2 className="h-4 w-4" />
+            <Building2 className="h-4 w-4 mr-2" />
             Moderar Agências
           </Link>
           <Link
             to="/admin/listagem-agencias"
-            className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1 ${mobile ? 'text-lg' : ''}`}
+            className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
             onClick={onLinkClick}
           >
-            <Building2 className="h-4 w-4" />
+            <Building2 className="h-4 w-4 mr-2" />
             Listar Agências
           </Link>
         </>
@@ -80,16 +82,17 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
 }
 
 export function Header() {
-  const { 
-    user, 
-    profile, 
-    signOut, 
-    isLoading, 
-    isSupabaseAvailable, 
-    hasPermission 
+  const {
+    user,
+    profile,
+    signOut,
+    isLoading,
+    isSupabaseAvailable,
+    hasPermission
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+  console.log('Header auth state:', { isLoading, user, profile, isSupabaseAvailable })
 
   if (isLoading) {
     return (
@@ -290,16 +293,38 @@ export function Header() {
                           {profile.full_name?.charAt(0)?.toUpperCase() || profile.email.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <p className="font-medium text-sm">{profile.full_name || profile.email}</p>
+                      {/* <div>
+                        <p className="font-medium text-sm">{profile.full_name}</p>
                         <p className="text-xs text-muted-foreground">{profile.email}</p>
+                      </div> */}
+                      <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-sm">{profile.full_name || profile.email}</p>
+                        {profile.role !== 'student' && (
+                          <Badge variant="secondary" className="text-xs">
+                            {profile.role === 'admin' ? 'Admin' : profile.role === 'moderator' ? 'Moderador' : 'Agência'}
+                          </Badge>
+                        )}
                       </div>
+                      <p className="w-[200px] truncate text-xs text-muted-foreground">
+                        {profile.email}
+                      </p>
+                  </div>
+                </div>
                     </div>
                     
                     {profile.credits > 0 && (
-                      <Badge variant="outline" className="w-fit">
-                        {profile.credits} créditos
-                      </Badge>
+                      // <div className="flex items-center space-x-2">
+                      //   <span className="text-yellow-400 text-sm">{profile.credits}★</span>
+                      //     <span className="relative cursor-pointer" onClick={() => tototo.info('Funcionalidade de comentários em desenvolvimento.')}>
+                      //     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      //       <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      //     </svg>
+                      //     {/* <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">4</span> */}
+                      //   </span>
+                      // </div>
+                      null
                     )}
                     
                     <div className="flex flex-col space-y-2">
@@ -368,23 +393,30 @@ export function Header() {
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
               {profile.credits > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {profile.credits} créditos
-                </Badge>
+                // <div className="flex items-center space-x-2">
+                //   <span className="text-yellow-400 text-sm">{profile.credits} ★</span>
+                //     <span className="relative cursor-pointer" onClick={() => tototo.info('Funcionalidade de comentários em desenvolvimento.')}>
+                //         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                //       <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                //     </svg>
+                //     {/* <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">4</span> */}
+                //   </span>
+                // </div>
+                null
               )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage 
+                      <AvatarImage
                         src={
-                          profile.avatar_url || 
-                          (user?.app_metadata?.provider === 'github' && user?.user_metadata?.avatar_url) ||
-                          (user?.app_metadata?.provider === 'google' && user?.user_metadata?.avatar_url) ||
-                          (user?.app_metadata?.provider === 'linkedin' && user?.user_metadata?.avatar_url) ||
+                          user?.user_metadata?.picture ||
+                          user?.identities?.[0]?.identity_data?.picture ||
+                          user?.identities?.[1]?.identity_data?.picture ||
+                          profile?.avatar_url ||
                           undefined
-                        } 
-                        alt="Avatar" 
+                        }
+                        alt={profile.full_name ?? "Imagem do usuário"}
                       />
                       <AvatarFallback>
                         {profile.full_name?.charAt(0)?.toUpperCase() || profile.email.charAt(0).toUpperCase()}
@@ -393,19 +425,22 @@ export function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <div className="flex items-center justify-start gap-2 p-2">
-                    <div className="flex flex-col space-y-1 leading-none">
-                      <p className="font-medium">{profile.full_name || profile.email}</p>
-                      <p className="w-[200px] truncate text-sm text-muted-foreground">
+                <div className="flex items-center justify-start gap-2 p-2">
+                  <div className="flex flex-col space-y-1 leading-none">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-md">{profile.full_name || profile.email}</p>
+                        {profile.role !== 'student' && (
+                          <Badge variant="secondary" className="text-xs">
+                            {profile.role === 'admin' ? 'Admin' : profile.role === 'moderator' ? 'Moderador' : 'Agência'}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="w-[200px] truncate text-xs text-muted-foreground">
                         {profile.email}
                       </p>
-                      {profile.role !== 'student' && (
-                        <Badge variant="secondary" className="w-fit text-xs">
-                          {profile.role === 'admin' ? 'Admin' : profile.role === 'moderator' ? 'Moderador' : 'Agência'}
-                        </Badge>
-                      )}
-                    </div>
                   </div>
+                </div>
+
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/dashboard">
