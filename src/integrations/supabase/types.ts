@@ -6,10 +6,124 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
-export type Database = {
+export interface Database {
   public: {
     Tables: {
-      [_ in never]: never
+      agencies: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          email: string | null
+          phone: string | null
+          website: string | null
+          instagram: string | null
+          address: string | null
+          city: string | null
+          state: string | null
+          cep: string | null
+          latitude: number | null
+          longitude: number | null
+          areas: string[] | null
+          logo_url: string | null
+          is_verified: boolean
+          is_whatsapp: boolean
+          rating: number
+          total_reviews: number
+          status: 'pending' | 'approved' | 'rejected'
+          created_by: string
+          verified_by: string | null
+          verified_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          email?: string | null
+          phone?: string | null
+          website?: string | null
+          instagram?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          cep?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          areas?: string[] | null
+          logo_url?: string | null
+          is_verified?: boolean
+          is_whatsapp?: boolean
+          rating?: number
+          total_reviews?: number
+          status?: 'pending' | 'approved' | 'rejected'
+          created_by: string
+          verified_by?: string | null
+          verified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          email?: string | null
+          phone?: string | null
+          website?: string | null
+          instagram?: string | null
+          address?: string | null
+          city?: string | null
+          state?: string | null
+          cep?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          areas?: string[] | null
+          logo_url?: string | null
+          is_verified?: boolean
+          is_whatsapp?: boolean
+          rating?: number
+          total_reviews?: number
+          status?: 'pending' | 'approved' | 'rejected'
+          created_by?: string
+          verified_by?: string | null
+          verified_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      resume_analyses: {
+        Row: {
+          id: string
+          user_id: string
+          resume_text: string
+          form_data: Json
+          analysis_data: Json
+          status: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          resume_text: string
+          form_data: Json
+          analysis_data: Json
+          status: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          resume_text?: string
+          form_data?: Json
+          analysis_data?: Json
+          status?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

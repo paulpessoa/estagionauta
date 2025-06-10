@@ -152,7 +152,7 @@ Configure no Lovable: Project > Settings > Domains
 
 ## 📊 Estratégia de Eventos
 
-### UPE Destaca 2024
+### UPE Destaca 2025
 - **Landing Page**: Formulário de interesse
 - **QR Code**: `https://estagionauta.com.br/?utm_source=upe_destaca`
 - **Análise Gratuita**: Primeira análise grátis para participantes

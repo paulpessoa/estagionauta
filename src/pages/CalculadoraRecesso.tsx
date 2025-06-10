@@ -123,7 +123,6 @@ export default function CalculadoraRecessoPage() {
                       <SelectItem value="3">3 dias</SelectItem>
                       <SelectItem value="4">4 dias</SelectItem>
                       <SelectItem value="5">5 dias</SelectItem>
-                      <SelectItem value="6">6 dias</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

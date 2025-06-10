@@ -69,7 +69,7 @@ export default function SucessoPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-3">
               <Button variant="outline" size="sm" asChild>
-                <Link to="/mapa-agencias">
+                <Link to="/agencias">
                   Explorar Agências de Estágio
                 </Link>
               </Button>

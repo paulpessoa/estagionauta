@@ -32,7 +32,7 @@ export default function AdminPage() {
       email: "maria@email.com",
       course: "Engenharia de Software",
       university: "UPE",
-      submittedAt: "2024-01-15T10:30:00Z",
+      submittedAt: "2025-01-15T10:30:00Z",
       status: "pending"
     },
     {
@@ -41,7 +41,7 @@ export default function AdminPage() {
       email: "joao@email.com",
       course: "Administração",
       university: "UFPE",
-      submittedAt: "2024-01-15T09:15:00Z",
+      submittedAt: "2025-01-15T09:15:00Z",
       status: "processed"
     }
   ]

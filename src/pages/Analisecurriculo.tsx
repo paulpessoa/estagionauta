@@ -33,6 +33,7 @@ export default function AnalyseCurriculoPage() {
     feedback: '',
     resumeFile: null as File | null
   })
+  const [error, setError] = useState<string | null>(null)
   
   const navigate = useNavigate()
   const { toast } = useToast()
@@ -44,6 +45,21 @@ export default function AnalyseCurriculoPage() {
     { title: "Feedback", description: "Sua opinião" },
     { title: "Currículo", description: "Upload do arquivo" }
   ]
+
+  // Função para converter arquivo em base64
+  const convertFileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.onload = () => {
+        const base64String = reader.result as string
+        // Remove o prefixo "data:application/pdf;base64," do resultado
+        const base64 = base64String.split(',')[1]
+        resolve(base64)
+      }
+      reader.onerror = reject
+      reader.readAsDataURL(file)
+    })
+  }
 
   const onDrop = (acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
@@ -72,101 +88,56 @@ export default function AnalyseCurriculoPage() {
     }
   }
 
-  const extractTextFromPDF = async (file: File): Promise<string> => {
-    // Simple text extraction - in production, use a proper PDF parser
-    return `Conteúdo do PDF extraído: ${file.name}. 
-    Esta é uma simulação da extração de texto do PDF.
-    O arquivo tem ${file.size} bytes.
-    
-    Exemplo de conteúdo de currículo:
-    Nome: ${formData.name}
-    Curso: ${formData.course}
-    Universidade: ${formData.university}
-    
-    Experiência:
-    - Projeto acadêmico em ${formData.course}
-    - Participação em eventos da universidade
-    
-    Habilidades:
-    - Comunicação
-    - Trabalho em equipe
-    - Resolução de problemas`;
-  }
-
-  const handleSubmit = async () => {
-    if (!formData.resumeFile) {
-      toast({
-        title: "Erro",
-        description: "Por favor, anexe seu currículo em PDF.",
-        variant: "destructive",
-      })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!formData.resumeFile || !formData.name || !formData.email || !formData.course || !formData.university || !formData.period) {
+      setError('Por favor, preencha todos os campos obrigatórios e selecione um arquivo PDF.')
       return
     }
 
-    setLoading(true)
-    console.log('Starting resume analysis process...')
-
     try {
-      // Extract text from PDF
-      console.log('Extracting text from PDF:', formData.resumeFile.name)
-      const resumeText = await extractTextFromPDF(formData.resumeFile)
-      console.log('Text extracted successfully')
+      setLoading(true)
+      setError(null)
 
-      // Call the analysis function
-      console.log('Calling Supabase function for analysis...')
+      // Convert PDF to base64
+      const base64 = await convertFileToBase64(formData.resumeFile)
+      
+      // Call Supabase Edge Function
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: {
-          resumeText,
+          resumeText: base64,
           formData
         }
       })
 
       if (error) {
-        console.error('Analysis error:', error)
-        throw error
+        throw new Error(error.message)
       }
 
-      console.log('Analysis completed successfully:', data)
+      if (!data.success) {
+        throw new Error(data.error || 'Erro ao analisar currículo')
+      }
 
-      // Save the analysis to the database
-      console.log('Saving analysis to database...')
-      const { data: savedAnalysis, error: saveError } = await supabase
-        .from('curriculum_analysis')
-        .insert([
-          {
-            user_id: user?.id,
-            name: formData.name,
-            email: formData.email,
-            course: formData.course,
-            university: formData.university,
-            analysis_data: data.analysis
-          }
-        ])
-        .select()
-        .single()
+      // Save analysis to database
+      const { error: saveError } = await supabase
+        .from('resume_analyses')
+        .insert({
+          user_id: user?.id,
+          resume_text: base64,
+          form_data: formData,
+          analysis_data: data.analysis,
+          status: 'completed'
+        })
 
       if (saveError) {
-        console.error('Error saving analysis:', saveError)
-        throw saveError
+        throw new Error('Erro ao salvar análise')
       }
 
-      console.log('Analysis saved successfully:', savedAnalysis)
-
-      toast({
-        title: "Análise concluída!",
-        description: "Seu currículo foi analisado com sucesso.",
-      })
-
       // Redirect to results page
-      navigate(`/resultado-curriculo/${savedAnalysis.id}`)
-
-    } catch (error) {
-      console.error('Error in analysis process:', error)
-      toast({
-        title: "Erro na análise",
-        description: "Ocorreu um erro ao analisar seu currículo. Tente novamente.",
-        variant: "destructive",
-      })
+      navigate(`/resultado-curriculo/${data.analysisId}`)
+    } catch (err) {
+      console.error('Error analyzing resume:', err)
+      setError(err instanceof Error ? err.message : 'Erro ao analisar currículo')
     } finally {
       setLoading(false)
     }

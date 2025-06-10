@@ -1,30 +1,19 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { User, Session } from '@supabase/supabase-js'
+import { Session, User } from '@supabase/supabase-js'
 import { supabase } from '@/integrations/supabase/client'
-import { isSupabaseConfigured } from '@/lib/env'
-import { useToast } from '@/hooks/use-toast'
-
-interface Profile {
-  id: string
-  email: string
-  full_name: string | null
-  avatar_url: string | null
-  role: 'student' | 'agency' | 'admin' | 'moderator'
-  credits: number
-  subscription_status: 'free' | 'premium'
-  subscription_tier: string | null
-}
+import { Profile } from '@/types/profile'
+import { UserRole } from '@/types/permissions'
+import { isSupabaseConfigured } from '@/integrations/supabase/config'
 
 interface AuthContextType {
   user: User | null
   profile: Profile | null
-  session: Session | null
-  loading: boolean
-  signUp: (email: string, password: string, userData?: any) => Promise<{ data: any; error: any }>
-  signIn: (email: string, password: string) => Promise<{ data: any; error: any }>
+  hasPermission: (permission: string) => boolean
   signOut: () => Promise<void>
-  updateProfile: (updates: Partial<Profile>) => Promise<void>
+  isLoading: boolean
   isSupabaseAvailable: boolean
+  isAdmin: boolean
+  isModerator: boolean
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -32,222 +21,119 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
+  const [isLoading, setIsLoading] = useState(true)
   const isSupabaseAvailable = isSupabaseConfigured()
 
   useEffect(() => {
     if (!isSupabaseAvailable) {
-      console.log('Supabase not configured, skipping auth initialization')
-      setLoading(false)
+      setIsLoading(false)
       return
     }
 
-    console.log('Initializing auth...')
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session)
-      setSession(session)
+    const fetchSessionAndProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
-      if (session?.user) {
-        console.log('User found in session, fetching profile for:', session.user.id)
-        fetchProfile(session.user.id)
-      } else {
-        console.log('No user in session')
-        setLoading(false)
-      }
-    })
 
-    // Listen for auth changes
-    console.log('Setting up auth state change listener')
+      if (session?.user) {
+        try {
+          const { data, error } = await supabase
+            .from('user_profiles')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+          
+          if (error) throw error
+          setProfile(data as Profile)
+        } catch (error) {
+          console.error('Erro ao buscar perfil inicial:', error)
+          setProfile(null)
+        }
+      }
+      setIsLoading(false)
+    }
+
+    fetchSessionAndProfile()
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session)
-        setSession(session)
-        setUser(session?.user ?? null)
-        
-        if (session?.user) {
-          console.log('User authenticated, fetching profile for:', session.user.id)
-          await fetchProfile(session.user.id)
+        const currentUser = session?.user ?? null
+        setUser(currentUser)
+
+        if (currentUser) {
+          setIsLoading(true)
+          try {
+            const { data, error } = await supabase
+              .from('user_profiles')
+              .select('*')
+              .eq('id', currentUser.id)
+              .single()
+            if (error) throw error
+            setProfile(data as Profile)
+          } catch (error) {
+            console.error('Erro ao buscar perfil na mudança de auth:', error)
+            setProfile(null)
+          } finally {
+            setIsLoading(false)
+          }
         } else {
-          console.log('User signed out')
           setProfile(null)
-          setLoading(false)
+          setIsLoading(false)
         }
       }
     )
 
     return () => {
-      console.log('Cleaning up auth subscription')
       subscription.unsubscribe()
     }
   }, [isSupabaseAvailable])
 
-  const fetchProfile = async (userId: string) => {
-    if (!isSupabaseAvailable) {
-      console.log('Supabase not configured, skipping profile fetch')
-      return
-    }
+  const hasPermission = (permission: string): boolean => {
+    if (!profile) return false
     
-    console.log('Fetching profile for user:', userId)
-    try {
-      const response = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
+    const userRole = profile.role
 
-      if (typeof response.then === 'function') {
-        const { data, error } = await response
-        
-        if (error) {
-          console.error('Error fetching profile:', error)
-          if (error.code !== 'PGRST116') {
-            console.error('Non-PGRST116 error:', error)
-          }
-          return
-        }
-
-        console.log('Profile data received:', data)
-        if (data && data.length > 0) {
-          console.log('Setting profile:', data[0])
-          setProfile(data[0] as Profile)
-        } else {
-          console.log('No profile found for user')
-        }
-      }
-    } catch (error) {
-      console.error('Unexpected error fetching profile:', error)
-    } finally {
-      console.log('Profile fetch completed')
-      setLoading(false)
-    }
-  }
-
-  const signUp = async (email: string, password: string, userData: any = {}) => {
-    if (!isSupabaseAvailable) {
-      return { 
-        data: null, 
-        error: { message: 'Funcionalidade de cadastro não disponível - Supabase não configurado' } 
-      }
+    const rolePermissions: Record<UserRole, string[]> = {
+      student: ['agencies.view', 'resumes.view', 'resumes.analyze', 'content.view'],
+      agency: ['agencies.view', 'agencies.update', 'resumes.view', 'content.view', 'reports.create'],
+      moderator: [
+        'agencies.view', 'agencies.verify', 'agencies.review',
+        'resumes.view', 'resumes.review', 'content.view',
+        'content.moderate', 'reports.view', 'reports.resolve'
+      ],
+      admin: [
+        'agencies.view', 'agencies.create', 'agencies.update', 'agencies.delete',
+        'agencies.verify', 'agencies.review', 'resumes.view', 'resumes.analyze',
+        'resumes.delete', 'resumes.review', 'users.view', 'users.create',
+        'users.update', 'users.delete', 'users.manage_roles', 'content.view',
+        'content.create', 'content.update', 'content.delete', 'content.moderate',
+        'reports.view', 'reports.create', 'reports.resolve'
+      ]
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: userData
-      }
-    })
-
-    if (error) {
-      toast({
-        title: "Erro no cadastro",
-        description: error.message,
-        variant: "destructive",
-      })
-    } else if (data.user && !data.session) {
-      toast({
-        title: "Verifique seu email",
-        description: "Um link de confirmação foi enviado para seu email.",
-      })
-    }
-
-    return { data, error }
-  }
-
-  const signIn = async (email: string, password: string) => {
-    if (!isSupabaseAvailable) {
-      return { 
-        data: null, 
-        error: { message: 'Funcionalidade de login não disponível - Supabase não configurado' } 
-      }
-    }
-
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
-
-    if (error) {
-      toast({
-        title: "Erro no login",
-        description: error.message,
-        variant: "destructive",
-      })
-    }
-
-    return { data, error }
+    return rolePermissions[userRole]?.includes(permission) || false
   }
 
   const signOut = async () => {
-    if (!isSupabaseAvailable) return
-
-    const { error } = await supabase.auth.signOut()
-    
-    if (error) {
-      toast({
-        title: "Erro ao sair",
-        description: error.message,
-        variant: "destructive",
-      })
-    } else {
-      setUser(null)
-      setProfile(null)
-      setSession(null)
-      toast({
-        title: "Logout realizado",
-        description: "Você foi desconectado com sucesso.",
-      })
-    }
+    await supabase.auth.signOut()
+    setUser(null)
+    setProfile(null)
   }
 
-  const updateProfile = async (updates: Partial<Profile>) => {
-    if (!isSupabaseAvailable || !user) return
+  const isAdmin = profile?.role === 'admin'
+  const isModerator = profile?.role === 'moderator'
 
-    try {
-      const response = await supabase
-        .from('user_profiles')
-        .update(updates)
-        .eq(user.id, user.id)
-
-      if (typeof response.then === 'function') {
-        const { error } = await response
-        if (error) throw error
-      }
-
-      setProfile(prev => prev ? { ...prev, ...updates } : null)
-      
-      toast({
-        title: "Perfil atualizado",
-        description: "Suas informações foram atualizadas com sucesso.",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Erro ao atualizar perfil",
-        description: error.message,
-        variant: "destructive",
-      })
-    }
-  }
-
-  const value: AuthContextType = {
+  const value = {
     user,
     profile,
-    session,
-    loading,
-    signUp,
-    signIn,
+    hasPermission,
     signOut,
-    updateProfile,
+    isLoading,
     isSupabaseAvailable,
+    isAdmin: isAdmin || false,
+    isModerator: isModerator || false,
   }
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
 export function useAuth() {

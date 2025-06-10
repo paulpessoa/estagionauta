@@ -1,4 +1,3 @@
-
 -- Este arquivo contém todas as tabelas, políticas RLS e funções necessárias
 -- Execute após conectar o Supabase ao projeto
 
@@ -154,6 +153,7 @@ CREATE TABLE public.agencies (
   rating DECIMAL(3, 2) DEFAULT 0,
   total_reviews INTEGER DEFAULT 0,
   is_verified BOOLEAN DEFAULT FALSE,
+  agency_type TEXT CHECK (agency_type IN ('faculdade', 'consultoria', 'agencia_privada', 'orgao_publico', 'instituto', 'fundacao', 'outro')),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
@@ -169,6 +169,7 @@ CREATE TABLE public.agency_reviews (
   comment TEXT,
   is_verified BOOLEAN DEFAULT FALSE,
   helpful_count INTEGER DEFAULT 0,
+  status TEXT NOT NULL DEFAULT 'pending',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
@@ -377,7 +378,7 @@ INSERT INTO public.categories (name, slug, description, icon) VALUES
 
 -- Insert UPE Destaca event
 INSERT INTO public.events (name, slug, description, start_date, end_date, location) VALUES
-  ('UPE Destaca 2024', 'upe-destaca-2024', 'Evento de carreira da Universidade de Pernambuco', '2024-03-15', '2024-03-16', 'Campus Benfica - UPE');
+  ('UPE Destaca 2025', 'upe-destaca-2025', 'Evento de carreira da Universidade de Pernambuco', '2025-03-15', '2025-03-16', 'Campus Benfica - UPE');
 
 -- Insert sample agencies
 INSERT INTO public.agencies (name, description, website, email, address, areas, is_verified) VALUES

@@ -1,246 +1,312 @@
-
-import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect, useMemo } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { Agency } from '@/types/agency'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Search, Filter, X, LocateFixed, Navigation, MapPin, Phone, Mail, Globe } from 'lucide-react'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Label } from '@/components/ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api';
+import { Card, CardContent } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
-import { MapPin, Star, Search, Filter, Users, Building, Phone, Globe } from 'lucide-react'
 
-export default function MapaAgenciasPage() {
+const containerStyle = {
+  width: '100%',
+  height: '100%'
+};
+
+// Hook para debounce
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value)
+  useEffect(() => {
+    const handler = setTimeout(() => { setDebouncedValue(value) }, delay)
+    return () => { clearTimeout(handler) }
+  }, [value, delay])
+  return debouncedValue
+}
+
+// Função para calcular distância
+function getDistance(lat1: number, lon1: number, lat2: number, lon2: number) {
+  const R = 6371; // Raio da Terra em km
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const d = R * c; // Distância em km
+  return d;
+}
+
+function FilterSheet({ states, cities, types, filters, onFilterChange, onClearFilters }: {
+  states: string[],
+  cities: string[],
+  types: string[],
+  filters: { state: string, city: string, type: string },
+  onFilterChange: (filterType: keyof typeof filters, value: string) => void,
+  onClearFilters: () => void
+}) {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant="outline" className="w-full flex items-center justify-center space-x-2">
+          <Filter className="h-4 w-4" />
+          <span>Filtros</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent>
+        <SheetHeader><SheetTitle>Filtrar Agências</SheetTitle></SheetHeader>
+        <div className="space-y-4 py-4">
+          <div>
+            <Label>Estado</Label>
+            <Select value={filters.state} onValueChange={(v) => onFilterChange('state', v)}>
+              <SelectTrigger><SelectValue placeholder="Todos os estados" /></SelectTrigger>
+              <SelectContent>{states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Cidade</Label>
+            <Select value={filters.city} onValueChange={(v) => onFilterChange('city', v)}>
+              <SelectTrigger><SelectValue placeholder="Todas as cidades" /></SelectTrigger>
+              <SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label>Tipo de Agência</Label>
+            <Select value={filters.type} onValueChange={(v) => onFilterChange('type', v)}>
+              <SelectTrigger><SelectValue placeholder="Todos os tipos" /></SelectTrigger>
+              <SelectContent>{types.map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}</SelectContent>
+            </Select>
+          </div>
+        </div>
+        <Button variant="ghost" onClick={onClearFilters} className="w-full justify-start text-sm text-muted-foreground">
+          <X className="mr-2 h-4 w-4" /> Limpar Filtros
+        </Button>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+export default function MapaAgencias() {
+  const [agencies, setAgencies] = useState<Agency[]>([])
+  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  
-  // Mock data for agencies
-  const agencies = [
-    {
-      id: 1,
-      name: "Agência UPE Carreiras",
-      description: "Especializada em conectar estudantes da UPE com oportunidades de estágio",
-      location: "Recife, PE",
-      rating: 4.8,
-      reviews: 156,
-      areas: ["Tecnologia", "Engenharia", "Administração"],
-      contact: {
-        phone: "(81) 3123-4567",
-        website: "www.upecarreiras.com.br"
-      },
-      verified: true
-    },
-    {
-      id: 2,
-      name: "Conecta Estágios",
-      description: "Mais de 10 anos conectando universitários às melhores empresas",
-      location: "Recife, PE",
-      rating: 4.5,
-      reviews: 89,
-      areas: ["Marketing", "Vendas", "RH"],
-      contact: {
-        phone: "(81) 2134-5678",
-        website: "www.conectaestagios.com"
-      },
-      verified: true
-    },
-    {
-      id: 3,
-      name: "TechStart Recife",
-      description: "Foco em startups e empresas de tecnologia",
-      location: "Recife, PE",
-      rating: 4.7,
-      reviews: 73,
-      areas: ["Desenvolvimento", "UI/UX", "Data Science"],
-      contact: {
-        phone: "(81) 3456-7890",
-        website: "www.techstartrecife.com"
-      },
-      verified: false
-    }
-  ]
+  const [addressSearch, setAddressSearch] = useState('')
+  const [filters, setFilters] = useState({ state: '', city: '', type: '' })
+  const [useGeolocation, setUseGeolocation] = useState(false)
+  const [sortBy, setSortBy] = useState('name')
+  const debouncedSearchTerm = useDebounce(searchTerm, 500)
+  const debouncedAddressSearch = useDebounce(addressSearch, 500)
 
-  const filteredAgencies = agencies.filter(agency =>
-    agency.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agency.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    agency.areas.some(area => area.toLowerCase().includes(searchTerm.toLowerCase()))
+  const [mapCenter, setMapCenter] = useState({ lat: -8.047562, lng: -34.877002 })
+  const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null)
+  const [activeMarker, setActiveMarker] = useState<string | null>(null);
+
+  const { isLoaded, loadError } = useJsApiLoader({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+  });
+
+  useEffect(() => { fetchApprovedAgencies() }, [])
+
+  useEffect(() => {
+    if (useGeolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          const newUserLocation = { lat: latitude, lng: longitude };
+          setUserLocation(newUserLocation)
+          setMapCenter(newUserLocation)
+          setAddressSearch(`Minha Localização (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`)
+          toast.success("Geolocalização ativada!")
+        },
+        () => {
+          toast.error("Não foi possível obter sua localização.")
+          setUseGeolocation(false)
+        }
+      )
+    } else {
+      setUserLocation(null)
+      if (addressSearch.startsWith("Minha Localização")) setAddressSearch('')
+    }
+  }, [useGeolocation])
+
+  const fetchApprovedAgencies = async () => {
+    setLoading(true)
+    try {
+      const { data, error } = await supabase.from('agencies').select('*').eq('status', 'approved').order('name', { ascending: true })
+      if (error) throw error
+      setAgencies(data || [])
+    } catch (error) { toast.error('Não foi possível carregar as agências.') }
+    finally { setLoading(false) }
+  }
+
+  const { states, cities, types } = useMemo(() => ({
+    states: [...new Set(agencies.map(a => a.state).filter(Boolean))] as string[],
+    cities: [...new Set(agencies.map(a => a.city).filter(Boolean))] as string[],
+    types: [...new Set(agencies.map(a => a.agency_type).filter(Boolean))] as string[],
+  }), [agencies])
+
+  const agenciesWithDistance = useMemo(() => {
+    if (!userLocation) return agencies.map(a => ({ ...a, distance: null }));
+    return agencies.map(agency => {
+      if (agency.latitude && agency.longitude) {
+        const distance = getDistance(userLocation.lat, userLocation.lng, agency.latitude, agency.longitude);
+        return { ...agency, distance };
+      }
+      return { ...agency, distance: null };
+    });
+  }, [agencies, userLocation]);
+
+  const filteredAgencies = useMemo(() => {
+    const filtered = agenciesWithDistance.filter(agency => {
+      const lowercasedTerm = debouncedSearchTerm.toLowerCase()
+      const lowercasedAddress = debouncedAddressSearch.toLowerCase()
+      const addressSearchActive = debouncedAddressSearch && !lowercasedAddress.startsWith('minha localização')
+
+      const searchTermMatch = !lowercasedTerm || agency.name.toLowerCase().includes(lowercasedTerm) || (agency.description?.toLowerCase().includes(lowercasedTerm) ?? false) || (agency.areas?.some(area => area.toLowerCase().includes(lowercasedTerm)) ?? false)
+      const addressMatch = !addressSearchActive || (agency.address?.toLowerCase().includes(lowercasedAddress) ?? false) || (agency.city?.toLowerCase().includes(lowercasedAddress) ?? false) || (agency.state?.toLowerCase().includes(lowercasedAddress) ?? false)
+      const stateMatch = !filters.state || agency.state === filters.state
+      const cityMatch = !filters.city || agency.city === filters.city
+      const typeMatch = !filters.type || agency.agency_type === filters.type
+
+      return searchTermMatch && addressMatch && stateMatch && cityMatch && typeMatch
+    });
+
+    if (sortBy === 'distance' && userLocation) {
+      return filtered.sort((a, b) => {
+        if (a.distance === null) return 1;
+        if (b.distance === null) return -1;
+        return a.distance - b.distance;
+      });
+    }
+    return filtered.sort((a, b) => a.name.localeCompare(b.name));
+
+  }, [agenciesWithDistance, debouncedSearchTerm, debouncedAddressSearch, filters, sortBy, userLocation])
+
+  const clearFilters = () => setFilters({ state: '', city: '', type: '' })
+  const handleFilterChange = (filterType: keyof typeof filters, value: string) => setFilters(prev => ({ ...prev, [filterType]: value }))
+
+  const handleMarkerClick = (agencyId: string) => {
+    setActiveMarker(agencyId);
+  }
+
+   const renderMap = () => (
+    <GoogleMap
+      mapContainerStyle={containerStyle}
+      center={mapCenter}
+      zoom={12}
+    >
+      {userLocation && <MarkerF position={userLocation} />}
+      {filteredAgencies.map(agency =>
+        agency.latitude && agency.longitude && (
+          <MarkerF
+            key={agency.id}
+            position={{ lat: agency.latitude, lng: agency.longitude }}
+            onClick={() => handleMarkerClick(agency.id)}
+            icon={{ url: '/logo.png', scaledSize: new window.google.maps.Size(35, 46) }}
+          >
+            {/* NOVO: Usando o ícone MapPin do Lucide React como marcador */}
+            <MapPin
+              size={35} // Tamanho do ícone
+              color="hsl(var(--primary))" // Cor do ícone (usa a cor primária do seu tema, se definida)
+              // Você pode adicionar mais estilos Tailwind via className, por exemplo:
+              // className="bg-white rounded-full p-1 shadow-md"
+            />
+            {activeMarker === agency.id && (
+              <InfoWindowF onCloseClick={() => setActiveMarker(null)}>
+                <div className="p-2 max-w-xs">
+                  <h3 className="font-bold text-lg mb-1">{agency.name}</h3>
+                  {agency.agency_type && <Badge variant="outline" className="mb-2 font-normal">{agency.agency_type}</Badge>}
+                  <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                    <MapPin className="h-3 w-3 inline-block" /> {agency.address}, {agency.city}, {agency.state}
+                  </p>
+                  {agency.phone && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                      <Phone className="h-3 w-3 inline-block" /> {agency.phone}
+                    </p>
+                  )}
+                  {agency.email && (
+                    <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
+                      <Mail className="h-3 w-3 inline-block" /> {agency.email}
+                    </p>
+                  )}
+                  {agency.website && (
+                    <a href={agency.website} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 hover:underline flex items-center gap-1 mb-2">
+                      <Globe className="h-3 w-3 inline-block" /> Site
+                    </a>
+                  )}
+                  {agency.distance !== null && (
+                    <p className="text-sm font-bold text-primary mt-2">{agency.distance.toFixed(1)} km de você</p>
+                  )}
+                  <Button size="sm" className="mt-3 w-full" onClick={() => toast.info("Abrir perfil...")}>Ver Detalhes</Button>
+                </div>
+              </InfoWindowF>
+            )}
+          </MarkerF>
+        )
+      )}
+    </GoogleMap>
   )
 
+  if (loadError) return <div>Erro ao carregar o mapa. Verifique sua chave de API do Google Maps.</div>;
+  if (loading || !isLoaded) return <div className="flex justify-center items-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto py-8 px-4">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Mapa de Agências de Estágio 🗺️
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Descubra e avalie agências de estágio na sua região. Veja avaliações reais de outros estudantes.
-          </p>
+    <div className="flex container py-8">
+      <div className="w-full md:w-1/3 p-4 border-r flex flex-col h-[80vh]"> {/* Adicionado h-[70vh] e flex-col */}
+        <h1 className="text-2xl font-bold mb-4">Explorar Agências</h1> {/* Adicionado mb-4 para espaçamento */}
+
+        <div className="space-y-4 mb-4"> {/* Adicionado mb-4 */}
+          <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por nome, área..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" /></div>
+          <div className="relative"><Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por endereço..." value={addressSearch} onChange={e => setAddressSearch(e.target.value)} className="pl-10" /></div>
+          <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50"><Label htmlFor="geolocation-switch" className="flex items-center gap-2 cursor-pointer"><LocateFixed className="h-4 w-4" /><span>Usar minha localização</span></Label><Switch id="geolocation-switch" checked={useGeolocation} onCheckedChange={setUseGeolocation} /></div>
+          <FilterSheet states={states} cities={cities} types={types} filters={filters} onFilterChange={handleFilterChange} onClearFilters={clearFilters} />
         </div>
 
-        {/* Search and Filters */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Buscar por nome, área ou localização..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Button variant="outline" className="flex items-center space-x-2">
-              <Filter className="h-4 w-4" />
-              <span>Filtros</span>
-            </Button>
-          </div>
+        <Separator className="mb-4" /> {/* Adicionado mb-4 */}
+
+        <div className="flex justify-between items-center mb-4"> {/* Adicionado mb-4 */}
+          <p className="text-sm text-muted-foreground">{filteredAgencies.length} agências encontradas</p>
+          <Select value={sortBy} onValueChange={setSortBy} disabled={!userLocation}>
+            <SelectTrigger className="w-[180px] text-xs">
+              <SelectValue placeholder="Ordenar por..." />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="name">Nome</SelectItem>
+              <SelectItem value="distance">Distância</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Statistics */}
-        <div className="max-w-4xl mx-auto mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="flex items-center space-x-4 p-6">
-                <div className="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
-                  <Building className="h-6 w-6 text-green-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">12</p>
-                  <p className="text-muted-foreground">Agências cadastradas</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center space-x-4 p-6">
-                <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-                  <Users className="h-6 w-6 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">318</p>
-                  <p className="text-muted-foreground">Avaliações</p>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card>
-              <CardContent className="flex items-center space-x-4 p-6">
-                <div className="h-12 w-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
-                  <Star className="h-6 w-6 text-purple-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">4.6</p>
-                  <p className="text-muted-foreground">Média geral</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Agencies List */}
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            {filteredAgencies.map((agency) => (
-              <Card key={agency.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="flex items-center space-x-2">
-                        <span>{agency.name}</span>
-                        {agency.verified && (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            ✓ Verificada
-                          </Badge>
-                        )}
-                      </CardTitle>
-                      <CardDescription className="mt-2">
-                        {agency.description}
-                      </CardDescription>
-                    </div>
-                    <div className="text-right">
-                      <div className="flex items-center space-x-1 mb-1">
-                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-semibold">{agency.rating}</span>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {agency.reviews} avaliações
-                      </p>
-                    </div>
+        <div className="overflow-y-auto space-y-2 pr-2"> {/* Adicionado overflow-y-auto e pr-2 para o scrollbar */}
+          {filteredAgencies.map(agency => (
+            <Card key={agency.id} className="cursor-pointer hover:bg-muted/50" onClick={() => agency.latitude && agency.longitude && setMapCenter({ lat: agency.latitude, lng: agency.longitude })}>
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div className="space-y-1">
+                    <h3 className="font-semibold pr-2">{agency.name}</h3>
+                    <p className="text-sm text-muted-foreground">{agency.city}, {agency.state}</p>
                   </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Location */}
-                    <div className="flex items-center space-x-2 text-muted-foreground">
-                      <MapPin className="h-4 w-4" />
-                      <span>{agency.location}</span>
+                  {agency.distance !== null && (
+                    <div className="text-right flex-shrink-0">
+                      <p className="text-sm font-bold text-primary">{agency.distance.toFixed(1)} km</p>
+                      <p className="text-xs text-muted-foreground">de você</p>
                     </div>
-
-                    {/* Areas */}
-                    <div>
-                      <p className="text-sm font-medium mb-2">Áreas de atuação:</p>
-                      <div className="flex flex-wrap gap-2">
-                        {agency.areas.map((area, index) => (
-                          <Badge key={index} variant="outline">
-                            {area}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Contact */}
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t">
-                      <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 mb-4 sm:mb-0">
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Phone className="h-4 w-4" />
-                          <span>{agency.contact.phone}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                          <Globe className="h-4 w-4" />
-                          <span>{agency.contact.website}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex space-x-2">
-                        <Button variant="outline" size="sm">
-                          Ver Perfil
-                        </Button>
-                        <Button size="sm">
-                          Avaliar
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {filteredAgencies.length === 0 && (
-            <Card>
-              <CardContent className="text-center py-12">
-                <MapPin className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Nenhuma agência encontrada</h3>
-                <p className="text-muted-foreground">
-                  Tente ajustar os filtros ou termos de busca.
-                </p>
+                  )}
+                </div>
+                {agency.agency_type && <Badge variant="outline" className="mt-2 font-normal">{agency.agency_type}</Badge>}
               </CardContent>
             </Card>
-          )}
-
-          {/* Add Agency CTA */}
-          <Card className="mt-8 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20">
-            <CardContent className="text-center py-8">
-              <h3 className="text-lg font-semibold mb-2">
-                Conhece uma agência que não está listada?
-              </h3>
-              <p className="text-muted-foreground mb-4">
-                Ajude outros estudantes adicionando agências que você conhece
-              </p>
-              <Button>
-                Adicionar Agência
-              </Button>
-            </CardContent>
-          </Card>
+          ))}
         </div>
+      </div>
+      <div className="hidden md:block md:w-2/3">
+        {renderMap()}
       </div>
     </div>
   )

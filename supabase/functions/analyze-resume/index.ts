@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
@@ -27,15 +26,15 @@ interface AnalysisRequest {
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const { resumeText, formData }: AnalysisRequest = await req.json();
+    const { resumeText, formData }: AnalysisRequest = await req.json()
     
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY')
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not configured');
+      throw new Error('OpenAI API key not configured')
     }
 
     const prompt = `Você é um analista de carreira com foco em estágio. Avalie o currículo a seguir e atribua uma nota de 0 a 10 para cada critério abaixo, baseado no conteúdo fornecido. Em seguida, dê sugestões para melhoria.
@@ -90,7 +89,7 @@ Informações adicionais do estudante:
 - Universidade: ${formData.university}
 - Período: ${formData.period}
 - Já fez estágio: ${formData.hasInternship}
-- Interesses em mentoria: ${formData.mentorshipTopics}`;
+- Interesses em mentoria: ${formData.mentorshipTopics}`
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -99,7 +98,7 @@ Informações adicionais do estudante:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { 
             role: 'system', 
@@ -109,47 +108,46 @@ Informações adicionais do estudante:
         ],
         temperature: 0.7,
       }),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      throw new Error(`OpenAI API error: ${response.statusText}`)
     }
 
-    const data = await response.json();
-    let analysisText = data.choices[0].message.content;
+    const data = await response.json()
+    let analysisText = data.choices[0].message.content
     
     // Remove formatação markdown se presente
-    analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
     
-    let analysisData;
+    let analysisData
     try {
-      analysisData = JSON.parse(analysisText);
+      analysisData = JSON.parse(analysisText)
     } catch (error) {
-      console.error('Error parsing OpenAI response:', analysisText);
-      throw new Error('Invalid response format from AI');
+      console.error('Error parsing OpenAI response:', analysisText)
+      throw new Error('Invalid response format from AI')
     }
 
     // Save to database
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     const { data: savedAnalysis, error: dbError } = await supabase
-      .from('curriculum_analysis')
+      .from('resume_analyses')
       .insert({
-        name: formData.name,
-        email: formData.email,
-        course: formData.course,
-        university: formData.university,
+        user_id: req.headers.get('x-user-id'),
+        resume_text: resumeText,
+        form_data: formData,
         analysis_data: analysisData,
         status: 'completed'
       })
       .select()
-      .single();
+      .single()
 
     if (dbError) {
-      console.error('Database error:', dbError);
-      throw new Error('Failed to save analysis');
+      console.error('Database error:', dbError)
+      throw new Error('Failed to save analysis')
     }
 
     return new Response(JSON.stringify({
@@ -158,15 +156,15 @@ Informações adicionais do estudante:
       analysisId: savedAnalysis.id
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    })
 
   } catch (error) {
-    console.error('Error in analyze-resume function:', error);
+    console.error('Error in analyze-resume function:', error)
     return new Response(JSON.stringify({ 
       error: error.message || 'Internal server error' 
     }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    })
   }
-});
+})
