@@ -60,7 +60,7 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
       {(isAdmin || isModerator) && (
         <>
           <Link
-            to="/admin/agencias"
+            to="/admin/moderacao-agencias"
             className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
             onClick={onLinkClick}
           >

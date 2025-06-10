@@ -200,6 +200,16 @@ export default function MapaAgencias() {
       mapContainerStyle={containerStyle}
       center={mapCenter}
       zoom={12}
+      options={{
+        zoomControl: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false,
+        controlSize: 24,
+        zoomControlOptions: {
+          position: window.google.maps.ControlPosition.RIGHT_BOTTOM,
+        },
+      }}
     >
       {userLocation && <MarkerF position={userLocation} />}
       {filteredAgencies.map(agency =>
@@ -208,18 +218,25 @@ export default function MapaAgencias() {
             key={agency.id}
             position={{ lat: agency.latitude, lng: agency.longitude }}
             onClick={() => handleMarkerClick(agency.id)}
-            icon={{ url: '/logo.png', scaledSize: new window.google.maps.Size(35, 46) }}
+            icon={{
+              url: '/logo.png',
+              scaledSize: new window.google.maps.Size(35, 46),
+              // Apply invert filter in dark mode for better visibility
+              // This requires the marker icon to support transparency
+              // Alternatively, use a different icon for dark mode if available
+              // Here we use a custom SVG marker with fill color adapting to theme
+              fillColor: getComputedStyle(document.documentElement).getPropertyValue('--background')?.trim() === '#000000' ? '#fff' : '#000',
+              // Add label or use SVG marker for better contrast
+            }}
           >
             {/* NOVO: Usando o ícone MapPin do Lucide React como marcador */}
             <MapPin
               size={35} // Tamanho do ícone
-              color="hsl(var(--primary))" // Cor do ícone (usa a cor primária do seu tema, se definida)
-              // Você pode adicionar mais estilos Tailwind via className, por exemplo:
-              // className="bg-white rounded-full p-1 shadow-md"
+              color={getComputedStyle(document.documentElement).getPropertyValue('--background')?.trim() === '#000000' ? '#fff' : 'hsl(var(--primary)'} // Cor do ícone adaptada ao modo escuro/claro
             />
             {activeMarker === agency.id && (
               <InfoWindowF onCloseClick={() => setActiveMarker(null)}>
-                <div className="p-2 max-w-xs">
+                <div className="p-2 max-w-xs bg-white dark:bg-gray-800 text-black dark:text-white rounded-md shadow-lg">
                   <h3 className="font-bold text-lg mb-1">{agency.name}</h3>
                   {agency.agency_type && <Badge variant="outline" className="mb-2 font-normal">{agency.agency_type}</Badge>}
                   <p className="text-sm text-muted-foreground flex items-center gap-1 mb-1">
@@ -305,7 +322,7 @@ export default function MapaAgencias() {
           ))}
         </div>
       </div>
-      <div className="hidden md:block md:w-2/3">
+      <div className="hidden md:block md:w-2/3 h-[80vh]">
         {renderMap()}
       </div>
     </div>

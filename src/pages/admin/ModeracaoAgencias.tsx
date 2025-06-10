@@ -53,7 +53,7 @@ export default function ModeracaoAgencias() {
     }
   }
 
-  const handleStatusChange = async (agencyId: string, newStatus: 'approved' | 'rejected') => {
+  const handleStatusChange = async (agencyId: string, newStatus: 'approved' | 'rejected' | 'pending') => {
     try {
       const { error } = await supabase
         .from('agencies')
@@ -62,11 +62,11 @@ export default function ModeracaoAgencias() {
 
       if (error) throw error
 
-      setAgencies(agencies.map(agency => 
+      setAgencies(agencies.map(agency =>
         agency.id === agencyId ? { ...agency, status: newStatus } : agency
       ))
 
-      toast.success(`Agência ${newStatus === 'approved' ? 'aprovada' : 'rejeitada'} com sucesso`)
+      toast.success(`Agência ${newStatus === 'approved' ? 'aprovada' : newStatus === 'rejected' ? 'rejeitada' : 'pendente'} com sucesso`)
     } catch (error) {
       console.error('Erro ao atualizar status:', error)
       toast.error('Erro ao atualizar status da agência')
@@ -158,6 +158,7 @@ export default function ModeracaoAgencias() {
                 agency={agency}
                 onApprove={() => handleStatusChange(agency.id, 'approved')}
                 onReject={() => handleStatusChange(agency.id, 'rejected')}
+                onSetPending={() => handleStatusChange(agency.id, 'pending')}
               />
             ))
           )}
@@ -177,6 +178,7 @@ export default function ModeracaoAgencias() {
                 agency={agency}
                 onApprove={() => handleStatusChange(agency.id, 'approved')}
                 onReject={() => handleStatusChange(agency.id, 'rejected')}
+                onSetPending={() => handleStatusChange(agency.id, 'pending')}
               />
             ))
           )}
@@ -196,6 +198,7 @@ export default function ModeracaoAgencias() {
                 agency={agency}
                 onApprove={() => handleStatusChange(agency.id, 'approved')}
                 onReject={() => handleStatusChange(agency.id, 'rejected')}
+                onSetPending={() => handleStatusChange(agency.id, 'pending')}
               />
             ))
           )}
@@ -205,7 +208,7 @@ export default function ModeracaoAgencias() {
   )
 }
 
-function AgencyCard({ agency, onApprove, onReject }: { agency: Agency; onApprove: () => void; onReject: () => void }) {
+function AgencyCard({ agency, onApprove, onReject, onSetPending }: { agency: Agency; onApprove: () => void; onReject: () => void; onSetPending: () => void }) {
   return (
     <Card>
       <CardHeader>
@@ -270,8 +273,20 @@ function AgencyCard({ agency, onApprove, onReject }: { agency: Agency; onApprove
               </Button>
             </div>
           )}
+          {agency.status !== 'pending' && (
+            <div className="flex gap-2 mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex-1"
+                onClick={onSetPending}
+              >
+                Voltar para Pendente
+              </Button>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
   )
-} 
+}
