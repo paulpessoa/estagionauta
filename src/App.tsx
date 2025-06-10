@@ -19,6 +19,7 @@ import CalculadoraRecesso from './pages/CalculadoraRecesso';
 import Admin from './pages/Admin';
 import EsqueciSenha from './pages/EsqueciSenha';
 import NotFound from './pages/NotFound';
+import { ThemeProvider } from './components/theme-provider';
 
 const queryClient = new QueryClient();
 
@@ -54,13 +55,21 @@ function AppLayout() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <AppLayout />
-          <Toaster />
-        </AuthProvider>
-      </BrowserRouter>
+      <ThemeProvider
+        defaultTheme='dark'
+        attribute='class'
+        disableTransitionOnChange
+        enableSystem
+      >
+        <BrowserRouter>
+          <AuthProvider>
+            <AppLayout />
+            <Toaster />
+          </AuthProvider>
+        </BrowserRouter>
+      </ThemeProvider>
     </QueryClientProvider>
+
   );
 }
 
