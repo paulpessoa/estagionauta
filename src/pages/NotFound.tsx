@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Home, ArrowLeft, Search } from 'lucide-react'
+import { toast } from 'sonner'
 
 export default function NotFound() {
   return (
@@ -36,7 +37,13 @@ export default function NotFound() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link to="/analise-curriculo" className="flex flex-col items-center space-y-2">
+                  <Link 
+                  to="#"
+                  // to="/analise-curriculo" 
+                    onClick={() => {
+                      toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
+                    }}
+                  className="flex flex-col items-center space-y-2">
                     <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
                       <span className="text-blue-600 dark:text-blue-400 text-sm">📄</span>
                     </div>

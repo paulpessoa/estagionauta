@@ -45,10 +45,13 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
         Calculadora
       </Link>
       <Link
-        to="/analise-curriculo"
+        to="#"
+        // to="/analise-curriculo"
         className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
-        onClick={onLinkClick}
-      >
+        // onClick={onLinkClick}
+        onClick={() => {
+          tototo.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
+        }}>
         Análise de Currículo
         <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
           com IA

@@ -54,11 +54,11 @@ export default function HomePage() {
                 Analisar Currículo com IA
               </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
+            {/* <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
               <Youtube className="mr-2 h-5 w-5" />
               Assistir Demonstração
-            </Button>
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
+            </Button> */}
+            <Button size="lg" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70" asChild>
               <Link to="/resultado-curriculo-exemplo">
                 <ScanText className="mr-2 h-5 w-5" />
                 Exemplo Currículo Revisado IA
@@ -132,7 +132,13 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-bold shadow-lg hover:from-pink-600 hover:to-blue-600" asChild>
-                  <Link to="/analise-curriculo" onClick={handleAnalyzeClick}>
+                  <Link 
+                  to="#"
+                  // to="/analise-curriculo" 
+                    onClick={(e) => {
+                      toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
+                      // handleAnalyzeClick(e);
+                    }}>
                     Analisar Currículo com IA
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -446,15 +452,27 @@ export default function HomePage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
-              <Link to="/analise-curriculo" onClick={handleAnalyzeClick}>
+              <Link
+              to="#"
+              // to="/analise-curriculo" 
+                onClick={(e) => {
+                  toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
+                  // handleAnalyzeClick(e);
+                }}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>
             </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
+              {/* <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
                 <Youtube className="mr-2 h-5 w-5" />
                 Assistir Demonstração
-              </Button>
+              </Button> */}
+               <Button size="lg" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70" asChild>
+              <Link to="/resultado-curriculo-exemplo">
+                <ScanText className="mr-2 h-5 w-5" />
+                Exemplo Currículo Revisado IA
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
