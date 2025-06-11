@@ -13,6 +13,7 @@ import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-m
 import { Card, CardContent } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Badge } from '@/components/ui/badge'
+import { Link } from 'react-router-dom'
 
 const containerStyle = {
   width: '100%',
@@ -301,6 +302,13 @@ export default function MapaAgencias() {
         </div>
 
         <div className="overflow-y-auto space-y-2 pr-2"> {/* Adicionado overflow-y-auto e pr-2 para o scrollbar */}
+          {filteredAgencies.length === 0 && (
+            <CardContent className="text-center py-8">
+              <h3 className="text-lg font-semibold mb-2">Conhece uma agência que não está listada?</h3>
+              <p className="text-muted-foreground mb-4">Ajude outros estudantes adicionando agências que você conhece</p>
+              <Button asChild><Link to="/cadastro-agencia">Adicionar Agência</Link></Button>
+            </CardContent>
+          )}
           {filteredAgencies.map(agency => (
             <Card key={agency.id} className="cursor-pointer hover:bg-muted/50" onClick={() => agency.latitude && agency.longitude && setMapCenter({ lat: agency.latitude, lng: agency.longitude })}>
               <CardContent className="p-4">
@@ -320,6 +328,9 @@ export default function MapaAgencias() {
               </CardContent>
             </Card>
           ))}
+
+
+
         </div>
       </div>
     <div className="w-full md:w-2/3 h-[60vh] md:h-[80vh]">
