@@ -10,6 +10,7 @@ import { Calendar, Calculator, DollarSign, Download, Info } from 'lucide-react'
 export default function CalculadoraRecessoPage() {
   const [formData, setFormData] = useState({
     startDate: '',
+    endDate: '',
     salario: '',
     horasDiarias: '6',
     diasSemana: '5'
@@ -25,10 +26,10 @@ export default function CalculadoraRecessoPage() {
     if (!formData.startDate || !formData.salario) return
 
     const start = new Date(formData.startDate)
-    const now = new Date()
+    const end = formData.endDate ? new Date(formData.endDate) : new Date()
     
     // Calculate months worked
-    const monthsWorked = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth())
+    const monthsWorked = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
     
     // For every 12 months, student gets 30 days of recess
     const diasRecesso = Math.floor((monthsWorked / 12) * 30)
@@ -85,6 +86,16 @@ export default function CalculadoraRecessoPage() {
                     type="date"
                     value={formData.startDate}
                     onChange={(e) => updateFormData('startDate', e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="endDate">Data final (opcional)</Label>
+                  <Input
+                    id="endDate"
+                    type="date"
+                    value={formData.endDate}
+                    onChange={(e) => updateFormData('endDate', e.target.value)}
                   />
                 </div>
 
@@ -183,14 +194,20 @@ export default function CalculadoraRecessoPage() {
                   </div>
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" className="flex-1">
+                    <Button variant="outline" className="flex-1" onClick={() => handleDownloadPDF()}>
                       <Download className="mr-2 h-4 w-4" />
                       Baixar PDF
                     </Button>
-                    <Button variant="outline" className="flex-1">
+                    <Button variant="outline" className="flex-1" onClick={() => handleShare()}>
                       Compartilhar
                     </Button>
                   </div>
+                              {/* Disclaimer below buttons */}
+            {result && (
+              <p className="mt-4 text-center text-sm text-muted-foreground italic">
+                ⚠️ O resultado deste calculo é apenas uma sugestão para apoiar sua negociação de folgas e férias. Aproveite!
+              </p>
+            )}
                 </CardContent>
               </Card>
             ) : (
@@ -243,4 +260,47 @@ export default function CalculadoraRecessoPage() {
       </div>
     </div>
   )
+
+  // Share handler for WhatsApp or email
+  function handleShare() {
+    if (!result) return
+    const start = formData.startDate
+    const end = formData.endDate ? formData.endDate : new Date().toISOString().split('T')[0]
+    const message = `Meu cálculo de recesso:\nInício: ${start}\nFim: ${end}\nDias de recesso: ${result.diasRecesso}\nValor: R$ ${result.valorRecesso.toFixed(2)}`
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+    window.open(whatsappUrl, '_blank')
+  }
+
+  // PDF download handler using print-like HTML snippet
+  function handleDownloadPDF() {
+    if (!result) return
+    const printContent = document.querySelector('.space-y-6') // The card content container for results
+    if (!printContent) return
+    const newWindow = window.open('', '', 'width=800,height=600')
+    if (!newWindow) return
+    newWindow.document.write(`
+      <html>
+        <head>
+          <title>Recesso PDF</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            .result-container { background: #f9fafb; padding: 20px; border-radius: 8px; }
+            h4 { color: #6b21a8; }
+          </style>
+        </head>
+        <body>
+          <div class="result-container">
+            ${printContent.innerHTML}
+          </div>
+          <script>
+            window.onload = function() {
+              window.print()
+              window.onafterprint = function() { window.close() }
+            }
+          </script>
+        </body>
+      </html>
+    `)
+    newWindow.document.close()
+  }
 }

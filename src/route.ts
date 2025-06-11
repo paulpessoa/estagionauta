@@ -13,6 +13,7 @@ import ResultadoCurriculoExemplo from './pages/ResultadoCurriculoExemplo'
 import Sucesso from './pages/Sucesso'
 import ModeracaoAgencias from './pages/admin/ModeracaoAgencias'
 import NotFound from './pages/NotFound'
+import Precos from './pages/Precos'
 
 export const routes = [
   { path: '/', component: HomePage },
@@ -29,5 +30,6 @@ export const routes = [
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
   { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
+  { path: '/precos', component: Precos},
   { path: '*', component: NotFound },
 ]
