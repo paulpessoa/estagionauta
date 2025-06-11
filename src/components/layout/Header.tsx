@@ -67,14 +67,6 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
             <Building2 className="h-4 w-4 mr-2"/>
             Moderar Agências
           </Link>
-          <Link
-            to="/admin/listagem-agencias"
-            className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
-            onClick={onLinkClick}
-          >
-            <Building2 className="h-4 w-4 mr-2" />
-            Listar Agências
-          </Link>
         </>
       )}
     </div>

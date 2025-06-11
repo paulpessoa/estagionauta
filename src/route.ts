@@ -10,7 +10,6 @@ import Login from './pages/Login'
 import MapaAgencias from './pages/MapaAgencias'
 import ResultadoCurriculo from './pages/ResultadoCurriculo'
 import Sucesso from './pages/Sucesso'
-import ListagemAgencias from './pages/admin/ListagemAgencias'
 import ModeracaoAgencias from './pages/admin/ModeracaoAgencias'
 import NotFound from './pages/NotFound'
 
@@ -27,8 +26,6 @@ export const routes = [
   { path: '/mapa-agencias', component: MapaAgencias },
   { path: '/resultado-curriculo', component: ResultadoCurriculo },
   { path: '/sucesso', component: Sucesso },
-  { path: '/admin/listagem-agencias', component: ListagemAgencias },
   { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
-  { path: '/admin/editar-agencia/:id', component: (await import('./pages/admin/EditAgencia')).default },
   { path: '*', component: NotFound },
 ]

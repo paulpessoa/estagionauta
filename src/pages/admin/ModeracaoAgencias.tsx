@@ -10,8 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Building2, Check, X, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Agency } from '@/types/agency'
-import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
-import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
+// import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
+// import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
 
 export default function ModeracaoAgencias() {
   const { hasPermission, isLoading, profile } = useAuth()
@@ -104,15 +104,15 @@ export default function ModeracaoAgencias() {
 
   return (
     <>
-      <EditAgencyModal
+      {/* <EditAgencyModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         agency={selectedAgency}
         onSave={(updatedAgency) => {
           setAgencies(agencies.map(a => a.id === updatedAgency.id ? updatedAgency : a))
         }}
-      />
-      <ConfirmDeleteModal
+      /> */}
+      {/* <ConfirmDeleteModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         itemName={selectedAgency?.name}
@@ -130,7 +130,7 @@ export default function ModeracaoAgencias() {
             toast.error('Erro ao excluir agência')
           }
         }}
-      />
+      /> */}
       <div className="container py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -320,7 +320,11 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelet
             <Button
               variant="outline"
               size="sm"
-              onClick={onEdit}
+                               onClick={() => {
+                onEdit(); // será chamado, mesmo que ainda não tenha efeito
+                toast.error('Funcionalidade de edição ainda não implementada');
+              }}
+              
             >
               Editar
             </Button>
@@ -328,7 +332,10 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelet
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={onDelete}
+                 onClick={() => {
+                onDelete(); // será chamado, mesmo que ainda não tenha efeito
+                toast.error('Funcionalidade de exclusão ainda não implementada');
+              }}
               >
                 Excluir
               </Button>
