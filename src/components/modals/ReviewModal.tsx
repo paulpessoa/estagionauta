@@ -68,7 +68,7 @@ export default function ReviewModal() {
   return (
     <>
       {/* Floating feedback button */}
-      <button
+     <button
         onClick={handleOpen}
         aria-label="Deixar sugestão"
         className="
@@ -82,14 +82,13 @@ export default function ReviewModal() {
           transition-all duration-300 ease-in-out
           hover:scale-105 hover:shadow-xl
           z-50
-          md:bottom-8
           font-medium
+          md:bottom-8 md:left-24
         "
       >
         <HeartHandshake size={20} />
         <span className="text-sm">Sugestões?</span>
       </button>
-
       {/* Modal */}
       <Dialog open={isOpen} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-lg">
