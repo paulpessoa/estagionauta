@@ -2,12 +2,13 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ArrowRight, Users, Brain, MapPin, Calculator, Star, Shield, Zap, BotMessageSquare, BotIcon, FileScan, FileText, Youtube, AlertCircle } from 'lucide-react'
+import { ArrowRight, Users, Brain, MapPin, Calculator, Star, Shield, Zap, BotMessageSquare, BotIcon, FileScan, FileText, Youtube, AlertCircle, ScanText } from 'lucide-react'
 import { Footer } from '@/components/Footer'
 import { DevWarningModal } from '@/components/DevWarningModal'
 import { AuthRequiredModal } from '@/components/AuthRequiredModal'
 import { useAuth } from '@/hooks/useAuth'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 export default function HomePage() {
   const { user } = useAuth()
@@ -43,17 +44,26 @@ export default function HomePage() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
-              <Link to="/analise-curriculo" onClick={handleAnalyzeClick}>
+              <Link to="#"
+              // to="/analise-curriculo" 
+                onClick={(e) => {
+                  toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
+                  // handleAnalyzeClick(e);
+                }}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>
             </Button>
-            <div className="flex flex-col items-center gap-2">
-              <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
-                <Youtube className="mr-2 h-5 w-5" />
-                Assistir Demonstração
-              </Button>
-            </div>
+            <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
+              <Youtube className="mr-2 h-5 w-5" />
+              Assistir Demonstração
+            </Button>
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
+              <Link to="/resultado-curriculo-exemplo">
+                <ScanText className="mr-2 h-5 w-5" />
+                Exemplo Currículo Revisado IA
+              </Link>
+            </Button>
           </div>
 
           <div className="flex justify-center items-center space-x-8 pt-8 text-blue-200">

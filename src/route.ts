@@ -9,6 +9,7 @@ import EsqueciSenha from './pages/EsqueciSenha'
 import Login from './pages/Login'
 import MapaAgencias from './pages/MapaAgencias'
 import ResultadoCurriculo from './pages/ResultadoCurriculo'
+import ResultadoCurriculoExemplo from './pages/ResultadoCurriculoExemplo'
 import Sucesso from './pages/Sucesso'
 import ModeracaoAgencias from './pages/admin/ModeracaoAgencias'
 import NotFound from './pages/NotFound'
@@ -25,6 +26,7 @@ export const routes = [
   { path: '/login', component: Login },
   { path: '/mapa-agencias', component: MapaAgencias },
   { path: '/resultado-curriculo', component: ResultadoCurriculo },
+  { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
   { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
   { path: '*', component: NotFound },
