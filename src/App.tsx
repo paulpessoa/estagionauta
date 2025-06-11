@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from './components/theme-provider';
 import { routes } from './route';
+import ReviewModal from './components/modals/ReviewModal'
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function AppLayout() {
         </Routes>
       </main>
       <Footer />
+      <ReviewModal />
     </div>
   );
 }
