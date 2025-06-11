@@ -1,9 +1,10 @@
 import { Link } from 'react-router-dom'
 import { Linkedin, Youtube, Github, Instagram } from 'lucide-react'
+import { toast } from 'sonner'
 
 export function Footer() {
   return (
-    <footer className="bg-navy-950 text-slate-900 dark:text-white py-12 px-4">
+    <footer className="border-t  bg-navy-950 text-slate-900 dark:text-white py-12 px-4">
       <div className="container mx-auto max-w-6xl flex flex-col md:flex-row md:justify-between md:items-start gap-8">
         {/* Logo, descrição e redes sociais */}
         <div className="flex-1 min-w-[220px] flex flex-col items-center md:items-start mb-8 md:mb-0">
@@ -18,7 +19,7 @@ export function Footer() {
             <span className="text-xl font-bold text-slate-900 dark:text-white">Estagionauta</span>
           </div>
           <p className="text-slate-700 dark:text-white text-sm mb-4 text-center md:text-left max-w-xs">
-            A plataforma completa para estagiários decolarem suas carreiras.
+            A plataforma completa para estudantes e estagiários decolarem suas carreiras.
           </p>
           <div className="flex space-x-4 mt-2 justify-center md:justify-start">
             <a href="https://www.linkedin.com/company/menvo" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
@@ -27,9 +28,9 @@ export function Footer() {
             {/* <a href="https://www.youtube.com/@estagionauta" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
               <Youtube className="h-6 w-6 hover:text-red-500 transition-colors" />
             </a> */}
-            <a href="https://github.com/paulpessoa/estagionauta" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            {/* <a href="https://github.com/paulpessoa/estagionauta" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
               <Github className="h-6 w-6 hover:text-gray-400 transition-colors" />
-            </a>
+            </a> */}
             <a href="https://www.instagram.com/oestagionauta" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
               <Instagram className="h-6 w-6 hover:text-pink-500 transition-colors" />
             </a>
@@ -44,14 +45,14 @@ export function Footer() {
                 <Link to="#" className="hover:text-blue-400 transition-colors">Funcionalidades</Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">Preços</Link>
+                <Link to="/precos" className="hover:text-blue-400 transition-colors">Preços</Link>
               </li>
               <li>
                 <Link to="#" className="hover:text-blue-400 transition-colors">API</Link>
               </li>
             </ul>
           </div>
-          <div>
+          <div onClick={() => toast.info('Esta página esta em desenvolvimento!')}>
             <h4 className="font-semibold mb-4 text-slate-900 dark:text-white">Empresa</h4>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
@@ -65,7 +66,7 @@ export function Footer() {
               </li>
             </ul>
           </div>
-          <div>
+          <div onClick={() => toast.info('Esta página esta em desenvolvimento!')}>
             <h4 className="font-semibold mb-4 text-slate-900 dark:text-white">Suporte</h4>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
