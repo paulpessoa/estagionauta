@@ -274,7 +274,7 @@ export default function MapaAgencias() {
   if (loading || !isLoaded) return <div className="flex justify-center items-center h-full"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>
 
   return (
-    <div className="flex container py-8">
+    <div className="flex flex-col md:flex-row container py-8">
       <div className="w-full md:w-1/3 p-4 border-r flex flex-col h-[80vh]"> {/* Adicionado h-[70vh] e flex-col */}
         <h1 className="text-2xl font-bold mb-4">Explorar Agências</h1> {/* Adicionado mb-4 para espaçamento */}
 
@@ -322,7 +322,7 @@ export default function MapaAgencias() {
           ))}
         </div>
       </div>
-      <div className="hidden md:block md:w-2/3 h-[80vh]">
+    <div className="w-full md:w-2/3 h-[60vh] md:h-[80vh]">
         {renderMap()}
       </div>
     </div>

@@ -324,7 +324,7 @@ export default function AnalyseCurriculoPage() {
               <Gift className="h-12 w-12 text-purple-600 mx-auto mb-4" />
               <h3 className="text-xl font-semibold mb-2">Seu presente 🎁</h3>
               <p className="text-muted-foreground">
-                Anexe seu currículo em PDF para uma análise gratuita com ajuda de IA
+                Anexe seu currículo em PDF para uma análise com ajuda de IA
               </p>
               {user && profile && (
                 <Badge variant="outline" className="mt-2">
@@ -414,7 +414,7 @@ export default function AnalyseCurriculoPage() {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Análise Gratuita de Currículo 🎯
+              Análise de Currículo  com IA
             </h1>
             <p className="text-xl text-muted-foreground">
               Responda algumas perguntas rápidas e receba uma análise completa do seu currículo

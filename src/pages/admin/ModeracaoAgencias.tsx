@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
-import { useAuth } from '@/hooks/useAuth'
 import { Permission } from '@/types/permissions'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -11,6 +10,8 @@ import { Badge } from '@/components/ui/badge'
 import { Building2, Check, X, Search } from 'lucide-react'
 import { toast } from 'sonner'
 import { Agency } from '@/types/agency'
+import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
+import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
 
 export default function ModeracaoAgencias() {
   const { hasPermission, isLoading, profile } = useAuth()
@@ -18,6 +19,11 @@ export default function ModeracaoAgencias() {
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [loadingAgencies, setLoadingAgencies] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+
+  // New state for modals and selected agency
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
 
   useEffect(() => {
     if (isLoading) {
@@ -97,118 +103,176 @@ export default function ModeracaoAgencias() {
   }
 
   return (
-    <div className="container py-8">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-3xl font-bold">Moderação de Agências</h1>
-          <p className="text-muted-foreground mt-1">
-            Gerencie as agências de estágio cadastradas na plataforma
-          </p>
+    <>
+      <EditAgencyModal
+        isOpen={editModalOpen}
+        onClose={() => setEditModalOpen(false)}
+        agency={selectedAgency}
+        onSave={(updatedAgency) => {
+          setAgencies(agencies.map(a => a.id === updatedAgency.id ? updatedAgency : a))
+        }}
+      />
+      <ConfirmDeleteModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        itemName={selectedAgency?.name}
+        onConfirm={async () => {
+          if (!selectedAgency) return
+          try {
+            const { error } = await supabase
+              .from('agencies')
+              .delete()
+              .eq('id', selectedAgency.id)
+            if (error) throw error
+            setAgencies(agencies.filter(a => a.id !== selectedAgency.id))
+            toast.success('Agência excluída com sucesso')
+          } catch (error) {
+            toast.error('Erro ao excluir agência')
+          }
+        }}
+      />
+      <div className="container py-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-3xl font-bold">Moderação de Agências</h1>
+            <p className="text-muted-foreground mt-1">
+              Gerencie as agências de estágio cadastradas na plataforma
+            </p>
+          </div>
+          <div className="relative w-64">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar agências..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
         </div>
-        <div className="relative w-64">
-          <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Buscar agências..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-8"
-          />
-        </div>
+
+        <Tabs defaultValue="pending" className="space-y-4">
+          <TabsList>
+            <TabsTrigger value="pending" className="relative">
+              Pendentes
+              {pendingAgencies.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {pendingAgencies.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="approved">
+              Aprovadas
+              {approvedAgencies.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {approvedAgencies.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="rejected">
+              Rejeitadas
+              {rejectedAgencies.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {rejectedAgencies.length}
+                </Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="pending" className="space-y-4">
+            {pendingAgencies.length === 0 ? (
+              <Card>
+                <CardContent className="flex items-center justify-center h-32">
+                  <p className="text-muted-foreground">Nenhuma agência pendente</p>
+                </CardContent>
+              </Card>
+            ) : (
+              pendingAgencies.map((agency) => (
+                <AgencyCard
+                  key={agency.id}
+                  agency={agency}
+                  onApprove={() => handleStatusChange(agency.id, 'approved')}
+                  onReject={() => handleStatusChange(agency.id, 'rejected')}
+                  onSetPending={() => handleStatusChange(agency.id, 'pending')}
+                  onEdit={() => {
+                    setSelectedAgency(agency)
+                    setEditModalOpen(true)
+                  }}
+                  onDelete={() => {
+                    setSelectedAgency(agency)
+                    setDeleteModalOpen(true)
+                  }}
+                />
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="approved" className="space-y-4">
+            {approvedAgencies.length === 0 ? (
+              <Card>
+                <CardContent className="flex items-center justify-center h-32">
+                  <p className="text-muted-foreground">Nenhuma agência aprovada</p>
+                </CardContent>
+              </Card>
+            ) : (
+              approvedAgencies.map((agency) => (
+                <AgencyCard
+                  key={agency.id}
+                  agency={agency}
+                  onApprove={() => handleStatusChange(agency.id, 'approved')}
+                  onReject={() => handleStatusChange(agency.id, 'rejected')}
+                  onSetPending={() => handleStatusChange(agency.id, 'pending')}
+                  onEdit={() => {
+                    setSelectedAgency(agency)
+                    setEditModalOpen(true)
+                  }}
+                  onDelete={() => {
+                    setSelectedAgency(agency)
+                    setDeleteModalOpen(true)
+                  }}
+                />
+              ))
+            )}
+          </TabsContent>
+
+          <TabsContent value="rejected" className="space-y-4">
+            {rejectedAgencies.length === 0 ? (
+              <Card>
+                <CardContent className="flex items-center justify-center h-32">
+                  <p className="text-muted-foreground">Nenhuma agência rejeitada</p>
+                </CardContent>
+              </Card>
+            ) : (
+              rejectedAgencies.map((agency) => (
+                <AgencyCard
+                  key={agency.id}
+                  agency={agency}
+                  onApprove={() => handleStatusChange(agency.id, 'approved')}
+                  onReject={() => handleStatusChange(agency.id, 'rejected')}
+                  onSetPending={() => handleStatusChange(agency.id, 'pending')}
+                  onEdit={() => {
+                    setSelectedAgency(agency)
+                    setEditModalOpen(true)
+                  }}
+                  onDelete={() => {
+                    setSelectedAgency(agency)
+                    setDeleteModalOpen(true)
+                  }}
+                />
+              ))
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
-
-      <Tabs defaultValue="pending" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="pending" className="relative">
-            Pendentes
-            {pendingAgencies.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {pendingAgencies.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="approved">
-            Aprovadas
-            {approvedAgencies.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {approvedAgencies.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-          <TabsTrigger value="rejected">
-            Rejeitadas
-            {rejectedAgencies.length > 0 && (
-              <Badge variant="secondary" className="ml-2">
-                {rejectedAgencies.length}
-              </Badge>
-            )}
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="pending" className="space-y-4">
-          {pendingAgencies.length === 0 ? (
-            <Card>
-              <CardContent className="flex items-center justify-center h-32">
-                <p className="text-muted-foreground">Nenhuma agência pendente</p>
-              </CardContent>
-            </Card>
-          ) : (
-            pendingAgencies.map((agency) => (
-              <AgencyCard
-                key={agency.id}
-                agency={agency}
-                onApprove={() => handleStatusChange(agency.id, 'approved')}
-                onReject={() => handleStatusChange(agency.id, 'rejected')}
-                onSetPending={() => handleStatusChange(agency.id, 'pending')}
-              />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="approved" className="space-y-4">
-          {approvedAgencies.length === 0 ? (
-            <Card>
-              <CardContent className="flex items-center justify-center h-32">
-                <p className="text-muted-foreground">Nenhuma agência aprovada</p>
-              </CardContent>
-            </Card>
-          ) : (
-            approvedAgencies.map((agency) => (
-              <AgencyCard
-                key={agency.id}
-                agency={agency}
-                onApprove={() => handleStatusChange(agency.id, 'approved')}
-                onReject={() => handleStatusChange(agency.id, 'rejected')}
-                onSetPending={() => handleStatusChange(agency.id, 'pending')}
-              />
-            ))
-          )}
-        </TabsContent>
-
-        <TabsContent value="rejected" className="space-y-4">
-          {rejectedAgencies.length === 0 ? (
-            <Card>
-              <CardContent className="flex items-center justify-center h-32">
-                <p className="text-muted-foreground">Nenhuma agência rejeitada</p>
-              </CardContent>
-            </Card>
-          ) : (
-            rejectedAgencies.map((agency) => (
-              <AgencyCard
-                key={agency.id}
-                agency={agency}
-                onApprove={() => handleStatusChange(agency.id, 'approved')}
-                onReject={() => handleStatusChange(agency.id, 'rejected')}
-                onSetPending={() => handleStatusChange(agency.id, 'pending')}
-              />
-            ))
-          )}
-        </TabsContent>
-      </Tabs>
-    </div>
+    </>
   )
 }
 
-function AgencyCard({ agency, onApprove, onReject, onSetPending }: { agency: Agency; onApprove: () => void; onReject: () => void; onSetPending: () => void }) {
+import { useAuth } from '@/hooks/useAuth'
+
+function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelete }: { agency: Agency; onApprove: () => void; onReject: () => void; onSetPending: () => void; onEdit: () => void; onDelete: () => void }) {
+  const { profile } = useAuth()
+  const isAdmin = profile?.role === 'admin'
+
   return (
     <Card>
       <CardHeader>
@@ -252,8 +316,26 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending }: { agency: Age
               </a>
             </div>
           )}
+          <div className="flex gap-2 mt-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+            >
+              Editar
+            </Button>
+            {isAdmin && (
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={onDelete}
+              >
+                Excluir
+              </Button>
+            )}
+          </div>
           {agency.status === 'pending' && (
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-2">
               <Button
                 variant="outline"
                 size="sm"

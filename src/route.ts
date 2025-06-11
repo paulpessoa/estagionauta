@@ -29,5 +29,6 @@ export const routes = [
   { path: '/sucesso', component: Sucesso },
   { path: '/admin/listagem-agencias', component: ListagemAgencias },
   { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
+  { path: '/admin/editar-agencia/:id', component: (await import('./pages/admin/EditAgencia')).default },
   { path: '*', component: NotFound },
 ]

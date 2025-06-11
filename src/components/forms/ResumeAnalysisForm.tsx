@@ -342,7 +342,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
       {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl md:text-4xl font-bold mb-4">
-          Análise Gratuita de Currículo 🎯
+          Análise de Currículo com IA
         </h1>
         <p className="text-xl text-muted-foreground">
           Responda algumas perguntas rápidas e receba uma análise completa do seu currículo

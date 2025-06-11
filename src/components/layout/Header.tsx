@@ -51,7 +51,7 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
       >
         Análise de Currículo
         <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-          Grátis
+          com IA
         </Badge>
         {!isSupabaseAvailable && (
           <AlertCircle className="h-3 w-3 text-yellow-500" />
@@ -64,7 +64,7 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
             className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
             onClick={onLinkClick}
           >
-            <Building2 className="h-4 w-4 mr-2" />
+            <Building2 className="h-4 w-4 mr-2"/>
             Moderar Agências
           </Link>
           <Link
