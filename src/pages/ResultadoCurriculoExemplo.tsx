@@ -2,9 +2,10 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Download, Mail, Share2, ArrowLeft } from 'lucide-react'
+import { Download, Mail, Share2, ArrowLeft, Medal, UserCheck, UsersRound } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { toast } from 'sonner'
 
 interface AnalysisData {
   notas: {
@@ -45,6 +46,16 @@ export default function ResultadoCurriculoExemplo() {
     created_at: new Date().toISOString(),
     analysis_data: {
       notas: {
+        // AVALIACAO BAIXA
+        // organizacao: 5,
+        // ortografia: 4,
+        // experiencias: 2,
+        // adequacao: 8,
+        // extracurriculares: 3,
+        // diferencial: 7,
+        // habilidades: 8,
+
+        // AVALIACAO NORMAL
         organizacao: 8,
         ortografia: 9,
         experiencias: 7,
@@ -52,6 +63,15 @@ export default function ResultadoCurriculoExemplo() {
         extracurriculares: 6,
         diferencial: 7,
         habilidades: 8,
+
+        // AVALIACAO TOPZERA
+        // organizacao: 10,
+        // ortografia: 9,
+        // experiencias: 10,
+        // adequacao: 10,
+        // extracurriculares: 10,
+        // diferencial: 10,
+        // habilidades: 10,
       },
       analise: [
         'Boa organização geral do currículo, facilitando a leitura.',
@@ -101,26 +121,29 @@ export default function ResultadoCurriculoExemplo() {
     
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: 'Análise de Currículo - Estagionauta',
-          text: shareText,
-          url: shareUrl,
-        })
+
+      toast.info('Link copiado para a área de transferência.')
+      navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
+      // await navigator.share({
+        //   title: 'Análise de Currículo - Estagionauta',
+        //   text: shareText,
+        //   url: shareUrl,
+        // })
       } catch (error) {
         // User cancelled sharing
       }
     } else {
       navigator.clipboard.writeText(`${shareText} ${shareUrl}`)
-      alert('Link copiado para a área de transferência.')
+      toast.info('Link copiado para a área de transferência.')
     }
   }
 
   const handleDownloadPDF = () => {
-    alert('Funcionalidade de download será implementada em breve.')
+    toast.info('Funcionalidade de download será implementada em breve.')
   }
 
   const handleSendEmail = () => {
-    alert('Envio por email será implementado em breve.')
+    toast.info('Envio por email será implementado em breve.')
   }
 
   return (
@@ -182,18 +205,68 @@ export default function ResultadoCurriculoExemplo() {
         </div>
 
         {/* Nota Geral */}
-        <Card>
-          <CardContent className="text-center p-6 md:p-8">
-            <h2 className="text-xl md:text-2xl font-semibold mb-4">Nota Geral</h2>
-            <div className="text-4xl md:text-6xl font-bold text-blue-600 mb-2">
+        <Card
+          className={`border relative ${
+            notaGeral < 5
+              ? 'bg-red-50 border-red-300 dark:bg-red-900 dark:border-red-700 text-red-700 dark:text-red-300'
+              : notaGeral < 7
+              ? 'bg-orange-50 border-orange-300 dark:bg-orange-900 dark:border-orange-700 text-orange-700 dark:text-orange-300'
+              : notaGeral < 8.5
+              ? 'bg-blue-50 border-blue-300 dark:bg-blue-900 dark:border-blue-700 text-blue-700 dark:text-blue-300'
+              : notaGeral < 9.5
+              ? 'bg-green-50 border-green-300 dark:bg-green-900 dark:border-green-700 text-green-700 dark:text-green-300'
+              : 'border-transparent text-yellow-900 dark:text-yellow-100'
+          }`}
+          title={notaGeral >= 9.5 ? 'Currículo Topzera!' : undefined}
+          style={
+            notaGeral >= 9.5
+              ? {
+                  background: 'linear-gradient(270deg, #603489, #b501a0, #e715ce, #4b1c71)',                  
+                  backgroundSize: '700% 800%',
+                  animation: 'gradientAnimation 5s ease infinite',
+                }
+              : undefined
+          }
+        >
+          {notaGeral > 8.5 && (
+            <div
+              className="h-8 w-8 text-yellow-300 dark:text-yellow-300 absolute top-4 right-4"
+              >
+             <Medal size={36}/>
+              </div>
+          )}
+          <CardContent className="text-center p-6 md:p-8 flex flex-col items-center justify-center relative">
+            <h2 className="text-gray-600 dark:text-gray-200 text-xl md:text-2xl font-semibold mb-4">Nota Geral</h2>
+            <div
+              className={`text-4xl md:text-6xl font-bold mb-2 ${
+                notaGeral < 5
+                  ? 'text-red-700 dark:text-red-300'
+                  : notaGeral < 7
+                  ? 'text-orange-700 dark:text-orange-300'
+                  : notaGeral < 8.5
+                  ? 'text-blue-700 dark:text-blue-300'
+                  : notaGeral < 9.5
+                  ? 'text-green-700 dark:text-green-300'
+                  : 'text-yellow-300 dark:text-yellow-100'
+              }`}
+            >
               {notaGeral.toFixed(1)}
             </div>
-            <p className="text-gray-600">de 10.0</p>
+            <p className=" text-gray-600 dark:text-gray-200">de 10.0</p>
           </CardContent>
+          <style>
+            {`
+              @keyframes gradientAnimation {
+                0% {background-position:0% 50%}
+                50% {background-position:100% 50%}
+                100% {background-position:0% 50%}
+              }
+            `}
+          </style>
         </Card>
 
         {/* Gráfico de Radar */}
-        <Card>
+        <Card className="bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700">
           <CardHeader>
             <CardTitle className="text-lg md:text-xl">Habilidades Avaliadas</CardTitle>
           </CardHeader>
@@ -202,21 +275,21 @@ export default function ResultadoCurriculoExemplo() {
               <ResponsiveContainer width="100%" height="100%">
                 <RadarChart data={radarData}>
                   <PolarGrid />
-                  <PolarAngleAxis 
-                    dataKey="habilidade" 
+                  <PolarAngleAxis
+                    dataKey="habilidade"
                     tick={{ fontSize: isMobile ? 10 : 12 }}
                   />
-                  <PolarRadiusAxis 
-                    angle={30} 
-                    domain={[0, 10]} 
+                  <PolarRadiusAxis
+                    angle={30}
+                    domain={[0, 10]}
                     tick={{ fontSize: isMobile ? 8 : 10 }}
                   />
-                  <Radar 
-                    name="Notas" 
-                    dataKey="valor" 
-                    stroke="#2B4C7E" 
-                    fill="#66A5AD" 
-                    fillOpacity={0.3} 
+                  <Radar
+                    name="Notas"
+                    dataKey="valor"
+                    stroke="#2B4C7E"
+                    fill="#66A5AD"
+                    fillOpacity={0.3}
                   />
                   <Tooltip />
                 </RadarChart>
@@ -227,12 +300,12 @@ export default function ResultadoCurriculoExemplo() {
 
         {/* Análise e Recomendações */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+          <Card className="bg-green-100 dark:bg-green-800 border-green-200 dark:border-green-600">
             <CardHeader>
-              <CardTitle className="text-green-700 text-lg md:text-xl">Pontos Fortes</CardTitle>
+              <CardTitle className="text-green-800 dark:text-green-200 text-lg md:text-xl">Pontos Fortes</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="list-disc list-inside text-green-700 space-y-2 text-sm md:text-base">
+              <ul className="list-disc list-inside text-green-800 dark:text-green-200 space-y-2 text-sm md:text-base">
                 {analysis.analysis_data.analise.slice(0, Math.ceil(analysis.analysis_data.analise.length / 2)).map((ponto, idx) => (
                   <li key={idx}>{ponto}</li>
                 ))}
@@ -240,12 +313,12 @@ export default function ResultadoCurriculoExemplo() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-yellow-100 dark:bg-yellow-800 border-yellow-200 dark:border-yellow-600">
             <CardHeader>
-              <CardTitle className="text-yellow-700 text-lg md:text-xl">Pontos a Melhorar</CardTitle>
+              <CardTitle className="text-yellow-800 dark:text-yellow-200 text-lg md:text-xl">Pontos a Melhorar</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="list-disc list-inside text-yellow-700 space-y-2 text-sm md:text-base">
+              <ul className="list-disc list-inside text-yellow-800 dark:text-yellow-200 space-y-2 text-sm md:text-base">
                 {analysis.analysis_data.analise.slice(Math.ceil(analysis.analysis_data.analise.length / 2)).map((ponto, idx) => (
                   <li key={idx}>{ponto}</li>
                 ))}
@@ -255,9 +328,9 @@ export default function ResultadoCurriculoExemplo() {
         </div>
 
         {/* Recomendações */}
-        <Card>
+        <Card className="bg-blue-50 dark:bg-blue-900 border-blue-300 dark:border-blue-700">
           <CardHeader>
-            <CardTitle className="text-lg md:text-xl">Recomendações para Melhoria</CardTitle>
+            <CardTitle className="text-blue-700 dark:text-blue-300 text-lg md:text-xl">Recomendações para Melhoria</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="list-disc list-inside space-y-2 text-sm md:text-base">
@@ -269,14 +342,18 @@ export default function ResultadoCurriculoExemplo() {
         </Card>
 
         {/* Tags de Habilidades */}
-        <Card>
+        <Card className="bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600">
           <CardHeader>
-            <CardTitle className="text-lg md:text-xl">Habilidades Identificadas</CardTitle>
+            <CardTitle className="text-gray-800 dark:text-gray-200 text-lg md:text-xl">Habilidades Identificadas</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {analysis.analysis_data.tags.map((tag, idx) => (
-                <Badge key={idx} variant="secondary" className="text-xs md:text-sm">
+                <Badge
+                  key={idx}
+                  variant="outline"
+                  className="text-xs md:text-sm text-gray-700 dark:text-gray-300 border-gray-700 dark:border-gray-300"
+                >
                   {tag}
                 </Badge>
               ))}
@@ -285,25 +362,46 @@ export default function ResultadoCurriculoExemplo() {
         </Card>
 
         {/* Próximos Passos */}
-        <Card>
+        <Card className="bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
           <CardHeader>
             <CardTitle className="text-lg md:text-xl">Próximos Passos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <p className="text-gray-700 text-sm md:text-base">
+              <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base">
                 Baseado na análise de exemplo, recomendamos buscar mentoria nas seguintes áreas:
               </p>
               <div className="flex flex-wrap gap-2">
-                <Badge variant="outline" className="text-xs md:text-sm">Metodologias de Ensino</Badge>
-                <Badge variant="outline" className="text-xs md:text-sm">Desenvolvimento Infantil</Badge>
-                <Badge variant="outline" className="text-xs md:text-sm">Comunicação Educacional</Badge>
-                <Badge variant="outline" className="text-xs md:text-sm">Planejamento de Aulas</Badge>
+                <Badge
+                  variant="outline"
+                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
+                >
+                  Metodologias de Ensino
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
+                >
+                  Desenvolvimento Infantil
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
+                >
+                  Comunicação Educacional
+                </Badge>
+                <Badge
+                  variant="outline"
+                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
+                >
+                  Planejamento de Aulas
+                </Badge>
               </div>
-              <div className="pt-4">
-                <Button asChild className="w-full md:w-auto">
-                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer">
-                    Encontrar Mentores no Menvo
+              <div className="pt-4 flex justify-center">
+                <Button asChild className="w-full md:w-auto bg-teal-700 hover:bg-teal-600  text-white">
+                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer" className="block px-4 py-2">
+                    <UsersRound size={20} /> {/* Ícone Lucide React */}
+                    Mentores Voluntários
                   </a>
                 </Button>
               </div>
