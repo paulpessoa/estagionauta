@@ -49,7 +49,7 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  to="#"
+                  to="/afiliados"
                   className="hover:text-blue-400 transition-colors"
                   onClick={() => {
                     toast.info("Em breve disponibilizaremos a seção de afiliados. Fique atento!");
