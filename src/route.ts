@@ -14,6 +14,7 @@ import Sucesso from './pages/Sucesso'
 import ModeracaoAgencias from './pages/admin/ModeracaoAgencias'
 import NotFound from './pages/NotFound'
 import Precos from './pages/Precos'
+import Afiliados from './pages/Afiliados'
 
 export const routes = [
   { path: '/', component: HomePage },
@@ -31,5 +32,6 @@ export const routes = [
   { path: '/sucesso', component: Sucesso },
   { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
   { path: '/precos', component: Precos},
+  { path: '/afiliados', component: Afiliados },
   { path: '*', component: NotFound },
 ]

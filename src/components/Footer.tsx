@@ -48,7 +48,15 @@ export function Footer() {
                 <Link to="/precos" className="hover:text-blue-400 transition-colors">Preços</Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">API</Link>
+                <Link
+                  to="#"
+                  className="hover:text-blue-400 transition-colors"
+                  onClick={() => {
+                    toast.info("Em breve disponibilizaremos a seção de afiliados. Fique atento!");
+                  }}
+                >
+                  Afiliados
+                </Link>
               </li>
             </ul>
           </div>

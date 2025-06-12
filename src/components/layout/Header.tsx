@@ -60,13 +60,13 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
           <AlertCircle className="h-3 w-3 text-yellow-500" />
         )}
       </Link>
-       <Link
+       {/* <Link
         to="/precos"
         className={`transition-colors hover:text-foreground/80 text-foreground/60`}
         onClick={onLinkClick}
       >
         Preços
-      </Link>
+      </Link> */}
       {(isAdmin || isModerator) && (
         <>
           <Link
