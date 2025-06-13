@@ -31,12 +31,8 @@ export default function ReviewModal() {
   }
 
   const handleSubmitFeedback = async () => {
-    if (rating === 0 || !email) {
-      toast({
-        title: 'Erro',
-        description: 'Por favor, forneça uma avaliação e um email válido.',
-        variant: 'destructive',
-      })
+    if (rating === 0 || !comment.trim()) {
+      tototo.info('Por favor, selecione uma avaliação e um comentário.')
       return
     }
     setLoading(true)
@@ -115,7 +111,7 @@ export default function ReviewModal() {
           <div className="space-y-4">
             <Input
               type="email"
-              placeholder="Seu email (opcional)"
+              placeholder="Seu email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
