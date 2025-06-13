@@ -57,8 +57,11 @@ export default function CadastroAgenciaPage() {
     e.preventDefault()
     if (!user) return
 
+    // if (formData) {
+    //   console.log('Dados do formulário:', formData)
+    //   return
+    // }
     setLoading(true)
-
     try {
       // Remover lat/lon se não forem válidos, para não enviar strings vazias
       const submissionData = { ...formData }
@@ -249,6 +252,41 @@ export default function CadastroAgenciaPage() {
                     />
                   </div>
                 </div>
+
+                {process.env.NODE_ENV === 'development' && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="latitude">Latitude (opcional)</Label>
+                      <Input
+                        id="latitude"
+                        name="latitude"
+                        type="number"
+                        step="any"
+                        value={formData.latitude ?? ''}
+                        onChange={e => {
+                          const val = e.target.value
+                          setFormData(prev => ({ ...prev, latitude: val === '' ? null : parseFloat(val) }))
+                        }}
+                        placeholder="Ex: -8.0476"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="longitude">Longitude (opcional)</Label>
+                      <Input
+                        id="longitude"
+                        name="longitude"
+                        type="number"
+                        step="any"
+                        value={formData.longitude ?? ''}
+                        onChange={e => {
+                          const val = e.target.value
+                          setFormData(prev => ({ ...prev, longitude: val === '' ? null : parseFloat(val) }))
+                        }}
+                        placeholder="Ex: -34.877"
+                      />
+                    </div>
+                  </div>
+                )}
 
                  <div>
                   <Label htmlFor="agency_type">Tipo de Agência *</Label>
