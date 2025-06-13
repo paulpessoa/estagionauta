@@ -115,7 +115,7 @@ export default function ReviewModal() {
           <div className="space-y-4">
             <Input
               type="email"
-              placeholder="Seu email"
+              placeholder="Seu email (opcional)"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
