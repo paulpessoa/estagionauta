@@ -44,6 +44,7 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
       >
         Calculadora
       </Link>
+    
       <Link
         to="#"
         // to="/analise-curriculo"
@@ -69,6 +70,27 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
       </Link> */}
       {(isAdmin || isModerator) && (
         <>
+          <Link
+            to="/simulador-entrevistas"
+            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+            onClick={onLinkClick}
+          >
+            Simulador de Entrevistas
+          </Link>
+          <Link
+            to="/gerador-curriculos"
+            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+            onClick={onLinkClick}
+          >
+            Gerador de Currículos
+          </Link>
+          <Link
+            to="/kanban-candidaturas"
+            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+            onClick={onLinkClick}
+          >
+            Kanban de Candidaturas
+          </Link>
           <Link
             to="/admin/moderacao-agencias"
             className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'

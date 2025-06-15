@@ -125,7 +125,7 @@ function AgencyCard({ agency, onReviewClick }: { agency: Agency; onReviewClick: 
   )
 }
 
-function FilterSheet({ states, cities, types, filters, onFilterChange, onClearFilters }: {
+export function FilterSheet({ states, cities, types, filters, onFilterChange, onClearFilters }: {
   states: string[],
   cities: string[],
   types: string[],

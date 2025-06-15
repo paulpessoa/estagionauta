@@ -15,23 +15,34 @@ import ModeracaoAgencias from './pages/admin/ModeracaoAgencias'
 import NotFound from './pages/NotFound'
 import Precos from './pages/Precos'
 import Afiliados from './pages/Afiliados'
+import SimuladorEntrevistas from './pages/SimuladorEntrevistas'
+import GeradorCurriculos from './pages/GeradorCurriculos'
+import KanbanCandidaturas from './pages/KanbanCandidaturas'
 
 export const routes = [
   { path: '/', component: HomePage },
-  { path: '/admin', component: Admin },
-  { path: '/agencias', component: Agencias },
-  { path: '/analise-curriculo', component: Analisecurriculo },
-  { path: '/cadastro', component: Cadastro },
-  { path: '/cadastro-agencia', component: CadastroAgencia },
-  { path: '/calculadora-recesso', component: CalculadoraRecesso },
-  { path: '/esqueci-senha', component: EsqueciSenha },
   { path: '/login', component: Login },
+  { path: '/esqueci-senha', component: EsqueciSenha },
+  { path: '/cadastro', component: Cadastro },
+
+  { path: '/admin', component: Admin },
+  { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
+
+  { path: '/cadastro-agencia', component: CadastroAgencia },
   { path: '/mapa-agencias', component: MapaAgencias },
-  { path: '/resultado-curriculo', component: ResultadoCurriculo },
+  
+
+  { path: '/analise-curriculo', component: Analisecurriculo },
+  { path: '/analise-curriculo/sucesso', component: Sucesso },
+  { path: '/agencias', component: Agencias },
+  { path: '/calculadora-recesso', component: CalculadoraRecesso },
+  { path: '/gerador-curriculos', component: GeradorCurriculos},
+  { path: '/simulador-entrevistas', component: SimuladorEntrevistas },
+  { path: '/kanban-candidaturas', component: KanbanCandidaturas },
+  { path: '/precos', component: Precos},
+  { path: '/resultado-curriculo/:id', component: ResultadoCurriculo },
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
-  { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
-  { path: '/precos', component: Precos},
   { path: '/afiliados', component: Afiliados },
   { path: '*', component: NotFound },
 ]
