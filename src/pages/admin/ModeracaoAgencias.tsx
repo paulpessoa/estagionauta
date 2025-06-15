@@ -1,17 +1,18 @@
+
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
-import { Permission } from '@/types/permissions'
+import { useAuth } from '@/hooks/useAuth'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Building2, Check, X, Search } from 'lucide-react'
+import { Building2, Check, X, Search, Edit, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Agency } from '@/types/agency'
-// import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
-// import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
+import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
+import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
 
 export default function ModeracaoAgencias() {
   const { hasPermission, isLoading, profile } = useAuth()
@@ -19,8 +20,9 @@ export default function ModeracaoAgencias() {
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [loadingAgencies, setLoadingAgencies] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [deleteLoading, setDeleteLoading] = useState(false)
 
-  // New state for modals and selected agency
+  // Modals state
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
@@ -63,7 +65,10 @@ export default function ModeracaoAgencias() {
     try {
       const { error } = await supabase
         .from('agencies')
-        .update({ status: newStatus })
+        .update({ 
+          status: newStatus,
+          updated_at: new Date().toISOString()
+        })
         .eq('id', agencyId)
 
       if (error) throw error
@@ -77,6 +82,44 @@ export default function ModeracaoAgencias() {
       console.error('Erro ao atualizar status:', error)
       toast.error('Erro ao atualizar status da agência')
     }
+  }
+
+  const handleDeleteAgency = async () => {
+    if (!selectedAgency) return
+    
+    setDeleteLoading(true)
+    try {
+      const { error } = await supabase
+        .from('agencies')
+        .delete()
+        .eq('id', selectedAgency.id)
+      
+      if (error) throw error
+      
+      setAgencies(agencies.filter(a => a.id !== selectedAgency.id))
+      setDeleteModalOpen(false)
+      setSelectedAgency(null)
+      toast.success('Agência excluída com sucesso')
+    } catch (error) {
+      console.error('Erro ao excluir agência:', error)
+      toast.error('Erro ao excluir agência')
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  const handleEditAgency = (agency: Agency) => {
+    setSelectedAgency(agency)
+    setEditModalOpen(true)
+  }
+
+  const handleDeleteClick = (agency: Agency) => {
+    setSelectedAgency(agency)
+    setDeleteModalOpen(true)
+  }
+
+  const handleAgencySaved = (updatedAgency: Agency) => {
+    setAgencies(agencies.map(a => a.id === updatedAgency.id ? updatedAgency : a))
   }
 
   const filteredAgencies = agencies.filter(agency => {
@@ -104,33 +147,21 @@ export default function ModeracaoAgencias() {
 
   return (
     <>
-      {/* <EditAgencyModal
+      <EditAgencyModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
         agency={selectedAgency}
-        onSave={(updatedAgency) => {
-          setAgencies(agencies.map(a => a.id === updatedAgency.id ? updatedAgency : a))
-        }}
-      /> */}
-      {/* <ConfirmDeleteModal
+        onSave={handleAgencySaved}
+      />
+      
+      <ConfirmDeleteModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
         itemName={selectedAgency?.name}
-        onConfirm={async () => {
-          if (!selectedAgency) return
-          try {
-            const { error } = await supabase
-              .from('agencies')
-              .delete()
-              .eq('id', selectedAgency.id)
-            if (error) throw error
-            setAgencies(agencies.filter(a => a.id !== selectedAgency.id))
-            toast.success('Agência excluída com sucesso')
-          } catch (error) {
-            toast.error('Erro ao excluir agência')
-          }
-        }}
-      /> */}
+        onConfirm={handleDeleteAgency}
+        loading={deleteLoading}
+      />
+      
       <div className="container py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -193,14 +224,8 @@ export default function ModeracaoAgencias() {
                   onApprove={() => handleStatusChange(agency.id, 'approved')}
                   onReject={() => handleStatusChange(agency.id, 'rejected')}
                   onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                  onEdit={() => {
-                    setSelectedAgency(agency)
-                    setEditModalOpen(true)
-                  }}
-                  onDelete={() => {
-                    setSelectedAgency(agency)
-                    setDeleteModalOpen(true)
-                  }}
+                  onEdit={() => handleEditAgency(agency)}
+                  onDelete={() => handleDeleteClick(agency)}
                 />
               ))
             )}
@@ -221,14 +246,8 @@ export default function ModeracaoAgencias() {
                   onApprove={() => handleStatusChange(agency.id, 'approved')}
                   onReject={() => handleStatusChange(agency.id, 'rejected')}
                   onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                  onEdit={() => {
-                    setSelectedAgency(agency)
-                    setEditModalOpen(true)
-                  }}
-                  onDelete={() => {
-                    setSelectedAgency(agency)
-                    setDeleteModalOpen(true)
-                  }}
+                  onEdit={() => handleEditAgency(agency)}
+                  onDelete={() => handleDeleteClick(agency)}
                 />
               ))
             )}
@@ -249,14 +268,8 @@ export default function ModeracaoAgencias() {
                   onApprove={() => handleStatusChange(agency.id, 'approved')}
                   onReject={() => handleStatusChange(agency.id, 'rejected')}
                   onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                  onEdit={() => {
-                    setSelectedAgency(agency)
-                    setEditModalOpen(true)
-                  }}
-                  onDelete={() => {
-                    setSelectedAgency(agency)
-                    setDeleteModalOpen(true)
-                  }}
+                  onEdit={() => handleEditAgency(agency)}
+                  onDelete={() => handleDeleteClick(agency)}
                 />
               ))
             )}
@@ -267,9 +280,21 @@ export default function ModeracaoAgencias() {
   )
 }
 
-import { useAuth } from '@/hooks/useAuth'
-
-function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelete }: { agency: Agency; onApprove: () => void; onReject: () => void; onSetPending: () => void; onEdit: () => void; onDelete: () => void }) {
+function AgencyCard({ 
+  agency, 
+  onApprove, 
+  onReject, 
+  onSetPending, 
+  onEdit, 
+  onDelete 
+}: { 
+  agency: Agency
+  onApprove: () => void
+  onReject: () => void
+  onSetPending: () => void
+  onEdit: () => void
+  onDelete: () => void 
+}) {
   const { profile } = useAuth()
   const isAdmin = profile?.role === 'admin'
 
@@ -303,6 +328,16 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelet
               <p className="text-sm text-muted-foreground">{agency.phone || 'Não informado'}</p>
             </div>
           </div>
+          
+          {agency.address && (
+            <div>
+              <p className="text-sm font-medium">Endereço</p>
+              <p className="text-sm text-muted-foreground">
+                {agency.address}, {agency.city} - {agency.state}
+              </p>
+            </div>
+          )}
+          
           {agency.website && (
             <div>
               <p className="text-sm font-medium">Website</p>
@@ -316,33 +351,46 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelet
               </a>
             </div>
           )}
-          <div className="flex gap-2 mt-2">
+          
+          {agency.areas && agency.areas.length > 0 && (
+            <div>
+              <p className="text-sm font-medium">Áreas</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {agency.areas.map((area, index) => (
+                  <Badge key={index} variant="outline" className="text-xs">
+                    {area}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
+          
+          <div className="flex gap-2 mt-4">
             <Button
               variant="outline"
               size="sm"
-                               onClick={() => {
-                onEdit(); // será chamado, mesmo que ainda não tenha efeito
-                toast.error('Funcionalidade de edição ainda não implementada');
-              }}
-              
+              onClick={onEdit}
+              className="flex items-center gap-2"
             >
+              <Edit className="h-4 w-4" />
               Editar
             </Button>
+            
             {isAdmin && (
               <Button
                 variant="destructive"
                 size="sm"
-                 onClick={() => {
-                onDelete(); // será chamado, mesmo que ainda não tenha efeito
-                toast.error('Funcionalidade de exclusão ainda não implementada');
-              }}
+                onClick={onDelete}
+                className="flex items-center gap-2"
               >
+                <Trash2 className="h-4 w-4" />
                 Excluir
               </Button>
             )}
           </div>
+          
           {agency.status === 'pending' && (
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -362,8 +410,9 @@ function AgencyCard({ agency, onApprove, onReject, onSetPending, onEdit, onDelet
               </Button>
             </div>
           )}
+          
           {agency.status !== 'pending' && (
-            <div className="flex gap-2 mt-2">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"

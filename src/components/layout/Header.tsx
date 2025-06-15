@@ -23,29 +23,15 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
   
   return (
     <div className={mobile ? "flex flex-col space-y-4 text-sm" : "hidden md:flex items-center space-x-6 text-sm font-medium"}>
-      <Link
-        to="/mapa-agencias"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-        onClick={onLinkClick}
-      >
-        Mapa de Agências
-      </Link>
+   
       <Link
         to="/agencias"
         className={`transition-colors hover:text-foreground/80 text-foreground/60`}
         onClick={onLinkClick}
       >
-        Lista de Agências
+        Agências de Estágio
       </Link>
-      <Link
-        to="/calculadora-recesso"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-        onClick={onLinkClick}
-      >
-        Calculadora
-      </Link>
-    
-      <Link
+         <Link
         to="#"
         // to="/analise-curriculo"
         className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
@@ -61,6 +47,15 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
           <AlertCircle className="h-3 w-3 text-yellow-500" />
         )}
       </Link>
+      <Link
+        to="/calculadora-recesso"
+        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+        onClick={onLinkClick}
+      >
+        Calculadora de Recesso
+      </Link>
+    
+      
        {/* <Link
         to="/precos"
         className={`transition-colors hover:text-foreground/80 text-foreground/60`}
@@ -116,7 +111,6 @@ export function Header() {
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
-  console.log('Header auth state:', { isLoading, user, profile, isSupabaseAvailable })
 
   if (isLoading) {
     return (

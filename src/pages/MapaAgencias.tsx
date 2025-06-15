@@ -221,7 +221,7 @@ export default function MapaAgencias() {
             onClick={() => handleMarkerClick(agency.id)}
             icon={{
               url: '/logo.png',
-              scaledSize: new window.google.maps.Size(35, 46),
+              scaledSize: new (window.google.maps.Size as any)(35, 46),
               // Apply invert filter in dark mode for better visibility
               // This requires the marker icon to support transparency
               // Alternatively, use a different icon for dark mode if available
@@ -281,7 +281,7 @@ export default function MapaAgencias() {
 
         <div className="space-y-4 mb-4"> {/* Adicionado mb-4 */}
           <div className="relative"><Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por nome, área..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="pl-10" /></div>
-          <div className="relative"><Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar por endereço..." value={addressSearch} onChange={e => setAddressSearch(e.target.value)} className="pl-10" /></div>
+          <div className="relative"><Navigation className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" /><Input placeholder="Buscar ssss endereço..." value={addressSearch} onChange={e => setAddressSearch(e.target.value)} className="pl-10" /></div>
           <div className="flex items-center justify-between p-2 rounded-lg bg-muted/50"><Label htmlFor="geolocation-switch" className="flex items-center gap-2 cursor-pointer"><LocateFixed className="h-4 w-4" /><span>Usar minha localização</span></Label><Switch id="geolocation-switch" checked={useGeolocation} onCheckedChange={setUseGeolocation} /></div>
           <FilterSheet states={states} cities={cities} types={types} filters={filters} onFilterChange={handleFilterChange} onClearFilters={clearFilters} />
         </div>

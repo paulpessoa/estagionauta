@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
-import { supabase } from '@/lib/supabase'
+import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useCep } from '@/hooks/useCep'
 import { Loader2 } from 'lucide-react'
@@ -102,7 +102,7 @@ export default function CadastroAgenciaBPage() {
   }
 
   const mapRef = useRef<HTMLDivElement | null>(null)
-  const googleMap = useRef<google.maps.Map | null>(null)
+  const googleMap = useRef<any>(null)
   const marker = useRef<google.maps.Marker | null>(null)
 
   // Get user location on mount if lat/lon not set

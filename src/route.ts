@@ -18,9 +18,14 @@ import Afiliados from './pages/Afiliados'
 import SimuladorEntrevistas from './pages/SimuladorEntrevistas'
 import GeradorCurriculos from './pages/GeradorCurriculos'
 import KanbanCandidaturas from './pages/KanbanCandidaturas'
+import Dashboard from './pages/Dashboard'
+import MinhasAnalises from './pages/MinhasAnalises'
+import Configuracoes from './pages/Configuracoes'
+
 
 export const routes = [
   { path: '/', component: HomePage },
+  { path: '/dashboard', component: Dashboard },
   { path: '/login', component: Login },
   { path: '/esqueci-senha', component: EsqueciSenha },
   { path: '/cadastro', component: Cadastro },
@@ -34,12 +39,15 @@ export const routes = [
 
   { path: '/analise-curriculo', component: Analisecurriculo },
   { path: '/analise-curriculo/sucesso', component: Sucesso },
+  { path: '/minhas-analises', component: MinhasAnalises },
   { path: '/agencias', component: Agencias },
   { path: '/calculadora-recesso', component: CalculadoraRecesso },
   { path: '/gerador-curriculos', component: GeradorCurriculos},
   { path: '/simulador-entrevistas', component: SimuladorEntrevistas },
   { path: '/kanban-candidaturas', component: KanbanCandidaturas },
   { path: '/precos', component: Precos},
+  { path: '/comprar-creditos', component: Precos },
+  { path: '/configuracoes', component: Configuracoes },
   { path: '/resultado-curriculo/:id', component: ResultadoCurriculo },
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },

@@ -119,12 +119,13 @@ export default function AnalyseCurriculoPage() {
       }
 
       // Save analysis to database
+      const { resumeFile, ...formDataWithoutFile } = formData;
       const { error: saveError } = await supabase
         .from('resume_analyses')
         .insert({
           user_id: user?.id,
           resume_text: base64,
-          form_data: formData,
+          form_data: formDataWithoutFile,
           analysis_data: data.analysis,
           status: 'completed'
         })
