@@ -140,7 +140,7 @@ export function AgencyFilterSidebar({
                   <SelectValue placeholder="Todos os estados" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os estados</SelectItem>
+                  <SelectItem value="all">Todos os estados</SelectItem>
                   {states.map((state) => (
                     <SelectItem key={state} value={state}>{state}</SelectItem>
                   ))}
@@ -155,7 +155,7 @@ export function AgencyFilterSidebar({
                   <SelectValue placeholder="Todas as cidades" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas as cidades</SelectItem>
+                  <SelectItem value="all">Todas as cidades</SelectItem>
                   {cities.map((city) => (
                     <SelectItem key={city} value={city}>{city}</SelectItem>
                   ))}
@@ -172,7 +172,7 @@ export function AgencyFilterSidebar({
                 <SelectValue placeholder="Todos os tipos" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos os tipos</SelectItem>
+                <SelectItem value="all">Todos os tipos</SelectItem>
                 {types.map((type) => (
                   <SelectItem key={type} value={type}>{type}</SelectItem>
                 ))}
@@ -181,7 +181,7 @@ export function AgencyFilterSidebar({
           </div>
 
           {/* Áreas de Atuação */}
-          <div className="space-y-3">
+          {/* <div className="space-y-3">
             <Label>Áreas de Atuação</Label>
             <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto border rounded-md p-2">
               {availableAreas.map((area) => (
@@ -212,7 +212,7 @@ export function AgencyFilterSidebar({
                 ))}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* Avaliação Mínima */}
           <div className="space-y-3">
@@ -243,16 +243,6 @@ export function AgencyFilterSidebar({
               />
             </div>
           )}
-
-          {/* Apenas Verificadas */}
-          <div className="flex items-center justify-between">
-            <Label htmlFor="verified">Apenas agências verificadas</Label>
-            <Switch
-              id="verified"
-              checked={filters.verifiedOnly}
-              onCheckedChange={(checked) => handleFilterChange('verifiedOnly', checked)}
-            />
-          </div>
 
           {/* Ordenação */}
           <div className="space-y-2">

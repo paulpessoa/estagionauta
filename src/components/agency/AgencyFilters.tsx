@@ -24,11 +24,6 @@ export interface FilterState {
   sortBy: 'distance' | 'rating' | 'name'
 }
 
-const popularAreas = [
-  'Tecnologia', 'Marketing', 'Administração', 'Vendas', 'RH',
-  'Engenharia', 'Design', 'Comunicação', 'Finanças', 'Educação'
-]
-
 const states = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO',
   'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI',
@@ -158,7 +153,7 @@ export function AgencyFilters({ onFiltersChange, totalAgencies, userLocation, on
                   <SelectValue placeholder="Selecione..." />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos os estados</SelectItem>
+                  <SelectItem value="all">Todos os estados</SelectItem>
                   {states.map(state => (
                     <SelectItem key={state} value={state}>{state}</SelectItem>
                   ))}
