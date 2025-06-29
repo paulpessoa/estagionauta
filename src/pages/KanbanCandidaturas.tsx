@@ -1,98 +1,873 @@
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Kanban, Calendar, Bell, Filter, BarChart3, Plus } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { AddReminderModal } from '@/components/modals/AddReminderModal'
+import { KanbanStats } from '@/components/kanban/KanbanStats'
+import { JobApplication, Reminder } from '@/types/kanban'
+import { 
+  Kanban, 
+  Calendar as CalendarIcon, 
+  Bell, 
+  Filter, 
+  BarChart3, 
+  Plus, 
+  Upload, 
+  Eye, 
+  Edit, 
+  Trash2, 
+  Clock, 
+  CheckCircle, 
+  AlertCircle, 
+  Phone, 
+  Mail, 
+  MapPin, 
+  Building, 
+  Users, 
+  Target,
+  FileText,
+  Image as ImageIcon,
+  Camera,
+  Search,
+  MoreVertical,
+  ChevronDown,
+  ChevronUp,
+  Star,
+  ExternalLink
+} from 'lucide-react'
+import { format, addDays, isAfter, isBefore, startOfDay } from 'date-fns'
+import { ptBR } from 'date-fns/locale'
+import { toast } from 'sonner'
+
+const statusConfig = {
+  interested: { label: 'Interessado', color: 'bg-gray-100 text-gray-800', icon: Eye },
+  applied: { label: 'Candidatado', color: 'bg-blue-100 text-blue-800', icon: FileText },
+  interview: { label: 'Entrevista', color: 'bg-yellow-100 text-yellow-800', icon: Users },
+  test: { label: 'Teste', color: 'bg-purple-100 text-purple-800', icon: Target },
+  offer: { label: 'Proposta', color: 'bg-green-100 text-green-800', icon: CheckCircle },
+  rejected: { label: 'Recusado', color: 'bg-red-100 text-red-800', icon: AlertCircle }
+}
 
 export default function KanbanCandidaturas() {
+  const [applications, setApplications] = useState<JobApplication[]>([])
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false)
+  const [isAddReminderModalOpen, setIsAddReminderModalOpen] = useState(false)
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showReminders, setShowReminders] = useState(false)
+
+  // Form state for new application
+  const [formData, setFormData] = useState({
+    company: '',
+    position: '',
+    description: '',
+    salary: '',
+    location: '',
+    contactPerson: '',
+    contactEmail: '',
+    contactPhone: '',
+    website: '',
+    notes: '',
+    tags: ''
+  })
+
+  // Sample data
+  useEffect(() => {
+    const sampleApplications: JobApplication[] = [
+      {
+        id: '1',
+        company: 'TechCorp',
+        position: 'Desenvolvedor Frontend',
+        status: 'interview',
+        appliedDate: new Date('2024-01-15'),
+        description: 'Vaga para desenvolvedor React/TypeScript',
+        salary: 'R$ 2.500',
+        location: 'São Paulo, SP',
+        contactPerson: 'João Silva',
+        contactEmail: 'joao@techcorp.com',
+        contactPhone: '(11) 99999-9999',
+        website: 'https://techcorp.com',
+        progress: 75,
+        nextAction: 'Entrevista técnica',
+        nextActionDate: addDays(new Date(), 3),
+        reminders: [
+          {
+            id: '1',
+            title: 'Preparar para entrevista',
+            description: 'Revisar conceitos de React e TypeScript',
+            date: addDays(new Date(), 2),
+            completed: false,
+            type: 'interview'
+          }
+        ],
+        notes: 'Empresa com boa cultura, salário competitivo',
+        tags: ['React', 'TypeScript', 'Frontend']
+      },
+      {
+        id: '2',
+        company: 'StartupXYZ',
+        position: 'Estagiário de Marketing',
+        status: 'applied',
+        appliedDate: new Date('2024-01-10'),
+        description: 'Estágio em marketing digital',
+        salary: 'R$ 1.800',
+        location: 'Remoto',
+        contactPerson: 'Maria Santos',
+        contactEmail: 'maria@startupxyz.com',
+        progress: 25,
+        nextAction: 'Aguardando retorno',
+        reminders: [
+          {
+            id: '2',
+            title: 'Follow-up',
+            description: 'Enviar email de acompanhamento',
+            date: addDays(new Date(), 5),
+            completed: false,
+            type: 'follow-up'
+          }
+        ],
+        notes: 'Startup em crescimento, oportunidade de aprendizado',
+        tags: ['Marketing', 'Digital', 'Remoto']
+      }
+    ]
+    setApplications(sampleApplications)
+  }, [])
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      setSelectedFile(file)
+      // Simulate AI processing and form auto-fill
+      setTimeout(() => {
+        setFormData({
+          company: 'Nova Empresa',
+          position: 'Desenvolvedor Full Stack',
+          description: 'Vaga identificada através da imagem',
+          salary: 'R$ 3.000',
+          location: 'São Paulo, SP',
+          contactPerson: '',
+          contactEmail: '',
+          contactPhone: '',
+          website: '',
+          notes: 'Vaga identificada automaticamente via IA',
+          tags: 'Full Stack, React, Node.js'
+        })
+        toast.success('Informações extraídas da imagem com sucesso!')
+      }, 2000)
+    }
+  }
+
+  const handleAddApplication = () => {
+    const newApplication: JobApplication = {
+      id: Date.now().toString(),
+      company: formData.company,
+      position: formData.position,
+      status: 'interested',
+      appliedDate: new Date(),
+      description: formData.description,
+      salary: formData.salary,
+      location: formData.location,
+      contactPerson: formData.contactPerson,
+      contactEmail: formData.contactEmail,
+      contactPhone: formData.contactPhone,
+      website: formData.website,
+      progress: 0,
+      reminders: [],
+      notes: formData.notes,
+      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+      imageUrl: selectedFile ? URL.createObjectURL(selectedFile) : undefined
+    }
+
+    setApplications(prev => [...prev, newApplication])
+    setIsAddModalOpen(false)
+    setIsImageUploadModalOpen(false)
+    setSelectedFile(null)
+    setFormData({
+      company: '',
+      position: '',
+      description: '',
+      salary: '',
+      location: '',
+      contactPerson: '',
+      contactEmail: '',
+      contactPhone: '',
+      website: '',
+      notes: '',
+      tags: ''
+    })
+    toast.success('Candidatura adicionada com sucesso!')
+  }
+
+  const updateApplicationStatus = (id: string, newStatus: JobApplication['status']) => {
+    setApplications(prev => prev.map(app => 
+      app.id === id ? { ...app, status: newStatus } : app
+    ))
+  }
+
+  const addReminderToApplication = (applicationId: string, reminder: Omit<Reminder, 'id' | 'completed'>) => {
+    const newReminder: Reminder = {
+      ...reminder,
+      id: Date.now().toString(),
+      completed: false
+    }
+
+    setApplications(prev => prev.map(app => 
+      app.id === applicationId 
+        ? { ...app, reminders: [...app.reminders, newReminder] }
+        : app
+    ))
+  }
+
+  const toggleReminderCompletion = (applicationId: string, reminderId: string) => {
+    setApplications(prev => prev.map(app => 
+      app.id === applicationId 
+        ? { 
+            ...app, 
+            reminders: app.reminders.map(reminder => 
+              reminder.id === reminderId 
+                ? { ...reminder, completed: !reminder.completed }
+                : reminder
+            )
+          }
+        : app
+    ))
+  }
+
+  const handleAddReminder = (applicationId: string) => {
+    setSelectedApplicationId(applicationId)
+    setIsAddReminderModalOpen(true)
+  }
+
+  const filteredApplications = applications.filter(app => {
+    const matchesStatus = filterStatus === 'all' || app.status === filterStatus
+    const matchesSearch = app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         app.position.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesStatus && matchesSearch
+  })
+
+  const getApplicationsByStatus = (status: JobApplication['status']) => {
+    return filteredApplications.filter(app => app.status === status)
+  }
+
+  const todayReminders = applications
+    .flatMap(app => app.reminders)
+    .filter(reminder => !reminder.completed && isAfter(startOfDay(reminder.date), startOfDay(new Date())))
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <div className="container mx-auto py-8 px-4">
         {/* Header */}
-        <div className="text-center mb-8">
-          <Badge variant="secondary" className="mb-4">
-            Em Breve
-          </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Kanban de Candidaturas
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Organize suas candidaturas com um Kanban inteligente e nunca perca o controle das suas oportunidades
-          </p>
+        <div className="mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
+                Kanban de Candidaturas
+              </h1>
+              <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
+                Organize suas candidaturas e acompanhe seu progresso
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={() => setShowReminders(!showReminders)}
+                className="flex items-center gap-2"
+              >
+                <Bell className="h-4 w-4" />
+                Lembretes ({todayReminders.length})
+              </Button>
+              <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Nova Candidatura
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Nova Candidatura</DialogTitle>
+                    <DialogDescription>
+                      Preencha as informações da vaga ou use IA para extrair da imagem
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  <div className="space-y-6">
+                    {/* Image Upload Section */}
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                      <Dialog open={isImageUploadModalOpen} onOpenChange={setIsImageUploadModalOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline" className="mb-4">
+                            <Camera className="h-4 w-4 mr-2" />
+                            Extrair da Imagem com IA
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Upload de Imagem</DialogTitle>
+                            <DialogDescription>
+                              Faça upload de uma imagem da vaga para extrair informações automaticamente
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4">
+                            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+                              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                              <Label htmlFor="image-upload" className="cursor-pointer">
+                                <Input
+                                  id="image-upload"
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleFileUpload}
+                                  className="hidden"
+                                />
+                                <span className="text-blue-600 hover:text-blue-700">
+                                  Clique para selecionar uma imagem
+                                </span>
+                              </Label>
+                            </div>
+                            {selectedFile && (
+                              <div className="text-sm text-gray-600">
+                                Arquivo selecionado: {selectedFile.name}
+                              </div>
+                            )}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                      <p className="text-sm text-gray-500">
+                        Ou preencha manualmente as informações abaixo
+                      </p>
+                    </div>
+
+                    {/* Form Fields */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="company">Empresa *</Label>
+                        <Input
+                          id="company"
+                          value={formData.company}
+                          onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                          placeholder="Nome da empresa"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="position">Cargo *</Label>
+                        <Input
+                          id="position"
+                          value={formData.position}
+                          onChange={(e) => setFormData(prev => ({ ...prev, position: e.target.value }))}
+                          placeholder="Título da vaga"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="location">Localização</Label>
+                        <Input
+                          id="location"
+                          value={formData.location}
+                          onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+                          placeholder="Cidade, Estado"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="salary">Salário</Label>
+                        <Input
+                          id="salary"
+                          value={formData.salary}
+                          onChange={(e) => setFormData(prev => ({ ...prev, salary: e.target.value }))}
+                          placeholder="R$ 0,00"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contactPerson">Contato</Label>
+                        <Input
+                          id="contactPerson"
+                          value={formData.contactPerson}
+                          onChange={(e) => setFormData(prev => ({ ...prev, contactPerson: e.target.value }))}
+                          placeholder="Nome do recrutador"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contactEmail">Email</Label>
+                        <Input
+                          id="contactEmail"
+                          type="email"
+                          value={formData.contactEmail}
+                          onChange={(e) => setFormData(prev => ({ ...prev, contactEmail: e.target.value }))}
+                          placeholder="email@empresa.com"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="contactPhone">Telefone</Label>
+                        <Input
+                          id="contactPhone"
+                          value={formData.contactPhone}
+                          onChange={(e) => setFormData(prev => ({ ...prev, contactPhone: e.target.value }))}
+                          placeholder="(11) 99999-9999"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="website">Website</Label>
+                        <Input
+                          id="website"
+                          value={formData.website}
+                          onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                          placeholder="https://empresa.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor="description">Descrição da Vaga</Label>
+                      <Textarea
+                        id="description"
+                        value={formData.description}
+                        onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                        placeholder="Descrição da vaga e requisitos"
+                        rows={3}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="tags">Tags</Label>
+                      <Input
+                        id="tags"
+                        value={formData.tags}
+                        onChange={(e) => setFormData(prev => ({ ...prev, tags: e.target.value }))}
+                        placeholder="React, TypeScript, Frontend (separadas por vírgula)"
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="notes">Observações</Label>
+                      <Textarea
+                        id="notes"
+                        value={formData.notes}
+                        onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                        placeholder="Observações pessoais sobre a vaga"
+                        rows={2}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
+                      Cancelar
+                    </Button>
+                    <Button onClick={handleAddApplication}>
+                      Adicionar Candidatura
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
         </div>
 
-        {/* Features Grid */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          <Card>
-            <CardHeader>
-              <div className="h-12 w-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-4">
-                <Kanban className="h-6 w-6 text-green-600" />
-              </div>
-              <CardTitle>Visualização Kanban</CardTitle>
-              <CardDescription>
-                Organize suas candidaturas em colunas personalizáveis
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center">
-                  <Plus className="h-4 w-4 text-green-500 mr-2" />
-                  Colunas customizáveis
-                </li>
-                <li className="flex items-center">
-                  <Filter className="h-4 w-4 text-green-500 mr-2" />
-                  Filtros por empresa e status
-                </li>
-                <li className="flex items-center">
-                  <BarChart3 className="h-4 w-4 text-green-500 mr-2" />
-                  Métricas de desempenho
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <div className="h-12 w-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4">
-                <Calendar className="h-6 w-6 text-blue-600" />
-              </div>
-              <CardTitle>Automação Inteligente</CardTitle>
-              <CardDescription>
-                Lembretes automáticos e integração com seu calendário
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-2 text-sm text-muted-foreground">
-                <li className="flex items-center">
-                  <Bell className="h-4 w-4 text-green-500 mr-2" />
-                  Lembretes de follow-up
-                </li>
-                <li className="flex items-center">
-                  <Calendar className="h-4 w-4 text-green-500 mr-2" />
-                  Integração com Google Calendar
-                </li>
-                <li className="flex items-center">
-                  <BarChart3 className="h-4 w-4 text-green-500 mr-2" />
-                  Relatórios de progresso
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+        {/* Filters and Search */}
+        <div className="mb-6 flex flex-col md:flex-row gap-4">
+          <div className="flex-1">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Buscar por empresa ou cargo..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+          </div>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+            <SelectTrigger className="w-full md:w-48">
+              <SelectValue placeholder="Filtrar por status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos os status</SelectItem>
+              {Object.entries(statusConfig).map(([key, config]) => (
+                <SelectItem key={key} value={key}>
+                  {config.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
-        {/* Coming Soon Notice */}
-        <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-blue-200 dark:border-blue-800">
-          <CardContent className="text-center py-8">
-            <Kanban className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">Em Desenvolvimento</h3>
-            <p className="text-muted-foreground mb-6">
-              Estamos criando a melhor ferramenta para organizar suas candidaturas. Em breve disponível!
-            </p>
-            <Button disabled variant="outline">
-              Disponível em Breve
-            </Button>
-          </CardContent>
-        </Card>
+        {/* Statistics */}
+        <KanbanStats applications={applications} />
+
+        {/* Reminders Panel */}
+        {showReminders && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bell className="h-5 w-5" />
+                Lembretes de Hoje
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {todayReminders.length === 0 ? (
+                <p className="text-gray-500">Nenhum lembrete para hoje</p>
+              ) : (
+                <div className="space-y-3">
+                  {todayReminders.slice(0, 5).map(reminder => (
+                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">{reminder.title}</p>
+                        <p className="text-sm text-gray-600">{reminder.description}</p>
+                        <p className="text-xs text-gray-500">
+                          {format(reminder.date, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                        </p>
+                      </div>
+                      <Button size="sm" variant="outline">
+                        Marcar como feito
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Kanban Board */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
+          {Object.entries(statusConfig).map(([status, config]) => {
+            const StatusIcon = config.icon
+            const statusApplications = getApplicationsByStatus(status as JobApplication['status'])
+            
+            return (
+              <div key={status} className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <StatusIcon className="h-5 w-5" />
+                  <h3 className="font-semibold">{config.label}</h3>
+                  <Badge variant="secondary" className="ml-auto">
+                    {statusApplications.length}
+                  </Badge>
+                </div>
+                
+                <div className="space-y-3">
+                  {statusApplications.map(application => (
+                    <ApplicationCard 
+                      key={application.id} 
+                      application={application}
+                      onStatusChange={updateApplicationStatus}
+                      onAddReminder={handleAddReminder}
+                      onToggleReminder={toggleReminderCompletion}
+                    />
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
+
+      {/* Add Reminder Modal */}
+      <AddReminderModal
+        isOpen={isAddReminderModalOpen}
+        onClose={() => {
+          setIsAddReminderModalOpen(false)
+          setSelectedApplicationId(null)
+        }}
+        onAddReminder={(reminder) => {
+          if (selectedApplicationId) {
+            addReminderToApplication(selectedApplicationId, reminder)
+          }
+        }}
+      />
     </div>
+  )
+}
+
+interface ApplicationCardProps {
+  application: JobApplication
+  onStatusChange: (id: string, status: JobApplication['status']) => void
+  onAddReminder: (applicationId: string) => void
+  onToggleReminder: (applicationId: string, reminderId: string) => void
+}
+
+function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder }: ApplicationCardProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
+
+  return (
+    <Card className="cursor-pointer hover:shadow-md transition-shadow">
+      <CardContent className="p-4">
+        <div className="space-y-3">
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <div className="flex-1">
+              <h4 className="font-semibold text-sm line-clamp-2">{application.position}</h4>
+              <p className="text-xs text-gray-600 dark:text-gray-400">{application.company}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                setIsExpanded(!isExpanded)
+              }}
+            >
+              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+          </div>
+
+          {/* Progress Bar */}
+          <div className="space-y-1">
+            <div className="flex justify-between text-xs">
+              <span>Progresso</span>
+              <span>{application.progress}%</span>
+            </div>
+            <Progress value={application.progress} className="h-2" />
+          </div>
+
+          {/* Tags */}
+          {application.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1">
+              {application.tags.slice(0, 2).map(tag => (
+                <Badge key={tag} variant="outline" className="text-xs">
+                  {tag}
+                </Badge>
+              ))}
+              {application.tags.length > 2 && (
+                <Badge variant="outline" className="text-xs">
+                  +{application.tags.length - 2}
+                </Badge>
+              )}
+            </div>
+          )}
+
+          {/* Next Action */}
+          {application.nextAction && (
+            <div className="text-xs text-gray-600 dark:text-gray-400">
+              <Clock className="h-3 w-3 inline mr-1" />
+              {application.nextAction}
+            </div>
+          )}
+
+          {/* Expanded Content */}
+          {isExpanded && (
+            <div className="space-y-3 pt-3 border-t">
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowDetails(true)}
+                  className="flex-1"
+                >
+                  <Eye className="h-3 w-3 mr-1" />
+                  Detalhes
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="flex-1"
+                >
+                  <Edit className="h-3 w-3 mr-1" />
+                  Editar
+                </Button>
+              </div>
+
+              {/* Quick Actions */}
+              <div className="grid grid-cols-2 gap-2">
+                <Button size="sm" variant="ghost" className="text-xs">
+                  <Phone className="h-3 w-3 mr-1" />
+                  Ligar
+                </Button>
+                <Button size="sm" variant="ghost" className="text-xs">
+                  <Mail className="h-3 w-3 mr-1" />
+                  Email
+                </Button>
+              </div>
+
+              {/* Reminders */}
+              {application.reminders.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-xs font-medium">Lembretes:</p>
+                  {application.reminders.slice(0, 2).map(reminder => (
+                    <div key={reminder.id} className="text-xs bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
+                      <p className="font-medium">{reminder.title}</p>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {format(reminder.date, 'dd/MM', { locale: ptBR })}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Add Reminder Button */}
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => onAddReminder(application.id)}
+                className="w-full text-xs"
+              >
+                <Bell className="h-3 w-3 mr-1" />
+                Adicionar Lembrete
+              </Button>
+            </div>
+          )}
+        </div>
+      </CardContent>
+
+      {/* Details Modal */}
+      <Dialog open={showDetails} onOpenChange={setShowDetails}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{application.position}</DialogTitle>
+            <DialogDescription>{application.company}</DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6">
+            {/* Basic Info */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-medium">Localização</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                  <MapPin className="h-3 w-3" />
+                  {application.location}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Salário</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {application.salary || 'Não informado'}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Data da Candidatura</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {format(application.appliedDate, 'dd/MM/yyyy', { locale: ptBR })}
+                </p>
+              </div>
+              <div>
+                <Label className="text-sm font-medium">Progresso</Label>
+                <div className="flex items-center gap-2">
+                  <Progress value={application.progress} className="flex-1 h-2" />
+                  <span className="text-sm">{application.progress}%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Info */}
+            {(application.contactPerson || application.contactEmail || application.contactPhone) && (
+              <div>
+                <Label className="text-sm font-medium">Informações de Contato</Label>
+                <div className="space-y-2 mt-2">
+                  {application.contactPerson && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <Users className="h-3 w-3 inline mr-1" />
+                      {application.contactPerson}
+                    </p>
+                  )}
+                  {application.contactEmail && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <Mail className="h-3 w-3 inline mr-1" />
+                      {application.contactEmail}
+                    </p>
+                  )}
+                  {application.contactPhone && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      <Phone className="h-3 w-3 inline mr-1" />
+                      {application.contactPhone}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Description */}
+            {application.description && (
+              <div>
+                <Label className="text-sm font-medium">Descrição</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {application.description}
+                </p>
+              </div>
+            )}
+
+            {/* Notes */}
+            {application.notes && (
+              <div>
+                <Label className="text-sm font-medium">Observações</Label>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  {application.notes}
+                </p>
+              </div>
+            )}
+
+            {/* Tags */}
+            {application.tags.length > 0 && (
+              <div>
+                <Label className="text-sm font-medium">Tags</Label>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {application.tags.map(tag => (
+                    <Badge key={tag} variant="outline" className="text-xs">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Reminders */}
+            {application.reminders.length > 0 && (
+              <div>
+                <Label className="text-sm font-medium">Lembretes</Label>
+                <div className="space-y-2 mt-2">
+                  {application.reminders.map(reminder => (
+                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                      <div>
+                        <p className="text-sm font-medium">{reminder.title}</p>
+                        <p className="text-xs text-gray-600 dark:text-gray-400">
+                          {reminder.description}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {format(reminder.date, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                        </p>
+                      </div>
+                      <Switch 
+                        checked={reminder.completed} 
+                        onCheckedChange={() => onToggleReminder(application.id, reminder.id)}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Actions */}
+            <div className="flex gap-2">
+              <Button variant="outline" className="flex-1">
+                <ExternalLink className="h-4 w-4 mr-2" />
+                Ver Vaga
+              </Button>
+              <Button variant="outline" className="flex-1">
+                <Edit className="h-4 w-4 mr-2" />
+                Editar
+              </Button>
+            </div>
+
+            {/* Add Reminder Button in Details */}
+            <Button
+              variant="outline"
+              onClick={() => onAddReminder(application.id)}
+              className="w-full"
+            >
+              <Bell className="h-4 w-4 mr-2" />
+              Adicionar Lembrete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </Card>
   )
 }
