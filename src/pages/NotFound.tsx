@@ -52,7 +52,7 @@ export default function NotFound() {
                 </Button>
                 
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link to="/mapa-agencias" className="flex flex-col items-center space-y-2">
+                  <Link to="/agencias" className="flex flex-col items-center space-y-2">
                     <div className="h-8 w-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                       <span className="text-green-600 dark:text-green-400 text-sm">🗺️</span>
                     </div>

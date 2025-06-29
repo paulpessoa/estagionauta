@@ -24,13 +24,10 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen">
         {/* Hero Section */}
-      <section className="relative py-20 px-4 bg-gradient-to-br from-blue-600 via-purple-600 to-purple-700 text-white overflow-hidden">
+      <section className="relative py-24 px-4 bg-gradient-to-br from-blue-600 via-purple-600 to-purple-700 text-white overflow-hidden">
         <div className="absolute inset-0 bg-black/20"></div>
-        <div className="relative max-w-6xl mx-auto text-center space-y-8">
-          <Badge variant="secondary" className="mx-auto bg-white/20 text-white border-white/30">
-            🚀 Plataforma em Beta - Participe do desenvolvimento!
-          </Badge>
-          
+        <div className="relative max-w-6xl mx-auto text-center space-y-14">
+       
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
             Sua <span className="text-yellow-300">missão</span> rumo ao<br />
             <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
@@ -132,11 +129,9 @@ export default function HomePage() {
                 </ul>
                 <Button className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-bold shadow-lg hover:from-pink-600 hover:to-blue-600" asChild>
                   <Link 
-                  to="#"
-                  // to="/analise-curriculo" 
+                    to="/analise-curriculo" 
                     onClick={(e) => {
-                      toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
-                      // handleAnalyzeClick(e);
+                      handleAnalyzeClick(e);
                     }}>
                     Analisar Currículo com IA
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -173,7 +168,7 @@ export default function HomePage() {
                   </li>
                 </ul>
                 <Button className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-bold shadow-lg hover:from-blue-600 hover:to-pink-600" asChild>
-                  <Link to="/mapa-agencias">
+                  <Link to="/agencias">
                     Explorar Mapa
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -449,11 +444,9 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
               <Link
-              to="#"
-              // to="/analise-curriculo" 
-                onClick={(e) => {
-                  toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
-                  // handleAnalyzeClick(e);
+                  to="/analise-curriculo" 
+                  onClick={(e) => {
+                  handleAnalyzeClick(e);
                 }}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA

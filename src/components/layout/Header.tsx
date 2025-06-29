@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -11,10 +11,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { User, Settings, LogOut, BarChart3, FileText, CreditCard, Menu, AlertCircle, Building2, Sun, Moon, LogIn, UserPlus } from 'lucide-react'
+import { User, Settings, LogOut, BarChart3, FileText, CreditCard, Menu, AlertCircle, Building2, Sun, Moon, LogIn, UserPlus, FileScan, Sparkles, Home, MapPin, Calculator, Trello, LayoutDashboard, Monitor, Satellite, Zap, ChevronDown, Bell, Star, X, Shield } from 'lucide-react'
 import { useState } from 'react'
 import { useTheme } from 'next-themes'
 import { AuthRequiredModal } from '@/components/AuthRequiredModal'
+import { MagicLinkModal } from '@/components/auth/MagicLinkModal'
+import { useNotifications } from '@/hooks/useNotifications'
+import { Separator } from '@/components/ui/separator'
+import { useCredits } from '../../hooks/useCredits'
+import { useIsMobile } from '../../hooks/use-mobile'
 
 const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) => {
   const { isSupabaseAvailable, isAdmin, isModerator, user, profile } = useAuth()
@@ -43,7 +48,6 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
           to="/analise-curriculo"
           className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
           onClick={handleCurriculoIAClick}
-
         >
           Análise de Currículo
           <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
@@ -56,11 +60,103 @@ const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkCli
         <Link
           to="/calculadora-recesso"
           className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-          onClick={onLinkClick}        >
+          onClick={onLinkClick}
+        >
           Calculadora de Recesso
         </Link>
       </div>
       <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+    </>
+  )
+}
+
+// Componente do botão inteligente
+const SmartActionButton = ({ mobile = false }: { mobile?: boolean }) => {
+  const { user, profile, isSupabaseAvailable } = useAuth()
+  const [showMagicLinkModal, setShowMagicLinkModal] = useState(false)
+
+  if (!isSupabaseAvailable) {
+    return (
+      <Button variant="outline" disabled className="opacity-50">
+        <AlertCircle className="mr-2 h-4 w-4" />
+        Sistema Offline
+      </Button>
+    )
+  }
+
+  // Usuário logado - não mostra botão de análise (já tem acesso direto)
+  if (user && profile) {
+    return null
+  }
+
+  // No mobile, mostrar botões diretos
+  if (mobile) {
+    return (
+      <>
+        <div className="flex flex-col space-y-2 w-full">
+          <Button 
+            className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold shadow-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
+            asChild
+          >
+            <Link to="/login">
+              <LogIn className="mr-2 h-4 w-4" />
+              Entrar
+            </Link>
+          </Button>
+          <Button variant="outline" asChild className="justify-start">
+            <Link to="/cadastro">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Criar Conta
+            </Link>
+          </Button>
+          <Button 
+            variant="ghost" 
+            onClick={() => setShowMagicLinkModal(true)}
+            className="justify-start"
+          >
+            <Zap className="mr-2 h-4 w-4" />
+            Login sem Senha
+          </Button>
+        </div>
+        <MagicLinkModal open={showMagicLinkModal} onOpenChange={setShowMagicLinkModal} />
+      </>
+    )
+  }
+
+  // No desktop, usar dropdown
+  return (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button 
+            className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold shadow-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 border border-cyan-300/30"
+          >
+            <Monitor className="mr-2 h-4 w-4" />
+            Começar Agora
+            <ChevronDown className="ml-1 h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuItem asChild>
+            <Link to="/login">
+              <LogIn className="mr-2 h-4 w-4" />
+              Entrar
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link to="/cadastro">
+              <UserPlus className="mr-2 h-4 w-4" />
+              Criar Conta
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => setShowMagicLinkModal(true)}>
+            <Zap className="mr-2 h-4 w-4" />
+            Login sem Senha
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <MagicLinkModal open={showMagicLinkModal} onOpenChange={setShowMagicLinkModal} />
     </>
   )
 }
@@ -77,6 +173,29 @@ export function Header() {
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
+  const { unreadCount, notifications, markAsRead } = useNotifications()
+  const { credits } = useCredits()
+  const navigate = useNavigate()
+  const isMobile = useIsMobile()
+
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showMagicLinkModal, setShowMagicLinkModal] = useState(false)
+
+  const handleSignOut = async () => {
+    await signOut()
+    navigate('/')
+  }
+
+  const handleNotificationClick = (notification: { id: string; action_url?: string }) => {
+    markAsRead(notification.id)
+    if (notification.action_url) {
+      navigate(notification.action_url)
+    }
+  }
+
+  const getInitials = (name: string) => {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  }
 
   if (isLoading) {
     return (
@@ -137,26 +256,9 @@ export function Header() {
                   )}
                   
                   <div className="flex flex-col space-y-2 pt-4 border-t">
-                    {isSupabaseAvailable ? (
-                      <>
-                        <Button variant="ghost" asChild className="justify-start">
-                          <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                            <LogIn className="mr-2 h-4 w-4" />
-                            Entrar
-                          </Link>
-                        </Button>
-                        <Button asChild className="justify-start">
-                          <Link to="/cadastro" onClick={() => setMobileMenuOpen(false)}>
-                            <UserPlus className="mr-2 h-4 w-4" />
-                            Cadastrar
-                          </Link>
-                        </Button>
-                      </>
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-2">
-                        Login/Cadastro não disponível
-                      </p>
-                    )}
+                    <div className="flex justify-center">
+                      <SmartActionButton mobile />
+                    </div>
                   </div>
                 </div>
               </SheetContent>
@@ -166,34 +268,7 @@ export function Header() {
               {!isSupabaseAvailable && (
                 <AlertCircle className="h-4 w-4 text-yellow-500" />
               )}
-              {isSupabaseAvailable ? (
-                <>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    aria-label="Alternar tema"
-                  >
-                    <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                  </Button>
-                  <Button variant="ghost" asChild>
-                    <Link to="/login">
-                     <LogIn className="mr-2 h-4 w-4" />
-                      Entrar
-                      </Link>
-                  </Button>
-                  <Button asChild>
-                    <Link to="/cadastro">
-                 <UserPlus className="mr-2 h-4 w-4" />
-                    Cadastrar</Link>
-                  </Button>
-                </>
-              ) : (
-                <span className="text-sm text-muted-foreground">
-                  Login indisponível
-                </span>
-              )}
+              <SmartActionButton />
             </div>
           </div>
         </div>
@@ -217,17 +292,6 @@ export function Header() {
         
         <div className="flex items-center space-x-2">
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            <div className="flex justify-end">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                aria-label="Alternar tema"
-              >
-                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              </Button>
-            </div>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
@@ -251,6 +315,31 @@ export function Header() {
                 
                 {user && profile ? (
                   <div className="flex flex-col space-y-4 pt-4 border-t">
+                    {/* Ícones de notificação e créditos */}
+                    <div className="flex items-center justify-between">
+                      <Button variant="ghost" asChild className="flex-1 justify-start">
+                        <Link to="/notificacoes" onClick={() => setMobileMenuOpen(false)}>
+                          <Bell className="mr-2 h-4 w-4" />
+                          Notificações
+                          {unreadCount > 0 && (
+                            <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                              {unreadCount}
+                            </span>
+                          )}
+                        </Link>
+                      </Button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                        <span className="text-sm">Créditos disponíveis:</span>
+                      </div>
+                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                        {credits?.credits || 0} ⭐
+                      </Badge>
+                    </div>
+
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
                         <AvatarImage 
@@ -323,7 +412,7 @@ export function Header() {
                       )}
                       {profile.subscription_status === 'free' && (
                         <Button variant="ghost" asChild className="justify-start">
-                          <Link to="/planos" onClick={() => setMobileMenuOpen(false)}>
+                          <Link to="/precos" onClick={() => setMobileMenuOpen(false)}>
                             <CreditCard className="mr-2 h-4 w-4" />
                             Comprar Créditos
                           </Link>
@@ -370,6 +459,27 @@ export function Header() {
 
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
+              {/* Ícone de notificações */}
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/notificacoes">
+                  <Bell className="h-5 w-5" />
+                  {/* Badge de notificações não lidas */}
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
+                </Link>
+              </Button>
+
+              {/* Ícone de estrelas (créditos) */}
+              <Button variant="ghost" size="icon" className="relative">
+                <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                <span className="absolute -top-1 -right-1 h-4 w-4 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                  {credits?.credits || 0}
+                </span>
+              </Button>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -420,6 +530,21 @@ export function Header() {
                       Minhas Análises
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/notificacoes">
+                      <Bell className="mr-2 h-4 w-4" />
+                      Notificações
+                      {unreadCount > 0 && (
+                        <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-default">
+                    <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+                    Créditos: {credits?.credits || 0} ⭐
+                  </DropdownMenuItem>
                   {(isAdmin || isModerator) && (
                     <>
                       <DropdownMenuSeparator />
@@ -453,7 +578,7 @@ export function Header() {
                   )}
                   {profile.subscription_status === 'free' && (
                     <DropdownMenuItem asChild>
-                      <Link to="/planos">
+                      <Link to="/precos">
                         <CreditCard className="mr-2 h-4 w-4" />
                         Comprar Créditos
                       </Link>
@@ -478,16 +603,7 @@ export function Header() {
               {!isSupabaseAvailable && (
                 <AlertCircle className="h-4 w-4 text-yellow-500" />
               )}
-              <Button variant="ghost" asChild>
-                <Link to="/login">
-                 <LogIn className="mr-2 h-4 w-4" />
-                Entrar</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/cadastro">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Cadastrar</Link>
-              </Button>
+              <SmartActionButton />
             </div>
           )}
         </div>

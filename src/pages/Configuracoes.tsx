@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2 } from 'lucide-react'
+import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
+import { useTheme } from 'next-themes'
 
 export default function Configuracoes() {
-  const { user, profile, refreshProfile } = useAuth()
+  const { user, profile } = useAuth()
   const { toast } = useToast()
+  const { theme, setTheme } = useTheme()
   const [loading, setLoading] = useState(false)
   
   const [profileData, setProfileData] = useState({
@@ -61,6 +63,14 @@ export default function Configuracoes() {
     }
   }, [profile])
 
+  // Carrega tema do localStorage
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme')
+    if (savedTheme) {
+      setAppearanceSettings(prev => ({ ...prev, theme: savedTheme }))
+    }
+  }, [])
+
   const handleSaveProfile = async () => {
     if (!user) return
 
@@ -83,8 +93,6 @@ export default function Configuracoes() {
 
       if (error) throw error
 
-      await refreshProfile()
-      
       toast({
         title: "Perfil atualizado",
         description: "Suas informações foram salvas com sucesso.",
@@ -122,13 +130,35 @@ export default function Configuracoes() {
     })
   }
 
+  const handleThemeChange = (newTheme: string) => {
+    setTheme(newTheme)
+    setAppearanceSettings(prev => ({ ...prev, theme: newTheme }))
+    localStorage.setItem('theme', newTheme)
+    
+    // Salvar no Supabase se o usuário estiver logado
+    if (user && profile) {
+      supabase
+        .from('user_profiles')
+        .update({ 
+          // theme_preference: newTheme // Comentado até adicionar a coluna no banco
+        })
+        .eq('id', user.id)
+        .then(() => {
+          console.log('Tema salvo no Supabase')
+        })
+        .catch((error) => {
+          console.error('Erro ao salvar tema no Supabase:', error)
+        })
+    }
+  }
+
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Acesso Negado</h1>
-            <p className="text-gray-600 mt-2">Você precisa estar logado para acessar as configurações.</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Acesso Negado</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">Você precisa estar logado para acessar as configurações.</p>
           </div>
         </div>
       </div>
@@ -136,12 +166,12 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Configurações</h1>
-            <p className="text-gray-600 mt-2">Gerencie suas preferências e configurações da conta</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Configurações</h1>
+            <p className="text-gray-600 dark:text-gray-300 mt-2">Gerencie suas preferências e configurações da conta</p>
           </div>
 
           {/* Perfil */}
@@ -353,20 +383,42 @@ export default function Configuracoes() {
                 Aparência
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="theme">Tema</Label>
-                <Select value={appearanceSettings.theme} onValueChange={(value) => setAppearanceSettings({...appearanceSettings, theme: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="light">Claro</SelectItem>
-                    <SelectItem value="dark">Escuro</SelectItem>
-                    <SelectItem value="system">Sistema</SelectItem>
-                  </SelectContent>
-                </Select>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <Label>Tema</Label>
+                <div className="grid grid-cols-3 gap-3">
+                  <Button
+                    variant={appearanceSettings.theme === 'light' ? 'default' : 'outline'}
+                    onClick={() => handleThemeChange('light')}
+                    className="flex flex-col items-center gap-2 h-auto p-4"
+                  >
+                    <Sun className="h-5 w-5" />
+                    <span className="text-sm">Claro</span>
+                  </Button>
+                  <Button
+                    variant={appearanceSettings.theme === 'dark' ? 'default' : 'outline'}
+                    onClick={() => handleThemeChange('dark')}
+                    className="flex flex-col items-center gap-2 h-auto p-4"
+                  >
+                    <Moon className="h-5 w-5" />
+                    <span className="text-sm">Escuro</span>
+                  </Button>
+                  <Button
+                    variant={appearanceSettings.theme === 'system' ? 'default' : 'outline'}
+                    onClick={() => handleThemeChange('system')}
+                    className="flex flex-col items-center gap-2 h-auto p-4"
+                  >
+                    <Globe className="h-5 w-5" />
+                    <span className="text-sm">Sistema</span>
+                  </Button>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  O tema será aplicado imediatamente e salvo automaticamente.
+                </p>
               </div>
+              
+              <Separator />
+              
               <div>
                 <Label htmlFor="language">Idioma</Label>
                 <Select value={appearanceSettings.language} onValueChange={(value) => setAppearanceSettings({...appearanceSettings, language: value})}>

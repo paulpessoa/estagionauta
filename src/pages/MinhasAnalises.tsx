@@ -25,7 +25,7 @@ interface Analysis {
   university: string
   status: string
   created_at: string
-  analysis_data: any
+  analysis_data: Record<string, unknown>
 }
 
 export default function MinhasAnalises() {
@@ -64,11 +64,11 @@ export default function MinhasAnalises() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'completed':
-        return <Badge className="bg-green-100 text-green-800">Concluído</Badge>
+        return <Badge className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Concluído</Badge>
       case 'processing':
-        return <Badge className="bg-yellow-100 text-yellow-800">Processando</Badge>
+        return <Badge className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Processando</Badge>
       case 'failed':
-        return <Badge className="bg-red-100 text-red-800">Falhou</Badge>
+        return <Badge className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Falhou</Badge>
       default:
         return <Badge variant="secondary">Pendente</Badge>
     }
@@ -80,24 +80,24 @@ export default function MinhasAnalises() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg">Carregando suas análises...</p>
+          <p className="text-lg text-gray-900 dark:text-gray-100">Carregando suas análises...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8">
       <div className="max-w-7xl mx-auto p-4 space-y-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
               Minhas Análises
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               Visualize e gerencie todas as suas análises de currículo
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function MinhasAnalises() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="space-y-2 text-sm text-gray-600">
+                  <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
                     <p><strong>Curso:</strong> {analysis.course}</p>
                     <p><strong>Universidade:</strong> {analysis.university}</p>
                     <div className="flex items-center gap-2">
@@ -191,11 +191,11 @@ export default function MinhasAnalises() {
         ) : (
           <Card>
             <CardContent className="p-12 text-center">
-              <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">
+              <FileText className="w-16 h-16 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-gray-100">
                 {searchTerm ? 'Nenhuma análise encontrada' : 'Nenhuma análise ainda'}
               </h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
                 {searchTerm 
                   ? 'Tente ajustar os filtros de busca'
                   : 'Envie seu primeiro currículo para começar a receber insights valiosos!'

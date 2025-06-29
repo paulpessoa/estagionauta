@@ -15,6 +15,7 @@ import { useAuth } from '@/hooks/useAuth'
 
 interface ResumeAnalysisFormProps {
   onComplete: (data: ResumeFormData) => void
+  loading?: boolean
 }
 
 interface ResumeFormData {
@@ -51,7 +52,7 @@ interface ResumeFormData {
   resumeFile: File | null
 }
 
-export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
+export function ResumeAnalysisForm({ onComplete, loading }: ResumeAnalysisFormProps) {
   const { profile } = useAuth()
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<ResumeFormData>({
@@ -106,8 +107,8 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
   const steps = [
     { title: "Perfil", description: "Informações básicas", icon: User },
     { title: "Momento Atual", description: "Sua situação atual", icon: Target },
-    { title: "Vaga Específica", description: "Opcional - vaga em mente", icon: GraduationCap },
-    { title: "Mentoria", description: "Opcional - sobre mentoria", icon: Brain },
+    { title: "Vaga Específica", description: "Vaga específica?", icon: GraduationCap },
+    { title: "Mentoria", description: "Sobre mentoria", icon: Brain },
     { title: "Feedback", description: "Sua opinião", icon: FileText },
     { title: "Currículo", description: "Upload do arquivo", icon: Upload }
   ]
@@ -587,7 +588,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case 0: // Perfil
+      case 0: { // Perfil
         // Verifica se os campos obrigatórios estão preenchidos, considerando o perfil
         const hasName = formData.name || (profile?.full_name)
         const hasEmail = formData.email || (profile?.email)
@@ -596,6 +597,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
         const hasPeriod = formData.period || (profile?.period)
         
         return hasName && hasEmail && hasCourse && hasUniversity && hasPeriod && formData.hasInternship && formData.hasLinkedIn
+      }
       case 1: // Momento Atual
         return formData.currentFocus && formData.careerGoals && formData.skillsToDevelop && formData.timeAvailability
       case 2: // Vaga Específica (sempre válido, é opcional)
@@ -718,11 +720,26 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
               {currentStep === steps.length - 1 ? (
                 <Button
                   onClick={handleSubmit}
-                  disabled={!isStepValid()}
-                  className="bg-purple-600 hover:bg-purple-700"
+                  disabled={!isStepValid() || loading}
+                  className="bg-purple-600 hover:bg-purple-700 relative overflow-hidden group"
                 >
-                  <Gift className="mr-2 h-4 w-4" />
-                  Enviar e Receber Análise
+                  <div className="flex items-center">
+                    {loading ? (
+                      <>
+                        <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span>Processando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Gift className="mr-2 h-4 w-4 group-hover:animate-bounce" />
+                        <span>Enviar e Receber Análise</span>
+                      </>
+                    )}
+                  </div>
+                  {/* Efeito de brilho no hover */}
+                  {!loading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                  )}
                 </Button>
               ) : (
                 <Button

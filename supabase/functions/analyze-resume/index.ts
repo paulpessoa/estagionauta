@@ -73,19 +73,37 @@ async function consumeUserCredits(supabase: any, userId: string): Promise<boolea
       return false;
     }
 
-    if (!profile || profile.credits < 1) {
-      throw new Error('Créditos insuficientes para análise');
+    if (!profile || profile.credits < 3) {
+      throw new Error('Créditos insuficientes para análise. Você precisa de 3 créditos.');
     }
 
-    // Consome 1 crédito
+    // Consome 3 créditos
     const { error: updateError } = await supabase
       .from('user_profiles')
-      .update({ credits: profile.credits - 1 })
+      .update({ 
+        credits: profile.credits - 3,
+        total_credits_used: (profile.total_credits_used || 0) + 3
+      })
       .eq('id', userId);
 
     if (updateError) {
       console.error('Error updating user credits:', updateError);
       return false;
+    }
+
+    // Registra a transação
+    const { error: transactionError } = await supabase
+      .from('credit_transactions')
+      .insert({
+        user_id: userId,
+        type: 'usage',
+        amount: 3,
+        description: 'Análise de currículo com IA'
+      });
+
+    if (transactionError) {
+      console.error('Error recording credit transaction:', transactionError);
+      // Não falha a operação se não conseguir registrar a transação
     }
 
     return true;
@@ -201,205 +219,263 @@ function generateFallbackAnalysis(formData: AnalysisRequest['formData'], resumeT
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response('ok', { headers: corsHeaders })
   }
 
   try {
-    console.log('Starting resume analysis...');
-    
-    const { resumeText, formData }: AnalysisRequest = await req.json();
-    console.log('Request data received:', { 
-      hasResumeText: !!resumeText, 
-      formDataKeys: Object.keys(formData),
-      name: formData.name,
-      email: formData.email 
-    });
-    
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
-      throw new Error('OpenAI API key not configured');
-    }
-    console.log('OpenAI API key found');
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-    
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('Supabase environment variables not configured');
-      throw new Error('Supabase configuration missing');
-    }
-    console.log('Supabase configuration found');
-
-    // Extrai texto do PDF
-    let extractedText = '';
-    try {
-      extractedText = await extractTextFromPDF(resumeText);
-      console.log('Text extracted from PDF, length:', extractedText.length);
-    } catch (error) {
-      console.error('Error extracting text:', error);
-      throw new Error('Não foi possível extrair texto do PDF. Verifique se o arquivo é válido.');
-    }
-
-    // Consome créditos do usuário
-    if (formData.user_id) {
-      const supabase = createClient(supabaseUrl, supabaseKey);
-      const creditsConsumed = await consumeUserCredits(supabase, formData.user_id);
-      if (!creditsConsumed) {
-        throw new Error('Erro ao consumir créditos. Verifique se você tem créditos suficientes.');
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: { Authorization: req.headers.get('Authorization')! },
+        },
       }
-      console.log('Credits consumed successfully');
+    )
+
+    // Get user from JWT
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser()
+    if (userError || !user) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    const prompt = `Você é um analista de carreira com foco em estágio. Avalie o currículo a seguir e atribua uma nota de 0 a 10 para cada critério abaixo, baseado no conteúdo fornecido. Em seguida, dê sugestões para melhoria.
+    const { resumeText, jobDescription, currentSituation, mentorshipQuestions } = await req.json()
 
-Critérios:
-- Clareza e organização do currículo
-- Ortografia e gramática
-- Destaque de experiências relevantes
-- Adequação ao nível acadêmico
-- Presença de atividades extracurriculares
-- Personalização e diferencial
-- Habilidades técnicas e interpessoais visíveis
+    // Verificar se o usuário tem créditos suficientes (3 créditos por análise)
+    const { data: userProfile, error: profileError } = await supabaseClient
+      .from('user_profiles')
+      .select('credits')
+      .eq('id', user.id)
+      .single()
 
-IMPORTANTE: Responda APENAS com o JSON válido, sem formatação markdown, sem \`\`\`json no início ou fim.
+    if (profileError) {
+      console.error('Erro ao buscar perfil do usuário:', profileError)
+      return new Response(
+        JSON.stringify({ error: 'Erro ao verificar créditos do usuário' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
 
+    if (!userProfile || userProfile.credits < 3) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Créditos insuficientes', 
+          requiredCredits: 3,
+          availableCredits: userProfile?.credits || 0,
+          message: 'Você precisa de 3 créditos para analisar um currículo. Compre mais créditos na página de preços.'
+        }),
+        { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Consumir 3 créditos
+    const { data: consumeResult, error: consumeError } = await supabaseClient
+      .rpc('consume_credits', {
+        user_uuid: user.id,
+        amount: 3,
+        description: 'Análise de currículo com IA'
+      })
+
+    if (consumeError || !consumeResult) {
+      console.error('Erro ao consumir créditos:', consumeError)
+      return new Response(
+        JSON.stringify({ error: 'Erro ao processar pagamento de créditos' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    console.log('Créditos consumidos com sucesso para usuário:', user.id)
+
+    // Preparar prompt para análise
+    let analysisPrompt = `Analise o seguinte currículo e forneça uma avaliação detalhada em português brasileiro:
+
+CURRÍCULO:
+${resumeText}
+
+SITUAÇÃO ATUAL DO CANDIDATO:
+${currentSituation || 'Não informado'}`
+
+    if (jobDescription) {
+      analysisPrompt += `
+
+DESCRIÇÃO DA VAGA:
+${jobDescription}
+
+Por favor, analise especificamente a adequação do candidato para esta vaga.`
+    }
+
+    analysisPrompt += `
+
+Forneça uma análise estruturada com:
+1. Pontos Fortes (mínimo 3)
+2. Áreas de Melhoria (mínimo 3)
+3. Recomendações Específicas (mínimo 3)
+4. Score Geral (0-100)
+5. Adequação ao Mercado (0-100)
+6. Potencial de Crescimento (0-100)
+
+Formate a resposta como JSON válido com a seguinte estrutura:
 {
-  "notas": {
-    "organizacao": 7,
-    "ortografia": 9,
-    "experiencias": 5,
-    "adequacao": 8,
-    "extracurriculares": 4,
-    "diferencial": 6,
-    "habilidades": 7
-  },
-  "analise": [
-    "O currículo está bem organizado, mas pode usar marcadores para facilitar a leitura.",
-    "Pouca ênfase em experiências extracurriculares. Considere incluir projetos ou voluntariado.",
-    "Faltam habilidades específicas ou softwares utilizados nos cursos.",
-    "Boa adequação para o nível de graduação."
-  ],
-  "recomendacoes": [
-    "Use verbos de ação como 'desenvolvi', 'participei', 'colaborei' para valorizar suas experiências.",
-    "Inclua um pequeno resumo profissional no topo do currículo.",
-    "Se possível, adicione links para LinkedIn ou portfólio."
-  ],
-  "tags": [
-    "comunicação",
-    "gestão de tempo",
-    "documentação",
-    "testes",
-    "clean code"
-  ]
-}
+  "pontosFortes": ["ponto 1", "ponto 2", "ponto 3"],
+  "areasMelhoria": ["área 1", "área 2", "área 3"],
+  "recomendacoes": ["recomendação 1", "recomendação 2", "recomendação 3"],
+  "scoreGeral": 75,
+  "adequacaoMercado": 80,
+  "potencialCrescimento": 85,
+  "resumo": "Resumo executivo da análise"
+}`
 
-Texto extraído do currículo:
-${extractedText}
+    if (mentorshipQuestions) {
+      analysisPrompt += `
 
-Informações adicionais do estudante:
-- Nome: ${formData.name}
-- Curso: ${formData.course} 
-- Universidade: ${formData.university}
-- Período: ${formData.period}
-- Já fez estágio: ${formData.hasInternship}
-- Interesses em mentoria: ${formData.mentorshipTopics || 'Não informado'}`;
+PERGUNTAS DE MENTORIA:
+${mentorshipQuestions}
 
-    let analysisData;
-    let usedFallback = false;
+Inclua também na análise:
+7. Respostas às Perguntas de Mentoria
+8. Plano de Desenvolvimento Personalizado
 
-    try {
-      // Tenta usar a API do OpenAI com retry
-      const response = await retryWithBackoff(async () => {
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-4o-nano',
-            messages: [
-              { 
-                role: 'system', 
-                content: 'Você é um especialista em análise de currículos para estágios. Responda SEMPRE com JSON válido, sem formatação markdown.' 
-              },
-              { role: 'user', content: prompt }
-            ],
-            temperature: 0.7,
-          }),
-        });
-
-        if (!res.ok) {
-          const errorText = await res.text();
-          throw new Error(`OpenAI API error: ${res.status} ${res.statusText} - ${errorText}`);
-        }
-
-        return res;
-      });
-
-      const data = await response.json();
-      let analysisText = data.choices[0].message.content;
-      
-      // Remove formatação markdown se presente
-      analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
-      
-      try {
-        analysisData = JSON.parse(analysisText);
-      } catch (error) {
-        console.error('Error parsing OpenAI response:', analysisText);
-        throw new Error('Invalid response format from AI');
-      }
-
-    } catch (error) {
-      console.error('OpenAI API failed, using fallback analysis:', error);
-      
-      // Se a API falhar, usa análise fallback
-      analysisData = generateFallbackAnalysis(formData, extractedText);
-      usedFallback = true;
+Adicione ao JSON:
+"respostasMentoria": ["resposta 1", "resposta 2", "resposta 3"],
+"planoDesenvolvimento": ["ação 1", "ação 2", "ação 3"]`
     }
 
-    // Save to database
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Tentar usar OpenAI
+    let analysisResult
+    let usedFallback = false
 
-    const { data: savedAnalysis, error: dbError } = await supabase
+    try {
+      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: 'gpt-4',
+          messages: [
+            {
+              role: 'system',
+              content: 'Você é um especialista em recrutamento e análise de currículos. Forneça análises objetivas e construtivas em português brasileiro.'
+            },
+            {
+              role: 'user',
+              content: analysisPrompt
+            }
+          ],
+          temperature: 0.7,
+          max_tokens: 2000
+        })
+      })
+
+      if (openaiResponse.ok) {
+        const openaiData = await openaiResponse.json()
+        const content = openaiData.choices[0].message.content
+        
+        try {
+          analysisResult = JSON.parse(content)
+          console.log('Análise OpenAI bem-sucedida')
+        } catch (parseError) {
+          console.error('Erro ao fazer parse da resposta OpenAI:', parseError)
+          throw new Error('Resposta OpenAI inválida')
+        }
+      } else {
+        console.error('Erro OpenAI:', openaiResponse.status, await openaiResponse.text())
+        throw new Error('Erro na API OpenAI')
+      }
+    } catch (openaiError) {
+      console.error('Erro ao usar OpenAI, usando fallback:', openaiError)
+      usedFallback = true
+      
+      // Análise fallback baseada no texto extraído
+      const wordCount = resumeText.split(/\s+/).length
+      const hasExperience = /experiência|experience|trabalho|work|empresa|company/i.test(resumeText)
+      const hasEducation = /graduação|graduation|curso|course|universidade|university|faculdade|college/i.test(resumeText)
+      const hasSkills = /habilidades|skills|competências|competencies|tecnologias|technologies/i.test(resumeText)
+      
+      let scoreGeral = 50
+      let adequacaoMercado = 50
+      let potencialCrescimento = 50
+      
+      if (wordCount > 200) scoreGeral += 10
+      if (hasExperience) scoreGeral += 15
+      if (hasEducation) scoreGeral += 10
+      if (hasSkills) scoreGeral += 15
+      
+      adequacaoMercado = scoreGeral + Math.floor(Math.random() * 20) - 10
+      potencialCrescimento = scoreGeral + Math.floor(Math.random() * 20) - 10
+      
+      adequacaoMercado = Math.max(0, Math.min(100, adequacaoMercado))
+      potencialCrescimento = Math.max(0, Math.min(100, potencialCrescimento))
+      
+      analysisResult = {
+        pontosFortes: [
+          "Currículo estruturado e organizado",
+          "Informações profissionais bem apresentadas",
+          "Formação acadêmica adequada"
+        ],
+        areasMelhoria: [
+          "Considerar adicionar mais detalhes sobre realizações específicas",
+          "Incluir métricas e resultados quantitativos",
+          "Destacar soft skills e competências interpessoais"
+        ],
+        recomendacoes: [
+          "Quantificar resultados e conquistas profissionais",
+          "Incluir palavras-chave relevantes para a área",
+          "Manter o currículo atualizado regularmente"
+        ],
+        scoreGeral,
+        adequacaoMercado,
+        potencialCrescimento,
+        resumo: "Análise realizada com base no conteúdo do currículo fornecido. Recomenda-se revisão e aprimoramento contínuo."
+      }
+    }
+
+    // Salvar análise no banco de dados
+    const { error: saveError } = await supabaseClient
       .from('curriculum_analysis')
       .insert({
-        user_id: formData.user_id || null,
-        name: formData.name,
-        email: formData.email,
-        course: formData.course,
-        university: formData.university,
-        analysis_data: analysisData,
-        status: 'completed',
-        credits_used: 1,
-        used_fallback: usedFallback
+        user_id: user.id,
+        resume_text: resumeText,
+        job_description: jobDescription || null,
+        current_situation: currentSituation || null,
+        mentorship_questions: mentorshipQuestions || null,
+        analysis_result: analysisResult,
+        used_fallback: usedFallback,
+        credits_used: 3
       })
-      .select()
-      .single();
 
-    if (dbError) {
-      console.error('Database error:', dbError);
-      throw new Error(`Failed to save analysis: ${dbError.message}`);
+    if (saveError) {
+      console.error('Erro ao salvar análise:', saveError)
+      return new Response(
+        JSON.stringify({ error: 'Erro ao salvar análise no banco de dados' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    return new Response(JSON.stringify({
-      success: true,
-      analysis: analysisData,
-      analysisId: savedAnalysis.id,
-      usedFallback: usedFallback
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log('Análise salva com sucesso para usuário:', user.id)
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        analysis: analysisResult,
+        usedFallback,
+        creditsUsed: 3,
+        remainingCredits: userProfile.credits - 3
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
 
   } catch (error) {
-    console.error('Error in analyze-resume function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Internal server error' 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Erro geral:', error)
+    return new Response(
+      JSON.stringify({ error: 'Erro interno do servidor' }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   }
-});
+})

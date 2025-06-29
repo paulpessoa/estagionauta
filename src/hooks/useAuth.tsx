@@ -12,6 +12,7 @@ interface AuthContextType {
   profile: Profile | null
   hasPermission: (permission: string) => boolean
   signOut: () => Promise<void>
+  signInWithOtp: (email: string) => Promise<void>
   isLoading: boolean
   isSupabaseAvailable: boolean
   isAdmin: boolean
@@ -56,8 +57,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signOut = async () => {
     try {
       await supabase.auth.signOut()
+      window.location.href = '/'
     } catch (error) {
       console.error('Error signing out:', error)
+    }
+  }
+
+  const signInWithOtp = async (email: string) => {
+    try {
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`
+        }
+      })
+      
+      if (error) {
+        throw error
+      }
+    } catch (error) {
+      console.error('Error signing in with OTP:', error)
+      throw error
     }
   }
 
@@ -69,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     profile: (profile as Profile) ?? null,
     hasPermission,
     signOut,
+    signInWithOtp,
     isLoading,
     isSupabaseAvailable,
     isAdmin: isAdmin || false,

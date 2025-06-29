@@ -21,6 +21,7 @@ import KanbanCandidaturas from './pages/KanbanCandidaturas'
 import Dashboard from './pages/Dashboard'
 import MinhasAnalises from './pages/MinhasAnalises'
 import Configuracoes from './pages/Configuracoes'
+import Notificacoes from './pages/Notificacoes'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import React from 'react'
 
@@ -34,6 +35,8 @@ const ProtectedMinhasAnalises = () => React.createElement(ProtectedRoute, null, 
 const ProtectedKanbanCandidaturas = () => React.createElement(ProtectedRoute, null, React.createElement(KanbanCandidaturas))
 
 const ProtectedConfiguracoes = () => React.createElement(ProtectedRoute, null, React.createElement(Configuracoes))
+
+const ProtectedNotificacoes = () => React.createElement(ProtectedRoute, null, React.createElement(Notificacoes))
 
 const ProtectedResultadoCurriculo = () => React.createElement(ProtectedRoute, null, React.createElement(ResultadoCurriculo))
 
@@ -56,13 +59,12 @@ export const routes = [
   { path: '/admin', component: ProtectedAdmin },
   { path: '/admin/moderacao-agencias', component: ProtectedModeracaoAgencias },
 
-  { path: '/cadastro-agencia', component: CadastroAgencia },
-  { path: '/agencias', component: MapaAgencias },
-  
+  { path: '/cadastro-agencia', component: CadastroAgencia },  
 
   { path: '/analise-curriculo', component: ProtectedAnaliseCurriculo },
   { path: '/analise-curriculo/sucesso', component: Sucesso },
   { path: '/minhas-analises', component: ProtectedMinhasAnalises },
+  { path: '/notificacoes', component: ProtectedNotificacoes },
   { path: '/agencias', component: Agencias },
   { path: '/calculadora-recesso', component: CalculadoraRecesso },
   { path: '/gerador-curriculos', component: ProtectedGeradorCurriculos},

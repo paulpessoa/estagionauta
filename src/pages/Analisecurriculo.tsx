@@ -1,9 +1,16 @@
 import { useState } from 'react'
 import { ResumeAnalysisForm } from '@/components/forms/ResumeAnalysisForm'
+import { AnalysisLoading } from '@/components/AnalysisLoading'
 import { useNavigate } from 'react-router-dom'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { useCredits } from '@/hooks/useCredits'
+import { useNotifications } from '@/hooks/useNotifications'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Star, AlertTriangle, CreditCard } from 'lucide-react'
 
 interface ResumeFormData {
   // Basic info
@@ -46,6 +53,7 @@ export default function AnalyseCurriculoPage() {
   const navigate = useNavigate()
   const { toast } = useToast()
   const { user, profile } = useAuth()
+  const { credits, hasEnoughCredits, refresh } = useCredits()
 
   // Função para converter arquivo em base64
   const convertFileToBase64 = (file: File): Promise<string> => {
@@ -71,6 +79,12 @@ export default function AnalyseCurriculoPage() {
     try {
       setLoading(true)
       setError(null)
+
+      // Verificar créditos antes de começar
+      if (!hasEnoughCredits(3)) {
+        setError('Créditos insuficientes. Por favor, compre mais créditos.')
+        return
+      }
 
       // Convert PDF to base64
       const base64 = await convertFileToBase64(formData.resumeFile)
@@ -109,8 +123,19 @@ export default function AnalyseCurriculoPage() {
 
       console.log('Analysis completed successfully:', data)
 
-      // Redirect to results page
-      navigate(`/resultado-curriculo/${data.analysisId}`)
+      // Atualizar créditos na interface
+      await refresh()
+      
+      // Redirecionar para resultado
+      navigate(`/resultado-curriculo/${data.analysisId}`, { 
+        state: { 
+          analysis: data.analysis,
+          score: data.score,
+          usedFallback: data.used_fallback,
+          creditsConsumed: 3,
+          remainingCredits: data.remainingCredits
+        } 
+      })
     } catch (err) {
       console.error('Error analyzing resume:', err)
       setError(err instanceof Error ? err.message : 'Erro ao analisar currículo')
@@ -124,19 +149,54 @@ export default function AnalyseCurriculoPage() {
     }
   }
 
+  if (loading) {
+    return <AnalysisLoading isVisible={loading} />
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <div className="container mx-auto py-8 px-4">
-        <ResumeAnalysisForm onComplete={handleFormComplete} />
-        
-        {/* Error Display */}
-        {error && (
-          <div className="max-w-2xl mx-auto mt-4">
-            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-red-700 dark:text-red-400 text-sm">{error}</p>
+        <div className="max-w-4xl mx-auto">
+          {/* Header com informações de créditos */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold mb-4">Análise de Currículo com IA</h1>
+            
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="flex items-center space-x-2 bg-yellow-50 border border-yellow-200 rounded-lg px-4 py-2">
+                <Star className="h-5 w-5 text-yellow-600 fill-yellow-600" />
+                <span className="font-semibold text-yellow-800">
+                  {credits?.credits || 0} créditos disponíveis
+                </span>
+              </div>
+              
+              <div className="text-sm text-muted-foreground">
+                Cada análise consome 3 créditos
+              </div>
             </div>
+
+            {error && (
+              <Alert className="mb-6 border-red-200 bg-red-50">
+                <AlertTriangle className="h-4 w-4 text-red-600" />
+                <AlertDescription className="text-red-800">
+                  <strong>Erro:</strong> {error}
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
-        )}
+
+          {/* Card principal */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Análise Inteligente de Currículo</CardTitle>
+              <CardDescription>
+                Faça upload do seu currículo e receba feedback detalhado com IA
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResumeAnalysisForm onComplete={handleFormComplete} loading={loading} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )
