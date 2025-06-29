@@ -44,14 +44,13 @@ export default function HomePage() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100 font-semibold" asChild>
-              <Link to="#"
-              // to="/analise-curriculo" 
+              <Link
+              to="/analise-curriculo" 
                 onClick={(e) => {
-                  toast.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
-                  // handleAnalyzeClick(e);
+                  handleAnalyzeClick(e);
                 }}>
                 <FileScan className="mr-2 h-5 w-5" />
-                Analisar Currículo com IA
+                Analisar Currículo com IA 
               </Link>
             </Button>
             {/* <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70 cursor-not-allowed">
@@ -264,12 +263,7 @@ export default function HomePage() {
                 <div className="h-12 w-12 bg-indigo-100 dark:bg-indigo-900 rounded-lg flex items-center justify-center mb-4">
                   <BotMessageSquare className="h-6 w-6 text-indigo-600" />
                 </div>
-                <div className="flex items-center gap-2">
-                  <CardTitle className="text-xl text-indigo-700 dark:text-indigo-400">Kanban de Candidaturas</CardTitle>
-                  <Badge variant="secondary" className="bg-yellow-400 text-purple-900">
-                    Em breve
-                  </Badge>
-                </div>
+                <CardTitle className="text-xl text-indigo-700 dark:text-indigo-400">Kanban de Candidaturas</CardTitle>
                 <CardDescription className="text-slate-700 dark:text-slate-200">
                   Organize suas candidaturas com um Kanban inteligente
                 </CardDescription>
@@ -289,9 +283,11 @@ export default function HomePage() {
                     Integração com Google Calendar
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full opacity-70 cursor-not-allowed border-indigo-400 text-indigo-700 dark:text-indigo-400">
-                  Em Desenvolvimento
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                <Button className="w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 text-white font-bold shadow-lg hover:from-indigo-600 hover:to-blue-600" asChild>
+                  <Link to="/kanban-candidaturas">
+                    Acessar Kanban
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
                 </Button>
               </CardContent>
             </Card>

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { JobFitAnalysis } from '@/components/analysis/JobFitAnalysis'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { Download, Mail, Share2, ArrowLeft } from 'lucide-react'
@@ -22,6 +23,14 @@ interface AnalysisData {
   analise: string[]
   recomendacoes: string[]
   tags: string[]
+  jobFit?: {
+    fitScore: number
+    strengths: string[]
+    weaknesses: string[]
+    recommendations: string[]
+    jobDescription: string
+    jobRequirements: string
+  }
 }
 
 interface CurriculumAnalysis {
@@ -32,6 +41,9 @@ interface CurriculumAnalysis {
   university: string
   analysis_data: AnalysisData
   created_at: string
+  user_id?: string
+  status?: string
+  used_fallback?: boolean
 }
 
 export default function ResultadoCurriculo() {
@@ -153,6 +165,13 @@ export default function ResultadoCurriculo() {
     }
   }
 
+  const handleGenerateCoverLetter = () => {
+    toast({
+      title: "Funcionalidade em Desenvolvimento",
+      description: "A geração de carta de apresentação será implementada em breve no Gerador de Currículos.",
+    })
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
@@ -252,6 +271,30 @@ export default function ResultadoCurriculo() {
           </div>
         </div>
 
+        {/* Aviso de Fallback */}
+        {analysis.used_fallback && (
+          <Card className="border-yellow-200 bg-yellow-50 dark:bg-yellow-950/30">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                    <span className="text-yellow-900 text-xs font-bold">!</span>
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                    Análise Simplificada
+                  </h3>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300 mt-1">
+                    Devido a uma alta demanda no momento, esta análise foi gerada automaticamente. 
+                    Para uma análise mais detalhada, tente novamente em alguns minutos.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Nota Geral */}
         <Card>
           <CardContent className="text-center p-6 md:p-8">
@@ -295,6 +338,19 @@ export default function ResultadoCurriculo() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Análise de Adequação com Vaga Específica */}
+        {analysis.analysis_data.jobFit && (
+          <JobFitAnalysis
+            jobDescription={analysis.analysis_data.jobFit.jobDescription}
+            jobRequirements={analysis.analysis_data.jobFit.jobRequirements}
+            fitScore={analysis.analysis_data.jobFit.fitScore}
+            strengths={analysis.analysis_data.jobFit.strengths}
+            weaknesses={analysis.analysis_data.jobFit.weaknesses}
+            recommendations={analysis.analysis_data.jobFit.recommendations}
+            onGenerateCoverLetter={handleGenerateCoverLetter}
+          />
+        )}
 
         {/* Análise e Recomendações */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

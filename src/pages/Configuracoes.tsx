@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,17 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, Bell, Shield, Palette, Globe } from 'lucide-react'
+import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2 } from 'lucide-react'
+import { supabase } from '@/integrations/supabase/client'
 
 export default function Configuracoes() {
-  const { user } = useAuth()
+  const { user, profile, refreshProfile } = useAuth()
   const { toast } = useToast()
+  const [loading, setLoading] = useState(false)
   
   const [profileData, setProfileData] = useState({
-    name: user?.user_metadata?.full_name || '',
-    email: user?.email || '',
+    full_name: '',
+    email: '',
     phone: '',
-    bio: ''
+    bio: '',
+    course: '',
+    university: '',
+    period: '',
+    linkedin_url: ''
   })
 
   const [notificationSettings, setNotificationSettings] = useState({
@@ -39,11 +45,60 @@ export default function Configuracoes() {
     language: 'pt'
   })
 
-  const handleSaveProfile = () => {
-    toast({
-      title: "Perfil atualizado",
-      description: "Suas informações foram salvas com sucesso.",
-    })
+  // Carrega dados do perfil
+  useEffect(() => {
+    if (profile) {
+      setProfileData({
+        full_name: profile.full_name || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        bio: profile.bio || '',
+        course: profile.course || '',
+        university: profile.university || '',
+        period: profile.period || '',
+        linkedin_url: profile.linkedin_url || ''
+      })
+    }
+  }, [profile])
+
+  const handleSaveProfile = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          full_name: profileData.full_name,
+          phone: profileData.phone,
+          bio: profileData.bio,
+          course: profileData.course,
+          university: profileData.university,
+          period: profileData.period,
+          linkedin_url: profileData.linkedin_url,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      await refreshProfile()
+      
+      toast({
+        title: "Perfil atualizado",
+        description: "Suas informações foram salvas com sucesso.",
+      })
+    } catch (error) {
+      console.error('Error updating profile:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar perfil. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleSaveNotifications = () => {
@@ -67,6 +122,19 @@ export default function Configuracoes() {
     })
   }
 
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold text-gray-900">Acesso Negado</h1>
+            <p className="text-gray-600 mt-2">Você precisa estar logado para acessar as configurações.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-6">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -87,11 +155,11 @@ export default function Configuracoes() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Nome completo</Label>
+                  <Label htmlFor="full_name">Nome completo</Label>
                   <Input
-                    id="name"
-                    value={profileData.name}
-                    onChange={(e) => setProfileData({...profileData, name: e.target.value})}
+                    id="full_name"
+                    value={profileData.full_name}
+                    onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
                   />
                 </div>
                 <div>
@@ -100,8 +168,10 @@ export default function Configuracoes() {
                     id="email"
                     type="email"
                     value={profileData.email}
-                    onChange={(e) => setProfileData({...profileData, email: e.target.value})}
+                    disabled
+                    className="bg-gray-50"
                   />
+                  <p className="text-xs text-gray-500 mt-1">Email não pode ser alterado</p>
                 </div>
                 <div>
                   <Label htmlFor="phone">Telefone</Label>
@@ -109,6 +179,16 @@ export default function Configuracoes() {
                     id="phone"
                     value={profileData.phone}
                     onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                    placeholder="(11) 99999-9999"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="linkedin_url">LinkedIn</Label>
+                  <Input
+                    id="linkedin_url"
+                    value={profileData.linkedin_url}
+                    onChange={(e) => setProfileData({...profileData, linkedin_url: e.target.value})}
+                    placeholder="https://linkedin.com/in/seu-perfil"
                   />
                 </div>
               </div>
@@ -121,9 +201,62 @@ export default function Configuracoes() {
                   placeholder="Conte um pouco sobre você..."
                 />
               </div>
-              <Button onClick={handleSaveProfile}>Salvar Perfil</Button>
+              <Button onClick={handleSaveProfile} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Perfil'}
+              </Button>
             </CardContent>
           </Card>
+
+          {/* Informações Acadêmicas */}
+          {profile?.role === 'student' && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <GraduationCap className="h-5 w-5" />
+                  Informações Acadêmicas
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="course">Curso</Label>
+                    <Input
+                      id="course"
+                      value={profileData.course}
+                      onChange={(e) => setProfileData({...profileData, course: e.target.value})}
+                      placeholder="Ex: Ciência da Computação"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="university">Universidade</Label>
+                    <Input
+                      id="university"
+                      value={profileData.university}
+                      onChange={(e) => setProfileData({...profileData, university: e.target.value})}
+                      placeholder="Ex: USP"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="period">Período</Label>
+                    <Select value={profileData.period} onValueChange={(value) => setProfileData({...profileData, period: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecione o período" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1-2">1º - 2º período</SelectItem>
+                        <SelectItem value="3-5">3º - 5º período</SelectItem>
+                        <SelectItem value="6+">6º período ou mais</SelectItem>
+                        <SelectItem value="formado">Formado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button onClick={handleSaveProfile} disabled={loading}>
+                  {loading ? 'Salvando...' : 'Salvar Informações Acadêmicas'}
+                </Button>
+              </CardContent>
+            </Card>
+          )}
 
           {/* Notificações */}
           <Card>

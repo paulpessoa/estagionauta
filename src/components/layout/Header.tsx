@@ -11,92 +11,57 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { User, Settings, LogOut, BarChart3, FileText, CreditCard, Menu, AlertCircle, Users, Building2, Sun, Moon, LogIn, UserPlus } from 'lucide-react'
+import { User, Settings, LogOut, BarChart3, FileText, CreditCard, Menu, AlertCircle, Building2, Sun, Moon, LogIn, UserPlus } from 'lucide-react'
 import { useState } from 'react'
-import { Permission } from '@/types/permissions'
 import { useTheme } from 'next-themes'
-import { toast } from '@/components/ui/use-toast'
-import {toast as tototo } from 'sonner'
+import { AuthRequiredModal } from '@/components/AuthRequiredModal'
 
 const NavLinks = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) => {
-  const { isSupabaseAvailable, isAdmin, isModerator } = useAuth()
-  
+  const { isSupabaseAvailable, isAdmin, isModerator, user, profile } = useAuth()
+  const [showAuthModal, setShowAuthModal] = useState(false)
+
+  const handleCurriculoIAClick = (e: React.MouseEvent) => {
+    if (!user || !profile) {
+      e.preventDefault()
+      setShowAuthModal(true)
+    } else if (onLinkClick) {
+      onLinkClick()
+    }
+  }
+
   return (
-    <div className={mobile ? "flex flex-col space-y-4 text-sm" : "hidden md:flex items-center space-x-6 text-sm font-medium"}>
-   
-      <Link
-        to="/agencias"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-        onClick={onLinkClick}
-      >
-        Agências de Estágio
-      </Link>
-         <Link
-        to="#"
-        // to="/analise-curriculo"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
-        // onClick={onLinkClick}
-        onClick={() => {
-          tototo.info("Devido a alta demanda, a análise de currículos está temporariamente indisponível. Estamos trabalhando para melhorar a experiência. Agradecemos pela compreensão!");
-        }}>
-        Análise de Currículo
-        <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
-          com IA
-        </Badge>
-        {!isSupabaseAvailable && (
-          <AlertCircle className="h-3 w-3 text-yellow-500" />
-        )}
-      </Link>
-      <Link
-        to="/calculadora-recesso"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-        onClick={onLinkClick}
-      >
-        Calculadora de Recesso
-      </Link>
-    
-      
-       {/* <Link
-        to="/precos"
-        className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-        onClick={onLinkClick}
-      >
-        Preços
-      </Link> */}
-      {(isAdmin || isModerator) && (
-        <>
-          <Link
-            to="/simulador-entrevistas"
-            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-            onClick={onLinkClick}
-          >
-            Simulador de Entrevistas
-          </Link>
-          <Link
-            to="/gerador-curriculos"
-            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-            onClick={onLinkClick}
-          >
-            Gerador de Currículos
-          </Link>
-          <Link
-            to="/kanban-candidaturas"
-            className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-            onClick={onLinkClick}
-          >
-            Kanban de Candidaturas
-          </Link>
-          <Link
-            to="/admin/moderacao-agencias"
-            className='transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1'
-            onClick={onLinkClick}
-          >
-            <Building2 className="h-4 w-4 mr-2"/>
-            Moderar Agências
-          </Link>
-        </>
-      )}
-    </div>
+    <>
+      <div className={mobile ? "flex flex-col space-y-4 text-sm" : "hidden md:flex items-center space-x-6 text-sm font-medium"}>
+        <Link
+          to="/agencias"
+          className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+          onClick={onLinkClick}
+        >
+          Agências de Estágio
+        </Link>
+        <Link
+          to="/analise-curriculo"
+          className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
+          onClick={handleCurriculoIAClick}
+
+        >
+          Análise de Currículo
+          <Badge variant="secondary" className="text-xs bg-green-100 text-green-800">
+            com IA
+          </Badge>
+          {!isSupabaseAvailable && (
+            <AlertCircle className="h-3 w-3 text-yellow-500" />
+          )}
+        </Link>
+        <Link
+          to="/calculadora-recesso"
+          className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+          onClick={onLinkClick}        >
+          Calculadora de Recesso
+        </Link>
+      </div>
+      <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
+    </>
   )
 }
 
@@ -107,7 +72,8 @@ export function Header() {
     signOut,
     isLoading,
     isSupabaseAvailable,
-    hasPermission
+    isAdmin,
+    isModerator
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
@@ -134,7 +100,6 @@ export function Header() {
 
   if (!user || !profile) {
     return (
-          // <header className="border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <header className="fixed w-full z-50 border-b border-border/40 bg-white/30 dark:bg-black/20 backdrop-blur-lg supports-[backdrop-filter]:bg-background/40 shadow-lg">
         <div className="container flex h-16 items-center justify-between px-4">
           <div className="flex items-center space-x-4">
@@ -146,11 +111,9 @@ export function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <NavLinks />
 
           <div className="flex items-center space-x-2">
-            {/* Mobile Menu */}
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="md:hidden">
@@ -162,7 +125,6 @@ export function Header() {
                 <div className="flex flex-col space-y-6 pt-6">
                   <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
                   
-                  {/* Aviso sobre Supabase */}
                   {!isSupabaseAvailable && (
                     <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                       <div className="flex items-center space-x-2">
@@ -200,7 +162,6 @@ export function Header() {
               </SheetContent>
             </Sheet>
 
-            {/* Desktop Login/Register Buttons */}
             <div className="hidden md:flex items-center space-x-2">
               {!isSupabaseAvailable && (
                 <AlertCircle className="h-4 w-4 text-yellow-500" />
@@ -252,25 +213,21 @@ export function Header() {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <NavLinks />
+        
         <div className="flex items-center space-x-2">
-      
-
-          {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-            {/* Theme Toggle - Mobile */}
             <div className="flex justify-end">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                    aria-label="Alternar tema"
-                  >
-                    <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                  </Button>
-                </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                aria-label="Alternar tema"
+              >
+                <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+              </Button>
+            </div>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Menu className="h-5 w-5" />
@@ -281,7 +238,6 @@ export function Header() {
               <div className="flex flex-col space-y-6 pt-6">
                 <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
                 
-                {/* Aviso sobre Supabase */}
                 {!isSupabaseAvailable && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
@@ -311,39 +267,15 @@ export function Header() {
                           {profile.full_name?.charAt(0)?.toUpperCase() || profile.email.charAt(0).toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      {/* <div>
-                        <p className="font-medium text-sm">{profile.full_name}</p>
-                        <p className="text-xs text-muted-foreground">{profile.email}</p>
-                      </div> */}
-                      <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm">{profile.full_name || profile.email}</p>
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">{profile.full_name || profile.email}</p>
                         {profile.role !== 'student' && (
-                          <Badge variant="secondary" className="text-xs">
+                          <Badge variant="secondary" className="text-xs w-fit">
                             {profile.role === 'admin' ? 'Admin' : profile.role === 'moderator' ? 'Moderador' : 'Agência'}
                           </Badge>
                         )}
                       </div>
-                      <p className="w-[200px] truncate text-xs text-muted-foreground">
-                        {profile.email}
-                      </p>
-                  </div>
-                </div>
                     </div>
-                    
-                    {profile.credits > 0 && (
-                      // <div className="flex items-center space-x-2">
-                      //   <span className="text-yellow-400 text-sm">{profile.credits}★</span>
-                      //     <span className="relative cursor-pointer" onClick={() => tototo.info('Funcionalidade de comentários em desenvolvimento.')}>
-                      //     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                      //       <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                      //     </svg>
-                      //     {/* <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">4</span> */}
-                      //   </span>
-                      // </div>
-                      null
-                    )}
                     
                     <div className="flex flex-col space-y-2">
                       <Button variant="ghost" asChild className="justify-start">
@@ -352,13 +284,42 @@ export function Header() {
                           Dashboard
                         </Link>
                       </Button>
-                      {hasPermission('resumes.view') && (
-                        <Button variant="ghost" asChild className="justify-start">
-                          <Link to="/minhas-analises" onClick={() => setMobileMenuOpen(false)}>
-                            <FileText className="mr-2 h-4 w-4" />
-                            Minhas Análises
-                          </Link>
-                        </Button>
+                      <Button variant="ghost" asChild className="justify-start">
+                        <Link to="/minhas-analises" onClick={() => setMobileMenuOpen(false)}>
+                          <FileText className="mr-2 h-4 w-4" />
+                          Minhas Análises
+                        </Link>
+                      </Button>
+                     
+                      {(isAdmin || isModerator) && (
+                        <>
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link to="/simulador-entrevistas" onClick={() => setMobileMenuOpen(false)}>
+                              <BarChart3 className="mr-2 h-4 w-4" />
+                              Simulador de Entrevistas
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link to="/gerador-curriculos" onClick={() => setMobileMenuOpen(false)}>
+                              <FileText className="mr-2 h-4 w-4" />
+                              Gerador de Currículos
+                            </Link>
+                          </Button>
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link to="/kanban-candidaturas" onClick={() => setMobileMenuOpen(false)}>
+                              <BarChart3 className="mr-2 h-4 w-4" />
+                              Kanban de Candidaturas
+                            </Link>
+                          </Button>
+                          {isModerator && (
+                            <Button variant="ghost" asChild className="justify-start">
+                              <Link to="/admin/moderacao-agencias" onClick={() => setMobileMenuOpen(false)}>
+                                <Building2 className="mr-2 h-4 w-4" />
+                                Moderar Agências
+                              </Link>
+                            </Button>
+                          )}
+                        </>
                       )}
                       {profile.subscription_status === 'free' && (
                         <Button variant="ghost" asChild className="justify-start">
@@ -407,26 +368,13 @@ export function Header() {
             </SheetContent>
           </Sheet>
 
-          {/* Desktop User Menu */}
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
-              {profile.credits > 0 && (
-                // <div className="flex items-center space-x-2">
-                //   <span className="text-yellow-400 text-sm">{profile.credits} ★</span>
-                //     <span className="relative cursor-pointer" onClick={() => tototo.info('Funcionalidade de comentários em desenvolvimento.')}>
-                //         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                //       <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                //     </svg>
-                //     {/* <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">4</span> */}
-                //   </span>
-                // </div>
-                null
-              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
+                       <AvatarImage
                         src={
                           user?.user_metadata?.picture ||
                           user?.identities?.[0]?.identity_data?.picture ||
@@ -443,10 +391,10 @@ export function Header() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                <div className="flex items-center justify-start gap-2 p-2">
-                  <div className="flex flex-col space-y-1 leading-none">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-md">{profile.full_name || profile.email}</p>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-md">{profile.full_name || profile.email}</p>
                         {profile.role !== 'student' && (
                           <Badge variant="secondary" className="text-xs">
                             {profile.role === 'admin' ? 'Admin' : profile.role === 'moderator' ? 'Moderador' : 'Agência'}
@@ -456,8 +404,8 @@ export function Header() {
                       <p className="w-[200px] truncate text-xs text-muted-foreground">
                         {profile.email}
                       </p>
+                    </div>
                   </div>
-                </div>
 
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -466,13 +414,42 @@ export function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  {hasPermission('resumes.view') && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/minhas-analises">
-                        <FileText className="mr-2 h-4 w-4" />
-                        Minhas Análises
-                      </Link>
-                    </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/minhas-analises">
+                      <FileText className="mr-2 h-4 w-4" />
+                      Minhas Análises
+                    </Link>
+                  </DropdownMenuItem>
+                  {(isAdmin || isModerator) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/simulador-entrevistas">
+                          <BarChart3 className="mr-2 h-4 w-4" />
+                          Simulador de Entrevistas
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/gerador-curriculos">
+                          <FileText className="mr-2 h-4 w-4" />
+                          Gerador de Currículos
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/kanban-candidaturas">
+                          <BarChart3 className="mr-2 h-4 w-4" />
+                          Kanban de Candidaturas
+                        </Link>
+                      </DropdownMenuItem>
+                      {isModerator && (
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/moderacao-agencias">
+                            <Building2 className="mr-2 h-4 w-4" />
+                            Moderar Agências
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                    </>
                   )}
                   {profile.subscription_status === 'free' && (
                     <DropdownMenuItem asChild>
