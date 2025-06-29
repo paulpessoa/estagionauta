@@ -21,34 +21,57 @@ import KanbanCandidaturas from './pages/KanbanCandidaturas'
 import Dashboard from './pages/Dashboard'
 import MinhasAnalises from './pages/MinhasAnalises'
 import Configuracoes from './pages/Configuracoes'
+import { ProtectedRoute } from './components/ProtectedRoute'
+import React from 'react'
 
+// Componentes protegidos
+const ProtectedDashboard = () => React.createElement(ProtectedRoute, null, React.createElement(Dashboard))
+
+const ProtectedAnaliseCurriculo = () => React.createElement(ProtectedRoute, null, React.createElement(Analisecurriculo))
+
+const ProtectedMinhasAnalises = () => React.createElement(ProtectedRoute, null, React.createElement(MinhasAnalises))
+
+const ProtectedKanbanCandidaturas = () => React.createElement(ProtectedRoute, null, React.createElement(KanbanCandidaturas))
+
+const ProtectedConfiguracoes = () => React.createElement(ProtectedRoute, null, React.createElement(Configuracoes))
+
+const ProtectedResultadoCurriculo = () => React.createElement(ProtectedRoute, null, React.createElement(ResultadoCurriculo))
+
+// Rotas que requerem role específica
+const ProtectedAdmin = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(Admin))
+
+const ProtectedModeracaoAgencias = () => React.createElement(ProtectedRoute, { requireRole: "moderator" }, React.createElement(ModeracaoAgencias))
+
+const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(GeradorCurriculos))
+
+const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(SimuladorEntrevistas))
 
 export const routes = [
   { path: '/', component: HomePage },
-  { path: '/dashboard', component: Dashboard },
+  { path: '/dashboard', component: ProtectedDashboard },
   { path: '/login', component: Login },
   { path: '/esqueci-senha', component: EsqueciSenha },
   { path: '/cadastro', component: Cadastro },
 
-  { path: '/admin', component: Admin },
-  { path: '/admin/moderacao-agencias', component: ModeracaoAgencias },
+  { path: '/admin', component: ProtectedAdmin },
+  { path: '/admin/moderacao-agencias', component: ProtectedModeracaoAgencias },
 
   { path: '/cadastro-agencia', component: CadastroAgencia },
   { path: '/mapa-agencias', component: MapaAgencias },
   
 
-  { path: '/analise-curriculo', component: Analisecurriculo },
+  { path: '/analise-curriculo', component: ProtectedAnaliseCurriculo },
   { path: '/analise-curriculo/sucesso', component: Sucesso },
-  { path: '/minhas-analises', component: MinhasAnalises },
+  { path: '/minhas-analises', component: ProtectedMinhasAnalises },
   { path: '/agencias', component: Agencias },
   { path: '/calculadora-recesso', component: CalculadoraRecesso },
-  { path: '/gerador-curriculos', component: GeradorCurriculos},
-  { path: '/simulador-entrevistas', component: SimuladorEntrevistas },
-  { path: '/kanban-candidaturas', component: KanbanCandidaturas },
+  { path: '/gerador-curriculos', component: ProtectedGeradorCurriculos},
+  { path: '/simulador-entrevistas', component: ProtectedSimuladorEntrevistas },
+  { path: '/kanban-candidaturas', component: ProtectedKanbanCandidaturas },
   { path: '/precos', component: Precos},
   { path: '/comprar-creditos', component: Precos },
-  { path: '/configuracoes', component: Configuracoes },
-  { path: '/resultado-curriculo/:id', component: ResultadoCurriculo },
+  { path: '/configuracoes', component: ProtectedConfiguracoes },
+  { path: '/resultado-curriculo/:id', component: ProtectedResultadoCurriculo },
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
   { path: '/afiliados', component: Afiliados },
