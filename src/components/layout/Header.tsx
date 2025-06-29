@@ -129,7 +129,7 @@ const SmartActionButton = ({ mobile = false }: { mobile?: boolean }) => {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold shadow-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 border border-cyan-300/30"
+            className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold shadow-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300 transform hover: border border-cyan-300/30"
           >
             <Monitor className="mr-2 h-4 w-4" />
             Começar Agora
