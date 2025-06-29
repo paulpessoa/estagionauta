@@ -57,7 +57,7 @@ export const routes = [
   { path: '/admin/moderacao-agencias', component: ProtectedModeracaoAgencias },
 
   { path: '/cadastro-agencia', component: CadastroAgencia },
-  { path: '/mapa-agencias', component: MapaAgencias },
+  { path: '/agencias', component: MapaAgencias },
   
 
   { path: '/analise-curriculo', component: ProtectedAnaliseCurriculo },
