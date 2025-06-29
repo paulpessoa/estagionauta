@@ -1,5 +1,4 @@
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,16 +8,53 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Upload, FileText, Brain, ArrowRight, ArrowLeft, Gift } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
+import { Upload, FileText, Brain, ArrowRight, ArrowLeft, Gift, Target, User, GraduationCap } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
+import { useAuth } from '@/hooks/useAuth'
 
 interface ResumeAnalysisFormProps {
-  onComplete: (data: any) => void
+  onComplete: (data: ResumeFormData) => void
+}
+
+interface ResumeFormData {
+  // Basic info
+  name: string
+  email: string
+  course: string
+  university: string
+  period: string
+  hasInternship: string
+  hasLinkedIn: string
+  
+  // Current situation
+  currentFocus: string
+  careerGoals: string
+  skillsToDevelop: string
+  timeAvailability: string
+  
+  // Optional: Specific job
+  hasSpecificJob: boolean
+  jobDescription: string
+  jobRequirements: string
+  
+  // Optional: Mentorship (moved to end)
+  mentorshipTopics: string
+  hasParticipated: string
+  hasInterest: string
+  
+  // About Estagionauta
+  howHeard: string
+  feedback: string
+  
+  // File upload
+  resumeFile: File | null
 }
 
 export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
+  const { profile } = useAuth()
   const [currentStep, setCurrentStep] = useState(0)
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ResumeFormData>({
     // Basic info
     name: '',
     email: '',
@@ -28,24 +64,52 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
     hasInternship: '',
     hasLinkedIn: '',
     
-    // Mentorship interests
+    // Current situation
+    currentFocus: '',
+    careerGoals: '',
+    skillsToDevelop: '',
+    timeAvailability: '',
+    
+    // Optional: Specific job
+    hasSpecificJob: false,
+    jobDescription: '',
+    jobRequirements: '',
+    
+    // Optional: Mentorship (moved to end)
     mentorshipTopics: '',
     hasParticipated: '',
     hasInterest: '',
     
-    // About Menvo
+    // About Estagionauta
     howHeard: '',
     feedback: '',
     
     // File upload
-    resumeFile: null as File | null
+    resumeFile: null
   })
 
+  // Preenche dados do perfil quando disponível
+  useEffect(() => {
+    if (profile) {
+      setFormData(prev => ({
+        ...prev,
+        name: profile.full_name || '',
+        email: profile.email || '',
+        course: profile.course || '',
+        university: profile.university || '',
+        period: profile.period || '',
+        hasLinkedIn: profile.linkedin_url ? 'yes' : 'no'
+      }))
+    }
+  }, [profile])
+
   const steps = [
-    { title: "Perfil", description: "Informações básicas" },
-    { title: "Interesses", description: "Sobre mentoria" },
-    { title: "Feedback", description: "Sua opinião" },
-    { title: "Currículo", description: "Upload do arquivo" }
+    { title: "Perfil", description: "Informações básicas", icon: User },
+    { title: "Momento Atual", description: "Sua situação atual", icon: Target },
+    { title: "Vaga Específica", description: "Opcional - vaga em mente", icon: GraduationCap },
+    { title: "Mentoria", description: "Opcional - sobre mentoria", icon: Brain },
+    { title: "Feedback", description: "Sua opinião", icon: FileText },
+    { title: "Currículo", description: "Upload do arquivo", icon: Upload }
   ]
 
   const onDrop = (acceptedFiles: File[]) => {
@@ -79,99 +143,294 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
     onComplete(formData)
   }
 
-  const updateFormData = (field: string, value: string) => {
+  const updateFormData = (field: keyof ResumeFormData, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }
+
+  // Verifica se o campo deve ser mostrado baseado no perfil
+  const shouldShowField = (field: keyof ResumeFormData) => {
+    if (!profile) return true
+    
+    switch (field) {
+      case 'name':
+        return !profile.full_name
+      case 'email':
+        return !profile.email
+      case 'course':
+        return !profile.course
+      case 'university':
+        return !profile.university
+      case 'period':
+        return !profile.period
+      default:
+        return true
+    }
   }
 
   const renderStep = () => {
     switch (currentStep) {
-      case 0:
+      case 0: // Perfil
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Nome completo</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => updateFormData('name', e.target.value)}
-                  placeholder="Seu nome completo"
-                />
+            {shouldShowField('name') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="name">Nome completo *</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => updateFormData('name', e.target.value)}
+                    placeholder="Seu nome completo"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="email">E-mail *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => updateFormData('email', e.target.value)}
+                    placeholder="seu@email.com"
+                  />
+                </div>
               </div>
-              <div>
-                <Label htmlFor="email">E-mail</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => updateFormData('email', e.target.value)}
-                  placeholder="seu@email.com"
-                />
-              </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="course">Curso</Label>
-                <Input
-                  id="course"
-                  value={formData.course}
-                  onChange={(e) => updateFormData('course', e.target.value)}
-                  placeholder="Ex: Engenharia de Software"
-                />
+            {shouldShowField('course') && shouldShowField('university') && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="course">Curso *</Label>
+                  <Input
+                    id="course"
+                    value={formData.course}
+                    onChange={(e) => updateFormData('course', e.target.value)}
+                    placeholder="Ex: Engenharia de Software"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="university">Universidade *</Label>
+                  <Input
+                    id="university"
+                    value={formData.university}
+                    onChange={(e) => updateFormData('university', e.target.value)}
+                    placeholder="Ex: UPE"
+                  />
+                </div>
               </div>
+            )}
+
+            {shouldShowField('period') && (
               <div>
-                <Label htmlFor="university">Universidade</Label>
-                <Input
-                  id="university"
-                  value={formData.university}
-                  onChange={(e) => updateFormData('university', e.target.value)}
-                  placeholder="Ex: UPE"
-                />
+                <Label>Período atual do curso *</Label>
+                <RadioGroup value={formData.period} onValueChange={(value) => updateFormData('period', value)}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="1-2" id="period1" />
+                    <Label htmlFor="period1">1º ao 2º período</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="3-5" id="period2" />
+                    <Label htmlFor="period2">3º ao 5º período</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="6+" id="period3" />
+                    <Label htmlFor="period3">6º período em diante</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="graduated" id="period4" />
+                    <Label htmlFor="period4">Formado há até 1 ano</Label>
+                  </div>
+                </RadioGroup>
               </div>
-            </div>
+            )}
+
+            {/* Mostra informações do perfil se já estiverem preenchidas */}
+            {profile && (profile.full_name || profile.email || profile.course || profile.university || profile.period) && (
+              <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Informações do seu perfil:</h3>
+                <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
+                  {profile.full_name && <p><strong>Nome:</strong> {profile.full_name}</p>}
+                  {profile.email && <p><strong>Email:</strong> {profile.email}</p>}
+                  {profile.course && <p><strong>Curso:</strong> {profile.course}</p>}
+                  {profile.university && <p><strong>Universidade:</strong> {profile.university}</p>}
+                  {profile.period && <p><strong>Período:</strong> {profile.period}</p>}
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
+                  Você pode atualizar essas informações nas configurações do seu perfil.
+                </p>
+              </div>
+            )}
 
             <div>
-              <Label>Período atual do curso</Label>
-              <RadioGroup value={formData.period} onValueChange={(value) => updateFormData('period', value)}>
+              <Label>Você já fez estágio? *</Label>
+              <RadioGroup value={formData.hasInternship} onValueChange={(value) => updateFormData('hasInternship', value)}>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="1-2" id="period1" />
-                  <Label htmlFor="period1">1º ao 2º período</Label>
+                  <RadioGroupItem value="yes" id="internship1" />
+                  <Label htmlFor="internship1">Sim, já fiz estágio</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="3-5" id="period2" />
-                  <Label htmlFor="period2">3º ao 5º período</Label>
+                  <RadioGroupItem value="no" id="internship2" />
+                  <Label htmlFor="internship2">Não, nunca fiz estágio</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="6+" id="period3" />
-                  <Label htmlFor="period3">6º período em diante</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="graduated" id="period4" />
-                  <Label htmlFor="period4">Formado há até 1 ano</Label>
+                  <RadioGroupItem value="looking" id="internship3" />
+                  <Label htmlFor="internship3">Não, mas estou procurando</Label>
                 </div>
               </RadioGroup>
             </div>
 
             <div>
-              <Label>Você já fez estágio?</Label>
-              <Select value={formData.hasInternship} onValueChange={(value) => updateFormData('hasInternship', value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione uma opção" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="yes">Sim</SelectItem>
-                  <SelectItem value="no">Não</SelectItem>
-                  <SelectItem value="looking">Estou procurando</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label>Você tem perfil no LinkedIn? *</Label>
+              <RadioGroup value={formData.hasLinkedIn} onValueChange={(value) => updateFormData('hasLinkedIn', value)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="yes" id="linkedin1" />
+                  <Label htmlFor="linkedin1">Sim, tenho perfil no LinkedIn</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="no" id="linkedin2" />
+                  <Label htmlFor="linkedin2">Não, não tenho perfil no LinkedIn</Label>
+                </div>
+              </RadioGroup>
             </div>
           </div>
         )
 
-      case 1:
+      case 1: // Momento Atual
         return (
           <div className="space-y-6">
+            <div>
+              <Label htmlFor="currentFocus">Qual é seu foco principal no momento? *</Label>
+              <Select value={formData.currentFocus} onValueChange={(value) => updateFormData('currentFocus', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione seu foco atual" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="first_internship">Conseguir meu primeiro estágio</SelectItem>
+                  <SelectItem value="better_internship">Trocar para um estágio melhor</SelectItem>
+                  <SelectItem value="trainee">Conseguir programa de trainee</SelectItem>
+                  <SelectItem value="first_job">Conseguir meu primeiro emprego</SelectItem>
+                  <SelectItem value="career_change">Mudar de área/carreira</SelectItem>
+                  <SelectItem value="improve_skills">Melhorar habilidades técnicas</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="careerGoals">Onde você se vê profissionalmente nos próximos 2 anos? *</Label>
+              <Textarea
+                id="careerGoals"
+                value={formData.careerGoals}
+                onChange={(e) => updateFormData('careerGoals', e.target.value)}
+                placeholder="Descreva seus objetivos de carreira..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="skillsToDevelop">Quais habilidades você mais quer desenvolver? *</Label>
+              <Textarea
+                id="skillsToDevelop"
+                value={formData.skillsToDevelop}
+                onChange={(e) => updateFormData('skillsToDevelop', e.target.value)}
+                placeholder="Ex: React, Python, gestão de projetos, comunicação..."
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <Label>Qual sua disponibilidade de tempo para buscar oportunidades? *</Label>
+              <RadioGroup value={formData.timeAvailability} onValueChange={(value) => updateFormData('timeAvailability', value)}>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="full_time" id="time1" />
+                  <Label htmlFor="time1">Tempo integral (40h/semana)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="part_time" id="time2" />
+                  <Label htmlFor="time2">Meio período (20h/semana)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="flexible" id="time3" />
+                  <Label htmlFor="time3">Flexível (depende da oportunidade)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="weekends" id="time4" />
+                  <Label htmlFor="time4">Apenas finais de semana</Label>
+                </div>
+              </RadioGroup>
+            </div>
+          </div>
+        )
+
+      case 2: // Vaga Específica (Opcional)
+        return (
+          <div className="space-y-6">
+            <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <Target className="h-5 w-5 text-blue-600 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-blue-900 dark:text-blue-100">
+                    Vaga Específica (Opcional)
+                  </p>
+                  <p className="text-blue-700 dark:text-blue-200 mt-1">
+                    Se você tem uma vaga específica em mente, podemos analisar se seu currículo está adequado para ela.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="hasSpecificJob"
+                checked={formData.hasSpecificJob}
+                onCheckedChange={(checked) => updateFormData('hasSpecificJob', checked)}
+              />
+              <Label htmlFor="hasSpecificJob">Tenho uma vaga específica em mente</Label>
+            </div>
+
+            {formData.hasSpecificJob && (
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="jobDescription">Descrição da vaga</Label>
+                  <Textarea
+                    id="jobDescription"
+                    value={formData.jobDescription}
+                    onChange={(e) => updateFormData('jobDescription', e.target.value)}
+                    placeholder="Cole aqui a descrição da vaga ou cargo..."
+                    rows={4}
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="jobRequirements">Requisitos da vaga</Label>
+                  <Textarea
+                    id="jobRequirements"
+                    value={formData.jobRequirements}
+                    onChange={(e) => updateFormData('jobRequirements', e.target.value)}
+                    placeholder="Liste os requisitos, habilidades e experiências necessárias..."
+                    rows={4}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+        )
+
+      case 3: // Mentoria (Opcional)
+        return (
+          <div className="space-y-6">
+            <div className="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-lg">
+              <div className="flex items-start space-x-3">
+                <Brain className="h-5 w-5 text-purple-600 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-purple-900 dark:text-purple-100">
+                    Mentoria (Opcional)
+                  </p>
+                  <p className="text-purple-700 dark:text-purple-200 mt-1">
+                    Conheça nossos programas de mentoria gratuita com profissionais voluntários.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <div>
               <Label htmlFor="mentorshipTopics">Se você pudesse conversar com alguém mais experiente, sobre o quê seria?</Label>
               <Textarea
@@ -221,7 +480,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
           </div>
         )
 
-      case 2:
+      case 4: // Feedback
         return (
           <div className="space-y-6">
             <div>
@@ -235,6 +494,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
                   <SelectItem value="friend">Indicação de amigo</SelectItem>
                   <SelectItem value="instagram">Instagram</SelectItem>
                   <SelectItem value="linkedin">LinkedIn</SelectItem>
+                  <SelectItem value="google">Google/Busca</SelectItem>
                   <SelectItem value="other">Outro</SelectItem>
                 </SelectContent>
               </Select>
@@ -253,7 +513,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
           </div>
         )
 
-      case 3:
+      case 5: // Currículo
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
@@ -309,6 +569,9 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
                     <li>• Nota geral do seu currículo (0-10)</li>
                     <li>• Análise detalhada em 7 critérios</li>
                     <li>• Sugestões personalizadas de melhoria</li>
+                    {formData.hasSpecificJob && (
+                      <li>• Análise de adequação para a vaga específica</li>
+                    )}
                     <li>• Resultado enviado por email em até 48h</li>
                   </ul>
                 </div>
@@ -324,17 +587,32 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
 
   const isStepValid = () => {
     switch (currentStep) {
-      case 0:
-        return formData.name && formData.email && formData.course && formData.university && formData.period && formData.hasInternship
-      case 1:
-        return formData.mentorshipTopics && formData.hasParticipated && formData.hasInterest
-      case 2:
-        return formData.howHeard
-      case 3:
+      case 0: // Perfil
+        // Verifica se os campos obrigatórios estão preenchidos, considerando o perfil
+        const hasName = formData.name || (profile?.full_name)
+        const hasEmail = formData.email || (profile?.email)
+        const hasCourse = formData.course || (profile?.course)
+        const hasUniversity = formData.university || (profile?.university)
+        const hasPeriod = formData.period || (profile?.period)
+        
+        return hasName && hasEmail && hasCourse && hasUniversity && hasPeriod && formData.hasInternship && formData.hasLinkedIn
+      case 1: // Momento Atual
+        return formData.currentFocus && formData.careerGoals && formData.skillsToDevelop && formData.timeAvailability
+      case 2: // Vaga Específica (sempre válido, é opcional)
+        return true
+      case 3: // Mentoria (sempre válido, é opcional)
+        return true
+      case 4: // Feedback (sempre válido, é opcional)
+        return true
+      case 5: // Currículo
         return formData.resumeFile
       default:
         return false
     }
+  }
+
+  const canSkipStep = (step: number) => {
+    return step === 2 || step === 3 || step === 4 // Vaga específica, mentoria e feedback são opcionais
   }
 
   return (
@@ -345,7 +623,7 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
           Análise de Currículo com IA
         </h1>
         <p className="text-xl text-muted-foreground">
-          Responda algumas perguntas rápidas e receba uma análise completa do seu currículo
+          Conte-nos sobre seu momento atual e receba uma análise completa do seu currículo
         </p>
       </div>
 
@@ -364,30 +642,33 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
 
       {/* Steps indicator */}
       <div className="flex justify-between mb-8">
-        {steps.map((step, index) => (
-          <div
-            key={index}
-            className={`flex flex-col items-center space-y-2 ${
-              index <= currentStep ? 'text-blue-600' : 'text-gray-400'
-            }`}
-          >
+        {steps.map((step, index) => {
+          const StepIcon = step.icon
+          return (
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                index <= currentStep
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 text-gray-500'
+              key={index}
+              className={`flex flex-col items-center space-y-2 ${
+                index <= currentStep ? 'text-blue-600' : 'text-gray-400'
               }`}
             >
-              {index + 1}
-            </div>
-            <div className="text-center">
-              <div className="text-sm font-medium">{step.title}</div>
-              <div className="text-xs text-muted-foreground hidden sm:block">
-                {step.description}
+              <div
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                  index <= currentStep
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-200 text-gray-500'
+                }`}
+              >
+                <StepIcon className="h-4 w-4" />
+              </div>
+              <div className="text-center">
+                <div className="text-sm font-medium">{step.title}</div>
+                <div className="text-xs text-muted-foreground hidden sm:block">
+                  {step.description}
+                </div>
               </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Form Card */}
@@ -395,9 +676,15 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
-              <FileText className="h-4 w-4 text-blue-600" />
+              {(() => {
+                const StepIcon = steps[currentStep].icon
+                return <StepIcon className="h-4 w-4 text-blue-600" />
+              })()}
             </div>
             <span>{steps[currentStep].title}</span>
+            {canSkipStep(currentStep) && (
+              <Badge variant="secondary" className="text-xs">Opcional</Badge>
+            )}
           </CardTitle>
           <CardDescription>
             {steps[currentStep].description}
@@ -417,24 +704,36 @@ export function ResumeAnalysisForm({ onComplete }: ResumeAnalysisFormProps) {
               Anterior
             </Button>
 
-            {currentStep === steps.length - 1 ? (
-              <Button
-                onClick={handleSubmit}
-                disabled={!isStepValid()}
-                className="bg-purple-600 hover:bg-purple-700"
-              >
-                <Gift className="mr-2 h-4 w-4" />
-                Enviar e Receber Análise
-              </Button>
-            ) : (
-              <Button
-                onClick={handleNext}
-                disabled={!isStepValid()}
-              >
-                Próximo
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {canSkipStep(currentStep) && (
+                <Button
+                  variant="ghost"
+                  onClick={handleNext}
+                >
+                  Pular
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+
+              {currentStep === steps.length - 1 ? (
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!isStepValid()}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Gift className="mr-2 h-4 w-4" />
+                  Enviar e Receber Análise
+                </Button>
+              ) : (
+                <Button
+                  onClick={handleNext}
+                  disabled={!isStepValid()}
+                >
+                  Próximo
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardContent>
       </Card>
