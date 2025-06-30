@@ -22,6 +22,7 @@ import Dashboard from './pages/Dashboard'
 import MinhasAnalises from './pages/MinhasAnalises'
 import Configuracoes from './pages/Configuracoes'
 import Notificacoes from './pages/Notificacoes'
+import Curriculo from './pages/Curriculo'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import React from 'react'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -42,13 +43,13 @@ const ProtectedNotificacoes = () => React.createElement(ProtectedRoute, null, Re
 const ProtectedResultadoCurriculo = () => React.createElement(ProtectedRoute, null, React.createElement(ResultadoCurriculo))
 
 // Rotas que requerem role específica
-const ProtectedAdmin = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(Admin))
+const ProtectedAdmin = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(Admin) })
 
-const ProtectedModeracaoAgencias = () => React.createElement(ProtectedRoute, { requireRole: "moderator" }, React.createElement(ModeracaoAgencias))
+const ProtectedModeracaoAgencias = () => React.createElement(ProtectedRoute, { requireRole: "moderator", children: React.createElement(ModeracaoAgencias) })
 
-const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(GeradorCurriculos))
+const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(GeradorCurriculos) })
 
-const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, { requireRole: "admin" }, React.createElement(SimuladorEntrevistas))
+const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(SimuladorEntrevistas) })
 
 export const routes = [
   { path: '/', component: HomePage },
@@ -78,6 +79,7 @@ export const routes = [
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
   { path: '/afiliados', component: Afiliados },
-  { path: '/privacy-policy', component: PrivacyPolicy },  
+  { path: '/privacy-policy', component: PrivacyPolicy },
+  { path: '/curriculo/:slug', component: Curriculo },
   { path: '*', component: NotFound },
 ]

@@ -1,5 +1,23 @@
 import { UserRole } from './permissions'
 
+export interface NotificationSettings {
+  emailNotifications: boolean
+  pushNotifications: boolean
+  weeklyReport: boolean
+  marketingEmails: boolean
+}
+
+export interface PrivacySettings {
+  profileVisibility: 'public' | 'private' | 'friends'
+  showEmail: boolean
+  showPhone: boolean
+}
+
+export interface AppearanceSettings {
+  theme: 'light' | 'dark' | 'system'
+  language: 'pt' | 'en' | 'es'
+}
+
 export interface Profile {
   id: string
   email: string
@@ -15,6 +33,10 @@ export interface Profile {
   university: string | null
   period: string | null
   linkedin_url: string | null
+  curriculo_slug?: string | null
+  notification_settings?: NotificationSettings
+  privacy_settings?: PrivacySettings
+  appearance_settings?: AppearanceSettings
   created_at: string
   updated_at: string
 } 

@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Separator } from '@/components/ui/separator'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon } from 'lucide-react'
+import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon, Loader2, CheckCircle, XCircle, Info } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useTheme } from 'next-themes'
 
@@ -47,6 +47,10 @@ export default function Configuracoes() {
     language: 'pt'
   })
 
+  const [slug, setSlug] = useState('')
+  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle')
+  const [slugError, setSlugError] = useState('')
+
   // Carrega dados do perfil
   useEffect(() => {
     if (profile) {
@@ -60,6 +64,34 @@ export default function Configuracoes() {
         period: profile.period || '',
         linkedin_url: profile.linkedin_url || ''
       })
+      setSlug(profile.curriculo_slug || '')
+
+      // Carrega configurações de notificação
+      if (profile.notification_settings) {
+        setNotificationSettings({
+          emailNotifications: profile.notification_settings.emailNotifications ?? true,
+          pushNotifications: profile.notification_settings.pushNotifications ?? false,
+          weeklyReport: profile.notification_settings.weeklyReport ?? true,
+          marketingEmails: profile.notification_settings.marketingEmails ?? false
+        })
+      }
+
+      // Carrega configurações de privacidade
+      if (profile.privacy_settings) {
+        setPrivacySettings({
+          profileVisibility: profile.privacy_settings.profileVisibility || 'public',
+          showEmail: profile.privacy_settings.showEmail ?? false,
+          showPhone: profile.privacy_settings.showPhone ?? false
+        })
+      }
+
+      // Carrega configurações de aparência
+      if (profile.appearance_settings) {
+        setAppearanceSettings({
+          theme: profile.appearance_settings.theme || 'system',
+          language: profile.appearance_settings.language || 'pt'
+        })
+      }
     }
   }, [profile])
 
@@ -109,47 +141,187 @@ export default function Configuracoes() {
     }
   }
 
-  const handleSaveNotifications = () => {
-    toast({
-      title: "Notificações atualizadas",
-      description: "Suas preferências de notificação foram salvas.",
-    })
+  const handleSaveNotifications = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          notification_settings: notificationSettings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      toast({
+        title: "Notificações atualizadas",
+        description: "Suas preferências de notificação foram salvas.",
+      })
+    } catch (error) {
+      console.error('Error updating notifications:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar notificações. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleSavePrivacy = () => {
-    toast({
-      title: "Privacidade atualizada",
-      description: "Suas configurações de privacidade foram salvas.",
-    })
+  const handleSavePrivacy = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          privacy_settings: privacySettings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      toast({
+        title: "Privacidade atualizada",
+        description: "Suas configurações de privacidade foram salvas.",
+      })
+    } catch (error) {
+      console.error('Error updating privacy:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar privacidade. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleSaveAppearance = () => {
-    toast({
-      title: "Aparência atualizada",
-      description: "Suas preferências de aparência foram salvas.",
-    })
+  const handleSaveAppearance = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          appearance_settings: appearanceSettings,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id)
+
+      if (error) throw error
+
+      toast({
+        title: "Aparência atualizada",
+        description: "Suas preferências de aparência foram salvas.",
+      })
+    } catch (error) {
+      console.error('Error updating appearance:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar aparência. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
   }
 
-  const handleThemeChange = (newTheme: string) => {
+  const handleThemeChange = async (newTheme: string) => {
     setTheme(newTheme)
     setAppearanceSettings(prev => ({ ...prev, theme: newTheme }))
     localStorage.setItem('theme', newTheme)
     
     // Salvar no Supabase se o usuário estiver logado
     if (user && profile) {
-      supabase
-        .from('user_profiles')
-        .update({ 
-          // theme_preference: newTheme // Comentado até adicionar a coluna no banco
-        })
-        .eq('id', user.id)
-        .then(() => {
-          console.log('Tema salvo no Supabase')
-        })
-        .catch((error) => {
+      try {
+        const { error } = await supabase
+          .from('user_profiles')
+          .update({ 
+            appearance_settings: {
+              ...appearanceSettings,
+              theme: newTheme
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id)
+
+        if (error) {
           console.error('Erro ao salvar tema no Supabase:', error)
-        })
+        } else {
+          console.log('Tema salvo no Supabase')
+        }
+      } catch (error) {
+        console.error('Erro ao salvar tema no Supabase:', error)
+      }
     }
+  }
+
+  // Função para sugerir slug
+  const suggestSlug = () => {
+    if (!profileData.full_name) return ''
+    const base = profileData.full_name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    const now = new Date()
+    const month = String(now.getMonth() + 1).padStart(2, '0')
+    const year = now.getFullYear()
+    return `${base}-${month}${year}`
+  }
+
+  // Verifica disponibilidade do slug
+  const checkSlug = async (value: string) => {
+    setSlugStatus('checking')
+    setSlugError('')
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('id')
+      .eq('curriculo_slug', value)
+      .maybeSingle()
+    if (error) {
+      setSlugStatus('idle')
+      setSlugError('Erro ao verificar slug')
+      return
+    }
+    if (data && (!user || data.id !== user.id)) {
+      setSlugStatus('unavailable')
+    } else {
+      setSlugStatus('available')
+    }
+  }
+
+  // Salva o slug no banco
+  const handleSaveSlug = async () => {
+    if (!user || !slug) return
+    setLoading(true)
+    setSlugError('')
+    await checkSlug(slug)
+    if (slugStatus !== 'available') {
+      setLoading(false)
+      setSlugError('Slug indisponível')
+      return
+    }
+    const { error } = await supabase
+      .from('user_profiles')
+      .update({ curriculo_slug: slug, updated_at: new Date().toISOString() })
+      .eq('id', user.id)
+    setLoading(false)
+    if (error) {
+      setSlugError('Erro ao salvar slug')
+      return
+    }
+    toast({
+      title: 'Slug salvo!',
+      description: `Seu currículo estará disponível em /curriculo/${slug}`,
+    })
   }
 
   if (!user) {
@@ -173,6 +345,43 @@ export default function Configuracoes() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Configurações</h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2">Gerencie suas preferências e configurações da conta</p>
           </div>
+
+          {/* Slug do Currículo */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Info className="h-5 w-5" />
+                URL do Currículo Público
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <Label htmlFor="curriculo-slug">Escolha um identificador único para seu currículo:</Label>
+              <div className="flex gap-2 items-center">
+                <Input
+                  id="curriculo-slug"
+                  value={slug}
+                  onChange={e => {
+                    setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
+                    setSlugStatus('idle')
+                  }}
+                  onBlur={e => slug && checkSlug(slug)}
+                  placeholder={suggestSlug()}
+                  className="max-w-xs"
+                />
+                {slugStatus === 'checking' && <Loader2 className="animate-spin h-5 w-5 text-blue-500" />}
+                {slugStatus === 'available' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                {slugStatus === 'unavailable' && <XCircle className="h-5 w-5 text-red-600" />}
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400">
+                Exemplo: <span className="font-mono">{suggestSlug()}</span> <br/>
+                Seu currículo ficará disponível em <span className="font-mono">/curriculo/{slug || '<slug>'}</span>
+              </div>
+              {slugError && <div className="text-red-600 text-xs">{slugError}</div>}
+              <Button onClick={handleSaveSlug} disabled={loading || !slug || slugStatus !== 'available'}>
+                {loading ? 'Salvando...' : 'Salvar URL do Currículo'}
+              </Button>
+            </CardContent>
+          </Card>
 
           {/* Perfil */}
           <Card>
@@ -329,7 +538,9 @@ export default function Configuracoes() {
                   onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, marketingEmails: checked})}
                 />
               </div>
-              <Button onClick={handleSaveNotifications}>Salvar Notificações</Button>
+              <Button onClick={handleSaveNotifications} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Notificações'}
+              </Button>
             </CardContent>
           </Card>
 
@@ -371,7 +582,9 @@ export default function Configuracoes() {
                   onCheckedChange={(checked) => setPrivacySettings({...privacySettings, showPhone: checked})}
                 />
               </div>
-              <Button onClick={handleSavePrivacy}>Salvar Privacidade</Button>
+              <Button onClick={handleSavePrivacy} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Privacidade'}
+              </Button>
             </CardContent>
           </Card>
 
@@ -432,7 +645,9 @@ export default function Configuracoes() {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleSaveAppearance}>Salvar Aparência</Button>
+              <Button onClick={handleSaveAppearance} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar Aparência'}
+              </Button>
             </CardContent>
           </Card>
         </div>
