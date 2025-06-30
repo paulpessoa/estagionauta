@@ -1,116 +1,161 @@
+import { useEffect, useState } from 'react'
+import { useSearchParams, useNavigate } from 'react-router-dom'
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
+import { Button } from '../components/ui/button'
+import { CheckCircle, Star, Rocket, ArrowRight } from 'lucide-react'
+import { verifyPayment } from '../api/stripe'
+import { useCredits } from '../hooks/useCredits'
+import { useToast } from '../hooks/use-toast'
 
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, Mail, Clock, Gift, ArrowLeft } from 'lucide-react'
+interface PaymentData {
+  credits: number
+  analyses: number
+  planName: string
+  amount: number
+}
 
-export default function SucessoPage() {
+export default function Sucesso() {
+  const [searchParams] = useSearchParams()
+  const navigate = useNavigate()
+  const { toast } = useToast()
+  const { refresh } = useCredits()
+  const [loading, setLoading] = useState(true)
+  const [paymentData, setPaymentData] = useState<PaymentData | null>(null)
+
+  const sessionId = searchParams.get('session_id')
+
+  useEffect(() => {
+    if (sessionId) {
+      verifyPaymentAndAddCredits()
+    } else {
+      setLoading(false)
+    }
+  }, [sessionId])
+
+  const verifyPaymentAndAddCredits = async () => {
+    try {
+      const result = await verifyPayment(sessionId!)
+      setPaymentData(result)
+      
+      // Atualizar créditos na interface
+      await refresh()
+      
+      toast({
+        title: "Pagamento confirmado!",
+        description: `Você recebeu ${result.credits} créditos.`,
+      })
+    } catch (error) {
+      console.error('Erro ao verificar pagamento:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao processar pagamento. Entre em contato conosco.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-lg">Processando pagamento...</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto py-16 px-4">
-        <div className="max-w-2xl mx-auto">
-          <div className="text-center mb-8">
-            <div className="flex justify-center mb-6">
-              <div className="h-20 w-20 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                <CheckCircle className="h-12 w-12 text-green-600" />
-              </div>
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">
-              Formulário enviado com sucesso! 🎉
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-2xl mx-auto text-center">
+          {/* Ícone de sucesso */}
+          <div className="mb-8">
+            <CheckCircle className="h-24 w-24 text-green-500 mx-auto mb-4" />
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+              Pagamento Confirmado!
             </h1>
-            <p className="text-xl text-muted-foreground">
-              Obrigado por participar da nossa pesquisa e compartilhar seu currículo conosco.
+            <p className="text-xl text-gray-600">
+              Seus créditos foram adicionados com sucesso
             </p>
           </div>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Gift className="h-5 w-5 mr-2 text-purple-600" />
-                Seu presente está sendo preparado
-              </CardTitle>
-              <CardDescription>
-                Nossa IA está analisando seu currículo e preparando um relatório personalizado
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-start space-x-3">
-                <Clock className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div>
-                  <p className="font-medium">Prazo de entrega</p>
-                  <p className="text-muted-foreground text-sm">
-                    Você receberá a análise completa por email em até 48 horas
+          {/* Detalhes do pagamento */}
+          {paymentData && (
+            <Card className="mb-8">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-center space-x-2">
+                  <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
+                  <span>Detalhes da Compra</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-2 gap-4 text-center">
+                  <div className="bg-green-50 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-green-600">
+                      {paymentData.credits}
+                    </div>
+                    <div className="text-sm text-green-800">Créditos Adicionados</div>
+                  </div>
+                  <div className="bg-blue-50 rounded-lg p-4">
+                    <div className="text-2xl font-bold text-blue-600">
+                      {paymentData.analyses}
+                    </div>
+                    <div className="text-sm text-blue-800">Análises Disponíveis</div>
+                  </div>
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-sm text-gray-600">
+                    Plano: <span className="font-semibold">{paymentData.planName}</span>
+                  </p>
+                  <p className="text-sm text-gray-600">
+                    Valor: <span className="font-semibold">R$ {paymentData.amount}</span>
                   </p>
                 </div>
-              </div>
-              
-              <div className="flex items-start space-x-3">
-                <Mail className="h-5 w-5 text-green-600 mt-0.5" />
-                <div>
-                  <p className="font-medium">O que você vai receber</p>
-                  <ul className="text-muted-foreground text-sm space-y-1 mt-1">
-                    <li>• Nota geral do seu currículo (0-10)</li>
-                    <li>• Análise detalhada em 7 critérios diferentes</li>
-                    <li>• Sugestões personalizadas de melhoria</li>
-                    <li>• Dicas de otimização para cada seção</li>
-                    <li>• Comparação com padrões do mercado</li>
-                  </ul>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
 
-          <div className="bg-blue-50 dark:bg-blue-950/30 p-6 rounded-lg mb-8">
-            <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">
-              Enquanto isso, que tal explorar outras funcionalidades?
-            </h3>
-            <p className="text-blue-700 dark:text-blue-200 text-sm mb-4">
-              O Estagionauta tem muito mais para oferecer. Conheça nossos outros serviços!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/agencias">
-                  Explorar Agências de Estágio
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/calculadora-recesso">
-                  Calcular Recesso
-                </Link>
-              </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link to="/mentores">
-                  Encontrar Mentores
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <div className="text-center space-y-4">
-            <p className="text-muted-foreground">
-              Tem alguma dúvida ou sugestão? Entre em contato conosco!
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button variant="outline" asChild>
-                <a href="mailto:contato@estagionauta.com.br">
-                  Enviar Email
-                </a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="https://instagram.com/estagionauta" target="_blank" rel="noopener noreferrer">
-                  Seguir no Instagram
-                </a>
-              </Button>
-            </div>
-          </div>
-
-          <div className="text-center mt-8">
-            <Button asChild>
-              <Link to="/">
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar ao Início
-              </Link>
+          {/* Botões de ação */}
+          <div className="space-y-4">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
+              onClick={() => navigate('/analise-curriculo')}
+            >
+              <Rocket className="mr-2 h-5 w-5" />
+              Analisar Currículo
             </Button>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/dashboard')}
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Ir para Dashboard
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/minhas-analises')}
+              >
+                Ver Minhas Análises
+              </Button>
+            </div>
+          </div>
+
+          {/* Informações adicionais */}
+          <div className="mt-12 text-center">
+            <p className="text-sm text-gray-500">
+              Recebeu um email de confirmação? Se não, verifique sua caixa de spam.
+            </p>
+            <p className="text-sm text-gray-500 mt-2">
+              Precisa de ajuda? Entre em contato conosco.
+            </p>
           </div>
         </div>
       </div>

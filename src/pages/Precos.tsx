@@ -5,10 +5,14 @@ import { Badge } from '../components/ui/badge'
 import { Check, Star, Zap, Crown, Sparkles } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useCredits } from '../hooks/useCredits'
+import { getStripe } from '../lib/stripe'
+import { createCheckoutSession } from '../api/stripe'
+import { useToast } from '../hooks/use-toast'
+import { StripeDebug } from '../components/StripeDebug'
 
 const plans = [
   {
-    id: 'starter',
+    id: 'cosmonauta',
     name: 'Cosmonauta',
     icon: '⭐',
     credits: 30,
@@ -18,7 +22,7 @@ const plans = [
     popular: false
   },
   {
-    id: 'pro',
+    id: 'astronauta',
     name: 'Astronauta',
     icon: '🚀',
     credits: 60,
@@ -28,7 +32,7 @@ const plans = [
     popular: true
   },
   {
-    id: 'power',
+    id: 'comandante',
     name: 'Comandante',
     icon: '💼',
     credits: 300,
@@ -42,28 +46,44 @@ const plans = [
 export default function Precos() {
   const { user } = useAuth()
   const { credits } = useCredits()
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { toast } = useToast()
+  const [loading, setLoading] = useState<string | null>(null)
 
   const handlePurchase = async (planId: string) => {
     if (!user) {
-      // Redirecionar para login
+      toast({
+        title: "Login necessário",
+        description: "Você precisa estar logado para comprar créditos.",
+        variant: "destructive",
+      })
       return
     }
 
-    setLoading(true)
+    setLoading(planId)
     try {
-      // TODO: Implementar integração com Stripe
-      console.log('Comprando plano:', planId)
+      // Criar checkout session
+      const sessionId = await createCheckoutSession(planId, user.id)
       
-      // Simular compra bem-sucedida
-      setTimeout(() => {
-        alert('Compra realizada com sucesso! (Simulação)')
-        setLoading(false)
-      }, 2000)
+      // Redirecionar para Stripe Checkout
+      const stripe = await getStripe()
+      if (stripe) {
+        const { error } = await stripe.redirectToCheckout({
+          sessionId,
+        })
+        
+        if (error) {
+          throw error
+        }
+      }
     } catch (error) {
       console.error('Erro na compra:', error)
-      setLoading(false)
+      toast({
+        title: "Erro na compra",
+        description: "Não foi possível processar sua compra. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(null)
     }
   }
 
@@ -133,9 +153,9 @@ export default function Precos() {
                       : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
                   }`}
                   onClick={() => handlePurchase(plan.id)}
-                  disabled={loading}
+                  disabled={loading === plan.id}
                 >
-                  {loading ? (
+                  {loading === plan.id ? (
                     <div className="flex items-center space-x-2">
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                       <span>Processando...</span>
@@ -217,6 +237,9 @@ export default function Precos() {
           </div>
         </div>
       </div>
+      
+      {/* Debug Stripe - Remover depois dos testes */}
+      <StripeDebug />
     </div>
   )
 }
