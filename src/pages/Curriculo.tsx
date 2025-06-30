@@ -20,7 +20,8 @@ import {
   ExternalLink,
   ArrowLeft,
   Download,
-  Share2
+  Share2,
+  Lock
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/profile'
@@ -30,6 +31,8 @@ export default function Curriculo() {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isOwner, setIsOwner] = useState(false)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -59,6 +62,14 @@ export default function Curriculo() {
         }
 
         setProfile(data)
+        
+        // Verificar se o usuário atual é o dono
+        const { data: { user } } = await supabase.auth.getUser()
+        setCurrentUser(user)
+        
+        if (user && data) {
+          setIsOwner(user.id === data.id)
+        }
       } catch (err) {
         setError('Erro ao carregar currículo')
         console.error('Error fetching profile:', err)
@@ -147,15 +158,31 @@ export default function Curriculo() {
             {/* Botões de Ação */}
             <div className="flex items-center justify-center gap-3">
               <CurriculumPDF profile={profile} />
-              <ShareCurriculoModal 
-                profile={profile}
-                trigger={
+              
+              {/* Botão de compartilhamento apenas para o dono */}
+              {isOwner ? (
+                <ShareCurriculoModal 
+                  profile={profile}
+                  trigger={
+                    <Button variant="outline" className="flex items-center gap-2">
+                      <Share2 className="h-4 w-4" />
+                      Compartilhar por Email
+                    </Button>
+                  }
+                />
+              ) : currentUser ? (
+                <Button variant="outline" className="flex items-center gap-2" disabled>
+                  <Lock className="h-4 w-4" />
+                  Apenas o Dono Pode Compartilhar
+                </Button>
+              ) : (
+                <Link to="/login">
                   <Button variant="outline" className="flex items-center gap-2">
-                    <Share2 className="h-4 w-4" />
-                    Compartilhar por Email
+                    <Lock className="h-4 w-4" />
+                    Faça Login para Compartilhar
                   </Button>
-                }
-              />
+                </Link>
+              )}
             </div>
           </div>
         </div>

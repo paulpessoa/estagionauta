@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,7 +15,8 @@ import {
   AlertCircle,
   Plus,
   User,
-  History
+  History,
+  Lock
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
@@ -23,6 +24,7 @@ import { Link } from 'react-router-dom'
 
 interface ShareCurriculoModalProps {
   profile: {
+    id: string
     full_name: string
     email: string
     bio?: string
@@ -50,7 +52,27 @@ Você pode visualizar o currículo completo em: ${window.location.origin}/curric
 Atenciosamente,
 ${profile.full_name}`)
   const [results, setResults] = useState<Array<{email: string, success: boolean, error?: string}>>([])
+  const [currentUser, setCurrentUser] = useState<any>(null)
+  const [isOwner, setIsOwner] = useState(false)
   const { toast } = useToast()
+
+  useEffect(() => {
+    checkUserPermissions()
+  }, [])
+
+  const checkUserPermissions = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      setCurrentUser(user)
+      
+      if (user) {
+        // Verificar se o usuário é o dono do currículo
+        setIsOwner(user.id === profile.id)
+      }
+    } catch (error) {
+      console.error('Error checking user permissions:', error)
+    }
+  }
 
   const addEmail = () => {
     if (emails.length < 5) {
@@ -96,6 +118,24 @@ ${profile.full_name}`)
   }
 
   const handleSendEmails = async () => {
+    if (!currentUser) {
+      toast({
+        title: "Erro",
+        description: "Você precisa estar logado para compartilhar currículos.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!isOwner) {
+      toast({
+        title: "Erro",
+        description: "Apenas o dono do currículo pode compartilhá-lo.",
+        variant: "destructive",
+      })
+      return
+    }
+
     const validEmails = validateEmails()
     if (!validEmails) return
 
@@ -103,7 +143,14 @@ ${profile.full_name}`)
     setResults([])
 
     try {
-      // Usar Supabase Edge Function
+      // Obter token de sessão
+      const { data: { session } } = await supabase.auth.getSession()
+      
+      if (!session) {
+        throw new Error('Sessão não encontrada')
+      }
+
+      // Usar Supabase Edge Function com autorização
       const { data, error } = await supabase.functions.invoke('send-curriculum-email', {
         body: {
           toEmails: validEmails,
@@ -111,6 +158,9 @@ ${profile.full_name}`)
           message,
           profile,
           curriculumUrl: `${window.location.origin}/curriculo/${profile.curriculo_slug}`
+        },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
         }
       })
 
@@ -164,6 +214,69 @@ ${profile.full_name}`)
     setResults([])
   }
 
+  // Se não estiver logado, mostrar botão de login
+  if (!currentUser) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="outline" className="flex items-center gap-2">
+              <Lock className="h-4 w-4" />
+              Faça Login para Compartilhar
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Login Necessário
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-6">
+            <p className="text-gray-600 mb-4">
+              Você precisa estar logado para compartilhar currículos por email.
+            </p>
+            <Link to="/login">
+              <Button onClick={() => setOpen(false)}>
+                Fazer Login
+              </Button>
+            </Link>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
+  // Se não for o dono, mostrar mensagem de permissão
+  if (!isOwner) {
+    return (
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="outline" className="flex items-center gap-2" disabled>
+              <Lock className="h-4 w-4" />
+              Apenas o Dono Pode Compartilhar
+            </Button>
+          )}
+        </DialogTrigger>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Lock className="h-5 w-5" />
+              Permissão Negada
+            </DialogTitle>
+          </DialogHeader>
+          <div className="text-center py-6">
+            <p className="text-gray-600">
+              Apenas o dono deste currículo pode compartilhá-lo por email.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )
+  }
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -183,6 +296,21 @@ ${profile.full_name}`)
         </DialogHeader>
 
         <div className="space-y-6">
+          {/* Informação do Remetente */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-green-600" />
+                </div>
+                <div>
+                  <p className="font-medium">Enviando como:</p>
+                  <p className="text-sm text-gray-600">{currentUser.email}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Destinatários */}
           <div>
             <Label className="text-sm font-medium">Destinatários (máximo 5)</Label>
