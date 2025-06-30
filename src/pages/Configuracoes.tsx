@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
+import { AvatarUpload } from '@/components/ui/avatar-upload'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
 import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon, Loader2, CheckCircle, XCircle, Info } from 'lucide-react'
@@ -324,6 +325,14 @@ export default function Configuracoes() {
     })
   }
 
+  const handleAvatarUpdate = (avatarUrl: string) => {
+    // Atualizar o perfil local para refletir a mudança imediatamente
+    if (profile) {
+      // Forçar re-render do componente
+      window.location.reload()
+    }
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
@@ -391,7 +400,24 @@ export default function Configuracoes() {
                 Informações do Perfil
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
+              {/* Avatar Upload */}
+              {user && (
+                <div>
+                  <Label className="text-sm font-medium">Foto do Perfil</Label>
+                  <div className="mt-2">
+                    <AvatarUpload
+                      currentAvatarUrl={profile?.avatar_url}
+                      onAvatarUpdate={handleAvatarUpdate}
+                      userId={user.id}
+                      userName={profile?.full_name}
+                    />
+                  </div>
+                </div>
+              )}
+
+              <Separator />
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="full_name">Nome completo</Label>

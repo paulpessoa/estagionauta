@@ -1,1 +1,4 @@
 project_id = "ptogsfpkptzpuvdluxzf"
+
+[functions.send-curriculum-email]
+verify_jwt = false

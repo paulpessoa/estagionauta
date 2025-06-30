@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
+import { CurriculumPDF } from '@/components/ui/curriculum-pdf'
+import { ShareCurriculoModal } from '@/components/modals/ShareCurriculoModal'
 import { 
   User, 
   Mail, 
@@ -16,7 +18,9 @@ import {
   Calendar,
   FileText,
   ExternalLink,
-  ArrowLeft
+  ArrowLeft,
+  Download,
+  Share2
 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/profile'
@@ -136,9 +140,23 @@ export default function Curriculo() {
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               Currículo de {profile.full_name}
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
               Gerado via Estagionauta
             </p>
+            
+            {/* Botões de Ação */}
+            <div className="flex items-center justify-center gap-3">
+              <CurriculumPDF profile={profile} />
+              <ShareCurriculoModal 
+                profile={profile}
+                trigger={
+                  <Button variant="outline" className="flex items-center gap-2">
+                    <Share2 className="h-4 w-4" />
+                    Compartilhar por Email
+                  </Button>
+                }
+              />
+            </div>
           </div>
         </div>
 

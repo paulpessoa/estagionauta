@@ -23,6 +23,7 @@ import MinhasAnalises from './pages/MinhasAnalises'
 import Configuracoes from './pages/Configuracoes'
 import Notificacoes from './pages/Notificacoes'
 import Curriculo from './pages/Curriculo'
+import EmailLogs from './pages/EmailLogs'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import React from 'react'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -41,6 +42,8 @@ const ProtectedConfiguracoes = () => React.createElement(ProtectedRoute, null, R
 const ProtectedNotificacoes = () => React.createElement(ProtectedRoute, null, React.createElement(Notificacoes))
 
 const ProtectedResultadoCurriculo = () => React.createElement(ProtectedRoute, null, React.createElement(ResultadoCurriculo))
+
+const ProtectedEmailLogs = () => React.createElement(ProtectedRoute, null, React.createElement(EmailLogs))
 
 // Rotas que requerem role específica
 const ProtectedAdmin = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(Admin) })
@@ -67,6 +70,7 @@ export const routes = [
   { path: '/analise-curriculo/sucesso', component: Sucesso },
   { path: '/minhas-analises', component: ProtectedMinhasAnalises },
   { path: '/notificacoes', component: ProtectedNotificacoes },
+  { path: '/email-logs', component: ProtectedEmailLogs },
   { path: '/agencias', component: Agencias },
   { path: '/calculadora-recesso', component: CalculadoraRecesso },
   { path: '/gerador-curriculos', component: ProtectedGeradorCurriculos},
