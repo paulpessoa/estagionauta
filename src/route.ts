@@ -24,6 +24,7 @@ import Configuracoes from './pages/Configuracoes'
 import Notificacoes from './pages/Notificacoes'
 import { ProtectedRoute } from './components/ProtectedRoute'
 import React from 'react'
+import PrivacyPolicy from './pages/PrivacyPolicy'
 
 // Componentes protegidos
 const ProtectedDashboard = () => React.createElement(ProtectedRoute, null, React.createElement(Dashboard))
@@ -77,5 +78,6 @@ export const routes = [
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
   { path: '/sucesso', component: Sucesso },
   { path: '/afiliados', component: Afiliados },
+  { path: '/privacy-policy', component: PrivacyPolicy },  
   { path: '*', component: NotFound },
 ]
