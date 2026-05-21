@@ -9,7 +9,7 @@
 - [x] Deletar arquivo morto [create-checkout-session.js](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/api/create-checkout-session.js)
 - [x] Deletar arquivo morto [stripe.js](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/api/webhooks/stripe.js)
 - [x] Limpar código legado/morto em [stripe.ts](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/lib/stripe.ts)
-- [ ] Ajustar CORS de Edge Functions
+- [x] Ajustar CORS de Edge Functions
 
 ## Fase 2 — Backend Hono.js 🏗️
 
