@@ -204,6 +204,10 @@ app.post('/send', authMiddleware, zValidator('json', emailSchema), async (c) => 
     return c.json({ error: 'Sem permissão para compartilhar este currículo' }, 403);
   }
 
+  if (!env.BREVO_API_KEY) {
+    return c.json({ error: 'Serviço de e-mail não configurado neste ambiente (BREVO_API_KEY ausente)' }, 503);
+  }
+
   try {
     // Get sender's details from DB
     const { data: userProfile, error: profileError } = await supabaseAdmin

@@ -5,8 +5,9 @@ const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
 
-import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData } from '../../../shared/types/index.js';
+import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData, SimulatorMessage, SimulatorFeedback } from '../../../shared/types/index.js';
 export type { AnalysisInput, AnalysisOutput };
+
 
 export async function analyzeResumeAI(input: AnalysisInput): Promise<AnalysisOutput> {
   const { resumeText, jobDescription, currentSituation, mentorshipQuestions } = input;
@@ -171,4 +172,118 @@ INSTRUÇÕES DE FORMATAÇÃO:
 
   return content;
 }
+
+export async function generateNextInterviewQuestionAI(
+  jobTitle: string,
+  jobDescription: string | null,
+  interviewerType: string,
+  messageHistory: SimulatorMessage[]
+): Promise<string> {
+  const interviewerTones: Record<string, string> = {
+    tech: 'Você é um entrevistador puramente técnico, focado em hard skills, arquitetura de sistemas, conceitos fundamentais e resolução de problemas práticos. Faça perguntas diretas e desafie as decisões técnicas do candidato.',
+    behavioral: 'Você é um entrevistador de Recursos Humanos focado em soft skills, aspectos comportamentais, liderança, comunicação e adequação cultural. Use metodologias como a técnica STAR (Situação, Tarefa, Ação, Resultado) para avaliar respostas anteriores.',
+    hard: 'Você é um entrevistador extremamente exigente, incisivo e direto. Você questiona profundamente as respostas do candidato, pressionando-o para testar sua capacidade de raciocinar sob estresse e resolver dilemas complexos.',
+    friendly: 'Você é um entrevistador caloroso, amigável e empático. Seu objetivo é fazer com que o candidato se sinta confortável, promovendo um diálogo fluido e construtivo, mas sem perder o foco na avaliação profissional.',
+  };
+
+  const toneInstruction = interviewerTones[interviewerType] || interviewerTones.friendly;
+
+  const systemPrompt = `Você é um entrevistador profissional experiente conduzindo uma simulação de entrevista de emprego realista.
+Cargo pretendido: ${jobTitle}
+Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
+
+Instrução de tom e personalidade:
+${toneInstruction}
+
+Regras cruciais:
+1. Conduza a entrevista de forma interativa. Faça apenas UMA pergunta por vez.
+2. Leia a resposta anterior do candidato e responda de forma natural, comentando brevemente se necessário antes de formular a próxima pergunta.
+3. Não saia do personagem. Você não é um assistente de IA, você é o entrevistador.
+4. Mantenha suas falas relativamente concisas e diretas para manter a dinâmica de conversação.
+5. Se for o início da entrevista (histórico vazio), apresente-se brevemente como o entrevistador correspondente ao tom selecionado e faça a primeira pergunta.`;
+
+  const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+    { role: 'system', content: systemPrompt }
+  ];
+
+  for (const msg of messageHistory) {
+    messages.push({
+      role: msg.role === 'candidate' ? 'user' : 'assistant',
+      content: msg.content
+    });
+  }
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages,
+    temperature: 0.8,
+    max_tokens: 800,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('Nenhuma resposta retornada da OpenAI para a simulação de entrevista');
+  }
+
+  return content;
+}
+
+export async function generateInterviewFeedbackAI(
+  jobTitle: string,
+  jobDescription: string | null,
+  interviewerType: string,
+  messageHistory: SimulatorMessage[]
+): Promise<SimulatorFeedback> {
+  const systemPrompt = `Você é um especialista sênior em recrutamento e seleção de talentos.
+Analise o histórico completo da simulação de entrevista de emprego e forneça um relatório de feedback construtivo e detalhado em português brasileiro.
+
+Cargo pretendido: ${jobTitle}
+Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
+Tipo de Entrevista conduzida: ${interviewerType}
+
+Instruções para o Feedback:
+1. Avalie o desempenho geral das respostas do candidato (conteúdo, clareza, embasamento técnico e comportamental).
+2. Estipule uma pontuação geral (score) de 0 a 100.
+3. Identifique pelo menos 3 Pontos Fortes demonstrados nas respostas.
+4. Identifique pelo menos 3 Áreas de Melhoria de forma construtiva.
+5. Dê dicas acionáveis e práticas de estudo ou comportamento para que o candidato possa se destacar em entrevistas reais.
+
+A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte formato:
+{
+  "score": 85,
+  "strengths": [
+    "Destaque claro das tecnologias X e Y...",
+    "Excelente articulação sobre projetos passados...",
+    "Uso adequado do modelo comportamental..."
+  ],
+  "improvements": [
+    "Faltou aprofundamento na explicação técnica sobre Z...",
+    "Respostas muito prolixas em determinados pontos...",
+    "Poderia dar exemplos práticos de como resolveu conflitos de time..."
+  ],
+  "tips": "Dica executiva estruturada recomendando ferramentas de aprendizado, refinamento da retórica profissional e leituras úteis."
+}`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      {
+        role: 'user',
+        content: `Aqui está o histórico completo da entrevista estruturado em JSON para sua análise:\n${JSON.stringify(messageHistory, null, 2)}`
+      }
+    ],
+    temperature: 0.6,
+    max_tokens: 1500,
+    response_format: { type: 'json_object' }
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('Nenhuma resposta retornada da OpenAI para o feedback de entrevista');
+  }
+
+  return JSON.parse(content) as SimulatorFeedback;
+}
+
 

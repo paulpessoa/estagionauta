@@ -6,8 +6,10 @@ import analysisRoutes from './routes/analysis.routes.js';
 import emailRoutes from './routes/email.routes.js';
 import kanbanRoutes from './routes/kanban.routes.js';
 import generatorRoutes from './routes/generator.routes.js';
+import simulatorRoutes from './routes/simulator.routes.js';
 
 const app = new Hono();
+
 
 // Configure CORS
 app.use(
@@ -37,5 +39,6 @@ app.route('/api/analysis', analysisRoutes);
 app.route('/api/email', emailRoutes);
 app.route('/api/kanban', kanbanRoutes);
 app.route('/api/generator', generatorRoutes);
+app.route('/api/simulator', simulatorRoutes);
 
 export default app;
