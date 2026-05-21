@@ -50,9 +50,9 @@ const ProtectedAdmin = () => React.createElement(ProtectedRoute, { requireRole: 
 
 const ProtectedModeracaoAgencias = () => React.createElement(ProtectedRoute, { requireRole: "moderator", children: React.createElement(ModeracaoAgencias) })
 
-const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(GeradorCurriculos) })
+const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, null, React.createElement(GeradorCurriculos))
 
-const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, { requireRole: "admin", children: React.createElement(SimuladorEntrevistas) })
+const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, null, React.createElement(SimuladorEntrevistas))
 
 export const routes = [
   { path: '/', component: HomePage },

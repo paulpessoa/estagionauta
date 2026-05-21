@@ -5,7 +5,7 @@ const openai = new OpenAI({
   apiKey: env.OPENAI_API_KEY,
 });
 
-import type { AnalysisRequest as AnalysisInput, AnalysisOutput } from '../../../shared/types/index.js';
+import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData } from '../../../shared/types/index.js';
 export type { AnalysisInput, AnalysisOutput };
 
 export async function analyzeResumeAI(input: AnalysisInput): Promise<AnalysisOutput> {
@@ -88,3 +88,87 @@ Adicione ao JSON:
 
   return JSON.parse(content) as AnalysisOutput;
 }
+
+export async function generateResumeAI(data: ResumeProfileData): Promise<string> {
+  let prompt = `Você é um redator profissional de currículos e especialista em recrutamento. Crie um currículo altamente otimizado e bem formatado em Markdown para o seguinte candidato:
+
+NOME COMPLETO: ${data.fullName}
+E-MAIL: ${data.email}
+TELEFONE: ${data.phone}
+LOCALIZAÇÃO: ${data.location}
+WEBSITE: ${data.website || 'Não informado'}
+LINKEDIN: ${data.linkedin || 'Não informado'}
+GITHUB: ${data.github || 'Não informado'}
+
+RESUMO PROFISSIONAL:
+${data.summary}
+
+EXPERIÊNCIAS PROFISSIONAIS:
+${data.experiences.map((exp, idx) => `
+Experiência ${idx + 1}:
+Empresa: ${exp.company}
+Cargo: ${exp.position}
+Período: de ${exp.startDate} a ${exp.current ? 'Atual' : exp.endDate}
+Descrição das atividades e conquistas:
+${exp.description}
+`).join('\n')}
+
+FORMAÇÃO ACADÊMICA:
+${data.education.map((edu, idx) => `
+Formação ${idx + 1}:
+Instituição: ${edu.institution}
+Grau/Curso: ${edu.degree} em ${edu.fieldOfStudy}
+Período: de ${edu.startDate} a ${edu.current ? 'Atual' : edu.endDate}
+`).join('\n')}
+
+HABILIDADES:
+${data.skills.join(', ')}
+
+IDIOMAS:
+${data.languages?.join(', ') || 'Não informado'}
+`;
+
+  if (data.jobTitle || data.jobDescription) {
+    prompt += `
+
+VAGA ALVO:
+Cargo: ${data.jobTitle || 'Não informado'}
+Descrição/Requisitos da Vaga:
+${data.jobDescription || 'Não informado'}
+
+ATENÇÃO: Adapte e otimize o currículo especificamente para essa vaga alvo, destacando as experiências, palavras-chave e habilidades que são mais relevantes para o cargo.`;
+  }
+
+  prompt += `
+
+INSTRUÇÕES DE FORMATAÇÃO:
+1. Retorne APENAS o currículo completo formatado em Markdown profissional. Não inclua observações, introduções ou explicações antes ou depois.
+2. Utilize cabeçalhos claros (H1 para o nome, H2 para as seções principais).
+3. Use tópicos (bullet points) nas experiências para descrever as realizações de forma objetiva, começando por verbos de ação e destacando conquistas.
+4. Mantenha um layout limpo, elegante e profissional.
+5. Remova seções vazias ou não informadas.`;
+
+  const response = await openai.chat.completions.create({
+    model: 'gpt-4',
+    messages: [
+      {
+        role: 'system',
+        content: 'Você é um especialista em recrutamento. Crie currículos otimizados e profissionais em português brasileiro. Retorne exclusivamente o conteúdo em Markdown, sem blocos de código markdown (sem ```markdown ... ```), apenas o texto cru.',
+      },
+      {
+        role: 'user',
+        content: prompt,
+      },
+    ],
+    temperature: 0.7,
+    max_tokens: 3000,
+  });
+
+  const content = response.choices[0]?.message?.content;
+  if (!content) {
+    throw new Error('Nenhuma resposta retornada da OpenAI para o gerador de currículo');
+  }
+
+  return content;
+}
+
