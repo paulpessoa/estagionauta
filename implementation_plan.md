@@ -364,13 +364,16 @@ CMD ["node", "dist/index.js"]
 - [ ] **Kanban** funcional com persistência
 - [ ] **Agências** com filtros, busca, moderação
 - [ ] **Calculadora** com compartilhamento
+- [x] **Módulo Simulador de Entrevistas** (`api/src/routes/simulator.routes.ts`)
+  - [x] Migration no banco de dados (`interview_simulations`) com políticas RLS por usuário
+  - [x] Shared TypeScript types em `shared/types/simulator.ts`
+  - [x] OpenAI service integration no backend para inicialização, interação do chat de entrevista e feedback final
+  - [x] Endpoints do Hono para CRUD e progresso de entrevista (`POST /api/simulator/start`, `POST /api/simulator/:id/answer`, `GET /api/simulator/history`, `GET /api/simulator/:id`)
+  - [x] Interface visual do Simulador (`src/pages/SimuladorEntrevistas.tsx`) com dashboard histórico, configuração de entrevista (vaga + tom do entrevistador) e chat interativo com contagem de perguntas (max 5)
+  - [x] Visualização premium do relatório de feedback gerado pela IA (pontuação, pontos fortes, melhorias e sugestões de respostas)
 - [ ] **Módulo Gerador de Currículos** (`api/src/routes/generator.routes.ts`)
   - Input: dados do perfil → Output: currículo formatado via IA
   - Preparado com interface própria para futura extração como microserviço
-- [ ] **Módulo Simulador de Entrevistas** (`api/src/routes/simulator.routes.ts`)
-  - Perguntas geradas por IA baseadas na vaga
-  - Streaming de respostas via SSE
-  - Preparado para futura extração como microserviço
 - [ ] **Landing page** otimizada para conversão e SEO
 - [ ] Definir preços finais consistentes (atualmente R$4, R$5, R$15 vs R$9.99, R$19.99)
 

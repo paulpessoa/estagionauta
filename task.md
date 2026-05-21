@@ -15,7 +15,7 @@
 
 - [x] Criar diretório `/api` e inicializar projeto Node/TS
 - [x] Configurar `tsconfig.json` e `package.json` do backend
-- [x] Implementar `api/src/index.ts` and `api/src/app.ts` (servidor Hono)
+- [x] Implementar `api/src/index.ts` e `api/src/app.ts` (servidor Hono)
 - [x] Implementar middleware de autenticação JWT (`api/src/middleware/auth.middleware.ts`)
 - [x] Implementar rotas e serviços do Stripe (`/api/stripe/checkout`, `/api/stripe/webhook`)
 - [x] Implementar rotas e lógica de créditos (`/api/credits`, `/api/credits/consume`)
@@ -26,42 +26,49 @@
 
 ## Fase 3 — Features Completas ⚡
 
-### 3.1. Sistema de Créditos e Stripe
-- [ ] Criar arquivo de migração para as tabelas e RPCs de créditos no Supabase (se ainda não criados)
-- [ ] Validar e testar a rota `/api/stripe/webhook` recebendo eventos reais de checkout/pagamento e creditando o saldo
-- [ ] Configurar chaves de ambiente necessárias para teste local do Stripe
-
-### 3.2. Kanban de Candidaturas Funcional com Persistência
-- [ ] Criar arquivo de migração `supabase/migrations/xxxx_create_kanban_tables.sql` para candidaturas e lembretes
-- [ ] Habilitar Row Level Security (RLS) com políticas para o `auth.uid()` do usuário nas tabelas de Kanban
-- [ ] Implementar rotas CRUD no backend em `api/src/routes/kanban.routes.ts`
-- [ ] Registrar as rotas de Kanban no servidor Hono (`api/src/app.ts`)
-- [ ] Atualizar o frontend em `src/pages/KanbanCandidaturas.tsx` para usar `apiClient` para carregar, criar, atualizar (mudar status/drag-drop) e excluir candidaturas e lembretes
-
-### 3.3. Análise de Currículo Melhorada
-- [ ] Otimizar prompt em `api/src/services/openai.service.ts`
-- [ ] Adicionar botão e funcionalidade de download de PDF no frontend (`src/pages/ResultadoCurriculo.tsx`)
-
-### 3.4. Módulo Gerador de Currículos
-- [ ] Criar tipos compartilhados em `/shared/types/generator.ts` e exportá-los
-- [ ] Criar rota do Hono `api/src/routes/generator.routes.ts`
-- [ ] Implementar integração com OpenAI no backend para gerar seções do currículo a partir do perfil do usuário
-- [ ] Registrar a rota de geração no servidor Hono (`api/src/app.ts`)
-- [ ] Integrar no frontend para permitir a geração e exportação
-
-### 3.5. Módulo Simulador de Entrevistas
-- [ ] Criar tipos compartilhados em `/shared/types/simulator.ts`
-- [ ] Criar rota do Hono `api/src/routes/simulator.routes.ts` com suporte a Server-Sent Events (SSE) para feedback ou perguntas
-- [ ] Implementar lógica de perguntas com IA no backend
-- [ ] Registrar rota no app principal do Hono
-- [ ] Integrar no frontend com a tela de simulação de entrevista
-
-### 3.6. Ajuste de Preços e Landing Page
-- [ ] Padronizar valores dos planos de preços entre o frontend, backend e Stripe
-- [ ] Ajustar exibição da landing page e fluxo de checkout correspondente
+- [x] **3.1 Persistência do Kanban**
+  - [x] Criar migration do banco para `kanban_applications` e `kanban_reminders`
+  - [x] Criar rotas do Hono para CRUD de candidaturas e lembretes no backend
+  - [x] Integrar frontend com `apiClient` em [KanbanCandidaturas.tsx](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/KanbanCandidaturas.tsx)
+    - [x] Carregar candidaturas do backend
+    - [x] Criar nova candidatura
+    - [x] Atualizar status da candidatura (drag-and-drop/select)
+    - [x] Corrigir erro de parsing de data no `date-fns` (conversão manual para `new Date(...)` antes de `format`)
+    - [x] Conectar ação de exclusão de candidatura (`deleteApplication`) no `ApplicationCard` e modal de detalhes
+    - [x] Conectar ação de alternância de lembrete (`toggleReminderCompletion`)
+  - [x] Validar e testar build completo (root + `api/`)
+- [x] **3.2 Módulo Gerador de Currículos**
+  - [x] Definir tipos compartilhados em `shared/types/generator.ts`
+  - [x] Criar migration do banco para `generated_resumes`
+  - [x] Criar service de OpenAI para geração de currículos
+  - [x] Implementar rotas do Hono (`api/src/routes/generator.routes.ts`)
+  - [x] Ajustar permissões de rota no frontend (`src/route.ts`)
+  - [x] Atualizar UI em `src/pages/GeradorCurriculos.tsx` com formulário e exportação em PDF
+  - [x] Validar builds do frontend e backend e commitar
+- [x] **3.3 Módulo Simulador de Entrevistas**
+  - [x] Criar migration do banco para `interview_simulations`
+  - [x] Definir tipos compartilhados em `shared/types/simulator.ts`
+  - [x] Criar service de OpenAI para o simulador (gerar perguntas e feedbacks)
+  - [x] Criar rotas do Hono (`api/src/routes/simulator.routes.ts`) integradas ao `openai.service`
+  - [x] Desenvolver interface visual premium em `src/pages/SimuladorEntrevistas.tsx`
+  - [x] Integrar UI do simulador com o backend `/api/simulator`
+  - [x] Validar builds e testar fluxo
+- [ ] **3.4 Fluxo de Análise Otimizado**
+  - [ ] Refinar prompt da IA em `/api/src/services/openai.service.ts`
+  - [ ] Adicionar exportação da análise em PDF no frontend
+- [ ] **3.5 Integração Stripe e Preços**
+  - [ ] Ajustar preços das ofertas e planos na landing page e backend
+  - [ ] Validar transação atômica do Stripe adicionando créditos via webhook com segurança
 
 ## Fase 4 — Testes e CI/CD 🧪
 
-- [ ] Implementar testes unitários/integração no backend
-- [ ] Configurar GitHub Actions CI/CD
-- [ ] Configurar Sentry e UptimeRobot
+- [ ] Implementar testes unitários para os services no `/api` (Supabase, Credits, Stripe, AI) com Vitest
+- [ ] Implementar testes de integração básicos para as rotas do Hono
+- [ ] Configurar GitHub Actions CI/CD para deploy independente
+- [ ] Configurar monitoramento de erros (Sentry free tier) e Uptime (UptimeRobot)
+
+## Fase 5 — Polish & Scale 🎯
+
+- [ ] Rate limit por IP/usuário no backend
+- [ ] Documentação Swagger/OpenAPI auto-gerada no Hono
+- [ ] Ajustes finais de design (micro-animações, consistência de dark mode)
