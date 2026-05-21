@@ -134,8 +134,8 @@ This section is automatically loaded into the agent's context via system rules. 
 
 ### 2. Status Checklist
 - [x] **Phase 1: Security Emergency**: Rotated keys, removed frontend service role client, cleaned legacy code, restricted CORS.
-- [/] **Phase 2: Hono.js Backend**: Created `/api` with Hono routes, configured TS, setup Docker, built routes for auth middleware, credits, analysis, Brevo email.
-- [ ] **Phase 3: Integration & Features**: Next step is connecting frontend forms to Hono endpoints via `apiClient`.
+- [x] **Phase 2: Hono.js Backend**: Created `/api` with Hono routes, configured TS, setup Docker, built routes for auth middleware, credits, analysis, Brevo email.
+- [/] **Phase 3: Integration & Features**: End-to-end integration and completing additional features (checkout, credit updates, analyze curriculum, share email).
 - [ ] **Phase 4: Tests & CI/CD**
 - [ ] **Phase 5: Polish & Scale**
 
