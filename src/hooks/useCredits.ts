@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '../lib/supabase'
+import { apiClient } from '../lib/apiClient'
 import { useAuth } from './useAuth'
 
 export interface CreditTransaction {
@@ -36,22 +36,11 @@ export const useCredits = () => {
       setLoading(true)
       setError(null)
 
-      const { data, error: creditsError } = await supabase
-        .from('user_profiles')
-        .select('credits, total_credits_used, total_credits_purchased')
-        .eq('id', user.id)
-        .single()
-
-      if (creditsError) {
-        console.error('Erro ao buscar créditos:', creditsError)
-        setError('Erro ao carregar créditos')
-        return
-      }
-
+      const data = await apiClient.get<UserCredits>('/api/credits')
       setCredits(data)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Erro ao buscar créditos:', err)
-      setError('Erro ao carregar créditos')
+      setError(err.message || 'Erro ao carregar créditos')
     } finally {
       setLoading(false)
     }
@@ -65,18 +54,7 @@ export const useCredits = () => {
     }
 
     try {
-      const { data, error: transactionsError } = await supabase
-        .from('credit_transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50)
-
-      if (transactionsError) {
-        console.error('Erro ao buscar transações:', transactionsError)
-        return
-      }
-
+      const data = await apiClient.get<CreditTransaction[]>('/api/credits/transactions')
       setTransactions(data || [])
     } catch (err) {
       console.error('Erro ao buscar transações:', err)
@@ -86,40 +64,6 @@ export const useCredits = () => {
   // Verificar se tem créditos suficientes
   const hasEnoughCredits = (required: number = 3) => {
     return credits ? credits.credits >= required : false
-  }
-
-  // Consumir créditos (chamado após análise bem-sucedida)
-  const consumeCredits = async (amount: number = 3, description: string = 'Análise de currículo') => {
-    if (!user || !credits) return false
-
-    try {
-      const { data, error: consumeError } = await supabase
-        .rpc('consume_credits', {
-          user_uuid: user.id,
-          amount,
-          description
-        })
-
-      if (consumeError) {
-        console.error('Erro ao consumir créditos:', consumeError)
-        return false
-      }
-
-      // Atualizar estado local
-      setCredits(prev => prev ? {
-        ...prev,
-        credits: prev.credits - amount,
-        total_credits_used: prev.total_credits_used + amount
-      } : null)
-
-      // Recarregar transações
-      await fetchTransactions()
-
-      return true
-    } catch (err) {
-      console.error('Erro ao consumir créditos:', err)
-      return false
-    }
   }
 
   // Recarregar dados
@@ -142,7 +86,7 @@ export const useCredits = () => {
     loading,
     error,
     hasEnoughCredits,
-    consumeCredits,
     refresh
   }
-} 
+}
+ 

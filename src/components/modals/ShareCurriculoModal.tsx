@@ -21,6 +21,7 @@ import {
 import { useToast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import { Link } from 'react-router-dom'
+import { apiClient } from '@/lib/apiClient'
 
 interface ShareCurriculoModalProps {
   profile: {
@@ -143,30 +144,23 @@ ${profile.full_name}`)
     setResults([])
 
     try {
-      // Obter token de sessão
-      const { data: { session } } = await supabase.auth.getSession()
-      
-      if (!session) {
-        throw new Error('Sessão não encontrada')
-      }
-
-      // Usar Supabase Edge Function com autorização
-      const { data, error } = await supabase.functions.invoke('send-curriculum-email', {
-        body: {
-          toEmails: validEmails,
-          subject,
-          message,
-          profile,
-          curriculumUrl: `${window.location.origin}/curriculo/${profile.curriculo_slug}`
+      // Call Hono email API
+      const data = await apiClient.post<any>('/api/email/send', {
+        toEmails: validEmails,
+        subject,
+        message,
+        profile: {
+          id: profile.id,
+          full_name: profile.full_name,
+          course: profile.course || null,
+          university: profile.university || null,
+          bio: profile.bio || null,
+          phone: profile.phone || null,
+          linkedin_url: profile.linkedin_url || null,
+          curriculo_slug: profile.curriculo_slug || null,
         },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+        curriculumUrl: `${window.location.origin}/curriculo/${profile.curriculo_slug}`
       })
-
-      if (error) {
-        throw new Error(error.message || 'Erro ao enviar emails')
-      }
 
       setResults(data.results)
       

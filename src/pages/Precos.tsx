@@ -5,10 +5,8 @@ import { Badge } from '../components/ui/badge'
 import { Check, Star, Zap, Crown, Sparkles } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useCredits } from '../hooks/useCredits'
-import { getStripe } from '../lib/stripe'
-import { createCheckoutSession } from '../api/stripe'
 import { useToast } from '../hooks/use-toast'
-import { StripeDebug } from '../components/StripeDebug'
+import { apiClient } from '../lib/apiClient'
 
 const plans = [
   {
@@ -61,25 +59,20 @@ export default function Precos() {
 
     setLoading(planId)
     try {
-      // Criar checkout session
-      const sessionId = await createCheckoutSession(planId, user.id)
+      // Criar checkout session no backend Hono
+      const { url } = await apiClient.post<{ url: string }>('/api/stripe/checkout', { planId })
       
       // Redirecionar para Stripe Checkout
-      const stripe = await getStripe()
-      if (stripe) {
-        const { error } = await stripe.redirectToCheckout({
-          sessionId,
-        })
-        
-        if (error) {
-          throw error
-        }
+      if (url) {
+        window.location.href = url
+      } else {
+        throw new Error('URL de checkout não foi retornada')
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro na compra:', error)
       toast({
         title: "Erro na compra",
-        description: "Não foi possível processar sua compra. Tente novamente.",
+        description: error.message || "Não foi possível processar sua compra. Tente novamente.",
         variant: "destructive",
       })
     } finally {

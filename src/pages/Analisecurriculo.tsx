@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Star, AlertTriangle, CreditCard } from 'lucide-react'
+import { apiClient } from '@/lib/apiClient'
 
 interface ResumeFormData {
   // Basic info
@@ -89,37 +90,33 @@ export default function AnalyseCurriculoPage() {
       // Convert PDF to base64
       const base64 = await convertFileToBase64(formData.resumeFile)
       
-      // Prepare data for analysis
-      const analysisData = {
-        ...formData,
-        user_id: user?.id,
-        hasSpecificJob: formData.hasSpecificJob,
-        jobDescription: formData.jobDescription || '',
-        jobRequirements: formData.jobRequirements || ''
-      }
+      // Prepare current situation description
+      const currentSituation = [
+        formData.currentFocus ? `Foco atual: ${formData.currentFocus}` : '',
+        formData.careerGoals ? `Objetivos de carreira: ${formData.careerGoals}` : '',
+        formData.skillsToDevelop ? `Habilidades a desenvolver: ${formData.skillsToDevelop}` : '',
+        formData.timeAvailability ? `Disponibilidade: ${formData.timeAvailability}` : '',
+        formData.period ? `Período da faculdade: ${formData.period}` : '',
+        formData.hasInternship ? `Tem estágio: ${formData.hasInternship}` : '',
+      ].filter(Boolean).join('\n');
+
+      const jobDescription = formData.hasSpecificJob 
+        ? `Vaga de Interesse: ${formData.jobDescription || ''}\nRequisitos: ${formData.jobRequirements || ''}`
+        : '';
       
-      console.log('Calling Edge Function with data:', {
+      console.log('Calling Backend API with data:', {
         hasResumeText: !!base64,
-        formDataKeys: Object.keys(analysisData)
+        jobDescriptionLen: jobDescription.length,
+        currentSituationLen: currentSituation.length
       })
       
-      // Call Supabase Edge Function
-      const { data, error } = await supabase.functions.invoke('analyze-resume', {
-        body: {
-          resumeText: base64,
-          formData: analysisData
-        }
+      // Call Backend API
+      const data = await apiClient.post<any>('/api/analysis/analyze', {
+        resumeText: base64,
+        jobDescription: jobDescription || undefined,
+        currentSituation: currentSituation || undefined,
+        mentorshipQuestions: formData.mentorshipTopics || undefined
       })
-
-      if (error) {
-        console.error('Edge Function error:', error)
-        throw new Error(error.message)
-      }
-
-      if (!data.success) {
-        console.error('Edge Function returned error:', data.error)
-        throw new Error(data.error || 'Erro ao analisar currículo')
-      }
 
       console.log('Analysis completed successfully:', data)
 
@@ -130,8 +127,8 @@ export default function AnalyseCurriculoPage() {
       navigate(`/resultado-curriculo/${data.analysisId}`, { 
         state: { 
           analysis: data.analysis,
-          score: data.score,
-          usedFallback: data.used_fallback,
+          score: data.analysis.scoreGeral,
+          usedFallback: data.usedFallback,
           creditsConsumed: 3,
           remainingCredits: data.remainingCredits
         } 

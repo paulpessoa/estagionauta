@@ -121,7 +121,33 @@ estagionauta/
 
 ---
 
-## Active Plan & Progress
+## Active Plan, Progress & Learnings
 
-- **Implementation Plan**: Refactoring the codebase into a monorepo structure. Follow the specifications in [implementation_plan.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/implementation_plan.md).
-- **Execution Checklist**: Track the checklist in [task.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/task.md) and update it as tasks are executed.
+This section is automatically loaded into the agent's context via system rules. Keep it updated to preserve project memory and save context tokens.
+
+### 1. Active Implementation Plan Summary
+- **Goal**: Refactor Estagionauta into a monorepo (`/src` frontend, `/api` Hono.js backend, `/shared/types` shared types, `/supabase` migrations).
+- **Security Principles**: No `VITE_` secrets on frontend, credit management and AI calls strictly backend, Supabase RLS enabled on all tables, revoking execution on sensitive database RPCs (e.g. `add_credits`).
+- **Detailed Documents**:
+  - Full specs in [implementation_plan.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/implementation_plan.md)
+  - Detailed task progress in [task.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/task.md)
+
+### 2. Status Checklist
+- [x] **Phase 1: Security Emergency**: Rotated keys, removed frontend service role client, cleaned legacy code, restricted CORS.
+- [/] **Phase 2: Hono.js Backend**: Created `/api` with Hono routes, configured TS, setup Docker, built routes for auth middleware, credits, analysis, Brevo email.
+- [ ] **Phase 3: Integration & Features**: Next step is connecting frontend forms to Hono endpoints via `apiClient`.
+- [ ] **Phase 4: Tests & CI/CD**
+- [ ] **Phase 5: Polish & Scale**
+
+### 3. Log of Learnings & Configuration
+- **Credits & Quota Checks in Antigravity**:
+  - In the IDE: Check model credits via **Settings (gear icon) → Models** (where "AI Credit Overages" settings reside).
+  - In the IDE UI: Look at the status bar at the bottom.
+  - Command Line: Use the `fuelcheck` tool or install `antigravity-usage` to inspect remaining quotas.
+- **Project Configuration**:
+  - Frontend env vars: Configured via `.env` in the root (do not commit to Git).
+  - Backend env vars: Configured via `api/.env` (based on `api/.env.example`).
+  - Shared types: Extracted to `/shared/types` to avoid type duplication and keep frontend and backend in sync.
+- **Git Commit Workflow**:
+  - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
+
