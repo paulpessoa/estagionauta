@@ -122,41 +122,6 @@ export const useCredits = () => {
     }
   }
 
-  // Adicionar créditos (após compra)
-  const addCredits = async (amount: number, stripePaymentIntentId?: string, description: string = 'Compra de créditos') => {
-    if (!user || !credits) return false
-
-    try {
-      const { error: addError } = await supabase
-        .rpc('add_credits', {
-          user_uuid: user.id,
-          amount,
-          stripe_payment_intent_id: stripePaymentIntentId,
-          description
-        })
-
-      if (addError) {
-        console.error('Erro ao adicionar créditos:', addError)
-        return false
-      }
-
-      // Atualizar estado local
-      setCredits(prev => prev ? {
-        ...prev,
-        credits: prev.credits + amount,
-        total_credits_purchased: prev.total_credits_purchased + amount
-      } : null)
-
-      // Recarregar transações
-      await fetchTransactions()
-
-      return true
-    } catch (err) {
-      console.error('Erro ao adicionar créditos:', err)
-      return false
-    }
-  }
-
   // Recarregar dados
   const refresh = async () => {
     await Promise.all([fetchCredits(), fetchTransactions()])
@@ -178,7 +143,6 @@ export const useCredits = () => {
     error,
     hasEnoughCredits,
     consumeCredits,
-    addCredits,
     refresh
   }
 } 

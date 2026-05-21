@@ -118,3 +118,10 @@ estagionauta/
 - Don't create duplicate Supabase clients
 - Don't add dependencies without justification
 - Don't write code that only works in development (e.g., `localhost` URLs without env vars)
+
+---
+
+## Active Plan & Progress
+
+- **Implementation Plan**: Refactoring the codebase into a monorepo structure. Follow the specifications in [implementation_plan.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/implementation_plan.md).
+- **Execution Checklist**: Track the checklist in [task.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/task.md) and update it as tasks are executed.
