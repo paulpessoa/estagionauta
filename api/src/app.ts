@@ -4,6 +4,7 @@ import stripeRoutes from './routes/stripe.routes.js';
 import creditsRoutes from './routes/credits.routes.js';
 import analysisRoutes from './routes/analysis.routes.js';
 import emailRoutes from './routes/email.routes.js';
+import kanbanRoutes from './routes/kanban.routes.js';
 
 const app = new Hono();
 
@@ -33,5 +34,6 @@ app.route('/api/stripe', stripeRoutes);
 app.route('/api/credits', creditsRoutes);
 app.route('/api/analysis', analysisRoutes);
 app.route('/api/email', emailRoutes);
+app.route('/api/kanban', kanbanRoutes);
 
 export default app;

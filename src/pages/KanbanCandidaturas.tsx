@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch'
 import { AddReminderModal } from '@/components/modals/AddReminderModal'
 import { KanbanStats } from '@/components/kanban/KanbanStats'
 import { JobApplication, Reminder } from '@/types/kanban'
+import { apiClient } from '@/lib/apiClient'
 import { 
   Kanban, 
   Calendar as CalendarIcon, 
@@ -66,6 +67,7 @@ export default function KanbanCandidaturas() {
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [showReminders, setShowReminders] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Form state for new application
   const [formData, setFormData] = useState({
@@ -82,66 +84,20 @@ export default function KanbanCandidaturas() {
     tags: ''
   })
 
-  // Sample data
+  // Load data from Hono backend
   useEffect(() => {
-    const sampleApplications: JobApplication[] = [
-      {
-        id: '1',
-        company: 'TechCorp',
-        position: 'Desenvolvedor Frontend',
-        status: 'interview',
-        appliedDate: new Date('2024-01-15'),
-        description: 'Vaga para desenvolvedor React/TypeScript',
-        salary: 'R$ 2.500',
-        location: 'São Paulo, SP',
-        contactPerson: 'João Silva',
-        contactEmail: 'joao@techcorp.com',
-        contactPhone: '(11) 99999-9999',
-        website: 'https://techcorp.com',
-        progress: 75,
-        nextAction: 'Entrevista técnica',
-        nextActionDate: addDays(new Date(), 3),
-        reminders: [
-          {
-            id: '1',
-            title: 'Preparar para entrevista',
-            description: 'Revisar conceitos de React e TypeScript',
-            date: addDays(new Date(), 2),
-            completed: false,
-            type: 'interview'
-          }
-        ],
-        notes: 'Empresa com boa cultura, salário competitivo',
-        tags: ['React', 'TypeScript', 'Frontend']
-      },
-      {
-        id: '2',
-        company: 'StartupXYZ',
-        position: 'Estagiário de Marketing',
-        status: 'applied',
-        appliedDate: new Date('2024-01-10'),
-        description: 'Estágio em marketing digital',
-        salary: 'R$ 1.800',
-        location: 'Remoto',
-        contactPerson: 'Maria Santos',
-        contactEmail: 'maria@startupxyz.com',
-        progress: 25,
-        nextAction: 'Aguardando retorno',
-        reminders: [
-          {
-            id: '2',
-            title: 'Follow-up',
-            description: 'Enviar email de acompanhamento',
-            date: addDays(new Date(), 5),
-            completed: false,
-            type: 'follow-up'
-          }
-        ],
-        notes: 'Startup em crescimento, oportunidade de aprendizado',
-        tags: ['Marketing', 'Digital', 'Remoto']
+    const loadApplications = async () => {
+      try {
+        const data = await apiClient.get<JobApplication[]>('/api/kanban')
+        setApplications(data)
+      } catch (err: any) {
+        console.error('Erro ao carregar candidaturas:', err)
+        toast.error('Não foi possível carregar as candidaturas.')
+      } finally {
+        setIsLoading(false)
       }
-    ]
-    setApplications(sampleApplications)
+    }
+    loadApplications()
   }, [])
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,80 +124,140 @@ export default function KanbanCandidaturas() {
     }
   }
 
-  const handleAddApplication = () => {
-    const newApplication: JobApplication = {
-      id: Date.now().toString(),
-      company: formData.company,
-      position: formData.position,
-      status: 'interested',
-      appliedDate: new Date(),
-      description: formData.description,
-      salary: formData.salary,
-      location: formData.location,
-      contactPerson: formData.contactPerson,
-      contactEmail: formData.contactEmail,
-      contactPhone: formData.contactPhone,
-      website: formData.website,
-      progress: 0,
-      reminders: [],
-      notes: formData.notes,
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
-      imageUrl: selectedFile ? URL.createObjectURL(selectedFile) : undefined
+  const handleAddApplication = async () => {
+    if (!formData.company || !formData.position) {
+      toast.error('Empresa e Cargo são obrigatórios')
+      return
     }
 
-    setApplications(prev => [...prev, newApplication])
-    setIsAddModalOpen(false)
-    setIsImageUploadModalOpen(false)
-    setSelectedFile(null)
-    setFormData({
-      company: '',
-      position: '',
-      description: '',
-      salary: '',
-      location: '',
-      contactPerson: '',
-      contactEmail: '',
-      contactPhone: '',
-      website: '',
-      notes: '',
-      tags: ''
-    })
-    toast.success('Candidatura adicionada com sucesso!')
-  }
+    try {
+      const payload = {
+        company: formData.company,
+        position: formData.position,
+        status: 'interested' as const,
+        appliedDate: new Date().toISOString(),
+        description: formData.description,
+        salary: formData.salary || null,
+        location: formData.location || '',
+        contactPerson: formData.contactPerson || null,
+        contactEmail: formData.contactEmail || null,
+        contactPhone: formData.contactPhone || null,
+        website: formData.website || null,
+        progress: 0,
+        notes: formData.notes,
+        tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag),
+        imageUrl: selectedFile ? URL.createObjectURL(selectedFile) : null
+      }
 
-  const updateApplicationStatus = (id: string, newStatus: JobApplication['status']) => {
-    setApplications(prev => prev.map(app => 
-      app.id === id ? { ...app, status: newStatus } : app
-    ))
-  }
-
-  const addReminderToApplication = (applicationId: string, reminder: Omit<Reminder, 'id' | 'completed'>) => {
-    const newReminder: Reminder = {
-      ...reminder,
-      id: Date.now().toString(),
-      completed: false
+      const createdApp = await apiClient.post<JobApplication>('/api/kanban', payload)
+      setApplications(prev => [createdApp, ...prev])
+      setIsAddModalOpen(false)
+      setIsImageUploadModalOpen(false)
+      setSelectedFile(null)
+      setFormData({
+        company: '',
+        position: '',
+        description: '',
+        salary: '',
+        location: '',
+        contactPerson: '',
+        contactEmail: '',
+        contactPhone: '',
+        website: '',
+        notes: '',
+        tags: ''
+      })
+      toast.success('Candidatura adicionada com sucesso!')
+    } catch (err: any) {
+      console.error('Erro ao criar candidatura:', err)
+      toast.error('Não foi possível adicionar a candidatura.')
     }
-
-    setApplications(prev => prev.map(app => 
-      app.id === applicationId 
-        ? { ...app, reminders: [...app.reminders, newReminder] }
-        : app
-    ))
   }
 
-  const toggleReminderCompletion = (applicationId: string, reminderId: string) => {
-    setApplications(prev => prev.map(app => 
-      app.id === applicationId 
-        ? { 
-            ...app, 
-            reminders: app.reminders.map(reminder => 
-              reminder.id === reminderId 
-                ? { ...reminder, completed: !reminder.completed }
-                : reminder
-            )
-          }
-        : app
-    ))
+  const updateApplicationStatus = async (id: string, newStatus: JobApplication['status']) => {
+    const progressMap = {
+      interested: 0,
+      applied: 20,
+      test: 50,
+      interview: 75,
+      offer: 100,
+      rejected: 100
+    }
+    const progress = progressMap[newStatus] ?? 0;
+
+    try {
+      const updated = await apiClient.put<JobApplication>(`/api/kanban/${id}`, { 
+        status: newStatus,
+        progress
+      })
+      setApplications(prev => prev.map(app => 
+        app.id === id ? { ...app, status: updated.status, progress: updated.progress } : app
+      ))
+      toast.success(`Status atualizado para ${statusConfig[newStatus].label}`)
+    } catch (err) {
+      console.error('Erro ao atualizar status:', err)
+      toast.error('Não foi possível atualizar o status.')
+    }
+  }
+
+  const deleteApplication = async (id: string) => {
+    try {
+      await apiClient.delete(`/api/kanban/${id}`)
+      setApplications(prev => prev.filter(app => app.id !== id))
+      toast.success('Candidatura removida com sucesso!')
+    } catch (err) {
+      console.error('Erro ao excluir candidatura:', err)
+      toast.error('Não foi possível excluir a candidatura.')
+    }
+  }
+
+  const addReminderToApplication = async (applicationId: string, reminder: Omit<Reminder, 'id' | 'completed'>) => {
+    try {
+      const newReminder = await apiClient.post<Reminder>(`/api/kanban/${applicationId}/reminders`, {
+        title: reminder.title,
+        description: reminder.description,
+        date: reminder.date,
+        completed: false,
+        type: reminder.type
+      })
+
+      setApplications(prev => prev.map(app => 
+        app.id === applicationId 
+          ? { ...app, reminders: [...app.reminders, newReminder] }
+          : app
+      ))
+      toast.success('Lembrete adicionado com sucesso!')
+    } catch (err) {
+      console.error('Erro ao adicionar lembrete:', err)
+      toast.error('Não foi possível adicionar o lembrete.')
+    }
+  }
+
+  const toggleReminderCompletion = async (applicationId: string, reminderId: string) => {
+    const app = applications.find(a => a.id === applicationId)
+    const reminder = app?.reminders.find(r => r.id === reminderId)
+    if (!reminder) return
+
+    try {
+      const updated = await apiClient.put<Reminder>(`/api/kanban/${applicationId}/reminders/${reminderId}`, {
+        completed: !reminder.completed
+      })
+
+      setApplications(prev => prev.map(app => 
+        app.id === applicationId 
+          ? { 
+              ...app, 
+              reminders: app.reminders.map(r => 
+                r.id === reminderId ? { ...r, completed: updated.completed } : r
+              )
+            }
+          : app
+      ))
+      toast.success(updated.completed ? 'Lembrete concluído!' : 'Lembrete reaberto.')
+    } catch (err) {
+      console.error('Erro ao alternar lembrete:', err)
+      toast.error('Não foi possível atualizar o lembrete.')
+    }
   }
 
   const handleAddReminder = (applicationId: string) => {
@@ -262,7 +278,7 @@ export default function KanbanCandidaturas() {
 
   const todayReminders = applications
     .flatMap(app => app.reminders)
-    .filter(reminder => !reminder.completed && isAfter(startOfDay(reminder.date), startOfDay(new Date())))
+    .filter(reminder => !reminder.completed && isAfter(startOfDay(new Date(reminder.date)), startOfDay(new Date())))
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -523,7 +539,7 @@ export default function KanbanCandidaturas() {
                         <p className="font-medium">{reminder.title}</p>
                         <p className="text-sm text-gray-600">{reminder.description}</p>
                         <p className="text-xs text-gray-500">
-                          {format(reminder.date, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                          {format(new Date(reminder.date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                         </p>
                       </div>
                       <Button size="sm" variant="outline">
@@ -561,6 +577,7 @@ export default function KanbanCandidaturas() {
                       onStatusChange={updateApplicationStatus}
                       onAddReminder={handleAddReminder}
                       onToggleReminder={toggleReminderCompletion}
+                      onDelete={deleteApplication}
                     />
                   ))}
                 </div>
@@ -592,9 +609,10 @@ interface ApplicationCardProps {
   onStatusChange: (id: string, status: JobApplication['status']) => void
   onAddReminder: (applicationId: string) => void
   onToggleReminder: (applicationId: string, reminderId: string) => void
+  onDelete: (id: string) => void
 }
 
-function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder }: ApplicationCardProps) {
+function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder, onDelete }: ApplicationCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
 
@@ -696,7 +714,7 @@ function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleR
                     <div key={reminder.id} className="text-xs bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
                       <p className="font-medium">{reminder.title}</p>
                       <p className="text-gray-600 dark:text-gray-400">
-                        {format(reminder.date, 'dd/MM', { locale: ptBR })}
+                        {format(new Date(reminder.date), 'dd/MM', { locale: ptBR })}
                       </p>
                     </div>
                   ))}
@@ -745,7 +763,7 @@ function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleR
               <div>
                 <Label className="text-sm font-medium">Data da Candidatura</Label>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {format(application.appliedDate, 'dd/MM/yyyy', { locale: ptBR })}
+                  {format(new Date(application.appliedDate), 'dd/MM/yyyy', { locale: ptBR })}
                 </p>
               </div>
               <div>
@@ -831,7 +849,7 @@ function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleR
                           {reminder.description}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {format(reminder.date, 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                          {format(new Date(reminder.date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
                         </p>
                       </div>
                       <Switch 
@@ -853,6 +871,19 @@ function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleR
               <Button variant="outline" className="flex-1">
                 <Edit className="h-4 w-4 mr-2" />
                 Editar
+              </Button>
+              <Button 
+                variant="destructive" 
+                className="flex-1"
+                onClick={() => {
+                  if (confirm('Tem certeza que deseja excluir esta candidatura?')) {
+                    onDelete(application.id)
+                    setShowDetails(false)
+                  }
+                }}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Excluir
               </Button>
             </div>
 
