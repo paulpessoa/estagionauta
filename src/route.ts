@@ -6,6 +6,7 @@ import Cadastro from './pages/Cadastro'
 import CadastroAgencia from './pages/CadastroAgencia'
 import CalculadoraRecesso from './pages/CalculadoraRecesso'
 import EsqueciSenha from './pages/EsqueciSenha'
+import RedefinirSenha from './pages/RedefinirSenha'
 import Login from './pages/Login'
 import MapaAgencias from './pages/MapaAgencias'
 import ResultadoCurriculo from './pages/ResultadoCurriculo'
@@ -59,6 +60,7 @@ export const routes = [
   { path: '/dashboard', component: ProtectedDashboard },
   { path: '/login', component: Login },
   { path: '/esqueci-senha', component: EsqueciSenha },
+  { path: '/redefinir-senha', component: RedefinirSenha },
   { path: '/cadastro', component: Cadastro },
 
   { path: '/admin', component: ProtectedAdmin },
