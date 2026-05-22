@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
 import { CheckCircle, Star, Rocket, ArrowRight } from 'lucide-react'
-import { verifyPayment } from '../api/stripe'
+import { apiClient } from '../lib/apiClient'
 import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
 
@@ -34,7 +34,7 @@ export default function Sucesso() {
 
   const verifyPaymentAndAddCredits = async () => {
     try {
-      const result = await verifyPayment(sessionId!)
+      const result = await apiClient.post<PaymentData>('/api/stripe/verify-session', { sessionId })
       setPaymentData(result)
       
       // Atualizar créditos na interface

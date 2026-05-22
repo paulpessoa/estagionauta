@@ -51,7 +51,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
         planId,
         credits: plan.credits.toString(),
       },
-      success_url: `${env.CLIENT_URL}/dashboard?payment=success`,
+      success_url: `${env.CLIENT_URL}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${env.CLIENT_URL}/precos?payment=cancel`,
     });
 
@@ -114,6 +114,31 @@ app.get('/plans', (c) => {
       ...plan,
     }))
   );
+});
+
+// POST /api/stripe/verify-session - Verify checkout session details for success page
+app.post('/verify-session', authMiddleware, zValidator('json', z.object({ sessionId: z.string() })), async (c) => {
+  const { sessionId } = c.req.valid('json');
+  try {
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    if (session.payment_status === 'paid') {
+      const planId = session.metadata?.planId;
+      const credits = session.metadata?.credits ? parseInt(session.metadata.credits, 10) : 0;
+      const plan = planId ? PLANS[planId as PlanId] : null;
+
+      return c.json({
+        credits,
+        analyses: plan ? plan.credits / 3 : 0,
+        planName: plan ? plan.name : 'Personalizado',
+        amount: session.amount_total ? session.amount_total / 100 : 0,
+      });
+    } else {
+      return c.json({ error: 'Pagamento não confirmado' }, 400);
+    }
+  } catch (err) {
+    console.error('Verify Stripe session failed:', err);
+    return c.json({ error: 'Erro ao verificar pagamento' }, 500);
+  }
 });
 
 export default app;

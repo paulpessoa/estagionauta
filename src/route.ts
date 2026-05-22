@@ -55,6 +55,8 @@ const ProtectedGeradorCurriculos = () => React.createElement(ProtectedRoute, nul
 
 const ProtectedSimuladorEntrevistas = () => React.createElement(ProtectedRoute, null, React.createElement(SimuladorEntrevistas))
 
+const ProtectedSucesso = () => React.createElement(ProtectedRoute, null, React.createElement(Sucesso))
+
 export const routes = [
   { path: '/', component: HomePage },
   { path: '/dashboard', component: ProtectedDashboard },
@@ -69,7 +71,7 @@ export const routes = [
   { path: '/cadastro-agencia', component: CadastroAgencia },  
 
   { path: '/analise-curriculo', component: ProtectedAnaliseCurriculo },
-  { path: '/analise-curriculo/sucesso', component: Sucesso },
+  { path: '/analise-curriculo/sucesso', component: ProtectedSucesso },
   { path: '/minhas-analises', component: ProtectedMinhasAnalises },
   { path: '/notificacoes', component: ProtectedNotificacoes },
   { path: '/email-logs', component: ProtectedEmailLogs },
@@ -83,7 +85,7 @@ export const routes = [
   { path: '/configuracoes', component: ProtectedConfiguracoes },
   { path: '/resultado-curriculo/:id', component: ProtectedResultadoCurriculo },
   { path: '/resultado-curriculo-exemplo', component: ResultadoCurriculoExemplo },
-  { path: '/sucesso', component: Sucesso },
+  { path: '/sucesso', component: ProtectedSucesso },
   { path: '/afiliados', component: Afiliados },
   { path: '/privacy-policy', component: PrivacyPolicy },
   { path: '/curriculo/:slug', component: Curriculo },
