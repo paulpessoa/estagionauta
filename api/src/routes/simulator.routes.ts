@@ -78,8 +78,9 @@ app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), as
     const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
       'consume_credits',
       {
-        p_user_id: user.id,
-        p_amount: 1,
+        user_uuid: user.id,
+        amount: 1,
+        description: 'Simulação de entrevista',
       }
     );
 

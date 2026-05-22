@@ -80,3 +80,10 @@ functions/node_modules/
 # yarn.lock
 # package-lock.json
 # pnpm-lock.yaml
+
+# Playwright and tests
+test-results/
+playwright-report/
+api/test-results/
+.env.test
+
