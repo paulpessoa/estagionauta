@@ -7,6 +7,8 @@ import { useAuth } from '../hooks/useAuth'
 import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
 import { apiClient } from '../lib/apiClient'
+import { StripeDebug } from '../components/StripeDebug'
+
 
 const plans = [
   {
