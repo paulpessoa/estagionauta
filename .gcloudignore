@@ -1,0 +1,46 @@
+# Google Cloud SDK ignore file for repository root
+
+# Exclude Git metadata
+.git/
+.gitignore
+.gcloudignore
+.dockerignore
+
+# Exclude local build artifacts and dependencies
+node_modules/
+dist/
+api/node_modules/
+api/dist/
+
+# Exclude frontend code and public assets at the root
+/src/
+/public/
+/index.html
+/components.json
+/postcss.config.js
+/tailwind.config.ts
+/vite.config.ts
+/tsconfig.app.json
+/tsconfig.node.json
+/tsconfig.json
+/eslint.config.js
+/vercel.json
+
+# Exclude local lock files not needed for backend build
+/bun.lockb
+/package-lock.json
+/package.json
+
+# Exclude local configuration files
+.env
+.env.*
+!.env.example
+api/.env
+api/.env.*
+
+# Exclude Supabase local configs and migrations
+/supabase/
+/deploy_edge_function.md
+
+# Exclude other documentation and markdown at root
+/*.md

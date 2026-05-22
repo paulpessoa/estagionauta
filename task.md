@@ -64,6 +64,7 @@
 
 - [ ] Implementar testes unitários para os services no `/api` (Supabase, Credits, Stripe, AI) com Vitest
 - [ ] Implementar testes de integração básicos para as rotas do Hono
+- [x] Deploy manual do Backend no Google Cloud Run concluído com sucesso
 - [ ] Configurar GitHub Actions CI/CD para deploy independente
 - [ ] Configurar monitoramento de erros (Sentry free tier) e Uptime (UptimeRobot)
 
