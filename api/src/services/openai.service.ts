@@ -2,7 +2,8 @@ import OpenAI from 'openai';
 import { env } from '../config/env.js';
 
 const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
+  apiKey: env.GROQ_API_KEY,
+  baseURL: 'https://api.groq.com/openai/v1',
 });
 
 import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData, SimulatorMessage, SimulatorFeedback } from '../../../shared/types/index.js';
@@ -66,7 +67,7 @@ Adicione ao JSON:
   }
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
@@ -150,7 +151,7 @@ INSTRUÇÕES DE FORMATAÇÃO:
 5. Remova seções vazias ou não informadas.`;
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
@@ -214,7 +215,7 @@ Regras cruciais:
   }
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'llama-3.3-70b-versatile',
     messages,
     temperature: 0.8,
     max_tokens: 800,
@@ -265,7 +266,7 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
 }`;
 
   const response = await openai.chat.completions.create({
-    model: 'gpt-4',
+    model: 'llama-3.3-70b-versatile',
     messages: [
       { role: 'system', content: systemPrompt },
       {
