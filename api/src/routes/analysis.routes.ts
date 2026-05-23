@@ -198,4 +198,28 @@ app.get('/:id', authMiddleware, async (c) => {
   }
 });
 
+// DELETE /api/analysis/:id - Delete specific analysis
+app.delete('/:id', authMiddleware, async (c) => {
+  const user = c.get('user');
+  const id = c.req.param('id');
+
+  try {
+    const { error } = await supabaseAdmin
+      .from('curriculum_analysis')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Analysis deletion error:', error);
+      return c.json({ error: 'Erro ao excluir a análise ou permissão negada' }, 500);
+    }
+
+    return c.json({ success: true, message: 'Análise excluída com sucesso' });
+  } catch (err) {
+    console.error('Delete route error:', err);
+    return c.json({ error: 'Erro interno do servidor ao excluir análise' }, 500);
+  }
+});
+
 export default app;

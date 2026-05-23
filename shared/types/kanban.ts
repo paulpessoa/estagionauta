@@ -9,6 +9,17 @@ export interface Reminder {
   created_at?: string;
 }
 
+export interface StatusHistoryEntry {
+  status: 'interested' | 'applied' | 'interview' | 'test' | 'offer' | 'rejected';
+  date: string;
+}
+
+export interface FeedbackEntry {
+  author?: string;
+  text: string;
+  date: string;
+}
+
 export interface JobApplication {
   id: string;
   user_id?: string;
@@ -30,6 +41,8 @@ export interface JobApplication {
   notes: string;
   imageUrl?: string;
   tags: string[];
+  statusHistory?: StatusHistoryEntry[];
+  feedbacks?: FeedbackEntry[];
   created_at?: string;
   updated_at?: string;
 }

@@ -5,8 +5,14 @@ import { authMiddleware } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { generateNextInterviewQuestionAI, generateInterviewFeedbackAI } from '../services/openai.service.js';
 import type { SimulatorMessage, InterviewSimulation } from '../../../shared/types/index.js';
+import OpenAI from 'openai';
+import { env } from '../config/env.js';
 
 const app = new Hono();
+
+const openai = new OpenAI({
+  apiKey: env.OPENAI_API_KEY,
+});
 
 // Schema for starting a simulation
 const startSimulationSchema = z.object({
@@ -236,6 +242,53 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
   } catch (err) {
     console.error('Unexpected error answering simulation:', err);
     return c.json({ error: 'Erro interno ao processar resposta' }, 500);
+  }
+});
+
+// DELETE /api/simulator/:id - Delete specific simulation
+app.delete('/:id', authMiddleware, async (c) => {
+  const user = c.get('user');
+  const id = c.req.param('id');
+
+  try {
+    const { error } = await supabaseAdmin
+      .from('interview_simulations')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id);
+
+    if (error) {
+      console.error('Simulation deletion error:', error);
+      return c.json({ error: 'Erro ao excluir a simulação ou permissão negada' }, 500);
+    }
+
+    return c.json({ success: true });
+  } catch (err) {
+    console.error('Simulation delete error:', err);
+    return c.json({ error: 'Erro interno no servidor' }, 500);
+  }
+});
+
+// POST /api/simulator/tts - Generate Text-to-Speech audio
+app.post('/tts', authMiddleware, zValidator('json', z.object({ text: z.string().min(1) })), async (c) => {
+  const { text } = c.req.valid('json');
+
+  try {
+    const mp3 = await openai.audio.speech.create({
+      model: "tts-1",
+      voice: "nova", // "alloy", "echo", "fable", "onyx", "nova", and "shimmer" (Nova is energetic/animated)
+      input: text,
+    });
+    
+    const buffer = Buffer.from(await mp3.arrayBuffer());
+    
+    c.header('Content-Type', 'audio/mpeg');
+    c.header('Content-Length', buffer.length.toString());
+    
+    return c.body(buffer);
+  } catch (err) {
+    console.error('Error generating TTS:', err);
+    return c.json({ error: 'Erro ao gerar áudio' }, 500);
   }
 });
 

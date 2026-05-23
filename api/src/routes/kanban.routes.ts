@@ -18,12 +18,20 @@ const jobApplicationSchema = z.object({
   contactEmail: z.string().optional().nullable(),
   contactPhone: z.string().optional().nullable(),
   website: z.string().optional().nullable(),
-  progress: z.number().min(0).max(100).default(0),
   nextAction: z.string().optional().nullable(),
   nextActionDate: z.string().optional().nullable(),
   notes: z.string().optional().default(''),
   imageUrl: z.string().optional().nullable(),
   tags: z.array(z.string()).default([]),
+  statusHistory: z.array(z.object({
+    status: z.enum(['interested', 'applied', 'interview', 'test', 'offer', 'rejected']),
+    date: z.string(),
+  })).optional(),
+  feedbacks: z.array(z.object({
+    author: z.string().optional(),
+    text: z.string(),
+    date: z.string(),
+  })).optional(),
 });
 
 const reminderSchema = z.object({
@@ -33,6 +41,18 @@ const reminderSchema = z.object({
   completed: z.boolean().default(false),
   type: z.enum(['call', 'email', 'test', 'interview', 'follow-up', 'deadline']),
 });
+
+const getProgressFromStatus = (status: string): number => {
+  const map: Record<string, number> = {
+    interested: 0,
+    applied: 20,
+    test: 50,
+    interview: 75,
+    offer: 100,
+    rejected: 100
+  };
+  return map[status] ?? 0;
+};
 
 // GET /api/kanban - Fetch all applications and reminders for the user
 app.get('/', authMiddleware, async (c) => {
@@ -101,6 +121,8 @@ app.get('/', authMiddleware, async (c) => {
       notes: app.notes,
       imageUrl: app.image_url,
       tags: app.tags,
+      statusHistory: app.status_history ?? [],
+      feedbacks: app.feedbacks ?? [],
       reminders: remindersByAppId[app.id] ?? [],
     }));
 
@@ -117,6 +139,10 @@ app.post('/', authMiddleware, zValidator('json', jobApplicationSchema), async (c
   const body = c.req.valid('json');
 
   try {
+    const initialHistory = body.statusHistory && body.statusHistory.length > 0
+      ? body.statusHistory
+      : [{ status: body.status, date: new Date().toISOString() }];
+
     const { data: appData, error } = await supabaseAdmin
       .from('kanban_applications')
       .insert({
@@ -132,12 +158,14 @@ app.post('/', authMiddleware, zValidator('json', jobApplicationSchema), async (c
         contact_email: body.contactEmail,
         contact_phone: body.contactPhone,
         website: body.website,
-        progress: body.progress,
+        progress: getProgressFromStatus(body.status),
         next_action: body.nextAction,
         next_action_date: body.nextActionDate,
         notes: body.notes,
         image_url: body.imageUrl,
         tags: body.tags,
+        status_history: initialHistory,
+        feedbacks: body.feedbacks ?? [],
       })
       .select()
       .single();
@@ -156,6 +184,8 @@ app.post('/', authMiddleware, zValidator('json', jobApplicationSchema), async (c
       nextAction: appData.next_action,
       nextActionDate: appData.next_action_date,
       imageUrl: appData.image_url,
+      statusHistory: appData.status_history ?? [],
+      feedbacks: appData.feedbacks ?? [],
       reminders: [],
     }, 201);
   } catch (err) {
@@ -171,10 +201,10 @@ app.put('/:id', authMiddleware, zValidator('json', jobApplicationSchema.partial(
   const body = c.req.valid('json');
 
   try {
-    // Verify ownership
+    // Verify ownership and fetch current status history
     const { data: existingApp, error: fetchError } = await supabaseAdmin
       .from('kanban_applications')
-      .select('id')
+      .select('id, status, status_history, feedbacks')
       .eq('id', id)
       .eq('user_id', user.id)
       .single();
@@ -187,7 +217,6 @@ app.put('/:id', authMiddleware, zValidator('json', jobApplicationSchema.partial(
     const updateData: any = {};
     if (body.company !== undefined) updateData.company = body.company;
     if (body.position !== undefined) updateData.position = body.position;
-    if (body.status !== undefined) updateData.status = body.status;
     if (body.appliedDate !== undefined) updateData.applied_date = body.appliedDate;
     if (body.description !== undefined) updateData.description = body.description;
     if (body.salary !== undefined) updateData.salary = body.salary;
@@ -196,12 +225,32 @@ app.put('/:id', authMiddleware, zValidator('json', jobApplicationSchema.partial(
     if (body.contactEmail !== undefined) updateData.contact_email = body.contactEmail;
     if (body.contactPhone !== undefined) updateData.contact_phone = body.contactPhone;
     if (body.website !== undefined) updateData.website = body.website;
-    if (body.progress !== undefined) updateData.progress = body.progress;
     if (body.nextAction !== undefined) updateData.next_action = body.nextAction;
     if (body.nextActionDate !== undefined) updateData.next_action_date = body.nextActionDate;
     if (body.notes !== undefined) updateData.notes = body.notes;
     if (body.imageUrl !== undefined) updateData.image_url = body.imageUrl;
     if (body.tags !== undefined) updateData.tags = body.tags;
+
+    // Handle status history transition appending
+    if (body.status !== undefined) {
+      updateData.status = body.status;
+      updateData.progress = getProgressFromStatus(body.status);
+      if (body.status !== existingApp.status) {
+        const currentHistory = Array.isArray(existingApp.status_history)
+          ? existingApp.status_history
+          : [];
+        updateData.status_history = [
+          ...currentHistory,
+          { status: body.status, date: new Date().toISOString() }
+        ];
+      }
+    } else if (body.statusHistory !== undefined) {
+      updateData.status_history = body.statusHistory;
+    }
+
+    if (body.feedbacks !== undefined) {
+      updateData.feedbacks = body.feedbacks;
+    }
 
     const { data: updatedApp, error } = await supabaseAdmin
       .from('kanban_applications')
@@ -224,6 +273,8 @@ app.put('/:id', authMiddleware, zValidator('json', jobApplicationSchema.partial(
       nextAction: updatedApp.next_action,
       nextActionDate: updatedApp.next_action_date,
       imageUrl: updatedApp.image_url,
+      statusHistory: updatedApp.status_history ?? [],
+      feedbacks: updatedApp.feedbacks ?? [],
     });
   } catch (err) {
     console.error('Kanban update error:', err);
