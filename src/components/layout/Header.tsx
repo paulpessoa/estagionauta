@@ -103,7 +103,7 @@ const NavLinks = ({
           )}
         </Link>
         <Link
-          to="/calculadora-recesso"
+          to="/calculadora"
           className={`transition-colors hover:text-foreground/80 text-foreground/60`}
           onClick={onLinkClick}
         >

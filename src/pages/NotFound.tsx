@@ -1,9 +1,22 @@
-
-import { Link } from 'react-router-dom'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Home, ArrowLeft, Search, FileText, MapPin, Calculator, Users } from 'lucide-react'
-import { toast } from 'sonner'
+import { Link } from "react-router-dom"
+import { Button } from "@/components/ui/button"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import {
+  Home,
+  ArrowLeft,
+  Search,
+  FileText,
+  MapPin,
+  Calculator,
+  Users
+} from "lucide-react"
+import { toast } from "sonner"
 
 export default function NotFound() {
   return (
@@ -37,8 +50,8 @@ export default function NotFound() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link 
-                    to="/analise-curriculo" 
+                  <Link
+                    to="/analise-curriculo"
                     className="flex flex-col items-center space-y-2"
                   >
                     <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
@@ -47,27 +60,36 @@ export default function NotFound() {
                     <span className="font-medium">Analisar Currículo</span>
                   </Link>
                 </Button>
-                
+
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link to="/agencias" className="flex flex-col items-center space-y-2">
+                  <Link
+                    to="/agencias"
+                    className="flex flex-col items-center space-y-2"
+                  >
                     <div className="h-8 w-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
                       <MapPin className="h-4 w-4 text-green-600 dark:text-green-400" />
                     </div>
                     <span className="font-medium">Mapa de Agências</span>
                   </Link>
                 </Button>
-                
+
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link to="/calculadora-recesso" className="flex flex-col items-center space-y-2">
+                  <Link
+                    to="/calculadora"
+                    className="flex flex-col items-center space-y-2"
+                  >
                     <div className="h-8 w-8 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center">
                       <Calculator className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <span className="font-medium">Calculadora de Recesso</span>
                   </Link>
                 </Button>
-                
+
                 <Button variant="outline" asChild className="h-auto p-4">
-                  <Link to="/mentores" className="flex flex-col items-center space-y-2">
+                  <Link
+                    to="/mentores"
+                    className="flex flex-col items-center space-y-2"
+                  >
                     <div className="h-8 w-8 bg-orange-100 dark:bg-orange-900 rounded-full flex items-center justify-center">
                       <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                     </div>

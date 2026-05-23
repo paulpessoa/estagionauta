@@ -47,7 +47,10 @@ export default function HomePage() {
     <div className="flex flex-col min-h-screen">
       <Helmet>
         <title>Estagionauta | Conquiste Seu Estágio Ideal com IA</title>
-        <meta name="description" content="Analise seu currículo com inteligência artificial, explore o mapa de agências de estágio e utilize ferramentas avançadas para impulsionar sua carreira profissional." />
+        <meta
+          name="description"
+          content="Analise seu currículo com inteligência artificial, explore o mapa de agências de estágio e utilize ferramentas avançadas para impulsionar sua carreira profissional."
+        />
         <link rel="canonical" href="https://www.estagionauta.com.br/" />
       </Helmet>
 
@@ -74,10 +77,7 @@ export default function HomePage() {
               className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
               asChild
             >
-              <Link
-                to="/analise-curriculo"
-                onClick={handleAuthGatedClick}
-              >
+              <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>
@@ -169,10 +169,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-bold shadow-lg hover:from-pink-600 hover:to-blue-600"
                   asChild
                 >
-                  <Link
-                    to="/analise-curriculo"
-                    onClick={handleAuthGatedClick}
-                  >
+                  <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
                     Analisar Currículo com IA
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -255,7 +252,7 @@ export default function HomePage() {
                   className="w-full border-purple-400 text-purple-700 dark:text-purple-400 font-bold"
                   asChild
                 >
-                  <Link to="/calculadora-recesso">
+                  <Link to="/calculadora">
                     Calcular Recesso
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -340,10 +337,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-indigo-500 to-blue-500 hover:from-indigo-600 hover:to-blue-600 text-white font-bold shadow-lg"
                   asChild
                 >
-                  <Link
-                    to="/candidaturas"
-                    onClick={handleAuthGatedClick}
-                  >
+                  <Link to="/candidaturas" onClick={handleAuthGatedClick}>
                     Organizar Vagas
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -385,10 +379,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold shadow-lg"
                   asChild
                 >
-                  <Link
-                    to="/gerador-curriculos"
-                    onClick={handleAuthGatedClick}
-                  >
+                  <Link to="/gerador-curriculos" onClick={handleAuthGatedClick}>
                     Gerar Currículo
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -552,10 +543,7 @@ export default function HomePage() {
               className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
               asChild
             >
-              <Link
-                to="/analise-curriculo"
-                onClick={handleAuthGatedClick}
-              >
+              <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>

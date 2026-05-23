@@ -404,28 +404,12 @@ export default function GeradorCurriculos() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 dark:bg-gray-950/50 py-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-gray-200 dark:border-gray-800 pb-6">
           <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Badge
-                variant="secondary"
-                className="bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300 flex gap-1 items-center"
-              >
-                <Sparkles className="h-3 w-3" /> Gerador Inteligente
-              </Badge>
-              {userCredits !== null && (
-                <Badge
-                  variant="outline"
-                  className="text-gray-600 border-gray-300 dark:text-gray-400"
-                >
-                  {userCredits} créditos disponíveis
-                </Badge>
-              )}
-            </div>
-            <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-violet-500 to-indigo-500 bg-clip-text text-transparent">
               Criador de Currículos com IA
             </h1>
             <p className="text-gray-500 dark:text-gray-400 mt-1">
@@ -434,13 +418,20 @@ export default function GeradorCurriculos() {
             </p>
           </div>
 
-          {currentView !== "history" && (
+          {currentView !== "history" ? (
             <Button
               variant="outline"
               onClick={() => setCurrentView("history")}
               className="flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" /> Voltar ao Histórico
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setCurrentView("form")}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold"
+            >
+              <PlusCircle className="mr-2 h-4 w-4" /> Novo Currículo
             </Button>
           )}
         </div>
@@ -469,12 +460,6 @@ export default function GeradorCurriculos() {
                     <h2 className="text-xl font-bold">
                       Seus Currículos Salvos
                     </h2>
-                    <Button
-                      onClick={() => setCurrentView("form")}
-                      className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold"
-                    >
-                      <Plus className="h-4 w-4 mr-2" /> Gerar Novo Currículo
-                    </Button>
                   </div>
 
                   {resumes.length === 0 ? (
@@ -1253,19 +1238,9 @@ export default function GeradorCurriculos() {
                 <div className="space-y-6">
                   {/* Actions bar */}
                   <div className="flex flex-wrap justify-between items-center bg-white dark:bg-gray-900 border p-4 rounded-xl gap-3 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentView("history")}
-                        className="flex items-center gap-1.5 text-xs sm:text-sm"
-                      >
-                        <ArrowLeft className="h-4 w-4" /> Histórico
-                      </Button>
-                      <h2 className="font-bold text-sm sm:text-base hidden sm:inline-block max-w-xs truncate">
-                        {selectedResume.title}
-                      </h2>
-                    </div>
+                    <h2 className="font-bold text-sm sm:text-base hidden sm:inline-block max-w-xs truncate">
+                      {selectedResume.title}
+                    </h2>
 
                     <div className="flex gap-2 w-full sm:w-auto justify-end">
                       <Button

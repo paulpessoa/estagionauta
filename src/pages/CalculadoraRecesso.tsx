@@ -1,22 +1,33 @@
-
-import { useState } from 'react'
-import { Helmet } from 'react-helmet-async'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Calendar, Calculator, DollarSign, Download, Info } from 'lucide-react'
+import { useState } from "react"
+import { Helmet } from "react-helmet-async"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
+import { Calendar, Calculator, DollarSign, Download, Info } from "lucide-react"
 
 export default function CalculadoraRecessoPage() {
   const [formData, setFormData] = useState({
-    startDate: '',
-    endDate: '',
-    salario: '',
-    horasDiarias: '6',
-    diasSemana: '5'
+    startDate: "",
+    endDate: "",
+    salario: "",
+    horasDiarias: "6",
+    diasSemana: "5"
   })
-  
+
   const [result, setResult] = useState<{
     diasRecesso: number
     valorRecesso: number
@@ -28,17 +39,19 @@ export default function CalculadoraRecessoPage() {
 
     const start = new Date(formData.startDate)
     const end = formData.endDate ? new Date(formData.endDate) : new Date()
-    
+
     // Calculate months worked
-    const monthsWorked = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth())
-    
+    const monthsWorked =
+      (end.getFullYear() - start.getFullYear()) * 12 +
+      (end.getMonth() - start.getMonth())
+
     // For every 12 months, student gets 30 days of recess
     const diasRecesso = Math.floor((monthsWorked / 12) * 30)
-    
+
     // Calculate daily salary
     const salarioMensal = parseFloat(formData.salario)
     const salarioDiario = salarioMensal / 30
-    
+
     // Calculate recess payment (same as salary)
     const valorRecesso = diasRecesso * salarioDiario
 
@@ -50,24 +63,31 @@ export default function CalculadoraRecessoPage() {
   }
 
   const updateFormData = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Calculadora de Recesso de Estágio | Estagionauta</title>
-        <meta name="description" content="Calcule gratuitamente quantos dias de recesso (férias) você tem direito a tirar no seu estágio e o valor total que deve receber da empresa." />
-        <link rel="canonical" href="https://www.estagionauta.com.br/calculadora-recesso" />
+        <meta
+          name="description"
+          content="Calcule gratuitamente quantos dias de recesso (férias) você tem direito a tirar no seu estágio e o valor total que deve receber da empresa."
+        />
+        <link
+          rel="canonical"
+          href="https://www.estagionauta.com.br/calculadora"
+        />
       </Helmet>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             Calculadora de Recesso
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Calcule seus dias de recesso e o valor que você tem direito a receber
+            Calcule seus dias de recesso e o valor que você tem direito a
+            receber
           </p>
         </div>
 
@@ -91,7 +111,9 @@ export default function CalculadoraRecessoPage() {
                     id="startDate"
                     type="date"
                     value={formData.startDate}
-                    onChange={(e) => updateFormData('startDate', e.target.value)}
+                    onChange={(e) =>
+                      updateFormData("startDate", e.target.value)
+                    }
                   />
                 </div>
 
@@ -101,7 +123,7 @@ export default function CalculadoraRecessoPage() {
                     id="endDate"
                     type="date"
                     value={formData.endDate}
-                    onChange={(e) => updateFormData('endDate', e.target.value)}
+                    onChange={(e) => updateFormData("endDate", e.target.value)}
                   />
                 </div>
 
@@ -112,13 +134,18 @@ export default function CalculadoraRecessoPage() {
                     type="number"
                     placeholder="1200.00"
                     value={formData.salario}
-                    onChange={(e) => updateFormData('salario', e.target.value)}
+                    onChange={(e) => updateFormData("salario", e.target.value)}
                   />
                 </div>
 
                 <div>
                   <Label>Horas diárias</Label>
-                  <Select value={formData.horasDiarias} onValueChange={(value) => updateFormData('horasDiarias', value)}>
+                  <Select
+                    value={formData.horasDiarias}
+                    onValueChange={(value) =>
+                      updateFormData("horasDiarias", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -132,7 +159,12 @@ export default function CalculadoraRecessoPage() {
 
                 <div>
                   <Label>Dias por semana</Label>
-                  <Select value={formData.diasSemana} onValueChange={(value) => updateFormData('diasSemana', value)}>
+                  <Select
+                    value={formData.diasSemana}
+                    onValueChange={(value) =>
+                      updateFormData("diasSemana", value)
+                    }
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -144,7 +176,7 @@ export default function CalculadoraRecessoPage() {
                   </Select>
                 </div>
 
-                <Button 
+                <Button
                   onClick={calculateRecesso}
                   className="w-full bg-purple-600 hover:bg-purple-700"
                   disabled={!formData.startDate || !formData.salario}
@@ -172,21 +204,31 @@ export default function CalculadoraRecessoPage() {
                     <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <Calendar className="h-4 w-4 text-blue-600" />
-                        <span className="text-sm font-medium">Dias de Recesso</span>
+                        <span className="text-sm font-medium">
+                          Dias de Recesso
+                        </span>
                       </div>
-                      <p className="text-2xl font-bold text-blue-600">{result.diasRecesso}</p>
-                      <p className="text-sm text-muted-foreground">dias corridos</p>
+                      <p className="text-2xl font-bold text-blue-600">
+                        {result.diasRecesso}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        dias corridos
+                      </p>
                     </div>
 
                     <div className="bg-green-50 dark:bg-green-950/30 p-4 rounded-lg">
                       <div className="flex items-center space-x-2 mb-2">
                         <DollarSign className="h-4 w-4 text-green-600" />
-                        <span className="text-sm font-medium">Valor do Recesso</span>
+                        <span className="text-sm font-medium">
+                          Valor do Recesso
+                        </span>
                       </div>
                       <p className="text-2xl font-bold text-green-600">
                         R$ {result.valorRecesso.toFixed(2)}
                       </p>
-                      <p className="text-sm text-muted-foreground">valor total</p>
+                      <p className="text-sm text-muted-foreground">
+                        valor total
+                      </p>
                     </div>
                   </div>
 
@@ -194,26 +236,38 @@ export default function CalculadoraRecessoPage() {
                     <h4 className="font-semibold mb-2">Detalhes do Cálculo</h4>
                     <ul className="text-sm space-y-1 text-muted-foreground">
                       <li>• A cada 12 meses: 30 dias de recesso</li>
-                      <li>• Valor diário: R$ {(parseFloat(formData.salario) / 30).toFixed(2)}</li>
+                      <li>
+                        • Valor diário: R${" "}
+                        {(parseFloat(formData.salario) / 30).toFixed(2)}
+                      </li>
                       <li>• Recesso remunerado conforme a bolsa-auxílio</li>
                     </ul>
                   </div>
 
                   <div className="flex space-x-2">
-                    <Button variant="outline" className="flex-1" onClick={() => handleDownloadPDF()}>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleDownloadPDF()}
+                    >
                       <Download className="mr-2 h-4 w-4" />
                       Baixar PDF
                     </Button>
-                    <Button variant="outline" className="flex-1" onClick={() => handleShare()}>
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => handleShare()}
+                    >
                       Compartilhar
                     </Button>
                   </div>
-                              {/* Disclaimer below buttons */}
-            {result && (
-              <p className="mt-4 text-center text-sm text-muted-foreground italic">
-                O resultado deste cálculo é apenas uma sugestão para apoiar sua negociação de folgas e férias. Aproveite!
-              </p>
-            )}
+                  {/* Disclaimer below buttons */}
+                  {result && (
+                    <p className="mt-4 text-center text-sm text-muted-foreground italic">
+                      O resultado deste cálculo é apenas uma sugestão para
+                      apoiar sua negociação de folgas e férias. Aproveite!
+                    </p>
+                  )}
                 </CardContent>
               </Card>
             ) : (
@@ -224,7 +278,8 @@ export default function CalculadoraRecessoPage() {
                     Preencha os dados para calcular
                   </h3>
                   <p className="text-muted-foreground text-center">
-                    Insira a data de início do estágio e o valor da bolsa-auxílio para ver o resultado
+                    Insira a data de início do estágio e o valor da
+                    bolsa-auxílio para ver o resultado
                   </p>
                 </CardContent>
               </Card>
@@ -271,18 +326,20 @@ export default function CalculadoraRecessoPage() {
   function handleShare() {
     if (!result) return
     const start = formData.startDate
-    const end = formData.endDate ? formData.endDate : new Date().toISOString().split('T')[0]
+    const end = formData.endDate
+      ? formData.endDate
+      : new Date().toISOString().split("T")[0]
     const message = `Meu cálculo de recesso:\nInício: ${start}\nFim: ${end}\nDias de recesso: ${result.diasRecesso}\nValor: R$ ${result.valorRecesso.toFixed(2)}`
     const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
-    window.open(whatsappUrl, '_blank')
+    window.open(whatsappUrl, "_blank")
   }
 
   // PDF download handler using print-like HTML snippet
   function handleDownloadPDF() {
     if (!result) return
-    const printContent = document.querySelector('.space-y-6') // The card content container for results
+    const printContent = document.querySelector(".space-y-6") // The card content container for results
     if (!printContent) return
-    const newWindow = window.open('', '', 'width=800,height=600')
+    const newWindow = window.open("", "", "width=800,height=600")
     if (!newWindow) return
     newWindow.document.write(`
       <html>

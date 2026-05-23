@@ -198,13 +198,13 @@ export default function AgenciasPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="min-h-screen bg-background">
       <Helmet>
         <title>Mapa de Agências de Estágio | Estagionauta</title>
         <meta name="description" content="Explore o mapa completo de agências de integração de estágio no Brasil. Encontre agências por cidade, estado e veja avaliações reais de outros estudantes." />
         <link rel="canonical" href="https://www.estagionauta.com.br/agencias" />
       </Helmet>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">Mapa de Agências de Estágio</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">Descubra e avalie agências de estágio na sua região. Veja avaliações reais de outros estudantes.</p>
