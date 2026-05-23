@@ -111,7 +111,8 @@ export function ProtectedRoute({
   }
 
   // Se requer role específica mas usuário não tem
-  if (requireRole && profile?.role !== requireRole) {
+  const hasRequiredRole = profile?.role === requireRole || (requireRole === 'moderator' && profile?.role === 'admin')
+  if (requireRole && !hasRequiredRole) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
