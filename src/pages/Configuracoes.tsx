@@ -336,7 +336,7 @@ export default function Configuracoes() {
   if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Acesso Negado</h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2">Você precisa estar logado para acessar as configurações.</p>
@@ -348,7 +348,7 @@ export default function Configuracoes() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-6">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Configurações</h1>

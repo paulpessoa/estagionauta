@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Helmet } from 'react-helmet-async'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -67,8 +68,13 @@ export default function Curriculo() {
         const { data: { user } } = await supabase.auth.getUser()
         setCurrentUser(user)
         
-        if (user && data) {
-          setIsOwner(user.id === data.id)
+        const isProfileOwner = user ? user.id === data.id : false
+        setIsOwner(isProfileOwner)
+
+        // Verificar visibilidade (privacidade)
+        const visibility = data.privacy_settings?.profileVisibility || 'public'
+        if (visibility === 'private' && !isProfileOwner) {
+          setError('privacy_private')
         }
       } catch (err) {
         setError('Erro ao carregar currículo')
@@ -113,21 +119,28 @@ export default function Curriculo() {
   }
 
   if (error || !profile) {
+    const isPrivate = error === 'privacy_private';
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto text-center">
             <div className="mb-8">
-              <FileText className="h-24 w-24 text-gray-400 mx-auto mb-4" />
+              {isPrivate ? (
+                <Lock className="h-24 w-24 text-gray-400 mx-auto mb-4" />
+              ) : (
+                <FileText className="h-24 w-24 text-gray-400 mx-auto mb-4" />
+              )}
               <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                Currículo não encontrado
+                {isPrivate ? 'Currículo Privado' : 'Currículo não encontrado'}
               </h1>
               <p className="text-gray-600 dark:text-gray-300 mb-8">
-                O currículo que você está procurando não existe ou foi removido.
+                {isPrivate 
+                  ? 'Este currículo está configurado como privado pelo proprietário.' 
+                  : 'O currículo que você está procurando não existe ou foi removido.'}
               </p>
             </div>
             <Link to="/">
-              <Button className="flex items-center gap-2">
+              <Button className="flex items-center gap-2 mx-auto">
                 <ArrowLeft className="h-4 w-4" />
                 Voltar ao início
               </Button>
@@ -140,6 +153,11 @@ export default function Curriculo() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <Helmet>
+        <title>{profile ? `Currículo de ${profile.full_name} | Estagionauta` : 'Currículo | Estagionauta'}</title>
+        <meta name="description" content={profile ? `Confira o perfil profissional de ${profile.full_name} no Estagionauta. Veja sua formação, biografia e informações profissionais.` : 'Visualizar currículo profissional no Estagionauta.'} />
+        <link rel="canonical" href={`https://www.estagionauta.com.br/curriculo/${slug}`} />
+      </Helmet>
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -215,7 +233,7 @@ export default function Curriculo() {
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {profile.email && (
+                    {profile.email && (isOwner || profile.privacy_settings?.showEmail !== false) && (
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-300">
@@ -223,7 +241,7 @@ export default function Curriculo() {
                         </span>
                       </div>
                     )}
-                    {profile.phone && (
+                    {profile.phone && (isOwner || profile.privacy_settings?.showPhone !== false) && (
                       <div className="flex items-center gap-2">
                         <Phone className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-600 dark:text-gray-300">
