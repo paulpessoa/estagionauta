@@ -46,7 +46,6 @@ import { useState } from "react"
 import { useTheme } from "next-themes"
 import { AuthRequiredModal } from "@/components/AuthRequiredModal"
 import { MagicLinkModal } from "@/components/auth/MagicLinkModal"
-import { useNotifications } from "@/hooks/useNotifications"
 import { Separator } from "@/components/ui/separator"
 import { useCredits } from "../../hooks/useCredits"
 import { useIsMobile } from "../../hooks/use-mobile"
@@ -225,7 +224,6 @@ export function Header() {
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
-  const { unreadCount, notifications, markAsRead } = useNotifications()
   const { credits } = useCredits()
   const navigate = useNavigate()
   const isMobile = useIsMobile()
@@ -238,15 +236,7 @@ export function Header() {
     navigate("/")
   }
 
-  const handleNotificationClick = (notification: {
-    id: string
-    action_url?: string
-  }) => {
-    markAsRead(notification.id)
-    if (notification.action_url) {
-      navigate(notification.action_url)
-    }
-  }
+
 
   const getInitials = (name: string) => {
     return name
@@ -378,27 +368,7 @@ export function Header() {
 
                 {user && profile ? (
                   <div className="flex flex-col space-y-4 pt-4 border-t">
-                    {/* Ícones de notificação e créditos */}
-                    <div className="flex items-center justify-between">
-                      <Button
-                        variant="ghost"
-                        asChild
-                        className="flex-1 justify-start"
-                      >
-                        <Link
-                          to="/notificacoes"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <Bell className="mr-2 h-4 w-4" />
-                          Notificações
-                          {unreadCount > 0 && (
-                            <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                              {unreadCount}
-                            </span>
-                          )}
-                        </Link>
-                      </Button>
-                    </div>
+                    {/* Ícones de créditos */}
 
                     <Link
                       to="/creditos"
@@ -613,18 +583,7 @@ export function Header() {
 
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
-              {/* Ícone de notificações */}
-              <Button variant="ghost" size="icon" asChild className="relative">
-                <Link to="/notificacoes">
-                  <Bell className="h-5 w-5" />
-                  {/* Badge de notificações não lidas */}
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                      {unreadCount}
-                    </span>
-                  )}
-                </Link>
-              </Button>
+
 
               {/* Ícone de estrelas (créditos) */}
               <Button variant="ghost" size="icon" asChild className="relative">
@@ -696,17 +655,7 @@ export function Header() {
                       Minhas Análises
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/notificacoes">
-                      <Bell className="mr-2 h-4 w-4" />
-                      Notificações
-                      {unreadCount > 0 && (
-                        <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </Link>
-                  </DropdownMenuItem>
+
                   <DropdownMenuItem asChild>
                     <Link to="/creditos">
                       <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />

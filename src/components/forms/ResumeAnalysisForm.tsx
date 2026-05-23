@@ -34,6 +34,7 @@ import {
 } from "lucide-react"
 import { useDropzone } from "react-dropzone"
 import { useAuth } from "@/hooks/useAuth"
+import { useToast } from "@/hooks/use-toast"
 
 interface ResumeAnalysisFormProps {
   onComplete: (data: ResumeFormData) => void
@@ -79,6 +80,7 @@ export function ResumeAnalysisForm({
   loading
 }: ResumeAnalysisFormProps) {
   const { profile } = useAuth()
+  const { toast } = useToast()
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<ResumeFormData>({
     // Basic info
@@ -134,14 +136,24 @@ export function ResumeAnalysisForm({
     { title: "Momento Atual", description: "Sua situação atual", icon: Target },
     {
       title: "Vaga Específica",
-      description: "Vaga específica?",
+      description: "Vaga específica (Opcional)",
       icon: GraduationCap
     },
-    { title: "Mentoria", description: "Sobre mentoria", icon: Brain },
     { title: "Currículo", description: "Upload do arquivo", icon: Upload }
   ]
 
-  const onDrop = (acceptedFiles: File[]) => {
+  const onDrop = (acceptedFiles: File[], fileRejections: any[]) => {
+    if (fileRejections.length > 0) {
+      const errorMsg = fileRejections[0].errors[0]?.code === 'file-too-large'
+        ? 'O arquivo é muito grande. O limite máximo é de 5MB.'
+        : 'Formato inválido. Selecione apenas arquivos em formato PDF.';
+      toast({
+        title: "Arquivo inválido",
+        description: errorMsg,
+        variant: "destructive",
+      });
+      return;
+    }
     if (acceptedFiles.length > 0) {
       setFormData((prev) => ({ ...prev, resumeFile: acceptedFiles[0] }))
     }
@@ -179,151 +191,81 @@ export function ResumeAnalysisForm({
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
 
-  // Verifica se o campo deve ser mostrado baseado no perfil
-  const shouldShowField = (field: keyof ResumeFormData) => {
-    if (!profile) return true
-
-    switch (field) {
-      case "name":
-        return !profile.full_name
-      case "email":
-        return !profile.email
-      case "course":
-        return !profile.course
-      case "university":
-        return !profile.university
-      case "period":
-        return !profile.period
-      default:
-        return true
-    }
-  }
-
   const renderStep = () => {
     switch (currentStep) {
       case 0: // Perfil
         return (
           <div className="space-y-6">
-            {shouldShowField("name") && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Nome completo *</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => updateFormData("name", e.target.value)}
-                    placeholder="Seu nome completo"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="email">E-mail *</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => updateFormData("email", e.target.value)}
-                    placeholder="seu@email.com"
-                  />
-                </div>
-              </div>
-            )}
-
-            {shouldShowField("course") && shouldShowField("university") && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="course">Curso *</Label>
-                  <Input
-                    id="course"
-                    value={formData.course}
-                    onChange={(e) => updateFormData("course", e.target.value)}
-                    placeholder="Ex: Engenharia de Software"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="university">Universidade *</Label>
-                  <Input
-                    id="university"
-                    value={formData.university}
-                    onChange={(e) =>
-                      updateFormData("university", e.target.value)
-                    }
-                    placeholder="Ex: UPE"
-                  />
-                </div>
-              </div>
-            )}
-
-            {shouldShowField("period") && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label>Período atual do curso *</Label>
-                <RadioGroup
-                  value={formData.period}
-                  onValueChange={(value) => updateFormData("period", value)}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="1-2" id="period1" />
-                    <Label htmlFor="period1">1º ao 2º período</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="3-5" id="period2" />
-                    <Label htmlFor="period2">3º ao 5º período</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="6+" id="period3" />
-                    <Label htmlFor="period3">6º período em diante</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="graduated" id="period4" />
-                    <Label htmlFor="period4">Formado há até 1 ano</Label>
-                  </div>
-                </RadioGroup>
+                <Label htmlFor="name">Nome completo *</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => updateFormData("name", e.target.value)}
+                  placeholder="Seu nome completo"
+                />
               </div>
-            )}
+              <div>
+                <Label htmlFor="email">E-mail *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => updateFormData("email", e.target.value)}
+                  placeholder="seu@email.com"
+                />
+              </div>
+            </div>
 
-            {/* Mostra informações do perfil se já estiverem preenchidas */}
-            {profile &&
-              (profile.full_name ||
-                profile.email ||
-                profile.course ||
-                profile.university ||
-                profile.period) && (
-                <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-                  <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
-                    Informações do seu perfil:
-                  </h3>
-                  <div className="space-y-1 text-sm text-blue-800 dark:text-blue-200">
-                    {profile.full_name && (
-                      <p>
-                        <strong>Nome:</strong> {profile.full_name}
-                      </p>
-                    )}
-                    {profile.email && (
-                      <p>
-                        <strong>Email:</strong> {profile.email}
-                      </p>
-                    )}
-                    {profile.course && (
-                      <p>
-                        <strong>Curso:</strong> {profile.course}
-                      </p>
-                    )}
-                    {profile.university && (
-                      <p>
-                        <strong>Universidade:</strong> {profile.university}
-                      </p>
-                    )}
-                    {profile.period && (
-                      <p>
-                        <strong>Período:</strong> {profile.period}
-                      </p>
-                    )}
-                  </div>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
-                    Você pode atualizar essas informações nas configurações do
-                    seu perfil.
-                  </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="course">Curso *</Label>
+                <Input
+                  id="course"
+                  value={formData.course}
+                  onChange={(e) => updateFormData("course", e.target.value)}
+                  placeholder="Ex: Engenharia de Software"
+                />
+              </div>
+              <div>
+                <Label htmlFor="university">Universidade *</Label>
+                <Input
+                  id="university"
+                  value={formData.university}
+                  onChange={(e) =>
+                    updateFormData("university", e.target.value)
+                  }
+                  placeholder="Ex: UPE"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label>Período atual do curso *</Label>
+              <RadioGroup
+                value={formData.period}
+                onValueChange={(value) => updateFormData("period", value)}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="1-2" id="period1" />
+                  <Label htmlFor="period1">1º ao 2º período</Label>
                 </div>
-              )}
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="3-5" id="period2" />
+                  <Label htmlFor="period2">3º ao 5º período</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="6+" id="period3" />
+                  <Label htmlFor="period3">6º período em diante</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="graduated" id="period4" />
+                  <Label htmlFor="period4">Formado há até 1 ano</Label>
+                </div>
+              </RadioGroup>
+            </div>
 
             <div>
               <Label>Você já fez estágio? *</Label>
@@ -332,6 +274,7 @@ export function ResumeAnalysisForm({
                 onValueChange={(value) =>
                   updateFormData("hasInternship", value)
                 }
+                className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="yes" id="internship1" />
@@ -353,6 +296,7 @@ export function ResumeAnalysisForm({
               <RadioGroup
                 value={formData.hasLinkedIn}
                 onValueChange={(value) => updateFormData("hasLinkedIn", value)}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="yes" id="linkedin1" />
@@ -531,93 +475,7 @@ export function ResumeAnalysisForm({
             )}
           </div>
         )
-
-      case 3: // Mentoria (Opcional)
-        return (
-          <div className="space-y-6">
-            <div className="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <Brain className="h-5 w-5 text-purple-600 mt-0.5" />
-                <div className="text-sm">
-                  <p className="font-medium text-purple-900 dark:text-purple-100">
-                    Mentoria (Opcional)
-                  </p>
-                  <p className="text-purple-700 dark:text-purple-200 mt-1">
-                    Conheça nossos programas de mentoria gratuita com
-                    profissionais voluntários.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="mentorshipTopics">
-                Se você pudesse conversar com alguém mais experiente, sobre o
-                quê seria?
-              </Label>
-              <Textarea
-                id="mentorshipTopics"
-                value={formData.mentorshipTopics}
-                onChange={(e) =>
-                  updateFormData("mentorshipTopics", e.target.value)
-                }
-                placeholder="Conte sobre seus interesses em mentoria..."
-                rows={4}
-              />
-            </div>
-
-            <div>
-              <Label>Você já participou de algum programa de mentoria?</Label>
-              <RadioGroup
-                value={formData.hasParticipated}
-                onValueChange={(value) =>
-                  updateFormData("hasParticipated", value)
-                }
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="participated1" />
-                  <Label htmlFor="participated1">Sim</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="participated2" />
-                  <Label htmlFor="participated2">Não</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="heard" id="participated3" />
-                  <Label htmlFor="participated3">
-                    Já ouvi falar, mas nunca participei
-                  </Label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            <div>
-              <Label>
-                Você teria interesse em participar de mentorias gratuitas com
-                profissionais voluntários?
-              </Label>
-              <RadioGroup
-                value={formData.hasInterest}
-                onValueChange={(value) => updateFormData("hasInterest", value)}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="interest1" />
-                  <Label htmlFor="interest1">Sim, com certeza</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="maybe" id="interest2" />
-                  <Label htmlFor="interest2">Talvez</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="interest3" />
-                  <Label htmlFor="interest3">Não tenho interesse</Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </div>
-        )
-
-      case 4: // Currículo
+      case 3: // Currículo
         return (
           <div className="space-y-6">
             <div
@@ -711,9 +569,7 @@ export function ResumeAnalysisForm({
         )
       case 2: // Vaga Específica (sempre válido, é opcional)
         return true
-      case 3: // Mentoria (sempre válido, é opcional)
-        return true
-      case 4: // Currículo
+      case 3: // Currículo
         return formData.resumeFile
       default:
         return false
@@ -721,7 +577,7 @@ export function ResumeAnalysisForm({
   }
 
   const canSkipStep = (step: number) => {
-    return step === 2 || step === 3 // Vaga específica, mentoria e feedback são opcionais
+    return step === 2 // Vaga específica é opcional
   }
 
   return (

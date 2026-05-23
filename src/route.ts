@@ -22,13 +22,13 @@ import KanbanCandidaturas from "./pages/KanbanCandidaturas"
 import Dashboard from "./pages/Dashboard"
 import MinhasAnalises from "./pages/MinhasAnalises"
 import Configuracoes from "./pages/Configuracoes"
-import Notificacoes from "./pages/Notificacoes"
 import Curriculo from "./pages/Curriculo"
 import Creditos from "./pages/Creditos"
 import EmailLogs from "./pages/EmailLogs"
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import React from "react"
 import PrivacyPolicy from "./pages/PrivacyPolicy"
+import TermosDeUso from "./pages/TermosDeUso"
 import Status from "./pages/Status"
 
 // Componentes protegidos
@@ -54,9 +54,6 @@ const ProtectedKanbanCandidaturas = () =>
 
 const ProtectedConfiguracoes = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Configuracoes))
-
-const ProtectedNotificacoes = () =>
-  React.createElement(ProtectedRoute, null, React.createElement(Notificacoes))
 
 const ProtectedCreditos = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Creditos))
@@ -117,7 +114,6 @@ export const routes = [
   { path: "/analise-curriculo", component: ProtectedAnaliseCurriculo },
   { path: "/analise-curriculo/sucesso", component: ProtectedSucesso },
   { path: "/minhas-analises", component: ProtectedMinhasAnalises },
-  { path: "/notificacoes", component: ProtectedNotificacoes },
   { path: "/email-logs", component: ProtectedEmailLogs },
   { path: "/agencias", component: Agencias },
   { path: "/calculadora", component: CalculadoraRecesso },
@@ -140,6 +136,7 @@ export const routes = [
   { path: "/sucesso", component: ProtectedSucesso },
   { path: "/afiliados", component: Afiliados },
   { path: "/privacy-policy", component: PrivacyPolicy },
+  { path: "/termos-de-uso", component: TermosDeUso },
   { path: "/status", component: Status },
   { path: "/curriculo/:slug", component: Curriculo },
   { path: "*", component: NotFound }

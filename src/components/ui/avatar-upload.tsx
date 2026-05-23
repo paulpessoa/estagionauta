@@ -20,13 +20,15 @@ interface AvatarUploadProps {
   onAvatarUpdate: (url: string) => void
   userId: string
   userName?: string | null
+  compact?: boolean
 }
 
 export function AvatarUpload({ 
   currentAvatarUrl, 
   onAvatarUpdate, 
   userId, 
-  userName 
+  userName,
+  compact = false
 }: AvatarUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
@@ -183,100 +185,111 @@ export function AvatarUpload({
 
   const displayUrl = previewUrl || currentAvatarUrl
 
+  const content = (
+    <div className={`flex ${compact ? 'flex-row items-center gap-4 space-y-0' : 'flex-col items-center space-y-4'}`}>
+      {/* Avatar Preview */}
+      <div className="relative shrink-0">
+        <Avatar className={compact ? "h-16 w-16" : "h-24 w-24"}>
+          <AvatarImage src={displayUrl || undefined} />
+          <AvatarFallback className={compact ? "text-sm" : "text-lg"}>
+            {userName ? getInitials(userName) : 'U'}
+          </AvatarFallback>
+        </Avatar>
+        
+        {/* Upload Progress Indicator */}
+        {uploading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
+            <Loader2 className="h-6 w-6 animate-spin text-white" />
+          </div>
+        )}
+      </div>
+
+      {/* Upload Controls */}
+      <div className={`flex flex-col ${compact ? 'items-start space-y-2' : 'items-center space-y-3'} w-full`}>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="flex items-center gap-2"
+          >
+            <Camera className="h-4 w-4" />
+            Escolher Foto
+          </Button>
+          
+          {displayUrl && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleRemoveAvatar}
+              disabled={uploading}
+              className="flex items-center gap-2 text-red-600 hover:text-red-700"
+            >
+              <X className="h-4 w-4" />
+              Remover
+            </Button>
+          )}
+        </div>
+
+        {/* Hidden File Input */}
+        <Input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleFileSelect}
+          className="hidden"
+        />
+
+        {/* Upload Button */}
+        {previewUrl && !uploading && (
+          <Button
+            onClick={handleUpload}
+            size="sm"
+            className="w-full flex items-center gap-2"
+          >
+            <Upload className="h-4 w-4" />
+            Fazer Upload
+          </Button>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="flex items-center gap-2 text-red-600 text-sm">
+            <AlertCircle className="h-4 w-4" />
+            {error}
+          </div>
+        )}
+
+        {/* Success Message */}
+        {!error && !uploading && previewUrl && (
+          <div className="flex items-center gap-2 text-green-600 text-sm">
+            <CheckCircle className="h-4 w-4" />
+            Imagem selecionada
+          </div>
+        )}
+      </div>
+
+      {/* Instructions */}
+      {!compact && (
+        <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+          <p>Formatos aceitos: JPG, PNG, GIF</p>
+          <p>Tamanho máximo: 5MB</p>
+        </div>
+      )}
+    </div>
+  )
+
+  if (compact) {
+    return content
+  }
+
   return (
     <Card>
       <CardContent className="p-6">
-        <div className="flex flex-col items-center space-y-4">
-          {/* Avatar Preview */}
-          <div className="relative">
-            <Avatar className="h-24 w-24">
-              <AvatarImage src={displayUrl || undefined} />
-              <AvatarFallback className="text-lg">
-                {userName ? getInitials(userName) : 'U'}
-              </AvatarFallback>
-            </Avatar>
-            
-            {/* Upload Progress Indicator */}
-            {uploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full">
-                <Loader2 className="h-6 w-6 animate-spin text-white" />
-              </div>
-            )}
-          </div>
-
-          {/* Upload Controls */}
-          <div className="flex flex-col items-center space-y-3 w-full max-w-xs">
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading}
-                className="flex items-center gap-2"
-              >
-                <Camera className="h-4 w-4" />
-                Escolher Foto
-              </Button>
-              
-              {displayUrl && (
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRemoveAvatar}
-                  disabled={uploading}
-                  className="flex items-center gap-2 text-red-600 hover:text-red-700"
-                >
-                  <X className="h-4 w-4" />
-                  Remover
-                </Button>
-              )}
-            </div>
-
-            {/* Hidden File Input */}
-            <Input
-              ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileSelect}
-              className="hidden"
-            />
-
-            {/* Upload Button */}
-            {previewUrl && !uploading && (
-              <Button
-                onClick={handleUpload}
-                className="w-full flex items-center gap-2"
-              >
-                <Upload className="h-4 w-4" />
-                Fazer Upload
-              </Button>
-            )}
-
-            {/* Error Message */}
-            {error && (
-              <div className="flex items-center gap-2 text-red-600 text-sm">
-                <AlertCircle className="h-4 w-4" />
-                {error}
-              </div>
-            )}
-
-            {/* Success Message */}
-            {!error && !uploading && previewUrl && (
-              <div className="flex items-center gap-2 text-green-600 text-sm">
-                <CheckCircle className="h-4 w-4" />
-                Imagem selecionada
-              </div>
-            )}
-          </div>
-
-          {/* Instructions */}
-          <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-            <p>Formatos aceitos: JPG, PNG, GIF</p>
-            <p>Tamanho máximo: 5MB</p>
-          </div>
-        </div>
+        {content}
       </CardContent>
     </Card>
   )

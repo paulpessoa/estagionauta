@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,16 +10,52 @@ import { Separator } from '@/components/ui/separator'
 import { AvatarUpload } from '@/components/ui/avatar-upload'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon, Loader2, CheckCircle, XCircle, Info, Settings, Lock } from 'lucide-react'
+import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon, Loader2, CheckCircle, XCircle, Info, Settings, Lock, Trash2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { useTheme } from 'next-themes'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { apiClient } from '@/lib/apiClient'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 
 export default function Configuracoes() {
-  const { user, profile } = useAuth()
+  const { user, profile, signOut } = useAuth()
   const { toast } = useToast()
+  const navigate = useNavigate()
   const { theme, setTheme } = useTheme()
   const [loading, setLoading] = useState(false)
+  const [deleteLoading, setDeleteLoading] = useState(false)
+
+  const handleDeleteAccount = async () => {
+    try {
+      setDeleteLoading(true)
+      const res = await apiClient.delete<{ success: boolean }>('/api/user/delete-account')
+      toast({
+        title: "Conta excluída",
+        description: "Sua conta foi permanentemente removida.",
+      })
+      await signOut()
+      navigate('/')
+    } catch (error: any) {
+      console.error('Error deleting account:', error)
+      toast({
+        title: "Erro",
+        description: error.message || "Erro ao excluir conta. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
   
   const [profileData, setProfileData] = useState({
     full_name: '',
@@ -406,13 +443,13 @@ export default function Configuracoes() {
                 <User className="h-4 w-4" />
                 <span>Perfil</span>
               </TabsTrigger>
-              <TabsTrigger value="slug" className="flex items-center gap-2">
-                <Info className="h-4 w-4" />
-                <span>URL Pública</span>
+              <TabsTrigger value="aparencia" className="flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                <span>Aparência</span>
               </TabsTrigger>
-              <TabsTrigger value="preferencias" className="flex items-center gap-2">
-                <Settings className="h-4 w-4" />
-                <span>Preferências</span>
+              <TabsTrigger value="seguranca" className="flex items-center gap-2">
+                <Lock className="h-4 w-4" />
+                <span>Segurança</span>
               </TabsTrigger>
             </TabsList>
 
@@ -429,16 +466,14 @@ export default function Configuracoes() {
                 <CardContent className="space-y-4">
                   {/* Avatar Upload */}
                   {user && (
-                    <div>
-                      <Label className="text-sm font-medium">Foto do Perfil</Label>
-                      <div className="mt-2">
-                        <AvatarUpload
-                          currentAvatarUrl={profile?.avatar_url}
-                          onAvatarUpdate={handleAvatarUpdate}
-                          userId={user.id}
-                          userName={profile?.full_name}
-                        />
-                      </div>
+                    <div className="mb-4">
+                      <AvatarUpload
+                        currentAvatarUrl={profile?.avatar_url}
+                        onAvatarUpdate={handleAvatarUpdate}
+                        userId={user.id}
+                        userName={profile?.full_name}
+                        compact={true}
+                      />
                     </div>
                   )}
 
@@ -548,10 +583,8 @@ export default function Configuracoes() {
                   </CardContent>
                 </Card>
               )}
-            </TabsContent>
 
-            {/* ABA: URL DO CURRÍCULO */}
-            <TabsContent value="slug" className="space-y-6 outline-none">
+              {/* URL do Currículo Público - Embutido no Perfil */}
               <Card>
                 <CardHeader className="py-4">
                   <CardTitle className="flex items-center gap-2 text-xl">
@@ -603,8 +636,8 @@ export default function Configuracoes() {
               </Card>
             </TabsContent>
 
-            {/* ABA: PREFERÊNCIAS */}
-            <TabsContent value="preferencias" className="space-y-6 outline-none">
+            {/* ABA: APARÊNCIA */}
+            <TabsContent value="aparencia" className="space-y-6 outline-none">
               {/* Aparência */}
               <Card>
                 <CardHeader className="py-4">
@@ -646,98 +679,10 @@ export default function Configuracoes() {
                   </p>
                 </CardContent>
               </Card>
+            </TabsContent>
 
-              {/* Notificações */}
-              <Card>
-                <CardHeader className="py-4">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Bell className="h-5 w-5" />
-                    Notificações
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="email-notifications">Notificações por email</Label>
-                    <Switch
-                      id="email-notifications"
-                      checked={notificationSettings.emailNotifications}
-                      onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, emailNotifications: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="push-notifications">Notificações push</Label>
-                    <Switch
-                      id="push-notifications"
-                      checked={notificationSettings.pushNotifications}
-                      onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, pushNotifications: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="weekly-report">Relatório semanal</Label>
-                    <Switch
-                      id="weekly-report"
-                      checked={notificationSettings.weeklyReport}
-                      onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, weeklyReport: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="marketing-emails">Emails de marketing</Label>
-                    <Switch
-                      id="marketing-emails"
-                      checked={notificationSettings.marketingEmails}
-                      onCheckedChange={(checked) => setNotificationSettings({...notificationSettings, marketingEmails: checked})}
-                    />
-                  </div>
-                  <Button onClick={handleSaveNotifications} disabled={loading}>
-                    {loading ? 'Salvando...' : 'Salvar Notificações'}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              {/* Privacidade */}
-              <Card>
-                <CardHeader className="py-4">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Shield className="h-5 w-5" />
-                    Privacidade
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <Label htmlFor="profile-visibility">Visibilidade do perfil</Label>
-                    <Select value={privacySettings.profileVisibility} onValueChange={(value) => setPrivacySettings({...privacySettings, profileVisibility: value})}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="public">Público</SelectItem>
-                        <SelectItem value="private">Privado</SelectItem>
-                        <SelectItem value="friends">Apenas amigos</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="show-email">Mostrar email no perfil</Label>
-                    <Switch
-                      id="show-email"
-                      checked={privacySettings.showEmail}
-                      onCheckedChange={(checked) => setPrivacySettings({...privacySettings, showEmail: checked})}
-                    />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="show-phone">Mostrar telefone no perfil</Label>
-                    <Switch
-                      id="show-phone"
-                      checked={privacySettings.showPhone}
-                      onCheckedChange={(checked) => setPrivacySettings({...privacySettings, showPhone: checked})}
-                    />
-                  </div>
-                  <Button onClick={handleSavePrivacy} disabled={loading}>
-                    {loading ? 'Salvando...' : 'Salvar Privacidade'}
-                  </Button>
-                </CardContent>
-              </Card>
-
+            {/* ABA: SEGURANÇA */}
+            <TabsContent value="seguranca" className="space-y-6 outline-none">
               {/* Alterar Senha */}
               <Card>
                 <CardHeader className="py-4">
@@ -783,6 +728,49 @@ export default function Configuracoes() {
                   <Button onClick={handleChangePassword} disabled={pwLoading}>
                     {pwLoading ? 'Atualizando...' : 'Atualizar Senha'}
                   </Button>
+                </CardContent>
+              </Card>
+
+              {/* Deletar Conta */}
+              <Card className="border-red-200 dark:border-red-900">
+                <CardHeader className="py-4">
+                  <CardTitle className="flex items-center gap-2 text-xl text-red-600 dark:text-red-400">
+                    <Trash2 className="h-5 w-5 text-red-600 dark:text-red-400" />
+                    Zona de Perigo
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Excluir sua conta removerá permanentemente todos os seus dados da plataforma. 
+                    Esta ação é irreversível e não poderá ser desfeita.
+                  </p>
+                  
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+                        Deletar Conta
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Esta ação é permanente e irreversível. Todos os seus currículos, créditos 
+                          adquiridos e históricos de simulações serão perdidos para sempre.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={handleDeleteAccount}
+                          disabled={deleteLoading}
+                          className="bg-red-600 text-white hover:bg-red-700"
+                        >
+                          {deleteLoading ? 'Excluindo...' : 'Sim, excluir minha conta'}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </CardContent>
               </Card>
             </TabsContent>

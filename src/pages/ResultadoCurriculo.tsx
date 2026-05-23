@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { JobFitAnalysis } from '@/components/analysis/JobFitAnalysis'
@@ -659,50 +660,119 @@ ${analysis.name}`)
           </CardContent>
         </Card>
 
-        {/* Próximos Passos */}
-        <Card id="next-steps-card" className="bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700">
+        {/* Sugestões de Mentores */}
+        <Card id="mentorship-recommendations-card" className="bg-gradient-to-br from-teal-50 to-blue-50 dark:from-teal-950/20 dark:to-blue-950/20 border-teal-200 dark:border-teal-900">
           <CardHeader>
-            <CardTitle className="text-lg md:text-xl">Próximos Passos</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base">
-                Baseado na sua análise, recomendamos buscar mentoria nas seguintes áreas:
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Badge
-                  variant="outline"
-                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
-                >
-                  Preparação para entrevistas
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
-                >
-                  Networking
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
-                >
-                  Desenvolvimento de soft skills
-                </Badge>
-                <Badge
-                  variant="outline"
-                  className="text-xs md:text-sm text-teal-700 dark:text-teal-300 border-teal-700 dark:border-teal-300"
-                >
-                  Estratégias de carreira
-                </Badge>
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-teal-100 dark:bg-teal-900 rounded-lg text-teal-700 dark:text-teal-300">
+                <UsersRound size={24} />
               </div>
-              <div className="pt-4 flex justify-center">
-                <Button asChild className="w-full md:w-auto bg-teal-700 hover:bg-teal-600 text-white">
-                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer" className="block px-4 py-2">
-                    <UsersRound size={20} />
-                    Mentores Voluntários
+              <div>
+                <CardTitle className="text-xl md:text-2xl font-bold text-teal-900 dark:text-teal-100">
+                  Recomendações de Mentores
+                </CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Acelere seu desenvolvimento conversando gratuitamente com profissionais experientes do mercado através da Menvo.
+                </p>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Mentor 1 */}
+              <div className="bg-white dark:bg-gray-800/50 p-5 rounded-xl border border-teal-100 dark:border-gray-700 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar className="h-12 w-12 border-2 border-teal-200">
+                      <AvatarImage src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Amanda Rodrigues" />
+                      <AvatarFallback>AR</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold text-foreground text-sm md:text-base">Amanda Rodrigues</h4>
+                      <p className="text-xs text-muted-foreground">Dev Senior & Tech Lead</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-3">
+                    Ajudo estudantes e desenvolvedores juniores a estruturarem seus planos de estudos, portfólio no GitHub e preparação para desafios técnicos de código.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">React / Node</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Portfólio</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Carreira Tech</Badge>
+                  </div>
+                </div>
+                <Button asChild variant="outline" className="w-full text-xs border-teal-300 hover:bg-teal-50 dark:border-teal-800 dark:hover:bg-teal-950/30 text-teal-700 dark:text-teal-300">
+                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer">
+                    Agendar Mentoria Grátis
                   </a>
                 </Button>
               </div>
+
+              {/* Mentor 2 */}
+              <div className="bg-white dark:bg-gray-800/50 p-5 rounded-xl border border-teal-100 dark:border-gray-700 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar className="h-12 w-12 border-2 border-teal-200">
+                      <AvatarImage src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Thiago Silva" />
+                      <AvatarFallback>TS</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold text-foreground text-sm md:text-base">Thiago Silva</h4>
+                      <p className="text-xs text-muted-foreground">Tech Recruiter Expert</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-3">
+                    Especialista em processos seletivos e atração de talentos. Posso analisar seu LinkedIn e te orientar em como se destacar em entrevistas de estágio.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Entrevistas</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">LinkedIn</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Currículos</Badge>
+                  </div>
+                </div>
+                <Button asChild variant="outline" className="w-full text-xs border-teal-300 hover:bg-teal-50 dark:border-teal-800 dark:hover:bg-teal-950/30 text-teal-700 dark:text-teal-300">
+                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer">
+                    Agendar Mentoria Grátis
+                  </a>
+                </Button>
+              </div>
+
+              {/* Mentor 3 */}
+              <div className="bg-white dark:bg-gray-800/50 p-5 rounded-xl border border-teal-100 dark:border-gray-700 flex flex-col justify-between hover:shadow-md transition-shadow">
+                <div>
+                  <div className="flex items-center gap-3 mb-3">
+                    <Avatar className="h-12 w-12 border-2 border-teal-200">
+                      <AvatarImage src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80" alt="Bruno Santos" />
+                      <AvatarFallback>BS</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h4 className="font-semibold text-foreground text-sm md:text-base">Bruno Santos</h4>
+                      <p className="text-xs text-muted-foreground">Product Manager</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-4 line-clamp-3">
+                    Ajudo na transição de carreira para papéis de produto, gerenciamento de projetos e análise de negócios. Dicas de soft skills e liderança.
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 mb-4">
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Soft Skills</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Gestão</Badge>
+                    <Badge variant="secondary" className="text-[10px] py-0.5 bg-teal-50 dark:bg-teal-950/40 text-teal-700 dark:text-teal-300 border-none">Transição</Badge>
+                  </div>
+                </div>
+                <Button asChild variant="outline" className="w-full text-xs border-teal-300 hover:bg-teal-50 dark:border-teal-800 dark:hover:bg-teal-950/30 text-teal-700 dark:text-teal-300">
+                  <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer">
+                    Agendar Mentoria Grátis
+                  </a>
+                </Button>
+              </div>
+            </div>
+            <div className="text-center pt-2">
+              <Button asChild className="bg-teal-600 hover:bg-teal-700 text-white font-medium">
+                <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2">
+                  <UsersRound size={18} />
+                  Ver Todos os Mentores na Menvo
+                </a>
+              </Button>
             </div>
           </CardContent>
         </Card>

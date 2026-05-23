@@ -36,18 +36,68 @@ const plans = [
     name: 'Comandante',
     icon: Crown,
     credits: 350,
-    analyses: 116,
     price: 25.00,
-    pricePerAnalysis: 0.21,
+    pricePerAnalysis: 0.07, // Consome 3 por análise -> 350 créditos / 3 = 116 análises. R$25 / 116 = ~R$0.21 por análise.
     popular: false
   }
 ]
+
+const subscriptionPlans = [
+  {
+    id: 'cosmonauta_pro',
+    name: 'Cosmonauta Pro',
+    icon: Star,
+    credits: 50,
+    price: 9.90,
+    benefits: [
+      '50 créditos recorrentes mensais',
+      'Até 16 análises de currículo com IA',
+      'Acesso total ao Kanban de vagas',
+      'Suporte via e-mail em até 24h',
+      'Acesso gratuito à Extensão do Chrome'
+    ],
+    badge: 'Plano Pro'
+  },
+  {
+    id: 'astronauta_pro',
+    name: 'Astronauta Pro',
+    icon: Zap,
+    credits: 150,
+    price: 19.90,
+    benefits: [
+      '150 créditos recorrentes/mês',
+      'Até 50 análises de currículo/mês',
+      'Simulações de entrevista ilimitadas',
+      'Geração de currículos ilimitada',
+      'Suporte prioritário via WhatsApp'
+    ],
+    badge: 'Mais Popular',
+    popular: true
+  },
+  {
+    id: 'comandante_pro',
+    name: 'Comandante Pro',
+    icon: Crown,
+    credits: 500,
+    price: 49.90,
+    benefits: [
+      '500 créditos recorrentes/mês',
+      'Até 166 análises de currículo/mês',
+      'Simulações e gerações ilimitadas',
+      'Análise de vaga automática com IA',
+      'Acesso antecipado a novas ferramentas'
+    ],
+    badge: 'Elite'
+  }
+]
+
 
 export default function Precos() {
   const { user } = useAuth()
   const { credits } = useCredits()
   const { toast } = useToast()
   const [loading, setLoading] = useState<string | null>(null)
+  const [billingType, setBillingType] = useState<'credits' | 'subscriptions'>('credits')
 
   const handlePurchase = async (planId: string) => {
     if (!user) {
@@ -82,92 +132,217 @@ export default function Precos() {
     }
   }
 
+  const handleSubscribe = () => {
+    toast({
+      title: "Planos de Assinatura Em Breve!",
+      description: "Estamos finalizando a integração das assinaturas recorrentes. Por enquanto, utilize a Recarga de Créditos Avulsos!",
+    })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-10">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-            Planos de Créditos
+            Planos e Preços
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
-            Cada análise de currículo custa 3 créditos • Preços a partir de R$ 4,00
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
+            Acelere sua carreira e otimize sua busca por estágio com o poder da Inteligência Artificial.
           </p>
           
           {user && credits && (
-            <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm">
+            <div className="inline-flex items-center space-x-2 bg-white dark:bg-gray-800 rounded-lg px-4 py-2 shadow-sm border">
               <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
               <span className="text-sm font-medium">
-                Seus créditos: {credits.credits}
+                Seus créditos atuais: {credits.credits}
               </span>
             </div>
           )}
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id}
-              className={`relative ${
-                plan.popular 
-                  ? 'border-2 border-blue-500 shadow-xl scale-105' 
-                  : 'border border-gray-200 dark:border-gray-700'
+        {/* Tab Switcher */}
+        <div className="flex justify-center mb-12">
+          <div className="bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-full inline-flex border border-slate-200/55 dark:border-slate-700/50">
+            <button
+              onClick={() => setBillingType('credits')}
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
+                billingType === 'credits'
+                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/20'
+                  : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
-                  Mais Popular
-                </Badge>
-              )}
-              
-              <CardHeader className="text-center pb-4">
-                <div className="flex justify-center mb-2">
-                  <plan.icon className="h-10 w-10 text-blue-500" />
-                </div>
-                <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                <CardDescription className="text-gray-600 dark:text-gray-400">
-                  {plan.analyses} análises de currículo
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent className="space-y-6">
-                {/* Price */}
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                    R$ {plan.price.toFixed(2).replace('.', ',')}
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    R$ {plan.pricePerAnalysis.toFixed(2).replace('.', ',')} por análise
-                  </div>
-                </div>
-
-                {/* Purchase Button */}
-                <Button 
-                  className={`w-full ${
-                    plan.popular 
-                      ? 'bg-blue-600 hover:bg-blue-700' 
-                      : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
-                  }`}
-                  onClick={() => handlePurchase(plan.id)}
-                  disabled={loading === plan.id}
-                >
-                  {loading === plan.id ? (
-                    <div className="flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                      <span>Processando...</span>
-                    </div>
-                  ) : (
-                    <>
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Comprar {plan.credits} Créditos
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+              Recarga de Créditos (Compra Única)
+            </button>
+            <button
+              onClick={() => setBillingType('subscriptions')}
+              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 relative ${
+                billingType === 'subscriptions'
+                  ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm border border-slate-200/20'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              Assinaturas Mensais
+              <span className="absolute -top-1.5 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-[10px] text-white px-2 py-0.5 rounded-full scale-90 border border-white dark:border-slate-800 font-bold">
+                Em Breve
+              </span>
+            </button>
+          </div>
         </div>
+
+        {/* Content based on selected billing type */}
+        {billingType === 'credits' ? (
+          <div>
+            <div className="text-center mb-8">
+              <p className="text-sm text-muted-foreground">
+                Cada análise de currículo custa 3 créditos • Seus créditos não expiram
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+              {plans.map((plan) => (
+                <Card 
+                  key={plan.id}
+                  className={`relative flex flex-col justify-between ${
+                    plan.popular 
+                      ? 'border-2 border-blue-500 shadow-xl scale-105' 
+                      : 'border border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
+                      Mais Popular
+                    </Badge>
+                  )}
+                  
+                  <CardHeader className="text-center pb-4">
+                    <div className="flex justify-center mb-2">
+                      <plan.icon className="h-10 w-10 text-blue-500" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-400">
+                      Equivale a ~{Math.floor(plan.credits / 3)} análises completas
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-6">
+                    {/* Price */}
+                    <div className="text-center">
+                      <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                        R$ {plan.price.toFixed(2).replace('.', ',')}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {plan.credits} créditos inclusos
+                      </div>
+                    </div>
+
+                    {/* Purchase Button */}
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-blue-600 hover:bg-blue-700' 
+                          : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
+                      }`}
+                      onClick={() => handlePurchase(plan.id)}
+                      disabled={loading === plan.id}
+                    >
+                      {loading === plan.id ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Processando...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Comprar {plan.credits} Créditos
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="text-center mb-8">
+              <p className="text-sm text-muted-foreground">
+                Cobrança recorrente mensal • Cancele quando quiser diretamente no painel
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto animate-fadeIn">
+              {subscriptionPlans.map((plan) => (
+                <Card 
+                  key={plan.id}
+                  className={`relative flex flex-col justify-between ${
+                    plan.popular 
+                      ? 'border-2 border-purple-500 shadow-xl scale-105' 
+                      : 'border border-gray-200 dark:border-gray-700'
+                  }`}
+                >
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white">
+                      Mais Popular
+                    </Badge>
+                  )}
+                  
+                  <CardHeader className="text-center pb-4">
+                    <div className="flex justify-center mb-2">
+                      <plan.icon className="h-10 w-10 text-purple-500" />
+                    </div>
+                    <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
+                      {plan.name}
+                      {!plan.popular && (
+                        <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground">
+                          {plan.badge}
+                        </Badge>
+                      )}
+                    </CardTitle>
+                    <CardDescription className="text-gray-600 dark:text-gray-400">
+                      Receba {plan.credits} créditos mensais
+                    </CardDescription>
+                  </CardHeader>
+                  
+                  <CardContent className="space-y-6 flex-grow flex flex-col justify-between">
+                    <div>
+                      {/* Price */}
+                      <div className="text-center mb-6">
+                        <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                          R$ {plan.price.toFixed(2).replace('.', ',')}
+                          <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                        </div>
+                      </div>
+
+                      {/* Benefits list */}
+                      <ul className="space-y-2 mb-6">
+                        {plan.benefits.map((benefit, i) => (
+                          <li key={i} className="flex items-start text-xs text-muted-foreground gap-2">
+                            <Check className="h-3.5 w-3.5 text-green-500 shrink-0 mt-0.5" />
+                            <span>{benefit}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Subscribe Button */}
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                          : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
+                      }`}
+                      onClick={handleSubscribe}
+                    >
+                      <Sparkles className="mr-2 h-4 w-4" />
+                      Assinar (Em Breve)
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tabela Comparativa de Limites */}
         <div className="mt-20 max-w-5xl mx-auto">

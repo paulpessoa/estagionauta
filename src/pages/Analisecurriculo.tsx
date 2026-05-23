@@ -6,7 +6,6 @@ import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/integrations/supabase/client"
 import { useAuth } from "@/hooks/useAuth"
 import { useCredits } from "@/hooks/useCredits"
-import { useNotifications } from "@/hooks/useNotifications"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -178,7 +177,7 @@ export default function AnalyseCurriculoPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
         {error && (
           <Alert className="mb-6 border-red-200 bg-red-50">
             <AlertTriangle className="h-4 w-4 text-red-600" />
@@ -187,20 +186,18 @@ export default function AnalyseCurriculoPage() {
             </AlertDescription>
           </Alert>
         )}
-        <Card>
-          <CardHeader>
-            <CardTitle>Análise Inteligente de Currículo</CardTitle>
-            <CardDescription>
-              Faça upload do seu currículo e receba feedback detalhado com IA
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ResumeAnalysisForm
-              onComplete={handleFormComplete}
-              loading={loading}
-            />
-          </CardContent>
-        </Card>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">
+            Análise Inteligente de Currículo
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Faça upload do seu currículo em formato PDF e receba feedback detalhado gerado pela inteligência artificial.
+          </p>
+        </div>
+        <ResumeAnalysisForm
+          onComplete={handleFormComplete}
+          loading={loading}
+        />
       </div>
     </div>
   )

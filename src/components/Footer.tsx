@@ -57,7 +57,7 @@ export function Footer() {
             </h4>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
+                <Link to="/" className="hover:text-blue-400 transition-colors">
                   Funcionalidades
                 </Link>
               </li>
@@ -69,41 +69,21 @@ export function Footer() {
                   Preços
                 </Link>
               </li>
-              <li>
-                <Link
-                  to="/afiliados"
-                  className="hover:text-blue-400 transition-colors"
-                  onClick={() => {
-                    toast.info(
-                      "Em breve disponibilizaremos a seção de afiliados. Fique atento!"
-                    )
-                  }}
-                >
-                  Afiliados
-                </Link>
-              </li>
             </ul>
           </div>
-          <div
-            onClick={() => toast.info("Esta página esta em desenvolvimento!")}
-          >
+          <div>
             <h4 className="font-semibold mb-4 text-slate-900 dark:text-white">
-              Empresa
+              Legal
             </h4>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
-                  Sobre
+                <Link to="/termos-de-uso" className="hover:text-blue-400 transition-colors">
+                  Termos de Uso
                 </Link>
               </li>
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
-                  Blog
-                </Link>
-              </li>
-              <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
-                  Carreiras
+                <Link to="/privacy-policy" className="hover:text-blue-400 transition-colors">
+                  Política de Privacidade
                 </Link>
               </li>
             </ul>
@@ -115,17 +95,12 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
                 <a href="https://wa.me/558199509777" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
-                  Central de Ajuda
-                </a>
-              </li>
-              <li>
-                <a href="https://wa.me/558199509777" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
-                  Contato
+                  Contato (WhatsApp)
                 </a>
               </li>
               <li>
                 <Link to="/status" className="hover:text-blue-400 transition-colors">
-                  Status
+                  Status do Sistema
                 </Link>
               </li>
             </ul>
