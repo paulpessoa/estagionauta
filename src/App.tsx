@@ -7,6 +7,7 @@ import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from './components/theme-provider';
 import { routes } from './route';
 import ReviewModal from './components/modals/ReviewModal'
+import { HelmetProvider } from 'react-helmet-async';
 
 const queryClient = new QueryClient();
 
@@ -36,12 +37,14 @@ function App() {
         disableTransitionOnChange
         enableSystem
       >
-        <BrowserRouter>
-          <AuthProvider>
-            <AppLayout />
-            <Toaster />
-          </AuthProvider>
-        </BrowserRouter>
+        <HelmetProvider>
+          <BrowserRouter>
+            <AuthProvider>
+              <AppLayout />
+              <Toaster />
+            </AuthProvider>
+          </BrowserRouter>
+        </HelmetProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
