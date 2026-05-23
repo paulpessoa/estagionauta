@@ -347,8 +347,8 @@ export default function Configuracoes() {
   }
 
   return (
-    <div className="min-h-screen bg-background py-6">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+    <div className="min-h-screen bg-background">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Configurações</h1>

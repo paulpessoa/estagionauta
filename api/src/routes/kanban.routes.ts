@@ -172,7 +172,7 @@ app.post('/', authMiddleware, zValidator('json', jobApplicationSchema), async (c
 
     if (error) {
       console.error('Error creating application:', error);
-      return c.json({ error: 'Erro ao criar candidatura' }, 500);
+      return c.json({ error: `Erro ao criar candidatura: ${error.message || JSON.stringify(error)}` }, 500);
     }
 
     return c.json({

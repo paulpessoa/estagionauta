@@ -50,7 +50,7 @@ export default function Curriculo() {
         const { data, error } = await supabase
           .from('user_profiles')
           .select('*')
-          .eq('curriculo_slug', slug)
+          .ilike('curriculo_slug', slug)
           .single()
 
         if (error) {

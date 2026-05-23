@@ -427,3 +427,35 @@ CMD ["node", "dist/index.js"]
 ### Manual Verification
 - Fluxo completo: cadastro → análise → pagamento → créditos
 - Teste de carga básico com Artillery/hey
+
+---
+
+# Layout Normalization, System Status & Kanban Fix
+
+This section details the layout normalization, adding the system status page, and resolving the Kanban update issue.
+
+## User Review Required
+
+> [!NOTE]
+> All normalizations will align containers to `max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8` and headers to left-aligned `tracking-tight` structures using the brand's cosmic color gradient and Space Grotesk/Inter font guidelines.
+
+## Proposed Changes
+
+### Database & Backend
+- Already applied all pending database migrations (`20260522120000-add-status-history-and-feedbacks.sql`, etc.) on the remote Supabase database. This resolves the 404 error when updating Kanban applications.
+
+### Layout & Page Normalization
+- [Analisecurriculo.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Analisecurriculo.tsx): Normalize page width, spacing, background gradient, and left-align the header.
+- [Agencias.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Agencias.tsx): Normalize outer container layout, left-align header, and replace green gradient with cosmic indigo gradient.
+- [CalculadoraRecesso.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/CalculadoraRecesso.tsx): Normalize outer container width, left-align header, and unify background gradient.
+- [Precos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Precos.tsx): Normalize outer container width, left-align header, and unify background gradient.
+- [Configuracoes.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Configuracoes.tsx): Normalize outer container width, left-align header, and unify background gradient.
+- [SimuladorEntrevistas.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/SimuladorEntrevistas.tsx): Unify container width, header elements, and background gradient.
+- [GeradorCurriculos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/GeradorCurriculos.tsx): Unify container width, header elements, and background gradient.
+- [KanbanCandidaturas.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/KanbanCandidaturas.tsx): Unify background gradient and container spacing.
+
+### System Status & Footer Update
+- [NEW] [Status.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Status.tsx): Add system status page showing status of the backend health check (`/api/health`).
+- [route.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/route.ts): Register `/status` route.
+- [Footer.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/Footer.tsx): Update WhatsApp link for Central de Ajuda to `https://wa.me/558199509777`, remove "Em desenvolvimento" toast wrapper from support links, and link Status to `/status`.
+
