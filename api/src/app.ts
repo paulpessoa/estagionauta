@@ -7,6 +7,7 @@ import emailRoutes from './routes/email.routes.js';
 import kanbanRoutes from './routes/kanban.routes.js';
 import generatorRoutes from './routes/generator.routes.js';
 import simulatorRoutes from './routes/simulator.routes.js';
+import adminRoutes from './routes/admin.routes.js';
 
 const app = new Hono();
 
@@ -40,5 +41,6 @@ app.route('/api/email', emailRoutes);
 app.route('/api/kanban', kanbanRoutes);
 app.route('/api/generator', generatorRoutes);
 app.route('/api/simulator', simulatorRoutes);
+app.route('/api/admin', adminRoutes);
 
 export default app;

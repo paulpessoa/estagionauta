@@ -13,6 +13,7 @@ const envSchema = z.object({
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
   BREVO_API_KEY: z.string().optional(),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
+  OPENAI_API_KEY: z.string().min(1).optional(),
 });
 
 const parseEnv = () => {

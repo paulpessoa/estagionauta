@@ -26,6 +26,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast } from 'sonner'
+import { apiClient } from '@/lib/apiClient'
 
 type AdminTab = 'overview' | 'users' | 'submissions' | 'transactions' | 'moderation' | 'settings'
 
@@ -72,31 +73,8 @@ export default function AdminPage() {
   const loadStats = async () => {
     setLoadingStats(true)
     try {
-      // Fetch stats...
-      const [
-        { count: usersCount },
-        { count: resumesCount },
-        { count: simulationsCount },
-        { count: reviewsCount },
-        { count: pendingAgenciesCount },
-        { count: pendingReviewsCount }
-      ] = await Promise.all([
-        supabase.from('user_profiles').select('*', { count: 'exact', head: true }),
-        supabase.from('curriculum_analysis').select('*', { count: 'exact', head: true }),
-        supabase.from('interview_simulations').select('*', { count: 'exact', head: true }),
-        supabase.from('agency_reviews').select('*', { count: 'exact', head: true }),
-        supabase.from('agencies').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
-        supabase.from('agency_reviews').select('*', { count: 'exact', head: true }).eq('status', 'pending')
-      ])
-
-      setStats({
-        totalUsers: usersCount || 0,
-        resumesAnalyzed: resumesCount || 0,
-        simulationsRun: simulationsCount || 0,
-        totalReviews: reviewsCount || 0,
-        pendingAgencies: pendingAgenciesCount || 0,
-        pendingReviews: pendingReviewsCount || 0
-      })
+      const data = await apiClient.get<any>('/api/admin/stats')
+      setStats(data)
     } catch (e) {
       console.error(e)
       toast.error('Erro ao carregar estatísticas')
@@ -108,13 +86,7 @@ export default function AdminPage() {
   const loadSubmissions = async () => {
     setLoadingSubmissions(true)
     try {
-      const { data, error } = await supabase
-        .from('curriculum_analysis')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10)
-
-      if (error) throw error
+      const data = await apiClient.get<any[]>('/api/admin/submissions')
       setRecentSubmissions(data || [])
     } catch (e) {
       console.error('Erro ao carregar submissões:', e)
@@ -126,12 +98,7 @@ export default function AdminPage() {
   const loadUsers = async () => {
     setLoadingUsers(true)
     try {
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .order('created_at', { ascending: false })
-      
-      if (error) throw error
+      const data = await apiClient.get<any[]>('/api/admin/users')
       setUsersList(data || [])
     } catch (e) {
       console.error('Erro ao carregar usuários:', e)
@@ -143,13 +110,7 @@ export default function AdminPage() {
   const loadTransactions = async () => {
     setLoadingTransactions(true)
     try {
-      const { data, error } = await supabase
-        .from('credit_transactions')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(20)
-
-      if (error) throw error
+      const data = await apiClient.get<any[]>('/api/admin/transactions')
       setRecentTransactions(data || [])
     } catch (e) {
       console.error('Erro ao carregar transações:', e)
@@ -160,17 +121,12 @@ export default function AdminPage() {
 
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ role: newRole })
-        .eq('id', userId)
-
-      if (error) throw error
+      await apiClient.put(`/api/admin/users/${userId}/role`, { role: newRole })
       toast.success('Cargo atualizado')
       setUsersList(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u))
-    } catch (e) {
+    } catch (e: any) {
       console.error('Erro ao atualizar cargo:', e)
-      toast.error('Erro ao atualizar cargo')
+      toast.error(e.message || 'Erro ao atualizar cargo')
     }
   }
 
@@ -181,18 +137,13 @@ export default function AdminPage() {
       
       const newCredits = Math.max(0, user.credits + amount)
       
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({ credits: newCredits })
-        .eq('id', userId)
-
-      if (error) throw error
+      await apiClient.put(`/api/admin/users/${userId}/credits`, { amount })
       toast.success(`Créditos atualizados para ${newCredits}`)
       setUsersList(prev => prev.map(u => u.id === userId ? { ...u, credits: newCredits } : u))
       loadStats()
-    } catch (e) {
+    } catch (e: any) {
       console.error('Erro ao atualizar créditos:', e)
-      toast.error('Erro ao atualizar créditos')
+      toast.error(e.message || 'Erro ao atualizar créditos')
     }
   }
 

@@ -40,7 +40,7 @@
 - [x] Aplicar migrações pendentes no Supabase para adicionar colunas `status_history` e `feedbacks` em `kanban_applications`
 - [x] Atualizar rodapé (`Footer.tsx`): link de Ajuda para WhatsApp, remover toast de "Em desenvolvimento" no suporte, link de Status para `/status`
 - [x] Criar página de Status do Sistema (`src/pages/Status.tsx`) e registrar no roteador `/status`
-- [x] Normalizar UX/UI (container `max-w-7xl px-4 sm:px-6 lg:px-8 py-8`, alinhamento à esquerda, tracking-tight, sem emojis, gradientes unificados) em:
+- [x] Normalize UI layout em:
   - [x] `analise-curriculo` (`src/pages/Analisecurriculo.tsx`)
   - [x] `agencias` (`src/pages/Agencias.tsx`)
   - [x] `calculadora` (`src/pages/CalculadoraRecesso.tsx`)
