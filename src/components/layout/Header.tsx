@@ -84,7 +84,7 @@ const NavLinks = ({
           className={`transition-colors hover:text-foreground/80 text-foreground/60`}
           onClick={onLinkClick}
         >
-          Agências de Estágio
+          Agências
         </Link>
         <Link
           to="/analise-curriculo"
@@ -400,10 +400,16 @@ export function Header() {
                       </Button>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <Link
+                      to="/creditos"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
+                    >
                       <div className="flex items-center space-x-2">
                         <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm">Créditos disponíveis:</span>
+                        <span className="text-sm text-foreground">
+                          Créditos disponíveis:
+                        </span>
                       </div>
                       <Badge
                         variant="secondary"
@@ -411,7 +417,7 @@ export function Header() {
                       >
                         {credits?.credits || 0} ⭐
                       </Badge>
-                    </div>
+                    </Link>
 
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
@@ -621,11 +627,13 @@ export function Header() {
               </Button>
 
               {/* Ícone de estrelas (créditos) */}
-              <Button variant="ghost" size="icon" className="relative">
-                <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                  {credits?.credits || 0}
-                </span>
+              <Button variant="ghost" size="icon" asChild className="relative">
+                <Link to="/creditos">
+                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                    {credits?.credits || 0}
+                  </span>
+                </Link>
               </Button>
 
               <DropdownMenu>
@@ -699,9 +707,11 @@ export function Header() {
                       )}
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-default">
-                    <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
-                    Créditos: {credits?.credits || 0} ⭐
+                  <DropdownMenuItem asChild>
+                    <Link to="/creditos">
+                      <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+                      Créditos: {credits?.credits || 0} ⭐
+                    </Link>
                   </DropdownMenuItem>
                   {(isAdmin || isModerator) && (
                     <>

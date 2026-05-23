@@ -32,7 +32,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
-        defaultTheme='dark'
+        defaultTheme='light'
         attribute='class'
         disableTransitionOnChange
         enableSystem

@@ -24,6 +24,7 @@ import MinhasAnalises from "./pages/MinhasAnalises"
 import Configuracoes from "./pages/Configuracoes"
 import Notificacoes from "./pages/Notificacoes"
 import Curriculo from "./pages/Curriculo"
+import Creditos from "./pages/Creditos"
 import EmailLogs from "./pages/EmailLogs"
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import React from "react"
@@ -56,6 +57,9 @@ const ProtectedConfiguracoes = () =>
 
 const ProtectedNotificacoes = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Notificacoes))
+
+const ProtectedCreditos = () =>
+  React.createElement(ProtectedRoute, null, React.createElement(Creditos))
 
 const ProtectedResultadoCurriculo = () =>
   React.createElement(
@@ -127,6 +131,7 @@ export const routes = [
   { path: "/precos", component: Precos },
   { path: "/comprar-creditos", component: Precos },
   { path: "/configuracoes", component: ProtectedConfiguracoes },
+  { path: "/creditos", component: ProtectedCreditos },
   { path: "/resultado-curriculo/:id", component: ProtectedResultadoCurriculo },
   {
     path: "/resultado-curriculo-exemplo",

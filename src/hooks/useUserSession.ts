@@ -22,6 +22,10 @@ export function useUserSession() {
       (event, session) => {
         if (!isMounted) return
         setUser(session?.user ?? null)
+
+        if (event === 'PASSWORD_RECOVERY') {
+          window.location.href = '/redefinir-senha'
+        }
       }
     )
 

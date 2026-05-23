@@ -14,8 +14,8 @@ const app = new Hono<Env>();
 
 const PLANS = {
   cosmonauta: { price: 400, credits: 30, name: 'Cosmonauta' },
-  astronauta: { price: 500, credits: 60, name: 'Astronauta' },
-  comandante: { price: 1500, credits: 300, name: 'Comandante' },
+  astronauta: { price: 1000, credits: 100, name: 'Astronauta' },
+  comandante: { price: 2500, credits: 350, name: 'Comandante' },
 } as const;
 
 type PlanId = keyof typeof PLANS;

@@ -25,20 +25,20 @@ const plans = [
     id: 'astronauta',
     name: 'Astronauta',
     icon: Zap,
-    credits: 60,
-    analyses: 20,
-    price: 5.00,
-    pricePerAnalysis: 0.25,
+    credits: 100,
+    analyses: 33,
+    price: 10.00,
+    pricePerAnalysis: 0.30,
     popular: true
   },
   {
     id: 'comandante',
     name: 'Comandante',
     icon: Crown,
-    credits: 300,
-    analyses: 100,
-    price: 15.00,
-    pricePerAnalysis: 0.15,
+    credits: 350,
+    analyses: 116,
+    price: 25.00,
+    pricePerAnalysis: 0.21,
     popular: false
   }
 ]
@@ -167,6 +167,117 @@ export default function Precos() {
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Tabela Comparativa de Limites */}
+        <div className="mt-20 max-w-5xl mx-auto">
+          <h2 className="text-3xl font-bold text-center mb-4 text-gray-900 dark:text-white">
+            Comparativo de Recursos por Nível
+          </h2>
+          <p className="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-xl mx-auto">
+            Entenda o que cada nível libera na plataforma para otimizar sua busca por estágio.
+          </p>
+
+          <div className="border rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse min-w-[600px]">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b">
+                    <th className="p-4 font-bold text-sm text-gray-700 dark:text-gray-300">Funcionalidade / Limite</th>
+                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Cosmonauta</th>
+                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Astronauta</th>
+                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Comandante</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y text-sm">
+                  <tr>
+                    <td className="p-4 font-medium">Créditos Inclusos (Recarga)</td>
+                    <td className="p-4 text-center">30 ⭐</td>
+                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">100 ⭐</td>
+                    <td className="p-4 text-center">350 ⭐</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Revisões de Currículo com IA (3 cr/cada)</td>
+                    <td className="p-4 text-center">Até 10/mês</td>
+                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Até 33/mês</td>
+                    <td className="p-4 text-center">Até 116/mês</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Simulações de Entrevista (2 cr/cada)</td>
+                    <td className="p-4 text-center">Até 5/mês</td>
+                    <td className="p-4 text-center">Até 20/mês</td>
+                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Gerações de Currículos (1 cr/cada)</td>
+                    <td className="p-4 text-center">Até 5/mês</td>
+                    <td className="p-4 text-center">Até 15/mês</td>
+                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Vagas no Kanban</td>
+                    <td className="p-4 text-center">Até 15 vagas</td>
+                    <td className="p-4 text-center">Até 50 vagas</td>
+                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Lembretes de Agenda & Notificações</td>
+                    <td className="p-4 text-center text-red-500">❌ Não</td>
+                    <td className="p-4 text-center text-green-500 font-semibold">✅ Sim</td>
+                    <td className="p-4 text-center text-green-500 font-semibold">✅ Sim (Prioritário)</td>
+                  </tr>
+                  <tr>
+                    <td className="p-4 font-medium">Integração com a Extensão do Chrome</td>
+                    <td className="p-4 text-center text-green-500 font-medium">✅ Gratuita</td>
+                    <td className="p-4 text-center text-green-500 font-medium">✅ Gratuita</td>
+                    <td className="p-4 text-center text-green-500 font-semibold">✅ Inteligência Artificial Auto-fill</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Seção da Extensão do Chrome */}
+        <div className="mt-20 max-w-5xl mx-auto border-t pt-16">
+          <div className="grid md:grid-cols-2 gap-8 items-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8 rounded-3xl border border-blue-100 dark:border-gray-800">
+            <div>
+              <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                <Sparkles className="h-3.5 w-3.5 text-blue-500 fill-blue-500" /> Em Breve: Extensão do Chrome
+              </div>
+              <h2 className="text-3xl font-extrabold mb-4 leading-tight">
+                Capture Vagas em 1 Clique direto no seu Navegador
+              </h2>
+              <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
+                Nossa futura extensão gratuita do Chrome vai ajudar você a economizar tempo de preenchimento. 
+                Ao abrir a extensão em portais como LinkedIn, Gupy ou Cia de Talentos, ela captura os dados da vaga e os envia instantaneamente para o seu Kanban no Estagionauta.
+              </p>
+              <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  Captura automática de Título, Empresa, Requisitos e Link
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  Sem redigitar ou copiar e colar
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  Gere currículos e cartas específicas para a vaga direto do dashboard
+                </li>
+              </ul>
+            </div>
+            
+            <div className="flex flex-col items-center justify-center p-6 bg-card border rounded-2xl shadow-sm text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
+              <Zap className="h-12 w-12 text-blue-500 mb-4 animate-bounce" />
+              <h3 className="font-bold text-lg mb-2">Busca de Vagas Descomplicada</h3>
+              <p className="text-xs text-muted-foreground max-w-xs mb-4">
+                Depois de salvar a vaga pela extensão, use o Simulador de Entrevistas e a Análise de IA na plataforma para aumentar suas chances de aprovação.
+              </p>
+              <Badge variant="outline" className="text-xs">Extensão Gratuita para Todos os Usuários</Badge>
+            </div>
+          </div>
         </div>
 
         {/* FAQ */}

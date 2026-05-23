@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { AuthRequiredModal } from '@/components/AuthRequiredModal'
-import { Building, MapPin, Star, Globe, Phone, Instagram, Users, MessageSquare, Rocket } from 'lucide-react'
+import { Building, MapPin, Star, Globe, Phone, Instagram, Users, MessageSquare } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { AgencyCommentsSection } from '@/components/agency/AgencyCommentsSection'
 
@@ -63,7 +63,7 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
             <div className="text-right flex-shrink-0">
               <div className="flex items-center justify-end space-x-1 mb-1">
                 <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                <span className="font-semibold">{agency.rating?.toFixed(1) || 'N/A'}</span>
+                <span className="font-semibold">{agency.rating ? agency.rating.toFixed(1) : '0.0'}</span>
               </div>
               <p className="text-sm text-muted-foreground cursor-pointer hover:text-primary" onClick={onViewReviews}>
                 {agency.total_reviews || 0} avaliações
@@ -127,14 +127,6 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
         <div className="px-6 pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-muted-foreground" onClick={handleReactionClick}>
-                <Rocket className="h-4 w-4 -rotate-45" />
-                <span>12</span>
-              </Button>
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-muted-foreground" onClick={handleReactionClick}>
-                <Rocket className="h-4 w-4 rotate-135" />
-                <span>3</span>
-              </Button>
               <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-muted-foreground" onClick={handleCommentsClick}>
                 <MessageSquare className="h-4 w-4" />
                 <span>Comentários</span>

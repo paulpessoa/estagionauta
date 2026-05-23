@@ -1,106 +1,25 @@
-import { useState, useEffect } from 'react'
-import { useAuth } from '@/hooks/useAuth'
+import { useNotifications } from '@/hooks/useNotifications'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
 import { 
   Bell, 
-  FileText, 
-  Star, 
   CheckCircle, 
   AlertCircle, 
   Info, 
   Trash2,
-  Clock,
-  Calendar
+  Clock
 } from 'lucide-react'
 
-interface Notification {
-  id: string
-  user_id: string
-  title: string
-  message: string
-  type: 'info' | 'success' | 'warning' | 'error'
-  read: boolean
-  created_at: string
-  action_url?: string
-}
-
-// Dados mockados para demonstração
-const mockNotifications: Notification[] = [
-  {
-    id: '1',
-    user_id: 'user1',
-    title: 'Análise de Currículo Concluída',
-    message: 'Sua análise de currículo foi processada com sucesso! Visualize os resultados detalhados.',
-    type: 'success',
-    read: false,
-    created_at: new Date(Date.now() - 1000 * 60 * 30).toISOString(), // 30 min atrás
-    action_url: '/minhas-analises'
-  },
-  {
-    id: '2',
-    user_id: 'user1',
-    title: 'Créditos Restantes',
-    message: 'Você tem apenas 2 análises restantes. Considere adquirir mais créditos.',
-    type: 'warning',
-    read: false,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(), // 2h atrás
-    action_url: '/precos'
-  },
-  {
-    id: '3',
-    user_id: 'user1',
-    title: 'Nova Vaga no Kanban',
-    message: 'Uma nova candidatura foi adicionada automaticamente ao seu Kanban a partir da extensão do Chrome.',
-    type: 'system',
-    read: false,
-    created_at: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
-    action_url: '/candidaturas'
-  },
-  {
-    id: '4',
-    user_id: 'user1',
-    title: 'Bem-vindo ao Estagionauta!',
-    message: 'Sua conta foi criada com sucesso. Comece analisando seu primeiro currículo.',
-    type: 'success',
-    read: true,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(), // 3 dias atrás
-    action_url: '/analise-curriculo'
-  }
-]
-
 export default function Notificacoes() {
-  const { user, profile } = useAuth()
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    if (user) {
-      // Simular carregamento
-      setTimeout(() => {
-        setNotifications(mockNotifications)
-        setLoading(false)
-      }, 500)
-    }
-  }, [user])
-
-  const markAsRead = async (notificationId: string) => {
-    setNotifications(prev => 
-      prev.map(notif => 
-        notif.id === notificationId ? { ...notif, read: true } : notif
-      )
-    )
-  }
-
-  const deleteNotification = async (notificationId: string) => {
-    setNotifications(prev => prev.filter(notif => notif.id !== notificationId))
-  }
-
-  const markAllAsRead = async () => {
-    setNotifications(prev => prev.map(notif => ({ ...notif, read: true })))
-  }
+  const { 
+    notifications, 
+    loading, 
+    unreadCount, 
+    markAsRead, 
+    markAllAsRead, 
+    deleteNotification 
+  } = useNotifications()
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
@@ -118,13 +37,13 @@ export default function Notificacoes() {
   const getNotificationBadge = (type: string) => {
     switch (type) {
       case 'success':
-        return <Badge variant="secondary" className="bg-green-100 text-green-800">Sucesso</Badge>
+        return <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">Sucesso</Badge>
       case 'warning':
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Aviso</Badge>
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">Aviso</Badge>
       case 'error':
-        return <Badge variant="secondary" className="bg-red-100 text-red-800">Erro</Badge>
+        return <Badge variant="secondary" className="bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">Erro</Badge>
       default:
-        return <Badge variant="secondary" className="bg-blue-100 text-blue-800">Info</Badge>
+        return <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">Info</Badge>
     }
   }
 
@@ -138,8 +57,6 @@ export default function Notificacoes() {
     if (diffInHours < 48) return 'Ontem'
     return date.toLocaleDateString('pt-BR')
   }
-
-  const unreadCount = notifications.filter(n => !n.read).length
 
   if (loading) {
     return (
@@ -234,6 +151,7 @@ export default function Notificacoes() {
                           variant="ghost"
                           onClick={() => markAsRead(notification.id)}
                           className="text-primary hover:text-primary/80"
+                          title="Marcar como lida"
                         >
                           <CheckCircle className="h-4 w-4" />
                         </Button>
@@ -243,6 +161,7 @@ export default function Notificacoes() {
                         variant="ghost"
                         onClick={() => deleteNotification(notification.id)}
                         className="text-red-500 hover:text-red-700"
+                        title="Excluir notificação"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -256,4 +175,4 @@ export default function Notificacoes() {
       </div>
     </div>
   )
-} 
+}
