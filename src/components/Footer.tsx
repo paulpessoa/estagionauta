@@ -108,25 +108,23 @@ export function Footer() {
               </li>
             </ul>
           </div>
-          <div
-            onClick={() => toast.info("Esta página esta em desenvolvimento!")}
-          >
+          <div>
             <h4 className="font-semibold mb-4 text-slate-900 dark:text-white">
               Suporte
             </h4>
             <ul className="space-y-2 text-sm text-slate-700 dark:text-white">
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
+                <a href="https://wa.me/558199509777" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Central de Ajuda
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
+                <a href="https://wa.me/558199509777" target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">
                   Contato
-                </Link>
+                </a>
               </li>
               <li>
-                <Link to="#" className="hover:text-blue-400 transition-colors">
+                <Link to="/status" className="hover:text-blue-400 transition-colors">
                   Status
                 </Link>
               </li>
