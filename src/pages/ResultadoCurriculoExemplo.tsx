@@ -117,7 +117,7 @@ export default function ResultadoCurriculoExemplo() {
 
   const handleShare = async () => {
     const shareUrl = window.location.href
-    const shareText = `Confira a análise de currículo de ${analysis.name} no Estagionauta! 🚀`
+    const shareText = `Confira a análise de currículo de ${analysis.name} no Estagionauta!`
     
     if (navigator.share) {
       try {

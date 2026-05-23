@@ -69,10 +69,10 @@ export default function Dashboard() {
       color: 'bg-purple-500'
     },
     {
-      title: 'Kanban de Candidaturas',
-      description: 'Organize suas aplicações',
+      title: 'Kanban de Vagas',
+      description: 'Acompanhe o status das suas candidaturas em um quadro visual, gerencie etapas e não perca prazos.',
       icon: BarChart3,
-      href: '/kanban-candidaturas',
+      href: '/candidaturas',
       color: 'bg-orange-500'
     }
   ]
@@ -82,7 +82,7 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto p-4 space-y-8">
         <div className="text-center md:text-left">
           <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            Bem-vindo, {profile?.full_name || 'Estagionauta'}! 🚀
+            Bem-vindo, {profile?.full_name || 'Estagionauta'}!
           </h1>
           <p className="text-gray-600 text-lg">
             Sua jornada profissional começa aqui

@@ -223,7 +223,7 @@ export function AnalysisLoading({ isVisible }: AnalysisLoadingProps) {
 
           {/* Fun fact */}
           <div className="text-center text-sm text-muted-foreground">
-            <p>💡 Dica: Enquanto aguarda, que tal revisar seu LinkedIn?</p>
+            <p>Dica: Enquanto aguarda, que tal revisar seu LinkedIn?</p>
           </div>
         </CardContent>
       </Card>

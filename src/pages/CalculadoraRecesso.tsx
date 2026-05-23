@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { Helmet } from 'react-helmet-async'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -54,11 +55,16 @@ export default function CalculadoraRecessoPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="container mx-auto py-8 px-4">
+      <Helmet>
+        <title>Calculadora de Recesso de Estágio | Estagionauta</title>
+        <meta name="description" content="Calcule gratuitamente quantos dias de recesso (férias) você tem direito a tirar no seu estágio e o valor total que deve receber da empresa." />
+        <link rel="canonical" href="https://www.estagionauta.com.br/calculadora-recesso" />
+      </Helmet>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
-            Calculadora de Recesso 📅
+            Calculadora de Recesso
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Calcule seus dias de recesso e o valor que você tem direito a receber
@@ -205,7 +211,7 @@ export default function CalculadoraRecessoPage() {
                               {/* Disclaimer below buttons */}
             {result && (
               <p className="mt-4 text-center text-sm text-muted-foreground italic">
-                ⚠️ O resultado deste calculo é apenas uma sugestão para apoiar sua negociação de folgas e férias. Aproveite!
+                O resultado deste cálculo é apenas uma sugestão para apoiar sua negociação de folgas e férias. Aproveite!
               </p>
             )}
                 </CardContent>

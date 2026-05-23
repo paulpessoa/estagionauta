@@ -519,7 +519,7 @@ export function ResumeAnalysisForm({ onComplete, loading }: ResumeAnalysisFormPr
           <div className="space-y-6">
             <div className="text-center mb-6">
               <Gift className="h-12 w-12 text-purple-600 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Seu presente 🎁</h3>
+              <h3 className="text-xl font-semibold mb-2">Seu presente</h3>
               <p className="text-muted-foreground">
                 Anexe seu currículo em PDF para uma análise gratuita com ajuda de IA
               </p>

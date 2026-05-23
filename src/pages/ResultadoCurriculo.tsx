@@ -6,10 +6,11 @@ import { Badge } from '@/components/ui/badge'
 import { JobFitAnalysis } from '@/components/analysis/JobFitAnalysis'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
-import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2 } from 'lucide-react'
+import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2, Trash2 } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useCredits } from '@/hooks/useCredits'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/apiClient'
 import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
@@ -61,6 +62,7 @@ export default function ResultadoCurriculo() {
   const { toast } = useToast()
   const isMobile = useIsMobile()
   const { credits } = useCredits()
+  const queryClient = useQueryClient()
   const [analysis, setAnalysis] = useState<CurriculumAnalysis | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
@@ -140,6 +142,33 @@ ${analysis.name}`)
       })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: async () => {
+      return await apiClient.delete(`/api/analysis/${id}`)
+    },
+    onSuccess: () => {
+      toast({
+        title: "Sucesso",
+        description: "Análise excluída permanentemente.",
+      })
+      queryClient.invalidateQueries({ queryKey: ['user-analyses'] })
+      navigate('/minhas-analises')
+    },
+    onError: () => {
+      toast({
+        title: "Erro",
+        description: "Erro ao excluir a análise. Tente novamente.",
+        variant: "destructive",
+      })
+    }
+  })
+
+  const handleDelete = () => {
+    if (window.confirm('Tem certeza que deseja excluir permanentemente esta análise?')) {
+      deleteMutation.mutate()
     }
   }
 
@@ -271,7 +300,7 @@ ${analysis.name}`)
 
   const handleShare = async () => {
     const shareUrl = window.location.href
-    const shareText = `Confira minha análise de currículo no Estagionauta! 🚀`
+    const shareText = `Confira minha análise de currículo no Estagionauta!`
     
     if (navigator.share) {
       try {
@@ -369,7 +398,7 @@ ${analysis.name}`)
             <Button 
               variant="outline" 
               onClick={handleShare}
-              disabled={actionLoading === 'share'}
+              disabled={actionLoading === 'share' || deleteMutation.isPending}
               size={isMobile ? "default" : "default"}
               className="w-full md:w-auto"
             >
@@ -379,7 +408,7 @@ ${analysis.name}`)
             <Button 
               variant="outline" 
               onClick={handleDownloadPDF}
-              disabled={actionLoading === 'pdf'}
+              disabled={actionLoading === 'pdf' || deleteMutation.isPending}
               size={isMobile ? "default" : "default"}
               className="w-full md:w-auto"
             >
@@ -389,12 +418,22 @@ ${analysis.name}`)
             <Button 
               variant="outline" 
               onClick={() => setEmailModalOpen(true)}
-              disabled={actionLoading === 'email'}
+              disabled={actionLoading === 'email' || deleteMutation.isPending}
               size={isMobile ? "default" : "default"}
               className="w-full md:w-auto"
             >
               <Mail className="mr-2 h-4 w-4" />
               Enviar Email
+            </Button>
+            <Button 
+              variant="destructive" 
+              onClick={handleDelete}
+              disabled={deleteMutation.isPending}
+              size={isMobile ? "default" : "default"}
+              className="w-full md:w-auto"
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Excluir
             </Button>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useState } from 'react'
-import { Mail, Zap, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react'
+import { Mail, Zap, ExternalLink, CheckCircle, AlertCircle, Cloud, Lock } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 
 interface MagicLinkModalProps {
@@ -12,12 +12,12 @@ interface MagicLinkModalProps {
 }
 
 const emailProviders = [
-  { name: 'Gmail', url: 'https://mail.google.com', icon: '📧' },
-  { name: 'Yahoo', url: 'https://mail.yahoo.com', icon: '📬' },
-  { name: 'Outlook', url: 'https://outlook.live.com', icon: '📭' },
-  { name: 'Hotmail', url: 'https://outlook.live.com', icon: '📮' },
-  { name: 'iCloud', url: 'https://www.icloud.com/mail', icon: '☁️' },
-  { name: 'ProtonMail', url: 'https://mail.proton.me', icon: '🔒' }
+  { name: 'Gmail', url: 'https://mail.google.com', icon: Mail },
+  { name: 'Yahoo', url: 'https://mail.yahoo.com', icon: Mail },
+  { name: 'Outlook', url: 'https://outlook.live.com', icon: Mail },
+  { name: 'Hotmail', url: 'https://outlook.live.com', icon: Mail },
+  { name: 'iCloud', url: 'https://www.icloud.com/mail', icon: Cloud },
+  { name: 'ProtonMail', url: 'https://mail.proton.me', icon: Lock }
 ]
 
 export function MagicLinkModal({ open, onOpenChange }: MagicLinkModalProps) {
@@ -125,19 +125,22 @@ export function MagicLinkModal({ open, onOpenChange }: MagicLinkModalProps) {
             <div className="space-y-3">
               <Label className="text-sm font-medium">Abrir provedor de email:</Label>
               <div className="grid grid-cols-2 gap-2">
-                {emailProviders.map((provider) => (
-                  <Button
-                    key={provider.name}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEmailProvider(provider.url)}
-                    className="justify-start"
-                  >
-                    <span className="mr-2">{provider.icon}</span>
-                    {provider.name}
-                    <ExternalLink className="w-3 h-3 ml-auto" />
-                  </Button>
-                ))}
+                {emailProviders.map((provider) => {
+                  const IconComponent = provider.icon
+                  return (
+                    <Button
+                      key={provider.name}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => openEmailProvider(provider.url)}
+                      className="justify-start"
+                    >
+                      <IconComponent className="w-4 h-4 mr-2 text-muted-foreground" />
+                      {provider.name}
+                      <ExternalLink className="w-3 h-3 ml-auto" />
+                    </Button>
+                  )
+                })}
               </div>
             </div>
 

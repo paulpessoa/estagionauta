@@ -52,12 +52,12 @@ const mockNotifications: Notification[] = [
   {
     id: '3',
     user_id: 'user1',
-    title: 'Nova Funcionalidade',
-    message: 'O sistema de Kanban para candidaturas está disponível! Organize suas aplicações.',
-    type: 'info',
-    read: true,
-    created_at: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // 1 dia atrás
-    action_url: '/kanban-candidaturas'
+    title: 'Nova Vaga no Kanban',
+    message: 'Uma nova candidatura foi adicionada automaticamente ao seu Kanban a partir da extensão do Chrome.',
+    type: 'system',
+    read: false,
+    created_at: new Date(Date.now() - 3600000 * 24).toISOString(), // 1 day ago
+    action_url: '/candidaturas'
   },
   {
     id: '4',

@@ -15,9 +15,9 @@ export function StripeDebug() {
       try {
         const stripe = await getStripe()
         setStripeLoaded(!!stripe)
-        console.log('✅ Stripe carregado com sucesso:', stripe)
+        console.log('Stripe carregado com sucesso:', stripe)
       } catch (error) {
-        console.error('❌ Erro ao carregar Stripe:', error)
+        console.error('Erro ao carregar Stripe:', error)
         setStripeLoaded(false)
       }
     }
@@ -27,7 +27,7 @@ export function StripeDebug() {
 
   return (
     <div className="fixed bottom-4 right-4 bg-white border border-gray-300 rounded-lg p-4 shadow-lg z-50 max-w-sm">
-      <h3 className="font-bold text-sm mb-2">🔧 Debug Stripe</h3>
+      <h3 className="font-bold text-sm mb-2">Debug Stripe</h3>
       <div className="text-xs space-y-1">
         <div>
           <strong>Chave Pública:</strong> 
@@ -38,7 +38,7 @@ export function StripeDebug() {
         <div>
           <strong>Stripe Carregado:</strong> 
           <span className={stripeLoaded ? 'text-green-600' : 'text-red-600'}>
-            {stripeLoaded ? '✅ Sim' : '❌ Não'}
+            {stripeLoaded ? 'Sim' : 'Não'}
           </span>
         </div>
         <div className="text-gray-500 mt-2">

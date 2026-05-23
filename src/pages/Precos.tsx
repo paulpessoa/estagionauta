@@ -14,7 +14,7 @@ const plans = [
   {
     id: 'cosmonauta',
     name: 'Cosmonauta',
-    icon: '⭐',
+    icon: Star,
     credits: 30,
     analyses: 10,
     price: 4.00,
@@ -24,7 +24,7 @@ const plans = [
   {
     id: 'astronauta',
     name: 'Astronauta',
-    icon: '🚀',
+    icon: Zap,
     credits: 60,
     analyses: 20,
     price: 5.00,
@@ -34,7 +34,7 @@ const plans = [
   {
     id: 'comandante',
     name: 'Comandante',
-    icon: '💼',
+    icon: Crown,
     credits: 300,
     analyses: 100,
     price: 15.00,
@@ -122,7 +122,9 @@ export default function Precos() {
               )}
               
               <CardHeader className="text-center pb-4">
-                <div className="text-4xl mb-2">{plan.icon}</div>
+                <div className="flex justify-center mb-2">
+                  <plan.icon className="h-10 w-10 text-blue-500" />
+                </div>
                 <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                 <CardDescription className="text-gray-600 dark:text-gray-400">
                   {plan.analyses} análises de currículo

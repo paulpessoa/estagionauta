@@ -42,11 +42,14 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
-  ExternalLink
+  GitMerge
 } from 'lucide-react'
-import { format, addDays, isAfter, isBefore, startOfDay } from 'date-fns'
+import { format, addDays, isAfter, isBefore, startOfDay, isSameDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { toast } from 'sonner'
+
+import { ApplicationCard } from '@/components/kanban/ApplicationCard'
+import { KanbanReactFlow } from '@/components/kanban/KanbanReactFlow'
 
 const statusConfig = {
   interested: { label: 'Interessado', color: 'bg-gray-100 text-gray-800', icon: Eye },
@@ -62,12 +65,17 @@ export default function KanbanCandidaturas() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isImageUploadModalOpen, setIsImageUploadModalOpen] = useState(false)
   const [isAddReminderModalOpen, setIsAddReminderModalOpen] = useState(false)
+  const [editingApplication, setEditingApplication] = useState<JobApplication | null>(null)
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [showReminders, setShowReminders] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  
+  // States to toggle Views
+  const [viewMode, setViewMode] = useState<'board' | 'flow'>('board')
+  const [selectedFlowStage, setSelectedFlowStage] = useState<string | null>(null)
 
   // Form state for new application
   const [formData, setFormData] = useState({
@@ -149,11 +157,22 @@ export default function KanbanCandidaturas() {
         imageUrl: selectedFile ? URL.createObjectURL(selectedFile) : null
       }
 
-      const createdApp = await apiClient.post<JobApplication>('/api/kanban', payload)
-      setApplications(prev => [createdApp, ...prev])
+      if (editingApplication) {
+        // Edit mode
+        const updated = await apiClient.put<JobApplication>(`/api/kanban/${editingApplication.id}`, payload)
+        setApplications(prev => prev.map(app => app.id === updated.id ? updated : app))
+        toast.success('Candidatura atualizada com sucesso!')
+      } else {
+        // Create mode
+        const createdApp = await apiClient.post<JobApplication>('/api/kanban', payload)
+        setApplications(prev => [createdApp, ...prev])
+        toast.success('Candidatura adicionada com sucesso!')
+      }
+
       setIsAddModalOpen(false)
       setIsImageUploadModalOpen(false)
       setSelectedFile(null)
+      setEditingApplication(null)
       setFormData({
         company: '',
         position: '',
@@ -175,20 +194,9 @@ export default function KanbanCandidaturas() {
   }
 
   const updateApplicationStatus = async (id: string, newStatus: JobApplication['status']) => {
-    const progressMap = {
-      interested: 0,
-      applied: 20,
-      test: 50,
-      interview: 75,
-      offer: 100,
-      rejected: 100
-    }
-    const progress = progressMap[newStatus] ?? 0;
-
     try {
       const updated = await apiClient.put<JobApplication>(`/api/kanban/${id}`, { 
-        status: newStatus,
-        progress
+        status: newStatus
       })
       setApplications(prev => prev.map(app => 
         app.id === id ? { ...app, status: updated.status, progress: updated.progress } : app
@@ -197,6 +205,18 @@ export default function KanbanCandidaturas() {
     } catch (err) {
       console.error('Erro ao atualizar status:', err)
       toast.error('Não foi possível atualizar o status.')
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault() // Necessário para permitir o drop
+  }
+
+  const handleDrop = (e: React.DragEvent, newStatus: JobApplication['status']) => {
+    e.preventDefault()
+    const applicationId = e.dataTransfer.getData('applicationId')
+    if (applicationId) {
+      updateApplicationStatus(applicationId, newStatus)
     }
   }
 
@@ -278,11 +298,14 @@ export default function KanbanCandidaturas() {
 
   const todayReminders = applications
     .flatMap(app => app.reminders)
-    .filter(reminder => !reminder.completed && isAfter(startOfDay(new Date(reminder.date)), startOfDay(new Date())))
+    .filter(reminder => !reminder.completed && 
+      (isSameDay(new Date(reminder.date), new Date()) || 
+       isBefore(new Date(reminder.date), new Date()))
+    )
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="container mx-auto py-8 px-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -303,7 +326,38 @@ export default function KanbanCandidaturas() {
                 <Bell className="h-4 w-4" />
                 Lembretes ({todayReminders.length})
               </Button>
-              <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+              <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                <Button 
+                  variant={viewMode === 'board' ? 'default' : 'ghost'} 
+                  size="sm" 
+                  onClick={() => setViewMode('board')}
+                  className="text-xs"
+                >
+                  <Kanban className="h-4 w-4 mr-2" /> Quadro
+                </Button>
+                <Button 
+                  variant={viewMode === 'flow' ? 'default' : 'ghost'} 
+                  size="sm" 
+                  onClick={() => setViewMode('flow')}
+                  className="text-xs"
+                >
+                  <GitMerge className="h-4 w-4 mr-2" /> Fluxo
+                </Button>
+              </div>
+              <Dialog 
+                open={isAddModalOpen} 
+                onOpenChange={(open) => {
+                  setIsAddModalOpen(open)
+                  if (!open) {
+                    setEditingApplication(null)
+                    setFormData({
+                      company: '', position: '', description: '', salary: '', 
+                      location: '', contactPerson: '', contactEmail: '', 
+                      contactPhone: '', website: '', notes: '', tags: ''
+                    })
+                  }
+                }}
+              >
                 <DialogTrigger asChild>
                   <Button className="flex items-center gap-2">
                     <Plus className="h-4 w-4" />
@@ -312,9 +366,11 @@ export default function KanbanCandidaturas() {
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
                   <DialogHeader>
-                    <DialogTitle>Adicionar Nova Candidatura</DialogTitle>
+                    <DialogTitle>{editingApplication ? 'Editar Candidatura' : 'Adicionar Nova Candidatura'}</DialogTitle>
                     <DialogDescription>
-                      Preencha as informações da vaga ou use IA para extrair da imagem
+                      {editingApplication 
+                        ? 'Atualize as informações da vaga selecionada' 
+                        : 'Preencha as informações da vaga ou use IA para extrair da imagem'}
                     </DialogDescription>
                   </DialogHeader>
                   
@@ -479,7 +535,7 @@ export default function KanbanCandidaturas() {
                       Cancelar
                     </Button>
                     <Button onClick={handleAddApplication}>
-                      Adicionar Candidatura
+                      {editingApplication ? 'Salvar Alterações' : 'Adicionar Candidatura'}
                     </Button>
                   </div>
                 </DialogContent>
@@ -553,24 +609,34 @@ export default function KanbanCandidaturas() {
           </Card>
         )}
 
-        {/* Kanban Board */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
-          {Object.entries(statusConfig).map(([status, config]) => {
-            const StatusIcon = config.icon
-            const statusApplications = getApplicationsByStatus(status as JobApplication['status'])
+        {/* Kanban Board or Flow */}
+        {viewMode === 'flow' ? (
+          <div className="space-y-6">
+            <KanbanReactFlow 
+              applications={applications} 
+              statusConfig={statusConfig} 
+              selectedStage={selectedFlowStage}
+              onSelectStage={setSelectedFlowStage}
+            />
             
-            return (
-              <div key={status} className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <StatusIcon className="h-5 w-5" />
-                  <h3 className="font-semibold">{config.label}</h3>
-                  <Badge variant="secondary" className="ml-auto">
-                    {statusApplications.length}
+            {/* List of cards below the flow when a stage is selected */}
+            {selectedFlowStage && (
+              <div className="bg-white dark:bg-gray-950 p-6 rounded-xl border shadow-sm mt-8">
+                <div className="flex items-center gap-3 mb-6">
+                  {(() => {
+                    const Icon = statusConfig[selectedFlowStage as keyof typeof statusConfig].icon
+                    return <div className={`p-2 rounded-lg ${statusConfig[selectedFlowStage as keyof typeof statusConfig].color}`}><Icon className="h-5 w-5" /></div>
+                  })()}
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                    Vagas em: {statusConfig[selectedFlowStage as keyof typeof statusConfig].label}
+                  </h3>
+                  <Badge variant="outline" className="ml-auto">
+                    {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).length} vagas
                   </Badge>
                 </div>
                 
-                <div className="space-y-3">
-                  {statusApplications.map(application => (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).map(application => (
                     <ApplicationCard 
                       key={application.id} 
                       application={application}
@@ -578,13 +644,89 @@ export default function KanbanCandidaturas() {
                       onAddReminder={handleAddReminder}
                       onToggleReminder={toggleReminderCompletion}
                       onDelete={deleteApplication}
+                      onEdit={(app) => {
+                        setEditingApplication(app)
+                        setFormData({
+                          company: app.company,
+                          position: app.position,
+                          description: app.description || '',
+                          salary: app.salary || '',
+                          location: app.location || '',
+                          contactPerson: app.contactPerson || '',
+                          contactEmail: app.contactEmail || '',
+                          contactPhone: app.contactPhone || '',
+                          website: app.website || '',
+                          notes: app.notes || '',
+                          tags: app.tags.join(', ')
+                        })
+                        setIsAddModalOpen(true)
+                      }}
                     />
                   ))}
+                  {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).length === 0 && (
+                    <p className="text-gray-500 py-8 text-center col-span-full border-2 border-dashed rounded-xl">
+                      Nenhuma candidatura nesta fase ainda.
+                    </p>
+                  )}
                 </div>
               </div>
-            )
-          })}
-        </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex overflow-x-auto gap-6 pb-4 snap-x">
+            {Object.entries(statusConfig).map(([status, config]) => {
+              const StatusIcon = config.icon
+              const statusApplications = getApplicationsByStatus(status as JobApplication['status'])
+              
+              return (
+                <div 
+                  key={status} 
+                  className="space-y-4 min-w-[320px] snap-center bg-gray-50/50 dark:bg-gray-900/50 p-4 rounded-xl border-2 border-transparent transition-colors data-[drop=true]:border-primary/30"
+                  onDragOver={handleDragOver}
+                  onDrop={(e) => handleDrop(e, status as JobApplication['status'])}
+                >
+                  <div className="flex items-center gap-2">
+                    <StatusIcon className="h-5 w-5" />
+                    <h3 className="font-semibold">{config.label}</h3>
+                    <Badge variant="secondary" className="ml-auto">
+                      {statusApplications.length}
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    {statusApplications.map(application => (
+                      <ApplicationCard 
+                        key={application.id} 
+                        application={application}
+                        onStatusChange={updateApplicationStatus}
+                        onAddReminder={handleAddReminder}
+                        onToggleReminder={toggleReminderCompletion}
+                        onDelete={deleteApplication}
+                        onEdit={(app) => {
+                          setEditingApplication(app)
+                          setFormData({
+                            company: app.company,
+                            position: app.position,
+                            description: app.description || '',
+                            salary: app.salary || '',
+                            location: app.location || '',
+                            contactPerson: app.contactPerson || '',
+                            contactEmail: app.contactEmail || '',
+                            contactPhone: app.contactPhone || '',
+                            website: app.website || '',
+                            notes: app.notes || '',
+                            tags: app.tags.join(', ')
+                          })
+                          setIsAddModalOpen(true)
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
       </div>
 
       {/* Add Reminder Modal */}
@@ -601,304 +743,5 @@ export default function KanbanCandidaturas() {
         }}
       />
     </div>
-  )
-}
-
-interface ApplicationCardProps {
-  application: JobApplication
-  onStatusChange: (id: string, status: JobApplication['status']) => void
-  onAddReminder: (applicationId: string) => void
-  onToggleReminder: (applicationId: string, reminderId: string) => void
-  onDelete: (id: string) => void
-}
-
-function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder, onDelete }: ApplicationCardProps) {
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
-
-  return (
-    <Card className="cursor-pointer hover:shadow-md transition-shadow">
-      <CardContent className="p-4">
-        <div className="space-y-3">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <h4 className="font-semibold text-sm line-clamp-2">{application.position}</h4>
-              <p className="text-xs text-gray-600 dark:text-gray-400">{application.company}</p>
-            </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                setIsExpanded(!isExpanded)
-              }}
-            >
-              {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
-          </div>
-
-          {/* Progress Bar */}
-          <div className="space-y-1">
-            <div className="flex justify-between text-xs">
-              <span>Progresso</span>
-              <span>{application.progress}%</span>
-            </div>
-            <Progress value={application.progress} className="h-2" />
-          </div>
-
-          {/* Tags */}
-          {application.tags.length > 0 && (
-            <div className="flex flex-wrap gap-1">
-              {application.tags.slice(0, 2).map(tag => (
-                <Badge key={tag} variant="outline" className="text-xs">
-                  {tag}
-                </Badge>
-              ))}
-              {application.tags.length > 2 && (
-                <Badge variant="outline" className="text-xs">
-                  +{application.tags.length - 2}
-                </Badge>
-              )}
-            </div>
-          )}
-
-          {/* Next Action */}
-          {application.nextAction && (
-            <div className="text-xs text-gray-600 dark:text-gray-400">
-              <Clock className="h-3 w-3 inline mr-1" />
-              {application.nextAction}
-            </div>
-          )}
-
-          {/* Expanded Content */}
-          {isExpanded && (
-            <div className="space-y-3 pt-3 border-t">
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowDetails(true)}
-                  className="flex-1"
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  Detalhes
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="flex-1"
-                >
-                  <Edit className="h-3 w-3 mr-1" />
-                  Editar
-                </Button>
-              </div>
-
-              {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-2">
-                <Button size="sm" variant="ghost" className="text-xs">
-                  <Phone className="h-3 w-3 mr-1" />
-                  Ligar
-                </Button>
-                <Button size="sm" variant="ghost" className="text-xs">
-                  <Mail className="h-3 w-3 mr-1" />
-                  Email
-                </Button>
-              </div>
-
-              {/* Reminders */}
-              {application.reminders.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-xs font-medium">Lembretes:</p>
-                  {application.reminders.slice(0, 2).map(reminder => (
-                    <div key={reminder.id} className="text-xs bg-yellow-50 dark:bg-yellow-900/20 p-2 rounded">
-                      <p className="font-medium">{reminder.title}</p>
-                      <p className="text-gray-600 dark:text-gray-400">
-                        {format(new Date(reminder.date), 'dd/MM', { locale: ptBR })}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Add Reminder Button */}
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onAddReminder(application.id)}
-                className="w-full text-xs"
-              >
-                <Bell className="h-3 w-3 mr-1" />
-                Adicionar Lembrete
-              </Button>
-            </div>
-          )}
-        </div>
-      </CardContent>
-
-      {/* Details Modal */}
-      <Dialog open={showDetails} onOpenChange={setShowDetails}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{application.position}</DialogTitle>
-            <DialogDescription>{application.company}</DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-6">
-            {/* Basic Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-medium">Localização</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                  <MapPin className="h-3 w-3" />
-                  {application.location}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Salário</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {application.salary || 'Não informado'}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Data da Candidatura</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {format(new Date(application.appliedDate), 'dd/MM/yyyy', { locale: ptBR })}
-                </p>
-              </div>
-              <div>
-                <Label className="text-sm font-medium">Progresso</Label>
-                <div className="flex items-center gap-2">
-                  <Progress value={application.progress} className="flex-1 h-2" />
-                  <span className="text-sm">{application.progress}%</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Contact Info */}
-            {(application.contactPerson || application.contactEmail || application.contactPhone) && (
-              <div>
-                <Label className="text-sm font-medium">Informações de Contato</Label>
-                <div className="space-y-2 mt-2">
-                  {application.contactPerson && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <Users className="h-3 w-3 inline mr-1" />
-                      {application.contactPerson}
-                    </p>
-                  )}
-                  {application.contactEmail && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <Mail className="h-3 w-3 inline mr-1" />
-                      {application.contactEmail}
-                    </p>
-                  )}
-                  {application.contactPhone && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <Phone className="h-3 w-3 inline mr-1" />
-                      {application.contactPhone}
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Description */}
-            {application.description && (
-              <div>
-                <Label className="text-sm font-medium">Descrição</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {application.description}
-                </p>
-              </div>
-            )}
-
-            {/* Notes */}
-            {application.notes && (
-              <div>
-                <Label className="text-sm font-medium">Observações</Label>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                  {application.notes}
-                </p>
-              </div>
-            )}
-
-            {/* Tags */}
-            {application.tags.length > 0 && (
-              <div>
-                <Label className="text-sm font-medium">Tags</Label>
-                <div className="flex flex-wrap gap-1 mt-1">
-                  {application.tags.map(tag => (
-                    <Badge key={tag} variant="outline" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Reminders */}
-            {application.reminders.length > 0 && (
-              <div>
-                <Label className="text-sm font-medium">Lembretes</Label>
-                <div className="space-y-2 mt-2">
-                  {application.reminders.map(reminder => (
-                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                      <div>
-                        <p className="text-sm font-medium">{reminder.title}</p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {reminder.description}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {format(new Date(reminder.date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
-                        </p>
-                      </div>
-                      <Switch 
-                        checked={reminder.completed} 
-                        onCheckedChange={() => onToggleReminder(application.id, reminder.id)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex gap-2">
-              <Button variant="outline" className="flex-1">
-                <ExternalLink className="h-4 w-4 mr-2" />
-                Ver Vaga
-              </Button>
-              <Button variant="outline" className="flex-1">
-                <Edit className="h-4 w-4 mr-2" />
-                Editar
-              </Button>
-              <Button 
-                variant="destructive" 
-                className="flex-1"
-                onClick={() => {
-                  if (confirm('Tem certeza que deseja excluir esta candidatura?')) {
-                    onDelete(application.id)
-                    setShowDetails(false)
-                  }
-                }}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Excluir
-              </Button>
-            </div>
-
-            {/* Add Reminder Button in Details */}
-            <Button
-              variant="outline"
-              onClick={() => onAddReminder(application.id)}
-              className="w-full"
-            >
-              <Bell className="h-4 w-4 mr-2" />
-              Adicionar Lembrete
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </Card>
   )
 }

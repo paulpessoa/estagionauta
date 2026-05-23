@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -14,8 +14,11 @@ import {
   Eye, 
   Download,
   Filter,
-  ArrowUpDown
+  ArrowUpDown,
+  Trash2
 } from 'lucide-react'
+import { toast } from 'sonner'
+import { apiClient } from '@/lib/apiClient'
 
 interface Analysis {
   id: string
@@ -31,6 +34,7 @@ interface Analysis {
 export default function MinhasAnalises() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const [searchTerm, setSearchTerm] = useState('')
   const [sortBy, setSortBy] = useState<'date' | 'name'>('date')
 
@@ -76,6 +80,25 @@ export default function MinhasAnalises() {
 
   const handleViewAnalysis = (id: string) => {
     navigate(`/resultado-curriculo/${id}`)
+  }
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiClient.delete(`/api/analysis/${id}`)
+    },
+    onSuccess: () => {
+      toast.success('Análise excluída com sucesso!')
+      queryClient.invalidateQueries({ queryKey: ['user-analyses', user?.id] })
+    },
+    onError: () => {
+      toast.error('Erro ao excluir análise. Tente novamente.')
+    }
+  })
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir permanentemente esta análise?')) {
+      deleteMutation.mutate(id)
+    }
   }
 
   if (isLoading) {
@@ -183,6 +206,14 @@ export default function MinhasAnalises() {
                         Tentar Novamente
                       </Button>
                     )}
+                    <Button 
+                      size="sm" 
+                      variant="destructive" 
+                      onClick={() => handleDelete(analysis.id)}
+                      disabled={deleteMutation.isPending}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

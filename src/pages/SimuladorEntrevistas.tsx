@@ -37,10 +37,20 @@ import {
   AlertTriangle,
   History,
   Coins,
-  PlusCircle
+  PlusCircle,
+  Trash2,
+  Mic,
+  MicOff,
+  Volume2,
+  VolumeX,
+  Keyboard
 } from "lucide-react"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
+import { useNavigate, useParams } from "react-router-dom"
+import { TypewriterText } from "@/components/simulator/TypewriterText"
+import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { supabase } from "@/integrations/supabase/client"
 
 export default function SimuladorEntrevistas() {
   const [currentView, setCurrentView] = useState<
@@ -52,6 +62,11 @@ export default function SimuladorEntrevistas() {
   const [loading, setLoading] = useState(false)
   const [actionLoading, setActionLoading] = useState(false)
   const [userCredits, setUserCredits] = useState<number | null>(null)
+  const navigate = useNavigate()
+  const { id } = useParams()
+  
+  // Dialog State
+  const [simulationToDelete, setSimulationToDelete] = useState<string | null>(null)
 
   // Setup Form
   const [jobTitle, setJobTitle] = useState("")
@@ -62,10 +77,147 @@ export default function SimuladorEntrevistas() {
   const [answerInput, setAnswerInput] = useState("")
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Voice States
+  const [isListening, setIsListening] = useState(false)
+  const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+  const [isAudioEnabled, setIsAudioEnabled] = useState(true)
+  const [inputMode, setInputMode] = useState<"voice" | "text">("voice")
+  const recognitionRef = useRef<any>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    // Initialize Speech Recognition
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+      if (SpeechRecognition) {
+        recognitionRef.current = new SpeechRecognition()
+        recognitionRef.current.continuous = true
+        recognitionRef.current.interimResults = true
+        recognitionRef.current.lang = 'pt-BR'
+
+        recognitionRef.current.onresult = (event: any) => {
+          const transcript = Array.from(event.results)
+            .map((result: any) => result[0].transcript)
+            .join('')
+          setAnswerInput(transcript)
+        }
+
+        recognitionRef.current.onerror = (event: any) => {
+          console.error('Speech recognition error', event.error)
+          setIsListening(false)
+        }
+
+        recognitionRef.current.onend = () => {
+          setIsListening(false)
+        }
+      }
+    }
+  }, [])
+
+  const toggleListening = (e: React.MouseEvent) => {
+    e.preventDefault()
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    } else {
+      if (recognitionRef.current) {
+        // Stop speech synthesis and our custom audio if it's talking so we can listen clearly
+        window.speechSynthesis?.cancel()
+        if (audioRef.current) {
+          audioRef.current.pause()
+          setIsPlayingAudio(false)
+        }
+        setAnswerInput('')
+        try {
+          recognitionRef.current.start()
+          setIsListening(true)
+        } catch(e) {
+          console.error("Erro ao iniciar gravação", e)
+        }
+      } else {
+        toast.error('Reconhecimento de voz não suportado neste navegador.')
+      }
+    }
+  }
+
+  const speakText = async (text: string) => {
+    if (!isAudioEnabled) return
+    
+    // Se o áudio estiver tocando E o botão for pressionado novamente, nós paramos o áudio (toggle)
+    if (isPlayingAudio && audioRef.current) {
+      audioRef.current.pause()
+      setIsPlayingAudio(false)
+      return
+    }
+
+    window.speechSynthesis?.cancel() // Cancel local if any
+    try {
+      const session = await supabase.auth.getSession()
+      const token = session.data.session?.access_token
+      if (!token) return
+
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/simulator/tts`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ text })
+      })
+
+      if (!response.ok) throw new Error('Falha no TTS')
+
+      const blob = await response.blob()
+      const audioUrl = URL.createObjectURL(blob)
+      
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
+
+      const audio = new Audio(audioUrl)
+      audioRef.current = audio
+      
+      audio.onplay = () => setIsPlayingAudio(true)
+      audio.onended = () => setIsPlayingAudio(false)
+      audio.onpause = () => setIsPlayingAudio(false)
+
+      audio.play()
+    } catch (err) {
+      console.error('Erro no TTS da OpenAI:', err)
+      toast.error('Erro ao processar voz da IA.')
+    }
+  }
+
+  useEffect(() => {
+    // Load voices on mount so they are available
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.getVoices()
+    }
+  }, [])
+
   useEffect(() => {
     loadHistory()
     loadCredits()
   }, [])
+
+  // Handle routing based on URL ID and loaded simulations
+  useEffect(() => {
+    if (!id) {
+      if (currentView !== "setup") {
+        setCurrentView("history")
+      }
+      setSelectedSimulation(null)
+    } else if (simulations.length > 0) {
+      const found = simulations.find(s => s.id === id)
+      if (found) {
+        setSelectedSimulation(found)
+        setCurrentView(found.status === "completed" ? "feedback" : "chat")
+      } else {
+        toast.error("Simulação não encontrada.")
+        navigate("/simulador-entrevistas")
+      }
+    }
+  }, [id, simulations])
 
   useEffect(() => {
     if (currentView === "chat") {
@@ -123,10 +275,19 @@ export default function SimuladorEntrevistas() {
           interviewer_type: interviewerType
         }
       )
+      setSimulations(prev => [data.simulation, ...prev])
       setSelectedSimulation(data.simulation)
-      setUserCredits((prev) => (prev !== null ? prev - 1 : null))
       setCurrentView("chat")
+      setUserCredits((prev) => (prev !== null ? prev - 1 : null))
       toast.success("Simulação iniciada! 1 crédito consumido.")
+      
+      // Update URL to match new simulation
+      navigate(`/simulador-entrevistas/${data.simulation.id}`)
+      
+      const lastMsg = data.simulation.messages[data.simulation.messages.length - 1]
+      if (lastMsg && lastMsg.role === 'interviewer') {
+        speakText(lastMsg.content)
+      }
     } catch (err: any) {
       console.error("Erro ao iniciar simulação:", err)
       toast.error(err.message || "Erro ao iniciar simulação.")
@@ -138,6 +299,11 @@ export default function SimuladorEntrevistas() {
   const handleSendAnswer = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!answerInput.trim() || !selectedSimulation) return
+
+    if (isListening) {
+      recognitionRef.current?.stop()
+      setIsListening(false)
+    }
 
     const tempAnswer = answerInput
     setAnswerInput("")
@@ -165,11 +331,17 @@ export default function SimuladorEntrevistas() {
       )
 
       setSelectedSimulation(data.simulation)
+      setSimulations(prev => prev.map(s => s.id === data.simulation.id ? data.simulation : s))
 
       if (data.simulation.status === "completed") {
         setCurrentView("feedback")
         toast.success("Simulação concluída! Relatório de feedback gerado.")
         loadHistory() // Refresh history table
+      } else {
+        const lastMsg = data.simulation.messages[data.simulation.messages.length - 1]
+        if (lastMsg && lastMsg.role === 'interviewer') {
+          speakText(lastMsg.content)
+        }
       }
     } catch (err: any) {
       console.error("Erro ao enviar resposta:", err)
@@ -179,14 +351,27 @@ export default function SimuladorEntrevistas() {
     }
   }
 
-  const handleViewDetails = async (simulation: InterviewSimulation) => {
-    if (simulation.status === "completed") {
-      setSelectedSimulation(simulation)
-      setCurrentView("feedback")
-    } else {
-      setSelectedSimulation(simulation)
-      setCurrentView("chat")
+  const confirmDeleteSimulation = async () => {
+    if (!simulationToDelete) return
+    try {
+      await apiClient.delete(`/api/simulator/${simulationToDelete}`)
+      toast.success('Simulação excluída com sucesso!')
+      loadHistory()
+    } catch (err: any) {
+      console.error('Erro ao excluir simulação:', err)
+      toast.error('Não foi possível excluir a simulação.')
+    } finally {
+      setSimulationToDelete(null)
     }
+  }
+
+  const handleDeleteSimulation = async (id: string, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setSimulationToDelete(id)
+  }
+
+  const handleViewDetails = (simulation: InterviewSimulation) => {
+    navigate(`/simulador-entrevistas/${simulation.id}`)
   }
 
   const getInterviewerBadge = (type: string) => {
@@ -227,7 +412,7 @@ export default function SimuladorEntrevistas() {
   }
 
   return (
-    <div className="container mx-auto py-8 px-4 max-w-6xl min-h-screen">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
       <AnimatePresence mode="wait">
         {/* VIEW 1: HISTORY DASHBOARD */}
         {currentView === "history" && (
@@ -264,6 +449,7 @@ export default function SimuladorEntrevistas() {
                 )}
                 <Button
                   onClick={() => {
+                    navigate("/simulador-entrevistas")
                     setJobTitle("")
                     setJobDescription("")
                     setInterviewerType("behavioral")
@@ -311,19 +497,29 @@ export default function SimuladorEntrevistas() {
                   >
                     <CardHeader className="pb-3">
                       <div className="flex items-center justify-between mb-2">
-                        {getInterviewerBadge(sim.interviewer_type)}
-                        {sim.status === "completed" ? (
-                          <Badge
-                            variant="outline"
-                            className={`px-2 py-0.5 border font-semibold ${getScoreColor(sim.feedback?.score || 0)}`}
-                          >
-                            Score: {sim.feedback?.score}%
-                          </Badge>
-                        ) : (
-                          <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">
-                            Em Andamento
-                          </Badge>
-                        )}
+                        <div className="flex items-center gap-2">
+                          {getInterviewerBadge(sim.interviewer_type)}
+                          {sim.status === "completed" ? (
+                            <Badge
+                              variant="outline"
+                              className={`px-2 py-0.5 border font-semibold ${getScoreColor(sim.feedback?.score || 0)}`}
+                            >
+                              Score: {sim.feedback?.score}%
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-amber-500/10 text-amber-500 border-amber-500/20">
+                              Em Andamento
+                            </Badge>
+                          )}
+                        </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-6 w-6 text-muted-foreground hover:text-red-500 z-10" 
+                          onClick={(e) => handleDeleteSimulation(sim.id, e)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                       <CardTitle className="line-clamp-1 text-lg group-hover:text-violet-500 transition-colors">
                         {sim.job_title}
@@ -378,7 +574,10 @@ export default function SimuladorEntrevistas() {
             className="max-w-2xl mx-auto"
           >
             <Button
-              onClick={() => setCurrentView("history")}
+              onClick={() => {
+                navigate("/simulador-entrevistas")
+                setCurrentView("history")
+              }}
               variant="ghost"
               className="mb-6 hover:bg-muted"
             >
@@ -572,14 +771,31 @@ export default function SimuladorEntrevistas() {
               <div className="flex items-center gap-3">
                 <Button
                   onClick={() => {
-                    setCurrentView("history")
-                    loadHistory()
+                    navigate("/simulador-entrevistas")
                   }}
                   variant="ghost"
                   size="icon"
                   className="hover:bg-muted rounded-full"
                 >
                   <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsAudioEnabled(!isAudioEnabled)
+                    if (isAudioEnabled) {
+                      window.speechSynthesis?.cancel()
+                      if (audioRef.current) {
+                        audioRef.current.pause()
+                        setIsPlayingAudio(false)
+                      }
+                    }
+                  }}
+                  variant="ghost"
+                  size="icon"
+                  className="hover:bg-muted rounded-full text-muted-foreground"
+                  title={isAudioEnabled ? "Desativar voz do entrevistador" : "Ativar voz do entrevistador"}
+                >
+                  {isAudioEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
                 </Button>
                 <div>
                   <div className="flex items-center gap-2">
@@ -655,15 +871,28 @@ export default function SimuladorEntrevistas() {
 
                         {/* Text bubble */}
                         <div
-                          className={`p-4 rounded-2xl shadow-sm text-sm border ${
+                          className={`relative p-4 rounded-2xl shadow-sm text-sm border group ${
                             isInterviewer
                               ? "bg-card border-muted rounded-tl-none text-foreground"
                               : "bg-indigo-600 border-indigo-700 rounded-tr-none text-white"
                           }`}
                         >
-                          <p className="whitespace-pre-line leading-relaxed">
-                            {msg.content}
-                          </p>
+                          {isInterviewer && (
+                            <button
+                              onClick={() => speakText(msg.content)}
+                              className="absolute -right-10 top-2 p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-100 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                              title="Ouvir reposta"
+                            >
+                              <Volume2 className="h-4 w-4" />
+                            </button>
+                          )}
+                          {isInterviewer && idx === selectedSimulation.messages.length - 1 ? (
+                            <TypewriterText text={msg.content} speed={20} />
+                          ) : (
+                            <p className="whitespace-pre-line leading-relaxed">
+                              {msg.content}
+                            </p>
+                          )}
                           <span
                             className={`block text-[10px] mt-2 text-right ${isInterviewer ? "text-muted-foreground" : "text-indigo-200"}`}
                           >
@@ -716,24 +945,131 @@ export default function SimuladorEntrevistas() {
               </div>
             </ScrollArea>
 
-            {/* Chat Input Footer Form */}
-            <div className="p-4 border-t border-muted/60 bg-muted/5">
-              <form onSubmit={handleSendAnswer} className="flex gap-3">
-                <Input
-                  placeholder="Escreva sua resposta para o entrevistador..."
-                  value={answerInput}
-                  onChange={(e) => setAnswerInput(e.target.value)}
-                  disabled={actionLoading}
-                  className="flex-1 border-muted focus-visible:ring-violet-500 bg-card/80"
-                  required
-                />
-                <Button
-                  type="submit"
-                  disabled={actionLoading || !answerInput.trim()}
-                  className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-5 shadow-sm"
+            {/* Visualizer for audio recording/playback */}
+            <AnimatePresence>
+              {(isListening || isPlayingAudio) && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: "auto", opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="bg-muted/10 border-t border-muted/60 overflow-hidden"
                 >
-                  <Send className="h-4 w-4" />
-                </Button>
+                  <div className="flex items-center justify-center gap-1.5 py-4">
+                    {[...Array(6)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{
+                          height: ["8px", "24px", "8px"],
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          repeat: Infinity,
+                          delay: i * 0.1,
+                          ease: "easeInOut"
+                        }}
+                        className={`w-1.5 rounded-full ${isListening ? 'bg-red-400' : 'bg-violet-400'}`}
+                      />
+                    ))}
+                    <span className="ml-3 text-xs text-muted-foreground font-medium animate-pulse">
+                      {isListening ? "Ouvindo você..." : "Entrevistador falando..."}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Chat Input Footer Form */}
+            <div className="p-4 border-t border-muted/60 bg-muted/5 flex flex-col items-center">
+              <form onSubmit={handleSendAnswer} className="w-full flex items-center justify-center gap-3">
+                {inputMode === "voice" ? (
+                  <div className="w-full flex flex-col items-center gap-3">
+                    {/* Visualizer and Text */}
+                    {isListening && (
+                      <div className="w-full min-h-[60px] p-4 bg-card border border-muted rounded-xl text-center text-sm text-muted-foreground italic max-h-[120px] overflow-y-auto">
+                        {answerInput || "Ouvindo... Pode falar."}
+                      </div>
+                    )}
+                    
+                    <div className="flex items-center gap-4">
+                      {/* Keyboard switch */}
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="rounded-full text-muted-foreground"
+                        onClick={() => setInputMode("text")}
+                        title="Escrever resposta"
+                      >
+                        <Keyboard className="h-5 w-5" />
+                      </Button>
+
+                      {/* Main Mic Button */}
+                      <Button
+                        type="button"
+                        onClick={toggleListening}
+                        disabled={actionLoading}
+                        className={`h-16 w-16 rounded-full shadow-lg transition-all ${
+                          isListening 
+                            ? 'bg-red-500 hover:bg-red-600 animate-pulse ring-4 ring-red-500/30 text-white' 
+                            : 'bg-violet-600 hover:bg-violet-700 text-white'
+                        }`}
+                        title={isListening ? "Parar gravação" : "Tocar para falar"}
+                      >
+                        {isListening ? (
+                          <div className="h-4 w-4 bg-white rounded-sm" /> // Stop icon
+                        ) : (
+                          <Mic className="h-6 w-6" />
+                        )}
+                      </Button>
+
+                      {/* Send Button (only appears if there's text captured) */}
+                      <AnimatePresence>
+                        {answerInput.trim() && !isListening && (
+                          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}>
+                            <Button
+                              type="submit"
+                              disabled={actionLoading}
+                              className="h-12 w-12 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md"
+                              title="Enviar resposta"
+                            >
+                              <Send className="h-5 w-5" />
+                            </Button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-full flex gap-3">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => {
+                        setInputMode("voice")
+                        setIsListening(false)
+                      }}
+                      className="px-3 text-muted-foreground"
+                      title="Voltar para gravação de voz"
+                    >
+                      <Mic className="h-5 w-5" />
+                    </Button>
+                    <Input
+                      placeholder="Escreva sua resposta para o entrevistador..."
+                      value={answerInput}
+                      onChange={(e) => setAnswerInput(e.target.value)}
+                      disabled={actionLoading}
+                      className="flex-1 border-muted focus-visible:ring-violet-500 bg-card/80"
+                      required
+                    />
+                    <Button
+                      type="submit"
+                      disabled={actionLoading || !answerInput.trim()}
+                      className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white px-5 shadow-sm"
+                    >
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </div>
+                )}
               </form>
             </div>
           </motion.div>
@@ -754,8 +1090,7 @@ export default function SimuladorEntrevistas() {
               <div className="flex items-center justify-between">
                 <Button
                   onClick={() => {
-                    setCurrentView("history")
-                    loadHistory()
+                    navigate("/simulador-entrevistas")
                   }}
                   variant="ghost"
                   className="hover:bg-muted"
@@ -931,42 +1266,33 @@ export default function SimuladorEntrevistas() {
               <Card className="border border-muted bg-card/40 backdrop-blur-sm">
                 <CardHeader className="py-4 border-b border-muted/50">
                   <CardTitle className="text-md font-semibold flex items-center gap-2">
-                    <History className="h-4 w-4 text-muted-foreground" /> Ver
-                    Transcrição Completa da Entrevista
+                    <History className="h-4 w-4 text-muted-foreground" /> Ver Transcrição Completa da Entrevista
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-0">
-                  <ScrollArea className="max-h-[400px]">
-                    <div className="p-6 space-y-4">
-                      {selectedSimulation.messages.map((msg, index) => {
-                        const isInterviewer = msg.role === "interviewer"
-                        return (
-                          <div key={index} className="space-y-1">
-                            <p className="text-xs font-semibold flex items-center gap-1.5">
-                              <span
-                                className={
-                                  isInterviewer
-                                    ? "text-violet-500"
-                                    : "text-indigo-500"
-                                }
-                              >
-                                {isInterviewer
-                                  ? "IA Entrevistador:"
-                                  : "Candidato (Você):"}
-                              </span>
-                              <span className="text-[10px] text-muted-foreground font-normal">
-                                {new Date(msg.timestamp).toLocaleTimeString(
-                                  "pt-BR",
-                                  { hour: "2-digit", minute: "2-digit" }
-                                )}
-                              </span>
+                <CardContent className="pt-4">
+                  <ScrollArea className="h-[400px] border border-muted rounded-xl bg-card">
+                    <div className="p-4 space-y-4">
+                      {selectedSimulation.messages.map((msg, idx) => (
+                        <div key={idx} className="space-y-1">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                              {msg.role === "interviewer"
+                                ? "Entrevistador"
+                                : "Candidato"}
                             </p>
-                            <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg border border-muted/30 whitespace-pre-line leading-relaxed">
-                              {msg.content}
-                            </p>
+                            <button
+                              onClick={() => speakText(msg.content)}
+                              className="text-muted-foreground hover:text-primary transition-colors"
+                              title="Ouvir áudio"
+                            >
+                              <Volume2 className="h-4 w-4" />
+                            </button>
                           </div>
-                        )
-                      })}
+                          <p className="text-sm bg-muted/30 p-3 rounded-lg leading-relaxed whitespace-pre-wrap">
+                            {msg.content}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </ScrollArea>
                 </CardContent>
@@ -974,6 +1300,16 @@ export default function SimuladorEntrevistas() {
             </motion.div>
           )}
       </AnimatePresence>
+
+      <ConfirmDialog 
+        isOpen={!!simulationToDelete} 
+        onClose={() => setSimulationToDelete(null)}
+        onConfirm={confirmDeleteSimulation}
+        title="Excluir Simulação"
+        description="Tem certeza que deseja excluir permanentemente o histórico desta simulação? Esta ação não pode ser desfeita."
+        variant="destructive"
+        confirmText="Excluir"
+      />
     </div>
   )
 }
