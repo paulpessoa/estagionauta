@@ -108,6 +108,12 @@ export default function MapaAgencias() {
   const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null)
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (activeMarker && !filteredAgencies.some(a => a.id === activeMarker)) {
+      setActiveMarker(null)
+    }
+  }, [filteredAgencies, activeMarker])
+
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
@@ -236,7 +242,10 @@ export default function MapaAgencias() {
               color={getComputedStyle(document.documentElement).getPropertyValue('--background')?.trim() === '#000000' ? '#fff' : 'hsl(var(--primary)'} // Cor do ícone adaptada ao modo escuro/claro
             />
             {activeMarker === agency.id && (
-              <InfoWindowF onCloseClick={() => setActiveMarker(null)}>
+              <InfoWindowF 
+                position={{ lat: agency.latitude, lng: agency.longitude }}
+                onCloseClick={() => setActiveMarker(null)}
+              >
                 <div className="p-2 max-w-xs bg-white dark:bg-gray-800 text-black dark:text-white rounded-md shadow-lg">
                   <h3 className="font-bold text-lg mb-1">{agency.name}</h3>
                   {agency.agency_type && <Badge variant="outline" className="mb-2 font-normal">{agency.agency_type}</Badge>}

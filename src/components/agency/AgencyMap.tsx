@@ -1,5 +1,5 @@
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api'
 import { Agency } from '@/types/agency'
 import { MapPin, Star, Phone, Globe, Instagram, Mail } from 'lucide-react'
@@ -17,6 +17,12 @@ interface AgencyMapProps {
 
 export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps) {
   const [activeMarker, setActiveMarker] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (activeMarker && !agencies.some(a => a.id === activeMarker)) {
+      setActiveMarker(null)
+    }
+  }, [agencies, activeMarker])
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -88,7 +94,10 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
             }}
           >
             {activeMarker === agency.id && (
-              <InfoWindowF onCloseClick={() => setActiveMarker(null)}>
+              <InfoWindowF 
+                position={{ lat: agency.latitude, lng: agency.longitude }}
+                onCloseClick={() => setActiveMarker(null)}
+              >
                 <div className="p-3 max-w-sm bg-white dark:bg-gray-800 text-black dark:text-white rounded-md shadow-lg">
                   <div className="flex items-start gap-3 mb-3">
                     {agency.logo_url && (
