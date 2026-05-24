@@ -49,3 +49,11 @@
   - [x] `/simulador-entrevistas` (`src/pages/SimuladorEntrevistas.tsx`)
   - [x] `/gerador-curriculos` (`src/pages/GeradorCurriculos.tsx`)
   - [x] `/candidaturas` (`src/pages/KanbanCandidaturas.tsx`)
+
+## 7. Painel de Moderação, URL Params & Uploader de Logo
+
+- [x] Backend: Permitir `moderator` no `adminMiddleware` e restringir endpoints confidenciais a `admin`
+- [x] Header UI: Exibir apenas "Painel Administrativo" no menu para administradores/moderadores
+- [x] Admin UI: Integrar `ModeracaoAgencias` diretamente como tab no `/admin`
+- [x] Agências: Sincronizar filtros/busca (q, address, view, page) na URL via `useSearchParams`
+- [x] Modais: Adicionar uploader de logo no `EditAgencyModal` apontando para o bucket `agency-logos`

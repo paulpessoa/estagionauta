@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { toast } from 'sonner'
 import { supabase } from '@/integrations/supabase/client'
 import { Agency } from '@/types/agency'
+import { Upload, Camera, X, Loader2 } from 'lucide-react'
 
 interface EditAgencyModalProps {
   isOpen: boolean
@@ -34,7 +35,12 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
     areas: [] as string[],
     latitude: null as number | null,
     longitude: null as number | null,
+    logo_url: '',
   })
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string>('')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     if (agency) {
@@ -53,7 +59,10 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
         areas: agency.areas || [],
         latitude: agency.latitude || null,
         longitude: agency.longitude || null,
+        logo_url: agency.logo_url || '',
       })
+      setLogoPreview(agency.logo_url || '')
+      setLogoFile(null)
     }
   }, [agency])
 
@@ -72,11 +81,68 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
     }))
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Por favor, selecione apenas arquivos de imagem')
+      return
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('A imagem deve ter no máximo 5MB')
+      return
+    }
+
+    setLogoFile(file)
+    const reader = new FileReader()
+    reader.onload = (event) => {
+      setLogoPreview(event.target?.result as string)
+    }
+    reader.readAsDataURL(file)
+  }
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null)
+    setLogoPreview('')
+    setFormData(prev => ({
+      ...prev,
+      logo_url: ''
+    }))
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   const handleSubmit = async () => {
     if (!agency) return
     
     setLoading(true)
     try {
+      let uploadedLogoUrl = formData.logo_url
+
+      if (logoFile) {
+        setUploadingLogo(true)
+        const fileExt = logoFile.name.split('.').pop()
+        const fileName = `${agency.id}-${Date.now()}.${fileExt}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('agency-logos')
+          .upload(fileName, logoFile, {
+            cacheControl: '3600',
+            upsert: false
+          })
+
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('agency-logos')
+          .getPublicUrl(fileName)
+
+        uploadedLogoUrl = publicUrl
+      }
+
       const { error } = await supabase
         .from('agencies')
         .update({
@@ -94,13 +160,18 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
           areas: formData.areas,
           latitude: formData.latitude,
           longitude: formData.longitude,
+          logo_url: uploadedLogoUrl,
           updated_at: new Date().toISOString(),
         })
         .eq('id', agency.id)
 
       if (error) throw error
 
-      const updatedAgency = { ...agency, ...formData }
+      const updatedAgency: Agency = { 
+        ...agency, 
+        ...formData, 
+        logo_url: uploadedLogoUrl 
+      }
       onSave(updatedAgency)
       onClose()
       
@@ -110,6 +181,7 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
       toast.error('Erro ao atualizar agência. Tente novamente.')
     } finally {
       setLoading(false)
+      setUploadingLogo(false)
     }
   }
 
@@ -123,6 +195,62 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
         </DialogHeader>
         
         <div className="grid gap-4 py-4">
+          {/* Logo Upload Section */}
+          <div className="flex items-center gap-4 border-b pb-4 mb-2">
+            <div className="relative h-16 w-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden border">
+              {logoPreview ? (
+                <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+              ) : (
+                <Camera className="h-6 w-6 text-muted-foreground" />
+              )}
+              {uploadingLogo && (
+                <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+                  <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                </div>
+              )}
+            </div>
+            
+            <div className="flex flex-col gap-1.5">
+              <Label>Logo da Agência</Label>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={loading}
+                  className="h-8 text-xs flex items-center gap-1.5"
+                >
+                  <Upload className="h-3.5 w-3.5" />
+                  Escolher Logo
+                </Button>
+                {logoPreview && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRemoveLogo}
+                    disabled={loading}
+                    className="h-8 text-xs text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950/20 border-red-200 dark:border-red-900 flex items-center gap-1.5"
+                  >
+                    <X className="h-3.5 w-3.5 text-red-600" />
+                    Remover
+                  </Button>
+                )}
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <span className="text-[10px] text-muted-foreground">
+                Formatos suportados: PNG, JPG, JPEG. Máx 5MB.
+              </span>
+            </div>
+          </div>
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="name">Nome *</Label>

@@ -486,7 +486,7 @@ export function Header() {
                               Kanban de Vagas
                             </Link>
                           </Button>
-                          {isAdmin && (
+                          {(isAdmin || isModerator) && (
                             <Button
                               variant="ghost"
                               asChild
@@ -497,22 +497,7 @@ export function Header() {
                                 onClick={() => setMobileMenuOpen(false)}
                               >
                                 <Shield className="mr-2 h-4 w-4" />
-                                Painel Admin
-                              </Link>
-                            </Button>
-                          )}
-                          {(isAdmin || isModerator) && (
-                            <Button
-                              variant="ghost"
-                              asChild
-                              className="justify-start"
-                            >
-                              <Link
-                                to="/admin/moderacao-agencias"
-                                onClick={() => setMobileMenuOpen(false)}
-                              >
-                                <Building2 className="mr-2 h-4 w-4" />
-                                Moderar Agências
+                                Painel Administrativo
                               </Link>
                             </Button>
                           )}
@@ -683,19 +668,11 @@ export function Header() {
                           Kanban de Vagas
                         </Link>
                       </DropdownMenuItem>
-                      {isAdmin && (
+                      {(isAdmin || isModerator) && (
                         <DropdownMenuItem asChild>
                           <Link to="/admin">
                             <Shield className="mr-2 h-4 w-4" />
-                            Painel Admin
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
-                      {(isAdmin || isModerator) && (
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/moderacao-agencias">
-                            <Building2 className="mr-2 h-4 w-4" />
-                            Moderar Agências
+                            Painel Administrativo
                           </Link>
                         </DropdownMenuItem>
                       )}

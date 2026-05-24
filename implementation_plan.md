@@ -430,6 +430,56 @@ CMD ["node", "dist/index.js"]
 
 ---
 
+# Moderação, URL Params & Uploader de Logo
+
+## Proposed Changes
+
+### Frontend Component & Layout Normalization
+
+#### [MODIFY] [Admin.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Admin.tsx)
+- Allow both `'admin'` and `'moderator'` roles in the front-end profile check.
+- Conditionally render sidebar navigation items based on user role (moderator only sees Visão Geral, Submissões, and Moderação).
+- Import and render `<ModeracaoAgencias />` directly in the `moderation` active tab switch case (removing the card redirect link).
+- Change the banner button "Ir para Moderação" in `overview` to `onClick={() => setActiveTab('moderation')}`.
+
+#### [MODIFY] [ModeracaoAgencias.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/admin/ModeracaoAgencias.tsx)
+- Remove the outer layout padding (`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8`) and modify headers so it blends directly inside the admin panel sidebar layout.
+
+#### [MODIFY] [Header.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/layout/Header.tsx)
+- Simplify administrative menu links: for both admins and moderators, render a single "Painel Administrativo" option linking to `/admin` instead of separate "Painel Admin" and "Moderar Agências" options in both the desktop dropdown and mobile sheet.
+
+#### [MODIFY] [Agencias.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Agencias.tsx)
+- Sync search query state with URL search parameters (derive `q`, `address`, `view`, and `page` using React Router's `useSearchParams` hook).
+- Implement input state initializers from URL search params.
+- Automatically reset page param to `1` when filters or search queries change.
+
+#### [MODIFY] [EditAgencyModal.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/modals/EditAgencyModal.tsx)
+- Add a logo image input field with preview capabilities.
+- Implement uploading the selected image file to Supabase Storage `agency-logos` bucket during form submission, updating the agency's `logo_url` attribute.
+- Provide a "Remover Logo" action to allow deleting the logo url.
+
+### Backend Endpoints Security
+
+#### [MODIFY] [admin.middleware.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/middleware/admin.middleware.ts)
+- Update check to permit both `'admin'` and `'moderator'` roles to access administrative routes.
+
+#### [MODIFY] [admin.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/admin.routes.ts)
+- Restrict sensitive endpoints (`/users`, `/transactions`, `/users/:id/role`, and `/users/:id/credits`) strictly to users with `'admin'` role by adding an explicit DB role check inside each request handler.
+
+## Verification Plan
+
+### Automated Verification
+- Run `npm run build` in root and `api/` directories to ensure zero compilation or type errors.
+
+### Manual Verification
+- Log in as admin and moderator, verify that the header displays a single "Painel Administrativo" link.
+- Navigate to `/admin` as moderator and verify that admin-only tabs are hidden, and stats load correctly.
+- Test searching/filtering in `/agencias` and refresh the page to verify parameters are preserved in the address bar.
+- Edit an agency, upload a new logo, save, and verify that the logo is displayed properly.
+
+
+---
+
 # Layout Normalization, System Status & Kanban Fix
 
 This section details the layout normalization, adding the system status page, and resolving the Kanban update issue.

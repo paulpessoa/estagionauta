@@ -34,21 +34,13 @@ export default function ModeracaoAgencias() {
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
 
   useEffect(() => {
-    if (isLoading) {
-      return
-    }
-
-    const canViewPage = hasPermission('agencies.verify') || hasPermission('agencies.review')
-
-    if (!canViewPage) {
-      toast.error('Você não tem permissão para acessar esta página')
-      navigate('/')
+    if (isLoading || !profile) {
       return
     }
 
     fetchAgencies()
     fetchReviews()
-  }, [isLoading, profile, hasPermission, navigate])
+  }, [isLoading, profile])
 
   const fetchAgencies = async () => {
     try {
@@ -265,10 +257,10 @@ export default function ModeracaoAgencias() {
         loading={deleteLoading}
       />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Painel de Moderação</h1>
-          <p className="text-muted-foreground mt-1">
+      <div className="space-y-6">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold tracking-tight">Painel de Moderação</h1>
+          <p className="text-muted-foreground mt-1 text-sm">
             Gerencie o cadastro de agências de estágio e a moderação de avaliações dos estudantes
           </p>
         </div>

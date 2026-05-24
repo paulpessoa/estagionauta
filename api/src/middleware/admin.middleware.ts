@@ -15,8 +15,8 @@ export const adminMiddleware = createMiddleware<Env>(async (c, next) => {
       .eq('id', user.id)
       .single();
 
-    if (error || !profile || profile.role !== 'admin') {
-      return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+    if (error || !profile || (profile.role !== 'admin' && profile.role !== 'moderator')) {
+      return c.json({ error: 'Acesso negado: Apenas administradores ou moderadores' }, 403);
     }
 
     await next();

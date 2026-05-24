@@ -7,6 +7,15 @@ import { supabaseAdmin } from '../services/supabase.service.js';
 
 const app = new Hono<Env>();
 
+async function verifyIsAdmin(userId: string): Promise<boolean> {
+  const { data, error } = await supabaseAdmin
+    .from('user_profiles')
+    .select('role')
+    .eq('id', userId)
+    .single();
+  return !error && data?.role === 'admin';
+}
+
 // Zod schemas for input validation
 const updateRoleSchema = z.object({
   role: z.enum(['student', 'agency', 'moderator', 'admin']),
@@ -51,6 +60,10 @@ app.get('/stats', authMiddleware, adminMiddleware, async (c) => {
 
 // GET /api/admin/users - List users (exposes only required PII fields)
 app.get('/users', authMiddleware, adminMiddleware, async (c) => {
+  const user = c.get('user');
+  if (!(await verifyIsAdmin(user.id))) {
+    return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+  }
   try {
     const { data: users, error } = await supabaseAdmin
       .from('user_profiles')
@@ -84,6 +97,10 @@ app.get('/submissions', authMiddleware, adminMiddleware, async (c) => {
 
 // GET /api/admin/transactions - List recent transactions
 app.get('/transactions', authMiddleware, adminMiddleware, async (c) => {
+  const user = c.get('user');
+  if (!(await verifyIsAdmin(user.id))) {
+    return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+  }
   try {
     const { data, error } = await supabaseAdmin
       .from('credit_transactions')
@@ -102,6 +119,9 @@ app.get('/transactions', authMiddleware, adminMiddleware, async (c) => {
 // PUT /api/admin/users/:id/role - Update user role securely
 app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', updateRoleSchema), async (c) => {
   const admin = c.get('user');
+  if (!(await verifyIsAdmin(admin.id))) {
+    return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+  }
   const targetId = c.req.param('id');
   const { role } = c.req.valid('json');
 
@@ -159,6 +179,9 @@ app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', u
 // PUT /api/admin/users/:id/credits - Adjust user credits securely (relational adjustment)
 app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json', updateCreditsSchema), async (c) => {
   const admin = c.get('user');
+  if (!(await verifyIsAdmin(admin.id))) {
+    return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+  }
   const targetId = c.req.param('id');
   const { amount } = c.req.valid('json');
 

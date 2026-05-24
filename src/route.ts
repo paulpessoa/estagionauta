@@ -12,7 +12,6 @@ import MapaAgencias from "./pages/MapaAgencias"
 import ResultadoCurriculo from "./pages/ResultadoCurriculo"
 import ResultadoCurriculoExemplo from "./pages/ResultadoCurriculoExemplo"
 import Sucesso from "./pages/Sucesso"
-import ModeracaoAgencias from "./pages/admin/ModeracaoAgencias"
 import NotFound from "./pages/NotFound"
 import Precos from "./pages/Precos"
 import Afiliados from "./pages/Afiliados"
@@ -71,14 +70,8 @@ const ProtectedEmailLogs = () =>
 // Rotas que requerem role específica
 const ProtectedAdmin = () =>
   React.createElement(ProtectedRoute, {
-    requireRole: "admin",
-    children: React.createElement(Admin)
-  })
-
-const ProtectedModeracaoAgencias = () =>
-  React.createElement(ProtectedRoute, {
     requireRole: "moderator",
-    children: React.createElement(ModeracaoAgencias)
+    children: React.createElement(Admin)
   })
 
 const ProtectedGeradorCurriculos = () =>
@@ -107,7 +100,6 @@ export const routes = [
   { path: "/cadastro", component: Cadastro },
 
   { path: "/admin", component: ProtectedAdmin },
-  { path: "/admin/moderacao-agencias", component: ProtectedModeracaoAgencias },
 
   { path: "/cadastro-agencia", component: CadastroAgencia },
 

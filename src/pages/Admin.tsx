@@ -27,6 +27,7 @@ import { useAuth } from '@/hooks/useAuth'
 import { useNavigate, Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { apiClient } from '@/lib/apiClient'
+import ModeracaoAgencias from './admin/ModeracaoAgencias'
 
 type AdminTab = 'overview' | 'users' | 'submissions' | 'transactions' | 'moderation' | 'settings'
 
@@ -58,16 +59,18 @@ export default function AdminPage() {
   useEffect(() => {
     if (authLoading) return
 
-    if (!profile || profile.role !== 'admin') {
-      toast.error('Acesso negado. Apenas administradores podem acessar esta página.')
+    if (!profile || (profile.role !== 'admin' && profile.role !== 'moderator')) {
+      toast.error('Acesso negado. Apenas administradores ou moderadores podem acessar esta página.')
       navigate('/')
       return
     }
 
     loadStats()
     loadSubmissions()
-    loadUsers()
-    loadTransactions()
+    if (profile.role === 'admin') {
+      loadUsers()
+      loadTransactions()
+    }
   }, [authLoading, profile, navigate])
 
   const loadStats = async () => {
@@ -187,10 +190,13 @@ export default function AdminPage() {
                     </p>
                   </div>
                 </div>
-                <Button asChild variant="outline" size="sm" className="bg-white dark:bg-gray-800 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-900">
-                  <Link to="/admin/moderacao-agencias">
-                    Ir para Moderação
-                  </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-white dark:bg-gray-800 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-900"
+                  onClick={() => setActiveTab('moderation')}
+                >
+                  Ir para Moderação
                 </Button>
               </div>
             )}
@@ -395,25 +401,7 @@ export default function AdminPage() {
           </Card>
         )
       case 'moderation':
-        return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4">Moderação</h2>
-            <Card>
-              <CardHeader>
-                <CardTitle>Agências e Avaliações</CardTitle>
-                <CardDescription>Acesse o painel completo de moderação de conteúdo gerado por usuários.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button asChild className="w-full sm:w-auto">
-                  <Link to="/admin/moderacao-agencias">
-                    <ShieldCheck className="h-4 w-4 mr-2" />
-                    Abrir Painel de Moderação
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        )
+        return <ModeracaoAgencias />
       case 'settings':
         return (
           <div className="space-y-6">
@@ -447,26 +435,32 @@ export default function AdminPage() {
               icon={<LayoutDashboard className="h-5 w-5" />} label="Visão Geral" 
               active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} 
             />
-            <SidebarItem 
-              icon={<Users className="h-5 w-5" />} label="Usuários" 
-              active={activeTab === 'users'} onClick={() => setActiveTab('users')} 
-            />
+            {profile?.role === 'admin' && (
+              <SidebarItem 
+                icon={<Users className="h-5 w-5" />} label="Usuários" 
+                active={activeTab === 'users'} onClick={() => setActiveTab('users')} 
+              />
+            )}
             <SidebarItem 
               icon={<FileText className="h-5 w-5" />} label="Submissões" 
               active={activeTab === 'submissions'} onClick={() => setActiveTab('submissions')} 
             />
-            <SidebarItem 
-              icon={<CreditCard className="h-5 w-5" />} label="Créditos" 
-              active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} 
-            />
+            {profile?.role === 'admin' && (
+              <SidebarItem 
+                icon={<CreditCard className="h-5 w-5" />} label="Créditos" 
+                active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} 
+              />
+            )}
             <SidebarItem 
               icon={<ShieldCheck className="h-5 w-5" />} label="Moderação" 
               active={activeTab === 'moderation'} onClick={() => setActiveTab('moderation')} 
             />
-            <SidebarItem 
-              icon={<Settings className="h-5 w-5" />} label="Configurações" 
-              active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} 
-            />
+            {profile?.role === 'admin' && (
+              <SidebarItem 
+                icon={<Settings className="h-5 w-5" />} label="Configurações" 
+                active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} 
+              />
+            )}
           </nav>
         </div>
       </aside>

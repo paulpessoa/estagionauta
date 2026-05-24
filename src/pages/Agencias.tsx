@@ -1,13 +1,12 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { Helmet } from 'react-helmet-async'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link, useSearchParams } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { Agency } from '@/types/agency'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Link } from 'react-router-dom'
 import { useAuth } from '@/hooks/useAuth'
 import { AuthRequiredModal } from '@/components/AuthRequiredModal'
 import { MapPin, List, Map, LocateFixed } from 'lucide-react'
@@ -23,24 +22,85 @@ import { Label } from '@/components/ui/label'
 import { AgencyReviewsModal } from '@/components/modals/AgencyReviewsModal'
 
 export default function AgenciasPage() {
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [loading, setLoading] = useState(true)
-  const [currentPage, setCurrentPage] = useState(1)
   const [showAuthModal, setShowAuthModal] = useState(false)
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false)
   const [isReviewsModalOpen, setIsReviewsModalOpen] = useState(false)
   const [selectedAgency, setSelectedAgency] = useState<Agency | null>(null)
-  const [viewMode, setViewMode] = useState<'list' | 'map'>('list')
   const [mapCenter, setMapCenter] = useState({ lat: -8.047562, lng: -34.877002 })
 
+  const viewMode = (searchParams.get('view') as 'list' | 'map') || 'list'
+  const setViewMode = (mode: 'list' | 'map') => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      next.set('view', mode)
+      return next
+    })
+  }
+
+  const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1
+  const setCurrentPage = (page: number | ((prev: number) => number)) => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      const newPage = typeof page === 'function' ? page(currentPage) : page
+      next.set('page', newPage.toString())
+      return next
+    })
+  }
+
   // Search states managed in page
-  const [searchTerm, setSearchTerm] = useState('')
-  const [addressSearch, setAddressSearch] = useState('')
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('q') || '')
+  const [addressSearch, setAddressSearch] = useState(() => searchParams.get('address') || '')
   const [useGeolocation, setUseGeolocation] = useState(false)
   const [geoLoading, setGeoLoading] = useState(false)
   
   const debouncedSearchTerm = useDebounce(searchTerm, 800)
   const debouncedAddressSearch = useDebounce(addressSearch, 800)
+
+  // Sync debounced search states to URL
+  useEffect(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (debouncedSearchTerm) {
+        next.set('q', debouncedSearchTerm)
+      } else {
+        next.delete('q')
+      }
+      next.set('page', '1')
+      return next
+    })
+  }, [debouncedSearchTerm, setSearchParams])
+
+  useEffect(() => {
+    setSearchParams(prev => {
+      const next = new URLSearchParams(prev)
+      if (debouncedAddressSearch) {
+        next.set('address', debouncedAddressSearch)
+      } else {
+        next.delete('address')
+      }
+      next.set('page', '1')
+      return next
+    })
+  }, [debouncedAddressSearch, setSearchParams])
+
+  // Sync URL changes back to inputs
+  useEffect(() => {
+    const q = searchParams.get('q') || ''
+    if (q !== searchTerm) {
+      setSearchTerm(q)
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    const address = searchParams.get('address') || ''
+    if (address !== addressSearch) {
+      setAddressSearch(address)
+    }
+  }, [searchParams])
 
   // For main filters (excluding search/address/location)
   const [filters, setFilters] = useState<FilterState>({
