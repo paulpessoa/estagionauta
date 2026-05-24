@@ -47,7 +47,10 @@ export function AgencyCommentsSection({ agencyId }: AgencyCommentsSectionProps) 
         .from('agency_comments')
         .select(`
           *,
-          comment_reactions!inner(reaction_type)
+          comment_reactions (
+            user_id,
+            reaction_type
+          )
         `)
         .eq('agency_id', agencyId)
         .order('created_at', { ascending: false })
