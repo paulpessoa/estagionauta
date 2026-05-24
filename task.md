@@ -31,9 +31,9 @@
 
 ## 5. Área de Administração Real
 
-- [ ] Refatorar a página `/admin` (`src/pages/Admin.tsx`) para puxar dados reais do Supabase
-- [ ] Conectar moderação de agências (`src/pages/admin/ModeracaoAgencias.tsx`) com a tabela `agency_reviews`
-- [ ] Implementar ações reais de aprovação e rejeição de avaliações
+- [x] Refatorar a página `/admin` (`src/pages/Admin.tsx`) para puxar dados reais do Supabase
+- [x] Conectar moderação de agências (`src/pages/admin/ModeracaoAgencias.tsx`) com a tabela `agency_reviews`
+- [x] Implementar ações reais de aprovação e rejeição de avaliações
 
 ## 6. Normalização Layout, Status Page & Correção Kanban
 

@@ -83,7 +83,7 @@ export default function SimuladorEntrevistas() {
   const [isListening, setIsListening] = useState(false)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
-  const [inputMode, setInputMode] = useState<"voice" | "text">("voice")
+  const [inputMode, setInputMode] = useState<"voice" | "text">("text")
   const recognitionRef = useRef<any>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -144,7 +144,7 @@ export default function SimuladorEntrevistas() {
     }
   }
 
-  const speakText = async (text: string) => {
+  const speakText = async (text: string, isOnDemand = false) => {
     if (!isAudioEnabled) return
 
     // Se o áudio estiver tocando E o botão for pressionado novamente, nós paramos o áudio (toggle)
@@ -191,7 +191,10 @@ export default function SimuladorEntrevistas() {
       audio.play()
     } catch (err) {
       console.error("Erro no TTS da OpenAI:", err)
-      toast.error("Erro ao processar voz da IA.")
+      // Silenciar erro se o modo texto estiver ativo
+      if (inputMode !== "text" && isOnDemand) {
+        toast.error("Erro ao processar voz da IA.")
+      }
     }
   }
 
@@ -231,6 +234,18 @@ export default function SimuladorEntrevistas() {
       scrollToBottom()
     }
   }, [selectedSimulation?.messages, currentView])
+
+  // Hide footer during active chat session
+  useEffect(() => {
+    if (currentView === "chat") {
+      document.body.classList.add("hide-footer-inside-simulator")
+    } else {
+      document.body.classList.remove("hide-footer-inside-simulator")
+    }
+    return () => {
+      document.body.classList.remove("hide-footer-inside-simulator")
+    }
+  }, [currentView])
 
   const loadHistory = async () => {
     setLoading(true)
@@ -294,7 +309,9 @@ export default function SimuladorEntrevistas() {
       const lastMsg =
         data.simulation.messages[data.simulation.messages.length - 1]
       if (lastMsg && lastMsg.role === "interviewer") {
-        speakText(lastMsg.content)
+        if (inputMode === "voice") {
+          speakText(lastMsg.content, false)
+        }
       }
     } catch (err: any) {
       console.error("Erro ao iniciar simulação:", err)
@@ -351,7 +368,9 @@ export default function SimuladorEntrevistas() {
         const lastMsg =
           data.simulation.messages[data.simulation.messages.length - 1]
         if (lastMsg && lastMsg.role === "interviewer") {
-          speakText(lastMsg.content)
+          if (inputMode === "voice") {
+            speakText(lastMsg.content, false)
+          }
         }
       }
     } catch (err: any) {
@@ -769,7 +788,7 @@ export default function SimuladorEntrevistas() {
               className="flex flex-col max-w-4xl mx-auto h-[80vh] border border-muted bg-card/60 backdrop-blur-md rounded-2xl overflow-hidden shadow-2xl"
             >
               {/* Chat Header */}
-              <div className="px-6 py-4 border-b border-muted/60 flex items-center justify-between bg-muted/10">
+              <div className="sticky top-14 z-50 px-6 py-4 border-b border-muted/60 flex items-center justify-between bg-muted/10 backdrop-blur-md bg-background/80">
                 <div className="flex items-center gap-3">
                   <Button
                     onClick={() => {
@@ -889,7 +908,7 @@ export default function SimuladorEntrevistas() {
                           >
                             {isInterviewer && (
                               <button
-                                onClick={() => speakText(msg.content)}
+                                onClick={() => speakText(msg.content, true)}
                                 className="absolute -right-10 top-2 p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-100 rounded-full transition-all opacity-0 group-hover:opacity-100"
                                 title="Ouvir reposta"
                               >
@@ -993,7 +1012,13 @@ export default function SimuladorEntrevistas() {
               </AnimatePresence>
 
               {/* Chat Input Footer Form */}
-              <div className="p-4 border-t border-muted/60 bg-muted/5 flex flex-col items-center">
+              <div className="p-4 border-t border-muted/60 bg-muted/5 flex flex-col items-center w-full">
+                {getProgressCount() === 4 && (
+                  <div className="w-full mb-3 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl text-xs font-semibold flex items-center gap-2 animate-pulse">
+                    <AlertTriangle className="h-4 w-4 shrink-0" />
+                    <span>Esta é a última pergunta! Responda com atenção para que a IA gere seu relatório de feedback final.</span>
+                  </div>
+                )}
                 <form
                   onSubmit={handleSendAnswer}
                   className="w-full flex items-center justify-center gap-3"
@@ -1012,12 +1037,13 @@ export default function SimuladorEntrevistas() {
                         <Button
                           type="button"
                           variant="ghost"
-                          size="icon"
-                          className="rounded-full text-muted-foreground"
+                          size="sm"
+                          className="rounded-full text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 hover:bg-muted"
                           onClick={() => setInputMode("text")}
-                          title="Escrever resposta"
+                          title="Responder por Texto"
                         >
-                          <Keyboard className="h-5 w-5" />
+                          <Keyboard className="h-4 w-4" />
+                          <span className="text-xs font-medium">Modo Texto</span>
                         </Button>
 
                         {/* Main Mic Button */}
@@ -1071,10 +1097,11 @@ export default function SimuladorEntrevistas() {
                           setInputMode("voice")
                           setIsListening(false)
                         }}
-                        className="px-3 text-muted-foreground"
-                        title="Voltar para gravação de voz"
+                        className="px-3 text-muted-foreground flex items-center gap-1.5 hover:bg-muted"
+                        title="Responder por Voz"
                       >
-                        <Mic className="h-5 w-5" />
+                        <Mic className="h-4 w-4" />
+                        <span className="text-xs font-medium">Modo Voz</span>
                       </Button>
                       <Input
                         placeholder="Escreva sua resposta para o entrevistador..."
@@ -1309,7 +1336,7 @@ export default function SimuladorEntrevistas() {
                                   : "Candidato"}
                               </p>
                               <button
-                                onClick={() => speakText(msg.content)}
+                                onClick={() => speakText(msg.content, true)}
                                 className="text-muted-foreground hover:text-primary transition-colors"
                                 title="Ouvir áudio"
                               >

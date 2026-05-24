@@ -101,3 +101,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+body.hide-footer-inside-simulator footer {
+  display: none !important;
+}

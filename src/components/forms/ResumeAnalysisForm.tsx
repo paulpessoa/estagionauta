@@ -259,8 +259,6 @@ export function ResumeAnalysisForm({
                 </div>
               </RadioGroup>
             </div>
-
-            </div>
           </div>
         )
 
