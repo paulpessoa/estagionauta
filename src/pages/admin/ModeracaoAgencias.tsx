@@ -77,7 +77,7 @@ export default function ModeracaoAgencias() {
           agencies (
             name
           ),
-          user_profiles (
+          user_profiles!agency_reviews_user_id_fkey (
             full_name,
             email
           )

@@ -41,7 +41,7 @@ export function AgencyReviewsModal({ isOpen, onClose, agencyId, agencyName }: Ag
         .from('agency_reviews')
         .select('*')
         .eq('agency_id', agencyId)
-        .eq('is_moderated', true)
+        .eq('status', 'approved')
         .order('created_at', { ascending: false })
 
       if (error) throw error
