@@ -509,3 +509,84 @@ This section details the layout normalization, adding the system status page, an
 - [route.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/route.ts): Register `/status` route.
 - [Footer.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/Footer.tsx): Update WhatsApp link for Central de Ajuda to `https://wa.me/558199509777`, remove "Em desenvolvimento" toast wrapper from support links, and link Status to `/status`.
 
+---
+
+# Paginação de Agências & Comentários Saudáveis (Nomes, Avatares, Regras e Moderação de Comentários)
+
+Este plano corrige o problema de listagem de agências quando o total de páginas reduz, a exibição de nomes e avatares nos comentários das agências, define restrições para evitar que os comentários virem uma árvore infinita e confusa, e implementa um sistema completo de moderação de comentários pelo administrador e moderador.
+
+## User Review Required
+
+> [!NOTE]
+> - **Visualização no Mapa**: No mapa não faz sentido usar paginação, pois o usuário deseja ver todos os locais correspondentes na região. Portanto, no modo Mapa exibiremos todas as agências filtradas de uma vez, mantendo a paginação apenas no modo Lista.
+> - **Níveis de Comentários**: Para manter a interface limpa e organizada (sem "árvores malucas"), limitamos as respostas a apenas **1 nível de aninhamento** (Comentário Pai -> Resposta). Respostas não podem receber novas respostas; o botão "Responder" é ocultado para respostas e desativado no backend/verificações.
+> - **Moderação de Comentários**:
+>   - Adicionamos as colunas `status` (padrão `'approved'`) e `moderation_reason` na tabela `agency_comments` via script de migração direta.
+>   - Criamos rotas no backend `api/src/routes/admin.routes.ts` para buscar e atualizar o status de moderação dos comentários (usando a service role key do Supabase Admin).
+>   - Usuários comuns e administradores poderão ver os comentários inline com um aviso de remoção (`"Conteúdo removido pelo moderador por violar as regras da comunidade: [motivo]"`), e haverá uma nova aba tanto para o usuário comum (na página da agência) quanto para o administrador (no painel `/admin`) listando os comentários que foram rejeitados/bloqueados.
+
+## Proposed Changes
+
+### Database & Seed
+
+#### [SEED] [seed-vaggon-reviews.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/scratch/seed-vaggon-reviews.ts)
+- [x] Script executado com sucesso: Criou a agência **VAGGON** (status: approved, type: agencia_privada, is_verified: true) e inseriu 3 avaliações (uma pendente, uma aprovada e uma rejeitada) associadas ao primeiro perfil de usuário encontrado no banco de dados.
+
+#### [MIGRATION] [run-comments-migration.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/scratch/run-comments-migration.ts)
+- [x] Script executado com sucesso: Adicionou as colunas `status` (TEXT, default 'approved') e `moderation_reason` (TEXT) à tabela `agency_comments` usando a conexão pooler via IPv4 (Supavisor) na região `sa-east-1`.
+
+### Backend API
+
+#### [MODIFY] [admin.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/admin.routes.ts)
+- **`GET /api/admin/comments`**: Rota protegida (admin/moderator) para listar todos os comentários denunciados (`is_reported = true`) ou bloqueados/rejeitados (`status = 'rejected'`).
+- **`PUT /api/admin/comments/:id/moderate`**: Rota protegida (admin/moderator) para aprovar ou rejeitar/bloquear um comentário. Se rejeitado, altera o `status` para `'rejected'`, salva o `moderation_reason` e sobrescreve o conteúdo (`content`) do comentário com a mensagem padrão de moderação, limpando também a flag `is_reported`. Se aprovado, limpa a flag `is_reported`.
+
+### Frontend Components
+
+#### [MODIFY] [Agencias.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Agencias.tsx)
+- No modo Lista, adicionar um `useEffect` para validar se a página atual (`currentPage`) excede a quantidade total de páginas (`totalPages`). Se exceder, redefinir para `1` (evitando listagem em branco pós-filtro).
+- No modo Mapa, passar a lista completa filtrada (`filteredAgencies`) sem paginação, permitindo que todas as agências elegíveis apareçam no mapa de uma vez.
+
+#### [MODIFY] [AgencyCommentsSection.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/agency/AgencyCommentsSection.tsx)
+- Modificar a interface `Comment` para comportar `user_name`, `user_avatar`, `status` e `moderation_reason`.
+- Em `fetchComments`, extrair os IDs dos usuários de todos os comentários, carregar as informações de perfil (`full_name`, `avatar_url`) da tabela `user_profiles` em lote, e mapear de volta nos comentários.
+- Atualizar o layout do comentário no `renderComment` para mostrar o avatar real (com fallback para a inicial do nome) e o nome do usuário.
+- Se `comment.status === 'rejected'`, renderizar o texto estilizado em vermelho/cinza `"Conteúdo removido pelo moderador por violar as regras da comunidade: [motivo]"` no lugar do conteúdo, e ocultar os botões de Reação (Like/Dislike) e Resposta.
+- Adicionar abas na seção de comentários (usando Shadcn `Tabs`):
+  - **Aba "Comentários" (Ativos)**: Exibe os comentários aprovados/ativos (e os moderados inline com o texto de aviso).
+  - **Aba "Histórico de Moderação"**: Exibe a lista transparente de todos os comentários dessa agência que foram removidos pela moderação, o nome do autor do comentário (redigido para segurança, ex: "Estudante G***") e a justificativa do moderador.
+- Para administradores/moderadores logados:
+  - Renderizar um botão "Moderar" (com ícone de escudo ou lixeira) ao lado de cada comentário ativo.
+  - Ao clicar, abre uma caixa de diálogo ou prompt solicitando o motivo da remoção e chama o endpoint `PUT /api/admin/comments/:id/moderate` com status `'rejected'`.
+- Ocultar o botão "Responder" para o próprio autor do comentário (`comment.user_id === user.id`).
+- Lançar alerta caso um usuário não autenticado clique no botão de resposta.
+- Em `handleSubmitReply`, adicionar verificações adicionais:
+  - Impedir resposta se o autor do comentário pai for o próprio usuário.
+  - Impedir resposta se o comentário pai for uma resposta (verificando `parent_id` existente).
+
+#### [MODIFY] [ModeracaoAgencias.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/admin/ModeracaoAgencias.tsx)
+- Adicionar uma nova aba principal: **Comentários**.
+- Carregar os comentários denunciados ou bloqueados usando a rota `GET /api/admin/comments`.
+- Renderizar uma tabela/lista exibindo o nome do usuário, nome da agência, conteúdo original (se ainda não excluído), motivo da denúncia, status atual e justificativa de moderação.
+- Fornecer ações rápidas:
+  - **Aprovar**: Remove a denúncia e mantém o comentário ativo.
+  - **Bloquear/Rejeitar**: Abre um modal/campo para inserir a justificativa de exclusão, substitui o conteúdo e altera seu status para `'rejected'`.
+
+## Verification Plan
+
+### Automated Verification
+- Rodar `npm run build` na raiz do projeto e na pasta `api/` para atestar a correção sintática de TypeScript.
+
+### Manual Verification
+- Acessar o painel administrativo (`/admin`) e verificar que a aba **Avaliações** exibe as 3 avaliações geradas para a agência **VAGGON** (pendente, aprovada e rejeitada).
+- Verificar que a nova aba **Comentários** no painel administrativo exibe os comentários sinalizados.
+- Acessar `/agencias` no navegador.
+- Filtrar por estado/cidade após avançar para uma página maior e verificar que ela é reiniciada para 1 se o resultado encolher.
+- Alternar para o modo Mapa e verificar que todas as agências correspondentes aos filtros aparecem (incluindo VAGGON).
+- Na página de detalhes da agência VAGGON:
+  - Comentar e responder com perfis diferentes, validando que nomes e avatares carregam corretamente.
+  - Como administrador, clicar em "Moderar" em um comentário, inserir um motivo e confirmar que ele é alterado para o aviso e movido para a aba de "Histórico de Moderação".
+  - Validar que respostas a comentários moderados e likes/dislikes são desabilitados.
+  - Validar que o botão "Responder" some em seus próprios comentários.
+  - Validar que é impossível responder a uma resposta de comentário.
+

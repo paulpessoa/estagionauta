@@ -370,24 +370,18 @@ export function Header() {
                   <div className="flex flex-col space-y-4 pt-4 border-t">
                     {/* Ícones de créditos */}
 
-                    <Link
-                      to="/creditos"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center justify-between hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
-                    >
-                      <div className="flex items-center space-x-2">
+                    {!(isAdmin || isModerator) && (
+                      <Link
+                        to="/creditos"
+                        onClick={() => setMobileMenuOpen(false)}
+                        className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
+                      >
                         <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
                         <span className="text-sm text-foreground">
-                          Créditos disponíveis:
+                          Meus Créditos
                         </span>
-                      </div>
-                      <Badge
-                        variant="secondary"
-                        className="bg-yellow-100 text-yellow-800"
-                      >
-                        {credits?.credits || 0} ⭐
-                      </Badge>
-                    </Link>
+                      </Link>
+                    )}
 
                     <div className="flex items-center space-x-3">
                       <Avatar className="h-10 w-10">
@@ -414,7 +408,7 @@ export function Header() {
                           {profile.full_name || profile.email}
                         </p>
                         {profile.role !== "student" && (
-                          <Badge variant="secondary" className="text-xs w-fit">
+                           <Badge variant="secondary" className="text-xs w-fit">
                             {profile.role === "admin"
                               ? "Admin"
                               : profile.role === "moderator"
@@ -435,18 +429,19 @@ export function Header() {
                           Dashboard
                         </Link>
                       </Button>
-                      <Button variant="ghost" asChild className="justify-start">
-                        <Link
-                          to="/minhas-analises"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <FileText className="mr-2 h-4 w-4" />
-                          Minhas Análises
-                        </Link>
-                      </Button>
 
-                      {(isAdmin || isModerator) && (
+                      {/* Se for usuário comum, mostramos Minhas Análises e as ferramentas estudantis */}
+                      {!(isAdmin || isModerator) && (
                         <>
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link
+                              to="/minhas-analises"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <FileText className="mr-2 h-4 w-4" />
+                              Minhas Análises
+                            </Link>
+                          </Button>
                           <Button
                             variant="ghost"
                             asChild
@@ -486,24 +481,28 @@ export function Header() {
                               Kanban de Vagas
                             </Link>
                           </Button>
-                          {(isAdmin || isModerator) && (
-                            <Button
-                              variant="ghost"
-                              asChild
-                              className="justify-start"
-                            >
-                              <Link
-                                to="/admin"
-                                onClick={() => setMobileMenuOpen(false)}
-                              >
-                                <Shield className="mr-2 h-4 w-4" />
-                                Painel Administrativo
-                              </Link>
-                            </Button>
-                          )}
                         </>
                       )}
-                      {profile.subscription_status === "free" && (
+
+                      {/* Se for Admin/Moderator, mostramos Painel Administrativo */}
+                      {(isAdmin || isModerator) && (
+                        <Button
+                          variant="ghost"
+                          asChild
+                          className="justify-start"
+                        >
+                          <Link
+                            to="/admin"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Shield className="mr-2 h-4 w-4" />
+                            Painel Administrativo
+                          </Link>
+                        </Button>
+                      )}
+
+                      {/* Se for usuário comum plano free, comprar créditos */}
+                      {!(isAdmin || isModerator) && profile.subscription_status === "free" && (
                         <Button
                           variant="ghost"
                           asChild
@@ -569,17 +568,6 @@ export function Header() {
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
 
-
-              {/* Ícone de estrelas (créditos) */}
-              <Button variant="ghost" size="icon" asChild className="relative">
-                <Link to="/creditos">
-                  <Star className="h-5 w-5 text-yellow-500 fill-yellow-500" />
-                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
-                    {credits?.credits || 0}
-                  </span>
-                </Link>
-              </Button>
-
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -634,20 +622,27 @@ export function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to="/minhas-analises">
-                      <FileText className="mr-2 h-4 w-4" />
-                      Minhas Análises
-                    </Link>
-                  </DropdownMenuItem>
 
-                  <DropdownMenuItem asChild>
-                    <Link to="/creditos">
-                      <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
-                      Créditos: {credits?.credits || 0} ⭐
-                    </Link>
-                  </DropdownMenuItem>
-                  {(isAdmin || isModerator) && (
+                  {/* Se for usuário comum, mostramos Minhas Análises e Créditos simplificados */}
+                  {!(isAdmin || isModerator) && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to="/minhas-analises">
+                          <FileText className="mr-2 h-4 w-4" />
+                          Minhas Análises
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/creditos">
+                          <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          Meus Créditos
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
+                  {/* Se for usuário comum, mostramos as ferramentas estudantis */}
+                  {!(isAdmin || isModerator) && (
                     <>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
@@ -668,17 +663,24 @@ export function Header() {
                           Kanban de Vagas
                         </Link>
                       </DropdownMenuItem>
-                      {(isAdmin || isModerator) && (
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin">
-                            <Shield className="mr-2 h-4 w-4" />
-                            Painel Administrativo
-                          </Link>
-                        </DropdownMenuItem>
-                      )}
                     </>
                   )}
-                  {profile.subscription_status === "free" && (
+
+                  {/* Se for Admin/Moderator, mostramos Painel Administrativo */}
+                  {(isAdmin || isModerator) && (
+                    <>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin">
+                          <Shield className="mr-2 h-4 w-4" />
+                          Painel Administrativo
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
+                  )}
+
+                  {/* Se for usuário comum em plano free, mostramos comprar créditos */}
+                  {!(isAdmin || isModerator) && profile.subscription_status === "free" && (
                     <DropdownMenuItem asChild>
                       <Link to="/precos">
                         <CreditCard className="mr-2 h-4 w-4" />
@@ -686,6 +688,8 @@ export function Header() {
                       </Link>
                     </DropdownMenuItem>
                   )}
+
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/configuracoes">
                       <Settings className="mr-2 h-4 w-4" />

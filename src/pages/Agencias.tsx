@@ -34,21 +34,17 @@ export default function AgenciasPage() {
 
   const viewMode = (searchParams.get('view') as 'list' | 'map') || 'list'
   const setViewMode = (mode: 'list' | 'map') => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
-      next.set('view', mode)
-      return next
-    })
+    const next = new URLSearchParams(searchParams)
+    next.set('view', mode)
+    setSearchParams(next)
   }
 
   const currentPage = parseInt(searchParams.get('page') || '1', 10) || 1
   const setCurrentPage = (page: number | ((prev: number) => number)) => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
-      const newPage = typeof page === 'function' ? page(currentPage) : page
-      next.set('page', newPage.toString())
-      return next
-    })
+    const newPage = typeof page === 'function' ? page(currentPage) : page
+    const next = new URLSearchParams(searchParams)
+    next.set('page', newPage.toString())
+    setSearchParams(next)
   }
 
   // Search states managed in page
@@ -62,30 +58,32 @@ export default function AgenciasPage() {
 
   // Sync debounced search states to URL
   useEffect(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
+    const urlQuery = searchParams.get('q') || ''
+    if (debouncedSearchTerm !== urlQuery) {
+      const next = new URLSearchParams(searchParams)
       if (debouncedSearchTerm) {
         next.set('q', debouncedSearchTerm)
       } else {
         next.delete('q')
       }
       next.set('page', '1')
-      return next
-    })
-  }, [debouncedSearchTerm, setSearchParams])
+      setSearchParams(next)
+    }
+  }, [debouncedSearchTerm, searchParams, setSearchParams])
 
   useEffect(() => {
-    setSearchParams(prev => {
-      const next = new URLSearchParams(prev)
+    const urlAddress = searchParams.get('address') || ''
+    if (debouncedAddressSearch !== urlAddress) {
+      const next = new URLSearchParams(searchParams)
       if (debouncedAddressSearch) {
         next.set('address', debouncedAddressSearch)
       } else {
         next.delete('address')
       }
       next.set('page', '1')
-      return next
-    })
-  }, [debouncedAddressSearch, setSearchParams])
+      setSearchParams(next)
+    }
+  }, [debouncedAddressSearch, searchParams, setSearchParams])
 
   // Sync URL changes back to inputs
   useEffect(() => {
@@ -181,6 +179,12 @@ export default function AgenciasPage() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   )
+
+  useEffect(() => {
+    if (totalPages > 0 && currentPage > totalPages) {
+      setCurrentPage(1)
+    }
+  }, [totalPages, currentPage])
 
   const handleReviewClick = (agency: Agency) => {
     if (!user) {

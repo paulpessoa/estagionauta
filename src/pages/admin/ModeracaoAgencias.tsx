@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { apiClient } from '@/lib/apiClient'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -28,6 +29,11 @@ export default function ModeracaoAgencias() {
   const [loadingReviews, setLoadingReviews] = useState(true)
   const [reviewSearchTerm, setReviewSearchTerm] = useState('')
 
+  // Comments state
+  const [commentsToModerate, setCommentsToModerate] = useState<any[]>([])
+  const [loadingComments, setLoadingComments] = useState(true)
+  const [commentSearchTerm, setCommentSearchTerm] = useState('')
+
   // Modals state for agencies
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -40,6 +46,7 @@ export default function ModeracaoAgencias() {
 
     fetchAgencies()
     fetchReviews()
+    fetchCommentsToModerate()
   }, [isLoading, profile])
 
   const fetchAgencies = async () => {
@@ -84,6 +91,38 @@ export default function ModeracaoAgencias() {
       toast.error('Erro ao buscar avaliações para moderação')
     } finally {
       setLoadingReviews(false)
+    }
+  }
+
+  const fetchCommentsToModerate = async () => {
+    setLoadingComments(true)
+    try {
+      const data = await apiClient.get<any[]>('/api/admin/comments')
+      setCommentsToModerate(data || [])
+    } catch (error) {
+      console.error('Erro ao buscar comentários:', error)
+      toast.error('Erro ao buscar comentários para moderação')
+    } finally {
+      setLoadingComments(false)
+    }
+  }
+
+  const handleCommentStatusChange = async (commentId: string, newStatus: 'approved' | 'rejected', reason?: string) => {
+    try {
+      await apiClient.put(`/api/admin/comments/${commentId}/moderate`, {
+        status: newStatus,
+        reason
+      })
+      
+      setCommentsToModerate(commentsToModerate.map(comment =>
+        comment.id === commentId ? { ...comment, status: newStatus, is_reported: false, moderation_reason: reason } : comment
+      ))
+      
+      toast.success(`Comentário ${newStatus === 'rejected' ? 'rejeitado' : 'aprovado'} com sucesso`)
+      fetchCommentsToModerate()
+    } catch (error) {
+      console.error('Erro ao moderar comentário:', error)
+      toast.error('Erro ao moderar comentário')
     }
   }
 
@@ -266,9 +305,10 @@ export default function ModeracaoAgencias() {
         </div>
 
         <Tabs defaultValue="agencies" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="agencies">Agências</TabsTrigger>
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
+            <TabsTrigger value="comments">Comentários</TabsTrigger>
           </TabsList>
 
           {/* Agencies Tab Content */}
@@ -513,9 +553,209 @@ export default function ModeracaoAgencias() {
               </TabsContent>
             </Tabs>
           </TabsContent>
+
+          {/* Comments Tab Content */}
+          <TabsContent value="comments" className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-xl font-semibold">Moderação de Comentários</h2>
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar comentários..."
+                  value={commentSearchTerm}
+                  onChange={(e) => setCommentSearchTerm(e.target.value)}
+                  className="pl-9 text-xs"
+                />
+              </div>
+            </div>
+
+            <Tabs defaultValue="pending" className="space-y-4">
+              <TabsList>
+                <TabsTrigger value="pending" className="relative">
+                  Denunciados
+                  {commentsToModerate.filter(c => c.is_reported && c.status !== 'rejected').length > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {commentsToModerate.filter(c => c.is_reported && c.status !== 'rejected').length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+                <TabsTrigger value="blocked">
+                  Bloqueados
+                  {commentsToModerate.filter(c => c.status === 'rejected').length > 0 && (
+                    <Badge variant="secondary" className="ml-2">
+                      {commentsToModerate.filter(c => c.status === 'rejected').length}
+                    </Badge>
+                  )}
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="pending" className="space-y-4">
+                {loadingComments ? (
+                  <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                ) : commentsToModerate.filter(c => c.is_reported && c.status !== 'rejected').length === 0 ? (
+                  <Card>
+                    <CardContent className="flex items-center justify-center h-32">
+                      <p className="text-muted-foreground text-sm">Nenhum comentário denunciado para moderação</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  commentsToModerate
+                    .filter(c => c.is_reported && c.status !== 'rejected')
+                    .filter(c => {
+                      const searchLower = commentSearchTerm.toLowerCase()
+                      return (
+                        c.content.toLowerCase().includes(searchLower) ||
+                        (c.agencies?.name?.toLowerCase().includes(searchLower) ?? false) ||
+                        (c.user_profiles?.full_name?.toLowerCase().includes(searchLower) ?? false)
+                      )
+                    })
+                    .map((comment) => (
+                      <CommentModerationCard
+                        key={comment.id}
+                        comment={comment}
+                        onApprove={() => handleCommentStatusChange(comment.id, 'approved')}
+                        onReject={() => {
+                          const reason = window.prompt('Justificativa para bloqueio:', 'Violação dos termos de uso')
+                          if (reason !== null) {
+                            handleCommentStatusChange(comment.id, 'rejected', reason)
+                          }
+                        }}
+                      />
+                    ))
+                )}
+              </TabsContent>
+
+              <TabsContent value="blocked" className="space-y-4">
+                {loadingComments ? (
+                  <div className="flex justify-center py-12">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                  </div>
+                ) : commentsToModerate.filter(c => c.status === 'rejected').length === 0 ? (
+                  <Card>
+                    <CardContent className="flex items-center justify-center h-32">
+                      <p className="text-muted-foreground text-sm">Nenhum comentário bloqueado</p>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  commentsToModerate
+                    .filter(c => c.status === 'rejected')
+                    .filter(c => {
+                      const searchLower = commentSearchTerm.toLowerCase()
+                      return (
+                        c.content.toLowerCase().includes(searchLower) ||
+                        (c.agencies?.name?.toLowerCase().includes(searchLower) ?? false) ||
+                        (c.user_profiles?.full_name?.toLowerCase().includes(searchLower) ?? false)
+                      )
+                    })
+                    .map((comment) => (
+                      <CommentModerationCard
+                        key={comment.id}
+                        comment={comment}
+                        onApprove={() => handleCommentStatusChange(comment.id, 'approved')}
+                        onReject={() => {}}
+                        isBlocked
+                      />
+                    ))
+                )}
+              </TabsContent>
+            </Tabs>
+          </TabsContent>
         </Tabs>
       </div>
     </>
+  )
+}
+
+function CommentModerationCard({
+  comment,
+  onApprove,
+  onReject,
+  isBlocked = false
+}: {
+  comment: any
+  onApprove: () => void
+  onReject: () => void
+  isBlocked?: boolean
+}) {
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardHeader className="pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+          <div>
+            <CardTitle className="text-md flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-muted-foreground" />
+              {comment.agencies?.name || 'Agência desconhecida'}
+            </CardTitle>
+            <CardDescription className="text-xs mt-1 flex flex-col sm:flex-row sm:items-center gap-1">
+              <span>Por: {comment.user_profiles?.full_name || 'Estudante'} ({comment.user_profiles?.email || 'N/A'})</span>
+              <span className="hidden sm:inline">•</span>
+              <span className="flex items-center text-[10px] text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5 mr-1" />
+                {new Date(comment.created_at).toLocaleString('pt-BR')}
+              </span>
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={comment.status === 'rejected' ? 'destructive' : 'secondary'}>
+              {comment.status === 'rejected' ? 'Bloqueado' : 'Denunciado'}
+            </Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-3 text-xs">
+        <div className="bg-muted/40 p-3 rounded-lg border border-border/50">
+          <p className="font-medium text-[11px] text-muted-foreground mb-1">
+            Conteúdo do Comentário:
+          </p>
+          <p className="text-gray-700 dark:text-gray-300 italic">{comment.content}</p>
+        </div>
+
+        {comment.status === 'rejected' && comment.moderation_reason && (
+          <div className="bg-red-50/40 dark:bg-red-950/10 p-3 rounded-lg border border-red-200/40 dark:border-red-900/20">
+            <p className="font-semibold text-[11px] text-red-800 dark:text-red-300 mb-1 flex items-center gap-1">
+              <ShieldAlert className="h-3.5 w-3.5 text-red-500" />
+              Justificativa de Moderação:
+            </p>
+            <p className="text-gray-600 dark:text-gray-400">{comment.moderation_reason}</p>
+          </div>
+        )}
+
+        <div className="flex justify-end gap-2 mt-4 pt-3 border-t">
+          {isBlocked ? (
+            <Button
+              variant="outline"
+              size="sm"
+              className="h-8 text-xs"
+              onClick={onApprove}
+            >
+              Reativar Comentário
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-8 text-xs border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20"
+                onClick={onReject}
+              >
+                <X className="h-3.5 w-3.5 mr-1 text-red-500" />
+                Bloquear / Excluir
+              </Button>
+              <Button
+                size="sm"
+                className="h-8 text-xs"
+                onClick={onApprove}
+              >
+                <Check className="h-3.5 w-3.5 mr-1" />
+                Aprovar Comentário
+              </Button>
+            </>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
