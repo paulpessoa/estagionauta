@@ -33,9 +33,10 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         defaultTheme='light'
+        forcedTheme='light'
         attribute='class'
         disableTransitionOnChange
-        enableSystem
+        enableSystem={false}
       >
         <HelmetProvider>
           <BrowserRouter>

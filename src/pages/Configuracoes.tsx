@@ -10,9 +10,8 @@ import { Separator } from '@/components/ui/separator'
 import { AvatarUpload } from '@/components/ui/avatar-upload'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, Bell, Shield, Palette, Globe, GraduationCap, Building2, Sun, Moon, Loader2, CheckCircle, XCircle, Info, Settings, Lock, Trash2 } from 'lucide-react'
+import { User, Bell, Shield, GraduationCap, Building2, Loader2, CheckCircle, XCircle, Info, Settings, Lock, Trash2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
-import { useTheme } from 'next-themes'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { apiClient } from '@/lib/apiClient'
 import {
@@ -31,7 +30,7 @@ export default function Configuracoes() {
   const { user, profile, signOut } = useAuth()
   const { toast } = useToast()
   const navigate = useNavigate()
-  const { theme, setTheme } = useTheme()
+
   const [loading, setLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
@@ -81,10 +80,7 @@ export default function Configuracoes() {
     showPhone: false
   })
 
-  const [appearanceSettings, setAppearanceSettings] = useState({
-    theme: 'system',
-    language: 'pt'
-  })
+
 
   const [slug, setSlug] = useState('')
   const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle')
@@ -130,23 +126,11 @@ export default function Configuracoes() {
         })
       }
 
-      // Carrega configurações de aparência
-      if (profile.appearance_settings) {
-        setAppearanceSettings({
-          theme: profile.appearance_settings.theme || 'system',
-          language: profile.appearance_settings.language || 'pt'
-        })
-      }
+
     }
   }, [profile])
 
-  // Carrega tema do localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme')
-    if (savedTheme) {
-      setAppearanceSettings(prev => ({ ...prev, theme: savedTheme }))
-    }
-  }, [])
+
 
   const handleSaveProfile = async () => {
     if (!user) return
@@ -250,67 +234,7 @@ export default function Configuracoes() {
     }
   }
 
-  const handleSaveAppearance = async () => {
-    if (!user) return
 
-    try {
-      setLoading(true)
-      
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          appearance_settings: appearanceSettings,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      toast({
-        title: "Aparência atualizada",
-        description: "Suas preferências de aparência foram salvas.",
-      })
-    } catch (error) {
-      console.error('Error updating appearance:', error)
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar aparência. Tente novamente.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleThemeChange = async (newTheme: string) => {
-    setTheme(newTheme)
-    setAppearanceSettings(prev => ({ ...prev, theme: newTheme }))
-    localStorage.setItem('theme', newTheme)
-    
-    // Salvar no Supabase se o usuário estiver logado
-    if (user && profile) {
-      try {
-        const { error } = await supabase
-          .from('user_profiles')
-          .update({ 
-            appearance_settings: {
-              ...appearanceSettings,
-              theme: newTheme
-            },
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', user.id)
-
-        if (error) {
-          console.error('Erro ao salvar tema no Supabase:', error)
-        } else {
-          console.log('Tema salvo no Supabase')
-        }
-      } catch (error) {
-        console.error('Erro ao salvar tema no Supabase:', error)
-      }
-    }
-  }
 
   // Função para sugerir slug
   const suggestSlug = () => {
@@ -438,14 +362,10 @@ export default function Configuracoes() {
           </div>
 
           <Tabs defaultValue="perfil" className="w-full">
-            <TabsList className="grid grid-cols-3 w-full max-w-md mb-6">
+            <TabsList className="grid grid-cols-2 w-full max-w-md mb-6">
               <TabsTrigger value="perfil" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
                 <span>Perfil</span>
-              </TabsTrigger>
-              <TabsTrigger value="aparencia" className="flex items-center gap-2">
-                <Palette className="h-4 w-4" />
-                <span>Aparência</span>
               </TabsTrigger>
               <TabsTrigger value="seguranca" className="flex items-center gap-2">
                 <Lock className="h-4 w-4" />
@@ -636,50 +556,7 @@ export default function Configuracoes() {
               </Card>
             </TabsContent>
 
-            {/* ABA: APARÊNCIA */}
-            <TabsContent value="aparencia" className="space-y-6 outline-none">
-              {/* Aparência */}
-              <Card>
-                <CardHeader className="py-4">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Palette className="h-5 w-5" />
-                    Aparência
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Label>Tema</Label>
-                  <div className="grid grid-cols-3 gap-3">
-                    <Button
-                      variant={appearanceSettings.theme === 'light' ? 'default' : 'outline'}
-                      onClick={() => handleThemeChange('light')}
-                      className="flex flex-col items-center gap-2 h-auto p-4"
-                    >
-                      <Sun className="h-5 w-5" />
-                      <span className="text-sm">Claro</span>
-                    </Button>
-                    <Button
-                      variant={appearanceSettings.theme === 'dark' ? 'default' : 'outline'}
-                      onClick={() => handleThemeChange('dark')}
-                      className="flex flex-col items-center gap-2 h-auto p-4"
-                    >
-                      <Moon className="h-5 w-5" />
-                      <span className="text-sm">Escuro</span>
-                    </Button>
-                    <Button
-                      variant={appearanceSettings.theme === 'system' ? 'default' : 'outline'}
-                      onClick={() => handleThemeChange('system')}
-                      className="flex flex-col items-center gap-2 h-auto p-4"
-                    >
-                      <Globe className="h-5 w-5" />
-                      <span className="text-sm">Sistema</span>
-                    </Button>
-                  </div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    O tema será aplicado imediatamente e salvo automaticamente.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
+
 
             {/* ABA: SEGURANÇA */}
             <TabsContent value="seguranca" className="space-y-6 outline-none">
