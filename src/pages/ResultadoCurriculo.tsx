@@ -96,11 +96,11 @@ ${analysis.name}`)
   }, [analysis])
 
   useEffect(() => {
-    if (id) {
+    if (id && id !== 'undefined') {
       console.log('Fetching analysis with ID:', id)
       fetchAnalysis(id)
     } else {
-      console.error('No analysis ID provided')
+      console.error('No analysis ID provided or invalid ID')
       navigate('/')
     }
   }, [id])

@@ -42,6 +42,7 @@ export function AgencyCommentsSection({ agencyId }: AgencyCommentsSectionProps) 
   }, [agencyId])
 
   const fetchComments = async () => {
+    if (!agencyId || agencyId === 'undefined') return
     try {
       const { data: commentsData, error } = await supabase
         .from('agency_comments')
