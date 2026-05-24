@@ -57,3 +57,18 @@
 - [x] Admin UI: Integrar `ModeracaoAgencias` diretamente como tab no `/admin`
 - [x] Agências: Sincronizar filtros/busca (q, address, view, page) na URL via `useSearchParams`
 - [x] Modais: Adicionar uploader de logo no `EditAgencyModal` apontando para o bucket `agency-logos`
+
+## 8. Paginação de Agências, Menus/Créditos e Moderação de Comentários
+
+- [x] Corrigir paginação de agências em `Agencias.tsx` (reiniciar página para 1 quando filtros encolherem a listagem)
+- [x] Exibir lista completa no modo Mapa de agências sem paginação
+- [x] Ajustar visibilidade de itens no header e menu mobile com base no cargo (ocultar recursos de estudante para admin)
+- [x] Remover exibição de contador de créditos no header superior e simplificar link para "Meus Créditos"
+- [x] Inserir agência VAGGON de teste e 3 avaliações (pendente, aprovada e rejeitada) no banco de dados
+- [x] Adicionar colunas `status` e `moderation_reason` na tabela `agency_comments` via script de migração
+- [x] Implementar rotas Hono de moderação de comentários: `GET /api/admin/comments` e `PUT /api/admin/comments/:id/moderate`
+- [x] Renderizar avatares e nomes reais dos estudantes nos comentários
+- [x] Ocultar botão de resposta para comentários próprios (bloquear autocomentários) e em respostas (limitar aninhamento a 1 nível)
+- [x] Adicionar aba de transparência de "Histórico de Moderação" nas agências para comentários removidos (nomes no formato `Estudante G***`)
+- [x] Integrar aba de moderação de "Comentários" no painel administrativo `/admin`
+
