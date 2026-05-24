@@ -32,7 +32,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'pix'],
+      payment_method_types: ['card'], // Removed 'pix' to prevent errors if not enabled in Stripe
       line_items: [
         {
           price_data: {
@@ -51,14 +51,14 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
         planId,
         credits: plan.credits.toString(),
       },
-      success_url: `${env.CLIENT_URL}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${env.CLIENT_URL}/precos?payment=cancel`,
+      success_url: env.STRIPE_SUCCESS_URL ? `${env.STRIPE_SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}` : `${env.CLIENT_URL}/sucesso?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: env.STRIPE_CANCEL_URL ? `${env.STRIPE_CANCEL_URL}?payment=cancel` : `${env.CLIENT_URL}/precos?payment=cancel`,
     });
 
     return c.json({ url: session.url });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Stripe checkout session creation failed:', err);
-    return c.json({ error: 'Erro ao criar sessão de pagamento' }, 500);
+    return c.json({ error: err.message || 'Erro ao criar sessão de pagamento' }, 500);
   }
 });
 

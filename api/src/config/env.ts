@@ -11,6 +11,8 @@ const envSchema = z.object({
   GROQ_API_KEY: z.string().min(1),
   STRIPE_SECRET_KEY: z.string().min(1),
   STRIPE_WEBHOOK_SECRET: z.string().min(1),
+  STRIPE_SUCCESS_URL: z.string().url().optional(),
+  STRIPE_CANCEL_URL: z.string().url().optional(),
   BREVO_API_KEY: z.string().optional(),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
   OPENAI_API_KEY: z.string().min(1).optional(),

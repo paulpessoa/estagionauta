@@ -42,14 +42,10 @@ interface ResumeAnalysisFormProps {
 }
 
 interface ResumeFormData {
-  // Basic info
-  name: string
-  email: string
   course: string
   university: string
   period: string
   hasInternship: string
-  hasLinkedIn: string
 
   // Current situation
   currentFocus: string
@@ -84,13 +80,10 @@ export function ResumeAnalysisForm({
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<ResumeFormData>({
     // Basic info
-    name: "",
-    email: "",
     course: "",
     university: "",
     period: "",
     hasInternship: "",
-    hasLinkedIn: "",
 
     // Current situation
     currentFocus: "",
@@ -121,12 +114,9 @@ export function ResumeAnalysisForm({
     if (profile) {
       setFormData((prev) => ({
         ...prev,
-        name: profile.full_name || "",
-        email: profile.email || "",
         course: profile.course || "",
         university: profile.university || "",
-        period: profile.period || "",
-        hasLinkedIn: profile.linkedin_url ? "yes" : "no"
+        period: profile.period || ""
       }))
     }
   }, [profile])
@@ -136,7 +126,7 @@ export function ResumeAnalysisForm({
     { title: "Momento Atual", description: "Sua situação atual", icon: Target },
     {
       title: "Vaga Específica",
-      description: "Vaga específica (Opcional)",
+      description: "Opcional",
       icon: GraduationCap
     },
     { title: "Currículo", description: "Upload do arquivo", icon: Upload }
@@ -196,27 +186,6 @@ export function ResumeAnalysisForm({
       case 0: // Perfil
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="name">Nome completo *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => updateFormData("name", e.target.value)}
-                  placeholder="Seu nome completo"
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">E-mail *</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => updateFormData("email", e.target.value)}
-                  placeholder="seu@email.com"
-                />
-              </div>
-            </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
@@ -291,26 +260,6 @@ export function ResumeAnalysisForm({
               </RadioGroup>
             </div>
 
-            <div>
-              <Label>Você tem perfil no LinkedIn? *</Label>
-              <RadioGroup
-                value={formData.hasLinkedIn}
-                onValueChange={(value) => updateFormData("hasLinkedIn", value)}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2"
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="linkedin1" />
-                  <Label htmlFor="linkedin1">
-                    Sim, tenho perfil no LinkedIn
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="linkedin2" />
-                  <Label htmlFor="linkedin2">
-                    Não, não tenho perfil no LinkedIn
-                  </Label>
-                </div>
-              </RadioGroup>
             </div>
           </div>
         )
@@ -420,10 +369,7 @@ export function ResumeAnalysisForm({
               <div className="flex items-start space-x-3">
                 <Target className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-900 dark:text-blue-100">
-                    Vaga Específica (Opcional)
-                  </p>
-                  <p className="text-blue-700 dark:text-blue-200 mt-1">
+                  <p className="text-blue-700 dark:text-blue-200">
                     Se você tem uma vaga específica em mente, podemos analisar
                     se seu currículo está adequado para ela.
                   </p>
@@ -544,20 +490,15 @@ export function ResumeAnalysisForm({
       case 0: {
         // Perfil
         // Verifica se os campos obrigatórios estão preenchidos, considerando o perfil
-        const hasName = formData.name || profile?.full_name
-        const hasEmail = formData.email || profile?.email
         const hasCourse = formData.course || profile?.course
         const hasUniversity = formData.university || profile?.university
         const hasPeriod = formData.period || profile?.period
 
         return (
-          hasName &&
-          hasEmail &&
-          hasCourse &&
-          hasUniversity &&
-          hasPeriod &&
-          formData.hasInternship &&
-          formData.hasLinkedIn
+          !!hasCourse &&
+          !!hasUniversity &&
+          !!hasPeriod &&
+          !!formData.hasInternship
         )
       }
       case 1: // Momento Atual
@@ -685,7 +626,7 @@ export function ResumeAnalysisForm({
                     ) : (
                       <>
                         <Gift className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-                        <span>Enviar e Receber Análise</span>
+                        <span>Processar Análise</span>
                       </>
                     )}
                   </div>
