@@ -20,13 +20,10 @@ import { apiClient } from "@/lib/apiClient"
 
 interface ResumeFormData {
   // Basic info
-  name: string
-  email: string
   course: string
   university: string
   period: string
   hasInternship: string
-  hasLinkedIn: string
 
   // Current situation
   currentFocus: string
@@ -77,16 +74,20 @@ export default function AnalyseCurriculoPage() {
   }
 
   const handleFormComplete = async (formData: ResumeFormData) => {
-    if (
-      !formData.resumeFile ||
-      !formData.name ||
-      !formData.email ||
-      !formData.course ||
-      !formData.university ||
-      !formData.period
-    ) {
+    const missingFields = []
+    if (!formData.course) missingFields.push("Curso")
+    if (!formData.university) missingFields.push("Universidade")
+    if (!formData.period) missingFields.push("Período")
+    if (!formData.hasInternship) missingFields.push("Se já fez estágio")
+    if (!formData.currentFocus) missingFields.push("Foco principal")
+    if (!formData.careerGoals) missingFields.push("Objetivos de carreira")
+    if (!formData.skillsToDevelop) missingFields.push("Habilidades a desenvolver")
+    if (!formData.timeAvailability) missingFields.push("Disponibilidade de tempo")
+    if (!formData.resumeFile) missingFields.push("Arquivo PDF do Currículo")
+
+    if (missingFields.length > 0) {
       setError(
-        "Por favor, preencha todos os campos obrigatórios e selecione um arquivo PDF."
+        `Por favor, preencha os seguintes campos obrigatórios: ${missingFields.join(", ")}.`
       )
       return
     }
