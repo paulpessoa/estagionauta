@@ -121,6 +121,8 @@ export type Database = {
           is_reported: boolean | null
           likes_count: number | null
           parent_id: string | null
+          status: string | null
+          moderation_reason: string | null
           updated_at: string
           user_id: string
         }
@@ -133,6 +135,8 @@ export type Database = {
           is_reported?: boolean | null
           likes_count?: number | null
           parent_id?: string | null
+          status?: string | null
+          moderation_reason?: string | null
           updated_at?: string
           user_id: string
         }
@@ -145,6 +149,8 @@ export type Database = {
           is_reported?: boolean | null
           likes_count?: number | null
           parent_id?: string | null
+          status?: string | null
+          moderation_reason?: string | null
           updated_at?: string
           user_id?: string
         }
