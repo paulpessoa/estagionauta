@@ -158,10 +158,15 @@ export default function SimuladorEntrevistas() {
     try {
       const session = await supabase.auth.getSession()
       const token = session.data.session?.access_token
-      if (!token) return
+      if (!token) {
+        console.warn("Nenhum token de autenticação encontrado para o TTS.")
+        toast.error("Erro de autenticação: faça login novamente.")
+        return
+      }
 
+      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001"
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || "http://localhost:3001"}/api/simulator/tts`,
+        `${apiUrl}/api/simulator/tts`,
         {
           method: "POST",
           headers: {
@@ -172,7 +177,10 @@ export default function SimuladorEntrevistas() {
         }
       )
 
-      if (!response.ok) throw new Error("Falha no TTS")
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.error || `Erro HTTP ${response.status}`)
+      }
 
       const blob = await response.blob()
       const audioUrl = URL.createObjectURL(blob)
@@ -188,13 +196,16 @@ export default function SimuladorEntrevistas() {
       audio.onended = () => setIsPlayingAudio(false)
       audio.onpause = () => setIsPlayingAudio(false)
 
-      audio.play()
-    } catch (err) {
-      console.error("Erro no TTS da OpenAI:", err)
-      // Silenciar erro se o modo texto estiver ativo
-      if (inputMode !== "text" && isOnDemand) {
-        toast.error("Erro ao processar voz da IA.")
+      const playPromise = audio.play()
+      if (playPromise !== undefined) {
+        playPromise.catch((e) => {
+          console.error("Autoplay ou erro de reprodução de áudio:", e)
+          toast.error("O navegador bloqueou a reprodução de áudio. Dê um clique na tela primeiro.")
+        })
       }
+    } catch (err: any) {
+      console.error("Erro no TTS da OpenAI:", err)
+      toast.error(`Erro ao processar voz da IA: ${err.message || err}`)
     }
   }
 
