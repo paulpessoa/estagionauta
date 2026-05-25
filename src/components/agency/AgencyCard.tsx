@@ -1,4 +1,3 @@
-
 import { useState } from 'react'
 import { Agency } from '@/types/agency'
 import { toast } from 'sonner'
@@ -7,9 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useAuth'
 import { AuthRequiredModal } from '@/components/AuthRequiredModal'
-import { Building, MapPin, Star, Globe, Phone, Instagram, Users, MessageSquare } from 'lucide-react'
+import { MapPin, Star, Globe, Phone, Instagram, Linkedin, Video, Mail, MessageSquare } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { AgencyCommentsSection } from '@/components/agency/AgencyCommentsSection'
 
 interface AgencyCardProps {
   agency: Agency & { distance?: number }
@@ -20,23 +18,6 @@ interface AgencyCardProps {
 export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardProps) {
   const { user } = useAuth()
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [showComments, setShowComments] = useState(false)
-
-  const handleReactionClick = () => {
-    if (!user) {
-      setShowAuthModal(true)
-    } else {
-      toast.info('Funcionalidade de reação em desenvolvimento!')
-    }
-  }
-
-  const handleCommentsClick = () => {
-    if (!user) {
-      setShowAuthModal(true)
-    } else {
-      setShowComments(!showComments)
-    }
-  }
 
   return (
     <>
@@ -90,32 +71,90 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
                 </div>
               </div>
             )}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t">
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 sm:mb-0">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between pt-4 border-t gap-4">
+              <div className="flex flex-wrap items-center gap-2">
                 {agency.phone && (
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Phone className="h-4 w-4" />
+                  <a
+                    href={`tel:${agency.phone.replace(/[^0-9+]/g, '')}`}
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-violet-100 hover:text-violet-700 dark:hover:bg-violet-950 dark:hover:text-violet-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Ligar para agência"
+                  >
+                    <Phone className="h-3.5 w-3.5" />
                     <span>{agency.phone}</span>
-                  </div>
+                  </a>
+                )}
+                {agency.whatsapp && (
+                  <a
+                    href={`https://wa.me/${agency.whatsapp.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-green-100 hover:text-green-700 dark:hover:bg-green-950 dark:hover:text-green-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Enviar WhatsApp"
+                  >
+                    <MessageSquare className="h-3.5 w-3.5 text-green-500" />
+                    <span>WhatsApp</span>
+                  </a>
+                )}
+                {agency.email && (
+                  <a
+                    href={`mailto:${agency.email}`}
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-blue-100 hover:text-blue-700 dark:hover:bg-blue-950 dark:hover:text-blue-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Enviar E-mail"
+                  >
+                    <Mail className="h-3.5 w-3.5" />
+                    <span>E-mail</span>
+                  </a>
                 )}
                 {agency.website && (
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Globe className="h-4 w-4" />
-                    <a href={agency.website} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate">
-                      {agency.website}
-                    </a>
-                  </div>
+                  <a
+                    href={agency.website.startsWith('http') ? agency.website : `https://${agency.website}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-indigo-100 hover:text-indigo-700 dark:hover:bg-indigo-950 dark:hover:text-indigo-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Acessar Website"
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    <span>Website</span>
+                  </a>
                 )}
                 {agency.instagram && (
-                  <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-                    <Instagram className="h-4 w-4" />
-                    <a href={`https://instagram.com/${agency.instagram}`} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline truncate">
-                      @{agency.instagram}
-                    </a>
-                  </div>
+                  <a
+                    href={agency.instagram.startsWith('http') ? agency.instagram : `https://instagram.com/${agency.instagram.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-pink-100 hover:text-pink-700 dark:hover:bg-pink-950 dark:hover:text-pink-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Ver Instagram"
+                  >
+                    <Instagram className="h-3.5 w-3.5" />
+                    <span>@{agency.instagram.replace('@', '')}</span>
+                  </a>
+                )}
+                {agency.linkedin && (
+                  <a
+                    href={agency.linkedin.startsWith('http') ? agency.linkedin : `https://linkedin.com/in/${agency.linkedin}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-sky-100 hover:text-sky-700 dark:hover:bg-sky-950 dark:hover:text-sky-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Ver LinkedIn"
+                  >
+                    <Linkedin className="h-3.5 w-3.5" />
+                    <span>LinkedIn</span>
+                  </a>
+                )}
+                {agency.tiktok && (
+                  <a
+                    href={agency.tiktok.startsWith('http') ? agency.tiktok : `https://tiktok.com/@${agency.tiktok.replace('@', '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center space-x-1 text-xs bg-muted hover:bg-red-100 hover:text-red-700 dark:hover:bg-red-950 dark:hover:text-red-300 px-2.5 py-1.5 rounded-full transition-all text-muted-foreground"
+                    title="Ver TikTok"
+                  >
+                    <Video className="h-3.5 w-3.5" />
+                    <span>TikTok</span>
+                  </a>
                 )}
               </div>
-              <div className="flex space-x-2 flex-shrink-0">                
+              <div className="flex space-x-2 flex-shrink-0">
                 <Button size="sm" onClick={onReviewClick}>
                   Avaliar
                 </Button>
@@ -123,24 +162,6 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
             </div>
           </div>
         </CardContent>
-        <div className="border-t mx-6 my-2"></div>
-        <div className="px-6 pb-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="flex items-center space-x-1 text-muted-foreground" onClick={handleCommentsClick}>
-                <MessageSquare className="h-4 w-4" />
-                <span>Comentários</span>
-              </Button>
-            </div>
-            <p className="text-xs text-muted-foreground">Última atualização: 2 dias atrás</p>
-          </div>
-        </div>
-
-        {showComments && (
-          <div className="border-t bg-muted/30">
-            <AgencyCommentsSection agencyId={agency.id} />
-          </div>
-        )}
       </Card>
       <AuthRequiredModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </>

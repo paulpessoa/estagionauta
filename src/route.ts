@@ -1,34 +1,36 @@
-import HomePage from "./pages/Index"
-import Admin from "./pages/Admin"
-import Agencias from "./pages/Agencias"
-import Analisecurriculo from "./pages/Analisecurriculo"
-import Cadastro from "./pages/Cadastro"
-import CadastroAgencia from "./pages/CadastroAgencia"
-import CalculadoraRecesso from "./pages/CalculadoraRecesso"
-import EsqueciSenha from "./pages/EsqueciSenha"
-import RedefinirSenha from "./pages/RedefinirSenha"
-import Login from "./pages/Login"
-import MapaAgencias from "./pages/MapaAgencias"
-import ResultadoCurriculo from "./pages/ResultadoCurriculo"
-import ResultadoCurriculoExemplo from "./pages/ResultadoCurriculoExemplo"
-import Sucesso from "./pages/Sucesso"
-import NotFound from "./pages/NotFound"
-import Precos from "./pages/Precos"
-import Afiliados from "./pages/Afiliados"
-import SimuladorEntrevistas from "./pages/SimuladorEntrevistas"
-import GeradorCurriculos from "./pages/GeradorCurriculos"
-import KanbanCandidaturas from "./pages/KanbanCandidaturas"
-import Dashboard from "./pages/Dashboard"
-import MinhasAnalises from "./pages/MinhasAnalises"
-import Configuracoes from "./pages/Configuracoes"
-import Curriculo from "./pages/Curriculo"
-import Creditos from "./pages/Creditos"
-import EmailLogs from "./pages/EmailLogs"
+import { lazy } from "react"
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import React from "react"
-import PrivacyPolicy from "./pages/PrivacyPolicy"
-import TermosDeUso from "./pages/TermosDeUso"
-import Status from "./pages/Status"
+
+const HomePage = lazy(() => import("./pages/Index"))
+const Admin = lazy(() => import("./pages/Admin"))
+const Agencias = lazy(() => import("./pages/Agencias"))
+const Analisecurriculo = lazy(() => import("./pages/Analisecurriculo"))
+const Cadastro = lazy(() => import("./pages/Cadastro"))
+const CadastroAgencia = lazy(() => import("./pages/CadastroAgencia"))
+const CalculadoraRecesso = lazy(() => import("./pages/CalculadoraRecesso"))
+const EsqueciSenha = lazy(() => import("./pages/EsqueciSenha"))
+const RedefinirSenha = lazy(() => import("./pages/RedefinirSenha"))
+const Login = lazy(() => import("./pages/Login"))
+const MapaAgencias = lazy(() => import("./pages/MapaAgencias"))
+const ResultadoCurriculo = lazy(() => import("./pages/ResultadoCurriculo"))
+const ResultadoCurriculoExemplo = lazy(() => import("./pages/ResultadoCurriculoExemplo"))
+const Sucesso = lazy(() => import("./pages/Sucesso"))
+const NotFound = lazy(() => import("./pages/NotFound"))
+const Precos = lazy(() => import("./pages/Precos"))
+const Afiliados = lazy(() => import("./pages/Afiliados"))
+const SimuladorEntrevistas = lazy(() => import("./pages/SimuladorEntrevistas"))
+const GeradorCurriculos = lazy(() => import("./pages/GeradorCurriculos"))
+const KanbanCandidaturas = lazy(() => import("./pages/KanbanCandidaturas"))
+const Dashboard = lazy(() => import("./pages/Dashboard"))
+const MinhasAnalises = lazy(() => import("./pages/MinhasAnalises"))
+const Configuracoes = lazy(() => import("./pages/Configuracoes"))
+const Curriculo = lazy(() => import("./pages/Curriculo"))
+const Creditos = lazy(() => import("./pages/Creditos"))
+const EmailLogs = lazy(() => import("./pages/EmailLogs"))
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"))
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso"))
+const Status = lazy(() => import("./pages/Status"))
 
 // Componentes protegidos
 const ProtectedDashboard = () =>

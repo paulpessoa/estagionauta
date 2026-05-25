@@ -55,7 +55,7 @@ export default function Configuracoes() {
       setDeleteLoading(false)
     }
   }
-  
+
   const [profileData, setProfileData] = useState({
     full_name: '',
     email: '',
@@ -137,7 +137,7 @@ export default function Configuracoes() {
 
     try {
       setLoading(true)
-      
+
       const { error } = await supabase
         .from('user_profiles')
         .update({
@@ -175,7 +175,7 @@ export default function Configuracoes() {
 
     try {
       setLoading(true)
-      
+
       const { error } = await supabase
         .from('user_profiles')
         .update({
@@ -207,7 +207,7 @@ export default function Configuracoes() {
 
     try {
       setLoading(true)
-      
+
       const { error } = await supabase
         .from('user_profiles')
         .update({
@@ -342,7 +342,7 @@ export default function Configuracoes() {
   if (!user) {
     return (
       <div className="min-h-screen bg-background py-6">
-      <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">Acesso Negado</h1>
             <p className="text-gray-600 dark:text-gray-300 mt-2">Você precisa estar logado para acessar as configurações.</p>
@@ -405,7 +405,7 @@ export default function Configuracoes() {
                       <Input
                         id="full_name"
                         value={profileData.full_name}
-                        onChange={(e) => setProfileData({...profileData, full_name: e.target.value})}
+                        onChange={(e) => setProfileData({ ...profileData, full_name: e.target.value })}
                       />
                     </div>
                     <div>
@@ -424,7 +424,7 @@ export default function Configuracoes() {
                       <Input
                         id="phone"
                         value={profileData.phone}
-                        onChange={(e) => setProfileData({...profileData, phone: e.target.value})}
+                        onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                         placeholder="(11) 99999-9999"
                       />
                     </div>
@@ -433,7 +433,7 @@ export default function Configuracoes() {
                       <Input
                         id="linkedin_url"
                         value={profileData.linkedin_url}
-                        onChange={(e) => setProfileData({...profileData, linkedin_url: e.target.value})}
+                        onChange={(e) => setProfileData({ ...profileData, linkedin_url: e.target.value })}
                         placeholder="https://linkedin.com/in/seu-perfil"
                       />
                     </div>
@@ -443,7 +443,7 @@ export default function Configuracoes() {
                     <Input
                       id="bio"
                       value={profileData.bio}
-                      onChange={(e) => setProfileData({...profileData, bio: e.target.value})}
+                      onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
                       placeholder="Conte um pouco sobre você..."
                     />
                   </div>
@@ -469,7 +469,7 @@ export default function Configuracoes() {
                         <Input
                           id="course"
                           value={profileData.course}
-                          onChange={(e) => setProfileData({...profileData, course: e.target.value})}
+                          onChange={(e) => setProfileData({ ...profileData, course: e.target.value })}
                           placeholder="Ex: Ciência da Computação"
                         />
                       </div>
@@ -478,13 +478,13 @@ export default function Configuracoes() {
                         <Input
                           id="university"
                           value={profileData.university}
-                          onChange={(e) => setProfileData({...profileData, university: e.target.value})}
+                          onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
                           placeholder="Ex: USP"
                         />
                       </div>
                       <div>
                         <Label htmlFor="period">Período</Label>
-                        <Select value={profileData.period} onValueChange={(value) => setProfileData({...profileData, period: value})}>
+                        <Select value={profileData.period} onValueChange={(value) => setProfileData({ ...profileData, period: value })}>
                           <SelectTrigger>
                             <SelectValue placeholder="Selecione o período" />
                           </SelectTrigger>
@@ -539,15 +539,10 @@ export default function Configuracoes() {
                         rel="noopener noreferrer"
                         className="hover:underline flex items-center gap-1 w-fit"
                       >
-                        Visualizar Currículo Público: /curriculo/{profile.curriculo_slug} ↗
+                        Visualizar: estagionauta.com.br/curriculo/{profile.curriculo_slug}
                       </a>
                     </div>
                   )}
-
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
-                    Exemplo: <span className="font-mono">{suggestSlug()}</span> <br/>
-                    Seu currículo ficará disponível em <span className="font-mono">/curriculo/{slug || '<slug>'}</span>
-                  </div>
                   {slugError && <div className="text-red-600 text-xs">{slugError}</div>}
                   <Button onClick={handleSaveSlug} disabled={loading || !slug || slugStatus !== 'available'}>
                     {loading ? 'Salvando...' : 'Salvar URL do Currículo'}
@@ -579,7 +574,7 @@ export default function Configuracoes() {
                       {pwSuccess}
                     </div>
                   )}
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="new-password">Nova Senha</Label>
                     <Input
@@ -590,7 +585,7 @@ export default function Configuracoes() {
                       onChange={(e) => setNewPassword(e.target.value)}
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label htmlFor="confirm-new-password">Confirmar Nova Senha</Label>
                     <Input
@@ -601,7 +596,7 @@ export default function Configuracoes() {
                       onChange={(e) => setConfirmNewPassword(e.target.value)}
                     />
                   </div>
-                  
+
                   <Button onClick={handleChangePassword} disabled={pwLoading}>
                     {pwLoading ? 'Atualizando...' : 'Atualizar Senha'}
                   </Button>
@@ -618,10 +613,10 @@ export default function Configuracoes() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Excluir sua conta removerá permanentemente todos os seus dados da plataforma. 
+                    Excluir sua conta removerá permanentemente todos os seus dados da plataforma.
                     Esta ação é irreversível e não poderá ser desfeita.
                   </p>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
@@ -632,7 +627,7 @@ export default function Configuracoes() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Tem certeza absoluta?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Esta ação é permanente e irreversível. Todos os seus currículos, créditos 
+                          Esta ação é permanente e irreversível. Todos os seus currículos, créditos
                           adquiridos e históricos de simulações serão perdidos para sempre.
                         </AlertDialogDescription>
                       </AlertDialogHeader>

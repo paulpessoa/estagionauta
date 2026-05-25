@@ -6,6 +6,9 @@ export interface Agency {
   phone: string | null
   website: string | null
   instagram: string | null
+  whatsapp: string | null
+  linkedin: string | null
+  tiktok: string | null
   address: string | null
   city: string | null
   state: string | null
