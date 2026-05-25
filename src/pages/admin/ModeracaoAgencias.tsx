@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
-import { Building2, Check, X, Search, Edit, Trash2, Star, Calendar, MessageSquare, ShieldAlert } from 'lucide-react'
+import { Building2, Check, X, Search, Edit, Trash2, Star, Calendar, MessageSquare, ShieldAlert, Mail, Inbox } from 'lucide-react'
 import { toast } from 'sonner'
 import { Agency } from '@/types/agency'
 import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
@@ -29,6 +29,11 @@ export default function ModeracaoAgencias() {
   const [loadingReviews, setLoadingReviews] = useState(true)
   const [reviewSearchTerm, setReviewSearchTerm] = useState('')
 
+  // Feedbacks state
+  const [feedbacks, setFeedbacks] = useState<any[]>([])
+  const [loadingFeedbacks, setLoadingFeedbacks] = useState(true)
+  const [feedbackSearchTerm, setFeedbackSearchTerm] = useState('')
+
   // Modals state for agencies
   const [editModalOpen, setEditModalOpen] = useState(false)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false)
@@ -41,6 +46,7 @@ export default function ModeracaoAgencias() {
 
     fetchAgencies()
     fetchReviews()
+    fetchFeedbacks()
   }, [isLoading, profile])
 
   const fetchAgencies = async () => {
@@ -85,6 +91,24 @@ export default function ModeracaoAgencias() {
       toast.error('Erro ao buscar avaliações para moderação')
     } finally {
       setLoadingReviews(false)
+    }
+  }
+
+  const fetchFeedbacks = async () => {
+    setLoadingFeedbacks(true)
+    try {
+      const { data, error } = await supabase
+        .from('feedbacks')
+        .select('*')
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      setFeedbacks(data || [])
+    } catch (error) {
+      console.error('Erro ao buscar feedbacks:', error)
+      toast.error('Erro ao buscar feedbacks de usuários')
+    } finally {
+      setLoadingFeedbacks(false)
     }
   }
 
@@ -232,6 +256,14 @@ export default function ModeracaoAgencias() {
   const approvedReviews = filteredReviews.filter(r => r.status === 'approved')
   const rejectedReviews = filteredReviews.filter(r => r.status === 'rejected')
 
+  // Filter logic for feedbacks
+  const filteredFeedbacks = feedbacks.filter(fb => {
+    const searchLower = feedbackSearchTerm.toLowerCase()
+    const email = fb.email?.toLowerCase() || ''
+    const comment = fb.comment?.toLowerCase() || ''
+    return email.includes(searchLower) || comment.includes(searchLower)
+  })
+
   if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -268,9 +300,10 @@ export default function ModeracaoAgencias() {
         </div>
 
         <Tabs defaultValue="agencies" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-xs">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="agencies">Agências</TabsTrigger>
             <TabsTrigger value="reviews">Avaliações</TabsTrigger>
+            <TabsTrigger value="feedbacks">Feedbacks</TabsTrigger>
           </TabsList>
 
           {/* Agencies Tab Content */}
@@ -515,9 +548,86 @@ export default function ModeracaoAgencias() {
               </TabsContent>
             </Tabs>
           </TabsContent>
+
+          {/* Feedbacks Tab Content */}
+          <TabsContent value="feedbacks" className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <h2 className="text-xl font-semibold">Feedbacks & Sugestões dos Usuários</h2>
+              <div className="relative w-full sm:w-64">
+                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar por email ou comentário..."
+                  value={feedbackSearchTerm}
+                  onChange={(e) => setFeedbackSearchTerm(e.target.value)}
+                  className="pl-9 text-xs"
+                />
+              </div>
+            </div>
+
+            {loadingFeedbacks ? (
+              <div className="flex justify-center py-12">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+              </div>
+            ) : filteredFeedbacks.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center h-48 text-muted-foreground">
+                  <Inbox className="h-12 w-12 mb-2 text-muted-foreground/50" />
+                  <p className="text-sm">Nenhum feedback ou sugestão recebida</p>
+                </CardContent>
+              </Card>
+            ) : (
+              <div className="grid gap-4">
+                {filteredFeedbacks.map((feedback) => (
+                  <FeedbackCard key={feedback.id} feedback={feedback} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
         </Tabs>
       </div>
     </>
+  )
+}
+
+function FeedbackCard({ feedback }: { feedback: any }) {
+  const stars = Array.from({ length: 5 }, (_, i) => i + 1)
+  return (
+    <Card className="hover:shadow-md transition-shadow">
+      <CardHeader className="pb-2">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+          <div>
+            <CardTitle className="text-md flex items-center gap-2">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span>{feedback.email || 'Anônimo'}</span>
+            </CardTitle>
+            <CardDescription className="text-xs mt-1 flex items-center gap-1">
+              <Calendar className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
+              {new Date(feedback.created_at).toLocaleString('pt-BR')}
+            </CardDescription>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-muted-foreground mr-1 font-medium">Satisfação:</span>
+            <div className="flex">
+              {stars.map((star) => (
+                <Star
+                  key={star}
+                  className={`h-4 w-4 ${
+                    star <= feedback.rating
+                      ? 'text-yellow-500 fill-yellow-500'
+                      : 'text-gray-300 dark:text-gray-700'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="text-xs">
+        <div className="bg-muted/40 p-3 rounded-lg border border-border/50">
+          <p className="text-gray-700 dark:text-gray-300 italic">{feedback.comment}</p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -586,7 +696,14 @@ function AgencyCard({
           {agency.address && (
             <div>
               <p className="font-semibold text-muted-foreground">Endereço</p>
-              <p>{agency.address}, {agency.city} - {agency.state}</p>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${agency.name} ${agency.address || ''} ${agency.city || ''} ${agency.state || ''}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                {agency.address}, {agency.city} - {agency.state}
+              </a>
             </div>
           )}
           

@@ -57,10 +57,16 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="flex items-center space-x-2 text-muted-foreground text-sm">
-              <MapPin className="h-4 w-4" />
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${agency.name} ${agency.address || ''} ${agency.city || ''} ${agency.state || ''}`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center space-x-2 text-muted-foreground text-sm hover:text-primary hover:underline transition-colors"
+              title="Ver no Google Maps"
+            >
+              <MapPin className="h-4 w-4 flex-shrink-0 text-red-500" />
               <span>{agency.address}, {agency.city} - {agency.state}</span>
-            </div>
+            </a>
             {agency.areas && agency.areas.length > 0 && (
               <div>
                 <p className="text-sm font-medium mb-2">Áreas de atuação:</p>
