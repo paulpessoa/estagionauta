@@ -88,3 +88,5 @@ api/test-results/
 .env.test
 
 scratch/
+scratch_*
+*.mp3
