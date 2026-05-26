@@ -1,10 +1,11 @@
 const Stripe = require('stripe');
 
-require('dotenv').config();
-const liveKey = process.env.STRIPE_LIVE_SECRET_KEY;
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+const liveKey = process.env.STRIPE_SECRET_KEY;
 const stripe = new Stripe(liveKey);
 
-const COSMONAUTA_PROD_ID = 'prod_SagGPvF1lCtYhw';
+const COSMONAUTA_PROD_ID = 'prod_UaZgShfeKyUAQH';
 
 async function run() {
   try {
