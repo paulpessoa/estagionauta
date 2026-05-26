@@ -84,7 +84,8 @@ export default function SimuladorEntrevistas() {
   const [isListening, setIsListening] = useState(false)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
-  const [inputMode, setInputMode] = useState<"voice" | "text">("text")
+  const [preferredInputMode, setPreferredInputMode] = useState<"voice" | "text">("voice")
+  const [inputMode, setInputMode] = useState<"voice" | "text">("voice")
   const recognitionRef = useRef<any>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
@@ -309,11 +310,13 @@ export default function SimuladorEntrevistas() {
 
       // Update URL to match new simulation
       navigate(`/simulador-entrevistas/${data.simulation.id}`)
+      
+      setInputMode(preferredInputMode)
 
       const lastMsg =
         data.simulation.messages[data.simulation.messages.length - 1]
       if (lastMsg && lastMsg.role === "interviewer") {
-        if (inputMode === "voice") {
+        if (preferredInputMode === "voice") {
           speakText(lastMsg.content, false)
         }
       }
@@ -773,6 +776,54 @@ export default function SimuladorEntrevistas() {
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Interaction Mode Selection */}
+                    <div className="space-y-3">
+                      <Label>Modo de Interação</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div
+                          onClick={() => setPreferredInputMode('voice')}
+                          className={`flex gap-3 items-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                            preferredInputMode === 'voice'
+                              ? 'border-violet-500 bg-violet-500/5 dark:bg-violet-500/10'
+                              : 'border-muted hover:border-violet-500/20 hover:bg-muted/10'
+                          }`}
+                        >
+                          <div className="h-9 w-9 rounded-lg bg-violet-100 dark:bg-violet-950/30 flex items-center justify-center text-violet-600 dark:text-violet-400 shrink-0">
+                            <Mic className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">Voz (Ligação)</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Fale naturalmente</p>
+                          </div>
+                        </div>
+                        <div
+                          onClick={() => setPreferredInputMode('text')}
+                          className={`flex gap-3 items-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                            preferredInputMode === 'text'
+                              ? 'border-violet-500 bg-violet-500/5 dark:bg-violet-500/10'
+                              : 'border-muted hover:border-violet-500/20 hover:bg-muted/10'
+                          }`}
+                        >
+                          <div className="h-9 w-9 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 shrink-0">
+                            <Keyboard className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">Texto (Chat)</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">Digite as respostas</p>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {preferredInputMode === 'voice' && (
+                        <div className="mt-2 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 rounded-lg text-xs flex items-start gap-2">
+                          <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                          <p>
+                            <strong>Dica para Captação de Áudio:</strong> O modo voz usa o sistema nativo do seu dispositivo. Fale de forma clara, perto do microfone e em ambiente sem ruídos. Algumas palavras complexas podem ser compreendidas incorretamente, isso é normal em sistemas de ditado nativo.
+                          </p>
+                        </div>
+                      )}
                     </div>
 
                     {/* Voice Gender Selection */}
