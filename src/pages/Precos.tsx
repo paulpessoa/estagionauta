@@ -18,9 +18,7 @@ const plans = [
     icon: Star,
     credits: 30,
     analyses: 10,
-    price: 59.70,
-    pricePerCredit: 1.99,
-    pricePerAnalysis: 5.97,
+    price: 1.99,
     popular: false
   },
   {
@@ -29,9 +27,7 @@ const plans = [
     icon: Zap,
     credits: 80,
     analyses: 26,
-    price: 119.20,
-    pricePerCredit: 1.49,
-    pricePerAnalysis: 4.47,
+    price: 4.99,
     popular: true
   },
   {
@@ -39,9 +35,8 @@ const plans = [
     name: 'Comandante',
     icon: Crown,
     credits: 200,
-    price: 198.00,
-    pricePerCredit: 0.99,
-    pricePerAnalysis: 2.97,
+    analyses: 66,
+    price: 9.99,
     popular: false
   }
 ]
@@ -52,8 +47,7 @@ const subscriptionPlans = [
     name: 'Cosmonauta Pro',
     icon: Star,
     credits: 50,
-    price: 49.00,
-    pricePerCredit: 0.98,
+    price: 0.98,
     benefits: [
       '50 créditos recorrentes mensais',
       'Até 16 análises de currículo com IA',
@@ -68,8 +62,7 @@ const subscriptionPlans = [
     name: 'Astronauta Pro',
     icon: Zap,
     credits: 150,
-    price: 111.00,
-    pricePerCredit: 0.74,
+    price: 2.49,
     benefits: [
       '150 créditos recorrentes/mês',
       'Até 50 análises de currículo/mês',
@@ -85,8 +78,7 @@ const subscriptionPlans = [
     name: 'Comandante Pro',
     icon: Crown,
     credits: 500,
-    price: 245.00,
-    pricePerCredit: 0.49,
+    price: 4.99,
     benefits: [
       '500 créditos recorrentes/mês',
       'Até 166 análises de currículo/mês',
@@ -245,10 +237,7 @@ export default function Precos() {
                       <div className="text-4xl font-bold text-gray-900 dark:text-white">
                         R$ {plan.price.toFixed(2).replace('.', ',')}
                       </div>
-                      <div className="text-sm font-semibold text-blue-600 dark:text-blue-400 mt-1">
-                        R$ {plan.pricePerCredit.toFixed(2).replace('.', ',')} por crédito
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-0.5">
+                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                         {plan.credits} créditos inclusos
                       </div>
                     </div>
@@ -329,13 +318,13 @@ export default function Precos() {
                           R$ {plan.price.toFixed(2).replace('.', ',')}
                           <span className="text-sm font-normal text-muted-foreground">/mês</span>
                         </div>
-                        <div className="text-sm font-semibold text-purple-600 dark:text-purple-400 mt-1">
-                          R$ {plan.pricePerCredit.toFixed(2).replace('.', ',')} por crédito
+                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                          {plan.credits} créditos recorrentes
                         </div>
-                        <div className="inline-flex items-center gap-1.5 mt-2 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-xs font-bold border border-purple-100 dark:border-purple-900/30">
+                        <div className="inline-flex items-center gap-1.5 mt-3 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-xs font-bold border border-purple-100 dark:border-purple-900/30">
                           {(() => {
-                            const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 1.49 : 0.99;
-                            const disc = Math.round((1 - (plan.pricePerCredit / avulsoRef)) * 100);
+                            const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 4.99 : 9.99;
+                            const disc = Math.round((1 - (plan.price / avulsoRef)) * 100);
                             return `Economize ${disc}% vs. Avulso`;
                           })()}
                         </div>

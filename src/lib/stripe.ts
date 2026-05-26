@@ -25,7 +25,7 @@ export const STRIPE_PLANS: StripePlan[] = [
   {
     id: 'cosmonauta',
     name: 'Cosmonauta',
-    price: 59.70,
+    price: 1.99,
     credits: 30,
     analyses: 10,
     stripePriceId: ''
@@ -33,7 +33,7 @@ export const STRIPE_PLANS: StripePlan[] = [
   {
     id: 'astronauta',
     name: 'Astronauta',
-    price: 119.20,
+    price: 4.99,
     credits: 80,
     analyses: 26,
     stripePriceId: ''
@@ -41,7 +41,7 @@ export const STRIPE_PLANS: StripePlan[] = [
   {
     id: 'comandante',
     name: 'Comandante',
-    price: 198.00,
+    price: 9.99,
     credits: 200,
     analyses: 66,
     stripePriceId: ''

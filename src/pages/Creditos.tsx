@@ -33,8 +33,7 @@ const packages = [
     name: 'Cosmonauta',
     icon: Star,
     credits: 30,
-    price: 59.70,
-    pricePerCredit: 1.99,
+    price: 1.99,
     popular: false,
     color: 'border-slate-200 dark:border-slate-800'
   },
@@ -43,8 +42,7 @@ const packages = [
     name: 'Astronauta',
     icon: Zap,
     credits: 80,
-    price: 119.20,
-    pricePerCredit: 1.49,
+    price: 4.99,
     popular: true,
     color: 'border-blue-500 ring-2 ring-blue-500/20'
   },
@@ -53,9 +51,60 @@ const packages = [
     name: 'Comandante',
     icon: Crown,
     credits: 200,
-    price: 198.00,
-    pricePerCredit: 0.99,
+    price: 9.99,
     popular: false,
+    color: 'border-purple-500'
+  }
+]
+
+const subscriptionPlans = [
+  {
+    id: 'cosmonauta_pro',
+    name: 'Cosmonauta Pro',
+    icon: Star,
+    credits: 50,
+    price: 0.98,
+    benefits: [
+      '50 créditos recorrentes mensais',
+      'Até 16 análises de currículo com IA',
+      'Acesso total ao Kanban de vagas',
+      'Suporte via e-mail em até 24h',
+      'Acesso gratuito à Extensão do Chrome'
+    ],
+    badge: 'Plano Pro',
+    color: 'border-slate-200 dark:border-slate-800'
+  },
+  {
+    id: 'astronauta_pro',
+    name: 'Astronauta Pro',
+    icon: Zap,
+    credits: 150,
+    price: 2.49,
+    benefits: [
+      '150 créditos recorrentes/mês',
+      'Até 50 análises de currículo/mês',
+      'Simulações de entrevista ilimitadas',
+      'Geração de currículos ilimitada',
+      'Suporte prioritário via WhatsApp'
+    ],
+    badge: 'Mais Popular',
+    popular: true,
+    color: 'border-blue-500 ring-2 ring-blue-500/20'
+  },
+  {
+    id: 'comandante_pro',
+    name: 'Comandante Pro',
+    icon: Crown,
+    credits: 500,
+    price: 4.99,
+    benefits: [
+      '500 créditos recorrentes/mês',
+      'Até 166 análises de currículo/mês',
+      'Simulações e gerações ilimitadas',
+      'Análise de vaga automática com IA',
+      'Acesso antecipado a novas ferramentas'
+    ],
+    badge: 'Elite',
     color: 'border-purple-500'
   }
 ]
@@ -67,6 +116,14 @@ export default function Creditos() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)
   const [purchaseLoading, setPurchaseLoading] = useState<string | null>(null)
+  const [billingType, setBillingType] = useState<'credits' | 'subscriptions'>('credits')
+
+  const handleSubscribe = () => {
+    toast({
+      title: "Planos de Assinatura Em Breve!",
+      description: "Estamos finalizando a integração das assinaturas recorrentes. Por enquanto, utilize a Recarga de Créditos Avulsos!",
+    })
+  }
 
   useEffect(() => {
     fetchTransactions()
@@ -162,63 +219,145 @@ export default function Creditos() {
           <div className="lg:col-span-2 space-y-6">
             <Card className="pt-6">
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {packages.map((pkg) => {
-                    const IconComponent = pkg.icon
-                    return (
-                      <div
-                        key={pkg.id}
-                        className={`border rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:shadow-md ${pkg.color} ${pkg.popular ? 'bg-blue-50/10 dark:bg-blue-950/10' : 'bg-card'
-                          }`}
-                      >
-                        {pkg.popular && (
-                          <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
-                            Mais Popular
-                          </Badge>
-                        )}
-
-                        <div>
-                          <div className="flex justify-between items-start mb-4">
-                            <h3 className="font-bold text-lg">{pkg.name}</h3>
-                            <IconComponent className="h-6 w-6 text-primary" />
-                          </div>
-
-                          <div className="text-3xl font-extrabold text-foreground mb-1">
-                            {pkg.credits} ⭐
-                          </div>
-                          <span className="text-sm text-muted-foreground block mb-6">créditos</span>
-                        </div>
-
-                        <div>
-                          <Separator className="my-4" />
-                          <div className="text-2xl font-bold text-foreground mb-1">
-                            R$ {pkg.price.toFixed(2).replace('.', ',')}
-                          </div>
-                          <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">
-                            R$ {pkg.pricePerCredit.toFixed(2).replace('.', ',')} / crédito
-                          </div>
-                          <div className="text-xs text-muted-foreground font-medium mb-4">
-                            Pagamento Único
-                          </div>
-
-                          <Button
-                            className="w-full"
-                            variant={pkg.popular ? 'default' : 'outline'}
-                            onClick={() => handlePurchase(pkg.id)}
-                            disabled={purchaseLoading !== null}
-                          >
-                            {purchaseLoading === pkg.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                              <Sparkles className="h-4 w-4 mr-2" />
-                            )}
-                            Comprar
-                          </Button>
-                        </div>
-                      </div>
-                    )
-                  })}
+                {/* Tab Switcher */}
+                <div className="flex justify-center mb-8">
+                  <div className="bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-full inline-flex border border-slate-200/55 dark:border-slate-700/50">
+                    <button
+                      onClick={() => setBillingType('credits')}
+                      className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 ${
+                        billingType === 'credits'
+                          ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/20'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Recarga de Créditos (Compra Única)
+                    </button>
+                    <button
+                      onClick={() => setBillingType('subscriptions')}
+                      className={`px-4 py-2 rounded-full text-xs font-semibold transition-all duration-300 relative ${
+                        billingType === 'subscriptions'
+                          ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm border border-slate-200/20'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Assinaturas Mensais
+                      <span className="absolute -top-1.5 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-[9px] text-white px-2 py-0.5 rounded-full scale-90 border border-white dark:border-slate-800 font-bold">
+                        Em Breve
+                      </span>
+                    </button>
+                  </div>
                 </div>
+
+                {billingType === 'credits' ? (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {packages.map((pkg) => {
+                      const IconComponent = pkg.icon
+                      return (
+                        <div
+                          key={pkg.id}
+                          className={`border rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:shadow-md ${pkg.color} ${pkg.popular ? 'bg-blue-50/10 dark:bg-blue-950/10' : 'bg-card'
+                            }`}
+                        >
+                          {pkg.popular && (
+                            <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
+                              Mais Popular
+                            </Badge>
+                          )}
+
+                          <div>
+                            <div className="flex justify-between items-start mb-4">
+                              <h3 className="font-bold text-lg">{pkg.name}</h3>
+                              <IconComponent className="h-6 w-6 text-primary" />
+                            </div>
+
+                            <div className="text-3xl font-extrabold text-foreground mb-1">
+                              {pkg.credits} ⭐
+                            </div>
+                            <span className="text-sm text-muted-foreground block mb-6">créditos</span>
+                          </div>
+
+                          <div>
+                            <Separator className="my-4" />
+                            <div className="text-2xl font-bold text-foreground mb-1">
+                              R$ {pkg.price.toFixed(2).replace('.', ',')}
+                            </div>
+                            <div className="text-xs text-muted-foreground font-medium mb-4">
+                              Pagamento Único
+                            </div>
+
+                            <Button
+                              className="w-full"
+                              variant={pkg.popular ? 'default' : 'outline'}
+                              onClick={() => handlePurchase(pkg.id)}
+                              disabled={purchaseLoading !== null}
+                            >
+                              {purchaseLoading === pkg.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              ) : (
+                                <Sparkles className="h-4 w-4 mr-2" />
+                              )}
+                              Comprar
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {subscriptionPlans.map((plan) => {
+                      const IconComponent = plan.icon
+                      return (
+                        <div
+                          key={plan.id}
+                          className={`border rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:shadow-md ${plan.color} ${plan.popular ? 'bg-purple-50/10 dark:bg-purple-950/10 border-purple-500' : 'bg-card'
+                            }`}
+                        >
+                          {plan.popular && (
+                            <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-600 text-white">
+                              Mais Popular
+                            </Badge>
+                          )}
+
+                          <div>
+                            <div className="flex justify-between items-start mb-4">
+                              <h3 className="font-bold text-lg">{plan.name}</h3>
+                              <IconComponent className="h-6 w-6 text-purple-500" />
+                            </div>
+
+                            <div className="text-3xl font-extrabold text-foreground mb-1">
+                              {plan.credits} ⭐
+                            </div>
+                            <span className="text-sm text-muted-foreground block mb-4">créditos mensais</span>
+                          </div>
+
+                          <div>
+                            <Separator className="my-4" />
+                            <div className="text-2xl font-bold text-foreground mb-1">
+                              R$ {plan.price.toFixed(2).replace('.', ',')} / mês
+                            </div>
+                            
+                            <div className="inline-flex items-center gap-1 mt-1 mb-4 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full text-[10px] font-bold border border-purple-100 dark:border-purple-900/30">
+                              {(() => {
+                                const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 4.99 : 9.99;
+                                const disc = Math.round((1 - (plan.price / avulsoRef)) * 100);
+                                return `Economize ${disc}% vs. Avulso`;
+                              })()}
+                            </div>
+
+                            <Button
+                              className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+                              onClick={handleSubscribe}
+                            >
+                              <Sparkles className="h-4 w-4 mr-2" />
+                              Assinar (Em Breve)
+                            </Button>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
 
                 <div className="mt-6 bg-muted/40 p-4 rounded-xl text-sm flex items-start gap-3">
                   <Sparkles className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
