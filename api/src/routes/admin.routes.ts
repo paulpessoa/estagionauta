@@ -104,7 +104,7 @@ app.get('/transactions', authMiddleware, adminMiddleware, async (c) => {
   try {
     const { data, error } = await supabaseAdmin
       .from('credit_transactions')
-      .select('id, user_id, type, amount, created_at')
+      .select('id, user_id, type, amount, created_at, user_profiles(full_name, email)')
       .order('created_at', { ascending: false })
       .limit(20);
 

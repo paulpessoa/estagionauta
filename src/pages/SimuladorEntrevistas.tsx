@@ -173,7 +173,13 @@ export default function SimuladorEntrevistas() {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
-          body: JSON.stringify({ text })
+          body: JSON.stringify({ 
+            text,
+            voice: selectedSimulation?.interviewer_type === "tech" ? "onyx" :
+                   selectedSimulation?.interviewer_type === "hard" ? "onyx" :
+                   selectedSimulation?.interviewer_type === "friendly" ? "alloy" :
+                   "shimmer"
+          })
         }
       )
 
@@ -387,6 +393,28 @@ export default function SimuladorEntrevistas() {
     } catch (err: any) {
       console.error("Erro ao enviar resposta:", err)
       toast.error(err.message || "Não foi possível enviar a resposta.")
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
+  const handleEndInterviewEarly = async () => {
+    if (!selectedSimulation) return
+    setActionLoading(true)
+    try {
+      const data = await apiClient.post<{ simulation: InterviewSimulation }>(
+        `/api/simulator/${selectedSimulation.id}/end`
+      )
+      setSelectedSimulation(data.simulation)
+      setSimulations((prev) =>
+        prev.map((s) => (s.id === data.simulation.id ? data.simulation : s))
+      )
+      setCurrentView("feedback")
+      toast.success("Simulação concluída! Relatório de feedback gerado.")
+      loadHistory()
+    } catch (err: any) {
+      console.error("Erro ao encerrar simulação:", err)
+      toast.error(err.message || "Não foi possível encerrar a simulação.")
     } finally {
       setActionLoading(false)
     }
@@ -855,7 +883,7 @@ export default function SimuladorEntrevistas() {
                     Perguntas Respondidas:
                   </span>
                   <Badge variant="secondary" className="px-2 py-0.5 font-bold">
-                    {getProgressCount()} / 5
+                    {getProgressCount()} / 20
                   </Badge>
                 </div>
               </div>
@@ -874,12 +902,12 @@ export default function SimuladorEntrevistas() {
                         reais de suas vivências passadas.
                       </li>
                       <li>
-                        A entrevista terá exatamente 5 rodadas de perguntas e
+                        A entrevista pode durar até 20 rodadas de perguntas e
                         respostas.
                       </li>
                       <li>
-                        Ao responder a 5ª pergunta, a IA gerará um relatório de
-                        feedback consolidado.
+                        A partir da 5ª pergunta respondida, você poderá encerrar
+                        a simulação a qualquer momento para gerar seu feedback.
                       </li>
                     </ul>
                   </div>
@@ -900,13 +928,15 @@ export default function SimuladorEntrevistas() {
                         >
                           {/* Avatar */}
                           <div
-                            className={`h-8 w-8 rounded-full flex items-center justify-center text-xs shrink-0 select-none ${
+                            className={`h-8 w-8 rounded-full flex items-center justify-center text-xs shrink-0 select-none overflow-hidden ${
                               isInterviewer
                                 ? "bg-violet-100 text-violet-600 dark:bg-violet-950/40 dark:text-violet-400 font-bold"
                                 : "bg-indigo-600 text-white font-medium"
                             }`}
                           >
-                            {isInterviewer ? "IA" : "VC"}
+                            {isInterviewer ? (
+                              <img src="/logo.png" alt="IA" className="h-5 w-auto object-contain" />
+                            ) : "VC"}
                           </div>
 
                           {/* Text bubble */}
@@ -956,8 +986,8 @@ export default function SimuladorEntrevistas() {
                       className="flex justify-start"
                     >
                       <div className="flex gap-3 max-w-[80%]">
-                        <div className="h-8 w-8 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-bold flex items-center justify-center text-xs">
-                          IA
+                        <div className="h-8 w-8 rounded-full bg-violet-100 dark:bg-violet-950/40 text-violet-600 dark:text-violet-400 font-bold flex items-center justify-center text-xs overflow-hidden">
+                          <img src="/logo.png" alt="IA" className="h-5 w-auto object-contain" />
                         </div>
                         <div className="px-4 py-3 rounded-2xl bg-card border border-muted rounded-tl-none flex items-center gap-2">
                           <span className="text-xs text-muted-foreground">
@@ -1023,11 +1053,35 @@ export default function SimuladorEntrevistas() {
               </AnimatePresence>
 
               {/* Chat Input Footer Form */}
-              <div className="p-4 border-t border-muted/60 bg-muted/5 flex flex-col items-center w-full">
-                {getProgressCount() === 4 && (
+               <div className="p-4 border-t border-muted/60 bg-muted/5 flex flex-col items-center w-full bg-background/95">
+                {getProgressCount() === 19 && (
                   <div className="w-full mb-3 p-3 bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 rounded-xl text-xs font-semibold flex items-center gap-2 animate-pulse">
                     <AlertTriangle className="h-4 w-4 shrink-0" />
                     <span>Esta é a última pergunta! Responda com atenção para que a IA gere seu relatório de feedback final.</span>
+                  </div>
+                )}
+                {getProgressCount() >= 5 && (
+                  <div className="w-full mb-3 flex items-center justify-between p-3 bg-violet-500/5 border border-violet-500/10 rounded-xl text-xs">
+                    <span className="text-muted-foreground">
+                      Você já respondeu a {getProgressCount()} perguntas. Já pode encerrar a entrevista e gerar seu relatório se desejar.
+                    </span>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      disabled={actionLoading}
+                      onClick={handleEndInterviewEarly}
+                      className="border-violet-500/30 text-violet-600 dark:text-violet-400 hover:bg-violet-500/10 h-8 text-xs font-semibold shrink-0"
+                    >
+                      {actionLoading ? (
+                        <>
+                          <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                          Gerando...
+                        </>
+                      ) : (
+                        "Encerrar Entrevista"
+                      )}
+                    </Button>
                   </div>
                 )}
                 <form
@@ -1247,8 +1301,7 @@ export default function SimuladorEntrevistas() {
                     </CardContent>
                     <CardFooter className="border-t border-muted/50 bg-muted/5 py-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1.5">
-                        <MessageSquare className="h-4 w-4 text-violet-500" /> 5
-                        perguntas respondidas
+                        <MessageSquare className="h-4 w-4 text-violet-500" /> {selectedSimulation.messages.filter((m) => m.role === "candidate").length} perguntas respondidas
                       </span>
                       <span className="flex items-center gap-1.5">
                         <CheckCircle2 className="h-4 w-4 text-emerald-500" />{" "}
@@ -1325,6 +1378,29 @@ export default function SimuladorEntrevistas() {
                   <CardContent className="pt-6 text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
                     {selectedSimulation.feedback.tips}
                   </CardContent>
+                </Card>
+
+                {/* MENVO Promo Card */}
+                <Card className="border border-indigo-500/20 bg-indigo-500/5 dark:bg-indigo-950/20 shadow-md relative overflow-hidden">
+                  <div className="absolute top-0 left-0 h-full w-1.5 bg-gradient-to-b from-indigo-500 to-violet-500" />
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-md font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 animate-pulse text-indigo-500" /> Prepare-se com Profissionais do Mercado
+                    </CardTitle>
+                    <CardDescription>
+                      Agende mentorias e simulações personalizadas com especialistas reais.
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="pb-4 text-sm text-muted-foreground">
+                    Quer levar sua preparação para o próximo nível? Encontre mentores de tecnologia, design, negócios e outras áreas no MENVO e agende sessões exclusivas de feedback e treinamento.
+                  </CardContent>
+                  <CardFooter className="pt-0">
+                    <Button asChild className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white shadow-sm font-medium">
+                      <a href="https://menvo.com.br" target="_blank" rel="noopener noreferrer">
+                        Explorar Mentores no MENVO
+                      </a>
+                    </Button>
+                  </CardFooter>
                 </Card>
 
                 {/* Conversation History Drawer */}

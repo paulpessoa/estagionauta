@@ -368,55 +368,40 @@ export function ResumeAnalysisForm({
                 <Target className="h-5 w-5 text-blue-600 mt-0.5" />
                 <div className="text-sm">
                   <p className="text-blue-700 dark:text-blue-200">
-                    Se você tem uma vaga específica em mente, podemos analisar
+                    Se você tem uma vaga específica em mente, preencha as informações abaixo para analisarmos
                     se seu currículo está adequado para ela.
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="hasSpecificJob"
-                checked={formData.hasSpecificJob}
-                onCheckedChange={(checked) =>
-                  updateFormData("hasSpecificJob", checked)
-                }
-              />
-              <Label htmlFor="hasSpecificJob">
-                Tenho uma vaga específica em mente
-              </Label>
-            </div>
-
-            {formData.hasSpecificJob && (
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="jobDescription">Descrição da vaga</Label>
-                  <Textarea
-                    id="jobDescription"
-                    value={formData.jobDescription}
-                    onChange={(e) =>
-                      updateFormData("jobDescription", e.target.value)
-                    }
-                    placeholder="Cole aqui a descrição da vaga ou cargo..."
-                    rows={4}
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="jobRequirements">Requisitos da vaga</Label>
-                  <Textarea
-                    id="jobRequirements"
-                    value={formData.jobRequirements}
-                    onChange={(e) =>
-                      updateFormData("jobRequirements", e.target.value)
-                    }
-                    placeholder="Liste os requisitos, habilidades e experiências necessárias..."
-                    rows={4}
-                  />
-                </div>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="jobDescription">Descrição da vaga</Label>
+                <Textarea
+                  id="jobDescription"
+                  value={formData.jobDescription}
+                  onChange={(e) =>
+                    updateFormData("jobDescription", e.target.value)
+                  }
+                  placeholder="Cole aqui a descrição da vaga ou cargo..."
+                  rows={4}
+                />
               </div>
-            )}
+
+              <div>
+                <Label htmlFor="jobRequirements">Requisitos da vaga</Label>
+                <Textarea
+                  id="jobRequirements"
+                  value={formData.jobRequirements}
+                  onChange={(e) =>
+                    updateFormData("jobRequirements", e.target.value)
+                  }
+                  placeholder="Liste os requisitos, habilidades e experiências necessárias..."
+                  rows={4}
+                />
+              </div>
+            </div>
           </div>
         )
       case 3: // Currículo
@@ -623,8 +608,8 @@ export function ResumeAnalysisForm({
                       </>
                     ) : (
                       <>
-                        <Gift className="mr-2 h-4 w-4 group-hover:animate-bounce" />
-                        <span>Processar Análise</span>
+                        <Brain className="mr-2 h-4 w-4 group-hover:animate-pulse" />
+                        <span>Analisar Currículo</span>
                       </>
                     )}
                   </div>

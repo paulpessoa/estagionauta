@@ -132,7 +132,7 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
                     title="Ver Instagram"
                   >
                     <Instagram className="h-3.5 w-3.5" />
-                    <span>@{agency.instagram.replace('@', '')}</span>
+                    <span>{agency.instagram.replace('@', '')}</span>
                   </a>
                 )}
                 {agency.linkedin && (

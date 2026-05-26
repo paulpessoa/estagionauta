@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Helmet } from "react-helmet-async"
 import {
   Card,
@@ -17,9 +17,18 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select"
-import { Calendar, Calculator, DollarSign, Download, Info } from "lucide-react"
+import { Calendar, Calculator, DollarSign, Download, Info, Sparkles, Loader2 } from "lucide-react"
+import { apiClient } from "@/lib/apiClient"
+import { useAuth } from "@/hooks/useAuth"
+import { useCredits } from "@/hooks/useCredits"
+import { toast } from "sonner"
 
 export default function CalculadoraRecessoPage() {
+  const { user } = useAuth()
+  const { credits, refresh } = useCredits()
+  const [aiComment, setAiComment] = useState<string | null>(null)
+  const [loadingAI, setLoadingAI] = useState(false)
+
   const [formData, setFormData] = useState({
     startDate: "",
     endDate: "",
@@ -60,6 +69,44 @@ export default function CalculadoraRecessoPage() {
       valorRecesso,
       periodoRecesso: `${diasRecesso} dias corridos`
     })
+    setAiComment(null)
+  }
+
+  const requestAIComment = async () => {
+    if (!result) return
+    if (!user) {
+      toast.error("Você precisa estar logado para solicitar um comentário da IA.")
+      return
+    }
+
+    if (credits !== null && credits.credits < 1) {
+      toast.error("Créditos insuficientes. Adquira mais créditos na página de Gestão de Créditos.")
+      return
+    }
+
+    setLoadingAI(true)
+    try {
+      const response = await apiClient.post<{ comment: string }>('/api/analysis/recesso-comment', {
+        startDate: formData.startDate,
+        endDate: formData.endDate || null,
+        salario: formData.salario,
+        horasDiarias: formData.horasDiarias,
+        diasSemana: formData.diasSemana,
+        diasRecesso: result.diasRecesso,
+        valorRecesso: result.valorRecesso,
+      })
+
+      if (response && response.comment) {
+        setAiComment(response.comment)
+        refresh()
+        toast.success("Comentário da IA gerado! 1 crédito consumido.")
+      }
+    } catch (e: any) {
+      console.error(e)
+      toast.error(e.message || "Erro ao gerar comentário da IA. Tente novamente.")
+    } finally {
+      setLoadingAI(false)
+    }
   }
 
   const updateFormData = (field: string, value: string) => {
@@ -243,6 +290,51 @@ export default function CalculadoraRecessoPage() {
                       <li>• Recesso remunerado conforme a bolsa-auxílio</li>
                     </ul>
                   </div>
+
+                  {aiComment ? (
+                    <div className="bg-violet-500/5 border border-violet-500/10 p-4 rounded-lg relative overflow-hidden text-left">
+                      <div className="flex items-center gap-2 mb-2 font-semibold text-violet-700 dark:text-violet-400">
+                        <Sparkles className="h-4 w-4 animate-pulse text-violet-500" />
+                        <span>Análise Legal da IA</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                        {aiComment}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="bg-violet-500/5 border border-violet-500/10 p-4 rounded-lg flex flex-col items-center text-center gap-2">
+                      <div className="flex items-center gap-1.5 text-sm font-semibold text-violet-600 dark:text-violet-400">
+                        <Sparkles className="h-4 w-4" />
+                        <span>Parecer da IA sobre seus direitos</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground max-w-sm">
+                        Nossa IA analisa as regras da Lei do Estágio aplicadas à sua carga horária e bolsa-auxílio.
+                      </p>
+                      <Button
+                        onClick={requestAIComment}
+                        disabled={loadingAI}
+                        size="sm"
+                        className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-sm h-8"
+                      >
+                        {loadingAI ? (
+                          <>
+                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                            Gerando Parecer...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="mr-1.5 h-3.5 w-3.5 text-yellow-300 fill-yellow-300" />
+                            Analisar com IA (Custo: 1 ⭐)
+                          </>
+                        )}
+                      </Button>
+                      {credits !== null && (
+                        <span className="text-[10px] text-muted-foreground">
+                          Seu saldo atual: {credits.credits} ⭐
+                        </span>
+                      )}
+                    </div>
+                  )}
 
                   <div className="flex space-x-2">
                     <Button

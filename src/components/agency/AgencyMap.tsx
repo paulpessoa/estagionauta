@@ -17,12 +17,46 @@ interface AgencyMapProps {
 
 export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps) {
   const [activeMarker, setActiveMarker] = useState<string | null>(null)
+  const [map, setMap] = useState<google.maps.Map | null>(null)
 
   useEffect(() => {
     if (activeMarker && !agencies.some(a => a.id === activeMarker)) {
       setActiveMarker(null)
     }
   }, [agencies, activeMarker])
+
+  useEffect(() => {
+    if (!map || agencies.length === 0) return
+
+    const bounds = new window.google.maps.LatLngBounds()
+    let hasCoords = false
+
+    agencies.forEach((agency) => {
+      if (agency.latitude && agency.longitude) {
+        bounds.extend({ lat: agency.latitude, lng: agency.longitude })
+        hasCoords = true
+      }
+    })
+
+    if (userLocation) {
+      bounds.extend(userLocation)
+      hasCoords = true
+    }
+
+    if (hasCoords) {
+      map.fitBounds(bounds)
+      // Limit zoom level if there's only one marker to prevent extreme closeups
+      const totalPoints = agencies.length + (userLocation ? 1 : 0)
+      if (totalPoints <= 1) {
+        const listener = window.google.maps.event.addListener(map, 'bounds_changed', () => {
+          if (map.getZoom()! > 14) {
+            map.setZoom(14)
+          }
+          window.google.maps.event.removeListener(listener)
+        })
+      }
+    }
+  }, [map, agencies, userLocation])
 
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -49,6 +83,8 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
       mapContainerStyle={containerStyle}
       center={mapCenter}
       zoom={12}
+      onLoad={(mapInstance) => setMap(mapInstance)}
+      onUnmount={() => setMap(null)}
       options={{
         zoomControl: true,
         mapTypeControl: false,
@@ -94,15 +130,15 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
             }}
           >
             {activeMarker === agency.id && (
-              <InfoWindowF 
+              <InfoWindowF
                 position={{ lat: agency.latitude, lng: agency.longitude }}
                 onCloseClick={() => setActiveMarker(null)}
               >
                 <div className="p-3 max-w-sm bg-white dark:bg-gray-800 text-black dark:text-white rounded-md shadow-lg">
                   <div className="flex items-start gap-3 mb-3">
                     {agency.logo_url && (
-                      <img 
-                        src={agency.logo_url} 
+                      <img
+                        src={agency.logo_url}
                         alt={agency.name}
                         className="w-10 h-10 rounded-full object-cover border"
                       />
@@ -133,35 +169,35 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
 
                   <div className="space-y-2 mb-3">
                     <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                      <MapPin className="h-3 w-3 inline-block flex-shrink-0" /> 
+                      <MapPin className="h-3 w-3 inline-block flex-shrink-0" />
                       <span className="truncate">{agency.address}, {agency.city}, {agency.state}</span>
                     </p>
 
                     {agency.phone && (
                       <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                        <Phone className="h-3 w-3 inline-block flex-shrink-0" /> 
+                        <Phone className="h-3 w-3 inline-block flex-shrink-0" />
                         <span>{agency.phone}</span>
                       </p>
                     )}
 
                     {agency.email && (
                       <p className="text-sm text-gray-600 dark:text-gray-300 flex items-center gap-1">
-                        <Mail className="h-3 w-3 inline-block flex-shrink-0" /> 
+                        <Mail className="h-3 w-3 inline-block flex-shrink-0" />
                         <span className="truncate">{agency.email}</span>
                       </p>
                     )}
 
                     {agency.website && (
                       <p className="text-sm text-blue-600 dark:text-blue-400 flex items-center gap-1">
-                        <Globe className="h-3 w-3 inline-block flex-shrink-0" /> 
+                        <Globe className="h-3 w-3 inline-block flex-shrink-0" />
                         <span className="truncate">{agency.website}</span>
                       </p>
                     )}
 
                     {agency.instagram && (
                       <p className="text-sm text-pink-600 dark:text-pink-400 flex items-center gap-1">
-                        <Instagram className="h-3 w-3 inline-block flex-shrink-0" /> 
-                        <span>@{agency.instagram}</span>
+                        <Instagram className="h-3 w-3 inline-block flex-shrink-0" />
+                        <span>{agency.instagram}</span>
                       </p>
                     )}
                   </div>
@@ -203,7 +239,7 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
                   </div>
 
                   {getContactUrl() && (
-                    <a 
+                    <a
                       href={getContactUrl()!}
                       target="_blank"
                       rel="noopener noreferrer"

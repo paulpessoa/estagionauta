@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -35,6 +35,10 @@ export default function CadastroAgenciaPage() {
     longitude: null as number | null
   })
 
+  const mapRef = useRef<HTMLDivElement | null>(null)
+  const googleMap = useRef<any>(null)
+  const marker = useRef<any>(null)
+
   const handleCepBlur = async () => {
     if (formData.cep.length === 8 || formData.cep.length === 9) {
       const cepData = await searchCep(formData.cep)
@@ -53,17 +57,125 @@ export default function CadastroAgenciaPage() {
     }
   }
 
+  // Get user location on mount if lat/lon not set
+  useEffect(() => {
+    if (formData.latitude !== null && formData.longitude !== null) return
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          setFormData(prev => ({
+            ...prev,
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          }))
+        },
+        () => {
+          // Geolocation failed or denied, do nothing
+        }
+      )
+    }
+  }, [])
+
+  // Geocode address when it changes to update lat/lon
+  useEffect(() => {
+    if (!formData.address || !formData.city || !formData.state) return
+    if (!window.google) return
+
+    const geocoder = new window.google.maps.Geocoder()
+    const fullAddress = `${formData.address}, ${formData.city} - ${formData.state}, Brazil`
+    geocoder.geocode({ address: fullAddress }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        const location = results[0].geometry.location
+        setFormData(prev => ({
+          ...prev,
+          latitude: location.lat(),
+          longitude: location.lng(),
+        }))
+      }
+    })
+  }, [formData.address, formData.city, formData.state])
+
+  // Initialize and update Google Maps
+  useEffect(() => {
+    const mapKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+    if (!mapKey || !mapRef.current) return
+
+    if (!window.google) {
+      const existingScript = document.getElementById('google-maps-script')
+      if (!existingScript) {
+        const script = document.createElement('script')
+        script.id = 'google-maps-script'
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${mapKey}`
+        script.async = true
+        script.defer = true
+        script.onload = () => {
+          initMap()
+        }
+        document.head.appendChild(script)
+      } else {
+        const interval = setInterval(() => {
+          if (window.google) {
+            clearInterval(interval)
+            initMap()
+          }
+        }, 100)
+      }
+    } else {
+      initMap()
+    }
+
+    function initMap() {
+      const center = {
+        lat: formData.latitude ?? -8.0476,
+        lng: formData.longitude ?? -34.877,
+      }
+      if (!googleMap.current) {
+        googleMap.current = new window.google.maps.Map(mapRef.current!, {
+          center,
+          zoom: 15,
+        })
+      } else {
+        googleMap.current.setCenter(center)
+      }
+      if (!marker.current) {
+        marker.current = new window.google.maps.Marker({
+          position: center,
+          map: googleMap.current,
+          draggable: true,
+        })
+        marker.current.addListener('dragend', () => {
+          const pos = marker.current!.getPosition()
+          if (pos) {
+            setFormData(prev => ({
+              ...prev,
+              latitude: pos.lat(),
+              longitude: pos.lng(),
+            }))
+          }
+        })
+        googleMap.current.addListener('click', (e: any) => {
+          if (e.latLng) {
+            marker.current!.setPosition(e.latLng)
+            setFormData(prev => ({
+              ...prev,
+              latitude: e.latLng!.lat(),
+              longitude: e.latLng!.lng(),
+            }))
+          }
+        })
+      } else {
+        marker.current.setPosition(center)
+      }
+    }
+  }, [formData.latitude, formData.longitude])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!user) return
 
-    // if (formData) {
-    //   console.log('Dados do formulário:', formData)
-    //   return
-    // }
     setLoading(true)
     try {
-      // Remover lat/lon se não forem válidos, para não enviar strings vazias
       const submissionData = { ...formData }
       if (submissionData.latitude === null || submissionData.longitude === null) {
         delete (submissionData as Partial<typeof submissionData>).latitude
@@ -101,12 +213,14 @@ export default function CadastroAgenciaPage() {
     setFormData(prev => ({ ...prev, agency_type: value }))
   }
 
+  const mapKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12">
       <div className="container max-w-4xl mx-auto px-4">
         <Card>
           <CardHeader>
-            <CardTitle>Cadastrar Nova Agência</CardTitle>
+            <CardTitle>Cadastrar Agência</CardTitle>
             <CardDescription>
               Preencha os dados da agência de estágio para adicionar à nossa plataforma.
             </CardDescription>
@@ -184,7 +298,7 @@ export default function CadastroAgenciaPage() {
                       name="instagram"
                       value={formData.instagram}
                       onChange={handleChange}
-                      placeholder="@agencia"
+                      placeholder="agencia"
                     />
                   </div>
                 </div>
@@ -212,7 +326,7 @@ export default function CadastroAgenciaPage() {
                     <p className="text-sm text-muted-foreground mt-1">O endereço será preenchido automaticamente.</p>
                   </div>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="address">Endereço *</Label>
                   <Input
@@ -253,42 +367,49 @@ export default function CadastroAgenciaPage() {
                   </div>
                 </div>
 
-                {process.env.NODE_ENV === 'development' && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="latitude">Latitude (opcional)</Label>
-                      <Input
-                        id="latitude"
-                        name="latitude"
-                        type="number"
-                        step="any"
-                        value={formData.latitude ?? ''}
-                        onChange={e => {
-                          const val = e.target.value
-                          setFormData(prev => ({ ...prev, latitude: val === '' ? null : parseFloat(val) }))
-                        }}
-                        placeholder="Ex: -8.0476"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="longitude">Longitude (opcional)</Label>
-                      <Input
-                        id="longitude"
-                        name="longitude"
-                        type="number"
-                        step="any"
-                        value={formData.longitude ?? ''}
-                        onChange={e => {
-                          const val = e.target.value
-                          setFormData(prev => ({ ...prev, longitude: val === '' ? null : parseFloat(val) }))
-                        }}
-                        placeholder="Ex: -34.877"
-                      />
-                    </div>
+                {/* Google Maps Selection */}
+                {mapKey && (
+                  <div className="space-y-2">
+                    <Label>Localização no Mapa</Label>
+                    <p className="text-xs text-muted-foreground">Clique no mapa ou arraste o marcador para selecionar a localização exata da agência.</p>
+                    <div className="h-64 w-full rounded-md border" ref={mapRef} />
                   </div>
                 )}
 
-                 <div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="latitude">Latitude</Label>
+                    <Input
+                      id="latitude"
+                      name="latitude"
+                      type="number"
+                      step="any"
+                      value={formData.latitude ?? ''}
+                      onChange={e => {
+                        const val = e.target.value
+                        setFormData(prev => ({ ...prev, latitude: val === '' ? null : parseFloat(val) }))
+                      }}
+                      placeholder="Ex: -8.0476"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="longitude">Longitude</Label>
+                    <Input
+                      id="longitude"
+                      name="longitude"
+                      type="number"
+                      step="any"
+                      value={formData.longitude ?? ''}
+                      onChange={e => {
+                        const val = e.target.value
+                        setFormData(prev => ({ ...prev, longitude: val === '' ? null : parseFloat(val) }))
+                      }}
+                      placeholder="Ex: -34.877"
+                    />
+                  </div>
+                </div>
+
+                <div>
                   <Label htmlFor="agency_type">Tipo de Agência *</Label>
                   <Select
                     value={formData.agency_type}
@@ -329,4 +450,4 @@ export default function CadastroAgenciaPage() {
       </div>
     </div>
   )
-} 
+}

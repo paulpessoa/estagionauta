@@ -33,7 +33,7 @@ const packages = [
     name: 'Cosmonauta',
     icon: Star,
     credits: 30,
-    price: 4.00,
+    price: 1.99,
     popular: false,
     color: 'border-slate-200 dark:border-slate-800'
   },
@@ -42,7 +42,7 @@ const packages = [
     name: 'Astronauta',
     icon: Zap,
     credits: 100,
-    price: 10.00,
+    price: 4.99,
     popular: true,
     color: 'border-blue-500 ring-2 ring-blue-500/20'
   },
@@ -51,7 +51,7 @@ const packages = [
     name: 'Comandante',
     icon: Crown,
     credits: 350,
-    price: 25.00,
+    price: 9.99,
     popular: false,
     color: 'border-purple-500'
   }

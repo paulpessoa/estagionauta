@@ -186,10 +186,31 @@ export default function AgenciasPage() {
     }
   }, [totalPages, currentPage])
 
-  const handleReviewClick = (agency: Agency) => {
+  const handleReviewClick = async (agency: Agency) => {
     if (!user) {
       setShowAuthModal(true)
-    } else {
+      return
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('agency_reviews')
+        .select('id')
+        .eq('agency_id', agency.id)
+        .eq('user_id', user.id)
+        .limit(1)
+
+      if (error) throw error
+
+      if (data && data.length > 0) {
+        toast.error('Você já enviou uma avaliação para esta agência. Só é permitida uma avaliação por agência.')
+        return
+      }
+
+      setSelectedAgency(agency)
+      setIsReviewModalOpen(true)
+    } catch (e) {
+      console.error('Erro ao verificar avaliações anteriores:', e)
       setSelectedAgency(agency)
       setIsReviewModalOpen(true)
     }

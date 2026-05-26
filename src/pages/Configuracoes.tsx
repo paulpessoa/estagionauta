@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -130,15 +131,25 @@ export default function Configuracoes() {
     }
   }, [profile])
 
+  const isDirty = profile ? (
+    profileData.full_name !== (profile.full_name || '') ||
+    profileData.phone !== (profile.phone || '') ||
+    profileData.bio !== (profile.bio || '') ||
+    profileData.course !== (profile.course || '') ||
+    profileData.university !== (profile.university || '') ||
+    profileData.period !== (profile.period || '') ||
+    profileData.linkedin_url !== (profile.linkedin_url || '') ||
+    slug !== (profile.curriculo_slug || '')
+  ) : false
 
-
-  const handleSaveProfile = async () => {
+  const handleSaveAll = async () => {
     if (!user) return
 
     try {
       setLoading(true)
 
-      const { error } = await supabase
+      // 1. Salvar perfil e informações acadêmicas
+      const { error: profileError } = await supabase
         .from('user_profiles')
         .update({
           full_name: profileData.full_name,
@@ -152,81 +163,50 @@ export default function Configuracoes() {
         })
         .eq('id', user.id)
 
-      if (error) throw error
+      if (profileError) throw profileError
+
+      // 2. Salvar slug se tiver sido alterado e for válido
+      const isSlugChanged = slug !== (profile?.curriculo_slug || '')
+      if (isSlugChanged) {
+        if (!slug) {
+          throw new Error('O identificador do currículo não pode ser vazio.')
+        }
+        
+        // Verifica se está disponível antes de atualizar
+        const { data: existingSlugUser, error: slugCheckError } = await supabase
+          .from('user_profiles')
+          .select('id')
+          .eq('curriculo_slug', slug)
+          .maybeSingle()
+
+        if (slugCheckError) throw slugCheckError
+        if (existingSlugUser && existingSlugUser.id !== user.id) {
+          throw new Error('Este identificador já está sendo utilizado por outro usuário.')
+        }
+
+        const { error: slugUpdateError } = await supabase
+          .from('user_profiles')
+          .update({ 
+            curriculo_slug: slug, 
+            updated_at: new Date().toISOString() 
+          })
+          .eq('id', user.id)
+
+        if (slugUpdateError) throw slugUpdateError
+      }
 
       toast({
-        title: "Perfil atualizado",
-        description: "Suas informações foram salvas com sucesso.",
+        title: "Alterações salvas",
+        description: "Suas configurações foram salvas com sucesso.",
       })
-    } catch (error) {
-      console.error('Error updating profile:', error)
+      
+      // Forçar reload após salvar para sincronizar tudo
+      window.location.reload()
+    } catch (error: any) {
+      console.error('Error saving settings:', error)
       toast({
-        title: "Erro",
-        description: "Erro ao atualizar perfil. Tente novamente.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSaveNotifications = async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          notification_settings: notificationSettings,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      toast({
-        title: "Notificações atualizadas",
-        description: "Suas preferências de notificação foram salvas.",
-      })
-    } catch (error) {
-      console.error('Error updating notifications:', error)
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar notificações. Tente novamente.",
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleSavePrivacy = async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          privacy_settings: privacySettings,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', user.id)
-
-      if (error) throw error
-
-      toast({
-        title: "Privacidade atualizada",
-        description: "Suas configurações de privacidade foram salvas.",
-      })
-    } catch (error) {
-      console.error('Error updating privacy:', error)
-      toast({
-        title: "Erro",
-        description: "Erro ao atualizar privacidade. Tente novamente.",
+        title: "Erro ao salvar",
+        description: error.message || "Ocorreu um erro ao salvar as alterações. Tente novamente.",
         variant: "destructive",
       })
     } finally {
@@ -386,7 +366,7 @@ export default function Configuracoes() {
                 <CardContent className="space-y-4">
                   {/* Avatar Upload */}
                   {user && (
-                    <div className="mb-4">
+                    <div className="space-y-2">
                       <AvatarUpload
                         currentAvatarUrl={profile?.avatar_url}
                         onAvatarUpdate={handleAvatarUpdate}
@@ -394,8 +374,49 @@ export default function Configuracoes() {
                         userName={profile?.full_name}
                         compact={true}
                       />
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Formatos aceitos: JPG, PNG ou WebP. Tamanho máximo: 2MB.
+                      </p>
                     </div>
                   )}
+
+                  <Separator />
+
+                  {/* URL do Currículo Público no topo */}
+                  <div className="space-y-2 p-4 bg-muted/30 rounded-lg border border-border">
+                    <Label htmlFor="curriculo-slug" className="font-semibold text-sm">URL do seu Currículo Público</Label>
+                    <div className="flex gap-2 items-center flex-wrap sm:flex-nowrap">
+                      <span className="text-sm text-muted-foreground whitespace-nowrap">estagionauta.com.br/curriculo/</span>
+                      <Input
+                        id="curriculo-slug"
+                        value={slug}
+                        onChange={e => {
+                          setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
+                          setSlugStatus('idle')
+                        }}
+                        onBlur={e => slug && checkSlug(slug)}
+                        placeholder={suggestSlug()}
+                        className="max-w-[200px]"
+                      />
+                      {slugStatus === 'checking' && <Loader2 className="animate-spin h-5 w-5 text-blue-500" />}
+                      {slugStatus === 'available' && <CheckCircle className="h-5 w-5 text-green-600" />}
+                      {slugStatus === 'unavailable' && <XCircle className="h-5 w-5 text-red-600" />}
+                    </div>
+                    {slugError && <p className="text-red-600 text-xs">{slugError}</p>}
+                    
+                    {profile?.curriculo_slug && (
+                      <div className="text-xs text-primary mt-1 font-medium">
+                        <a
+                          href={`/curriculo/${profile.curriculo_slug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="hover:underline inline-flex items-center gap-1"
+                        >
+                          Ver perfil público →
+                        </a>
+                      </div>
+                    )}
+                  </div>
 
                   <Separator />
 
@@ -440,16 +461,18 @@ export default function Configuracoes() {
                   </div>
                   <div>
                     <Label htmlFor="bio">Biografia</Label>
-                    <Input
+                    <Textarea
                       id="bio"
                       value={profileData.bio}
                       onChange={(e) => setProfileData({ ...profileData, bio: e.target.value })}
-                      placeholder="Conte um pouco sobre você..."
+                      placeholder="Conte um pouco sobre você, sua área de interesse e seus objetivos de carreira..."
+                      maxLength={500}
+                      className="resize-none h-24"
                     />
+                    <div className="text-right text-xs text-muted-foreground mt-1">
+                      {profileData.bio.length}/500 caracteres
+                    </div>
                   </div>
-                  <Button onClick={handleSaveProfile} disabled={loading}>
-                    {loading ? 'Salvando...' : 'Salvar Perfil'}
-                  </Button>
                 </CardContent>
               </Card>
 
@@ -497,58 +520,16 @@ export default function Configuracoes() {
                         </Select>
                       </div>
                     </div>
-                    <Button onClick={handleSaveProfile} disabled={loading}>
-                      {loading ? 'Salvando...' : 'Salvar Informações Acadêmicas'}
-                    </Button>
                   </CardContent>
                 </Card>
               )}
 
-              {/* URL do Currículo Público - Embutido no Perfil */}
-              <Card>
-                <CardHeader className="py-4">
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Info className="h-5 w-5" />
-                    URL do Currículo Público
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Label htmlFor="curriculo-slug">Escolha um identificador único para seu currículo:</Label>
-                  <div className="flex gap-2 items-center">
-                    <Input
-                      id="curriculo-slug"
-                      value={slug}
-                      onChange={e => {
-                        setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
-                        setSlugStatus('idle')
-                      }}
-                      onBlur={e => slug && checkSlug(slug)}
-                      placeholder={suggestSlug()}
-                      className="max-w-xs"
-                    />
-                    {slugStatus === 'checking' && <Loader2 className="animate-spin h-5 w-5 text-blue-500" />}
-                    {slugStatus === 'available' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                    {slugStatus === 'unavailable' && <XCircle className="h-5 w-5 text-red-600" />}
-                  </div>
-
-                  {profile?.curriculo_slug && (
-                    <div className="text-sm font-semibold text-primary mt-1">
-                      <a
-                        href={`/curriculo/${profile.curriculo_slug}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline flex items-center gap-1 w-fit"
-                      >
-                        Visualizar: estagionauta.com.br/curriculo/{profile.curriculo_slug}
-                      </a>
-                    </div>
-                  )}
-                  {slugError && <div className="text-red-600 text-xs">{slugError}</div>}
-                  <Button onClick={handleSaveSlug} disabled={loading || !slug || slugStatus !== 'available'}>
-                    {loading ? 'Salvando...' : 'Salvar URL do Currículo'}
-                  </Button>
-                </CardContent>
-              </Card>
+              {/* Botão único de Salvar Alterações ao final do perfil */}
+              <div className="flex justify-end pt-2">
+                <Button onClick={handleSaveAll} disabled={loading || !isDirty || (slug !== '' && slugStatus === 'unavailable')}>
+                  {loading ? 'Salvando...' : 'Salvar Alterações'}
+                </Button>
+              </div>
             </TabsContent>
 
 

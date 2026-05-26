@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
@@ -8,6 +8,7 @@ import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
 import { apiClient } from '../lib/apiClient'
 import { StripeDebug } from '../components/StripeDebug'
+import { useNavigate } from 'react-router-dom'
 
 
 const plans = [
@@ -17,8 +18,8 @@ const plans = [
     icon: Star,
     credits: 30,
     analyses: 10,
-    price: 4.00,
-    pricePerAnalysis: 0.40,
+    price: 1.99,
+    pricePerAnalysis: 0.20,
     popular: false
   },
   {
@@ -27,8 +28,8 @@ const plans = [
     icon: Zap,
     credits: 100,
     analyses: 33,
-    price: 10.00,
-    pricePerAnalysis: 0.30,
+    price: 4.99,
+    pricePerAnalysis: 0.15,
     popular: true
   },
   {
@@ -36,8 +37,8 @@ const plans = [
     name: 'Comandante',
     icon: Crown,
     credits: 350,
-    price: 25.00,
-    pricePerAnalysis: 0.07, // Consome 3 por análise -> 350 créditos / 3 = 116 análises. R$25 / 116 = ~R$0.21 por análise.
+    price: 9.99,
+    pricePerAnalysis: 0.09, // Consome 3 por análise -> 350 créditos / 3 = 116 análises.
     popular: false
   }
 ]
@@ -94,10 +95,17 @@ const subscriptionPlans = [
 
 export default function Precos() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const { credits } = useCredits()
   const { toast } = useToast()
   const [loading, setLoading] = useState<string | null>(null)
   const [billingType, setBillingType] = useState<'credits' | 'subscriptions'>('credits')
+
+  useEffect(() => {
+    if (user) {
+      navigate('/creditos', { replace: true })
+    }
+  }, [user, navigate])
 
   const handlePurchase = async (planId: string) => {
     if (!user) {

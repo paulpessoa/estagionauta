@@ -123,7 +123,8 @@ export default function AnalyseCurriculoPage() {
         .filter(Boolean)
         .join("\n")
 
-      const jobDescription = formData.hasSpecificJob
+      const hasSpecificJob = !!(formData.jobDescription?.trim() || formData.jobRequirements?.trim())
+      const jobDescription = hasSpecificJob
         ? `Vaga de Interesse: ${formData.jobDescription || ""}\nRequisitos: ${formData.jobRequirements || ""}`
         : ""
 

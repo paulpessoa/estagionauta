@@ -41,6 +41,9 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
   const [logoPreview, setLogoPreview] = useState<string>('')
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const mapRef = useRef<HTMLDivElement | null>(null)
+  const googleMap = useRef<any>(null)
+  const markerRef = useRef<any>(null)
 
   useEffect(() => {
     if (agency) {
@@ -65,6 +68,90 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
       setLogoFile(null)
     }
   }, [agency])
+
+  // Geocode address when it changes to update lat/lon
+  useEffect(() => {
+    if (!formData.address || !formData.city || !formData.state) return
+    if (!window.google) return
+
+    const geocoder = new window.google.maps.Geocoder()
+    const fullAddress = `${formData.address}, ${formData.city} - ${formData.state}, Brazil`
+    geocoder.geocode({ address: fullAddress }, (results, status) => {
+      if (status === 'OK' && results && results[0]) {
+        const location = results[0].geometry.location
+        handleChange('latitude', location.lat())
+        handleChange('longitude', location.lng())
+      }
+    })
+  }, [formData.address, formData.city, formData.state])
+
+  // Initialize and update Google Maps
+  useEffect(() => {
+    const mapKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+    if (!mapKey || !mapRef.current || !isOpen) return
+
+    if (!window.google) {
+      const existingScript = document.getElementById('google-maps-script')
+      if (!existingScript) {
+        const script = document.createElement('script')
+        script.id = 'google-maps-script'
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${mapKey}`
+        script.async = true
+        script.defer = true
+        script.onload = () => {
+          initMap()
+        }
+        document.head.appendChild(script)
+      } else {
+        const interval = setInterval(() => {
+          if (window.google) {
+            clearInterval(interval)
+            initMap()
+          }
+        }, 100)
+      }
+    } else {
+      initMap()
+    }
+
+    function initMap() {
+      const center = {
+        lat: formData.latitude ?? -8.0476,
+        lng: formData.longitude ?? -34.877,
+      }
+      if (!googleMap.current) {
+        googleMap.current = new window.google.maps.Map(mapRef.current!, {
+          center,
+          zoom: 15,
+        })
+      } else {
+        googleMap.current.setCenter(center)
+      }
+      if (!markerRef.current) {
+        markerRef.current = new window.google.maps.Marker({
+          position: center,
+          map: googleMap.current,
+          draggable: true,
+        })
+        markerRef.current.addListener('dragend', () => {
+          const pos = markerRef.current!.getPosition()
+          if (pos) {
+            handleChange('latitude', pos.lat())
+            handleChange('longitude', pos.lng())
+          }
+        })
+        googleMap.current.addListener('click', (e: any) => {
+          if (e.latLng) {
+            markerRef.current!.setPosition(e.latLng)
+            handleChange('latitude', e.latLng!.lat())
+            handleChange('longitude', e.latLng!.lng())
+          }
+        })
+      } else {
+        markerRef.current.setPosition(center)
+      }
+    }
+  }, [formData.latitude, formData.longitude, isOpen])
 
   const handleChange = (field: string, value: string | number | null) => {
     setFormData(prev => ({
@@ -351,6 +438,15 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
               onChange={e => handleChange('cep', e.target.value)}
             />
           </div>
+
+          {/* Google Maps Selection */}
+          {import.meta.env.VITE_GOOGLE_MAPS_API_KEY && (
+            <div className="space-y-2">
+              <Label>Localização no Mapa</Label>
+              <p className="text-xs text-muted-foreground">Clique no mapa ou arraste o marcador para selecionar a localização exata da agência.</p>
+              <div className="h-64 w-full rounded-md border" ref={mapRef} />
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>

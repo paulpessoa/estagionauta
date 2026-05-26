@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
-import { analyzeResumeAI, type AnalysisOutput } from '../services/openai.service.js';
+import { analyzeResumeAI, type AnalysisOutput, generateRecessoCommentAI } from '../services/openai.service.js';
 
 const app = new Hono<Env>();
 
@@ -62,7 +62,7 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
     // 1. Check user credits balance
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
-      .select('credits')
+      .select('credits, full_name, course, university')
       .eq('id', user.id)
       .single();
 
@@ -115,16 +115,22 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
       usedFallback = true;
     }
 
+    const email = user.email || '';
+    const name = profile.full_name || user.user_metadata?.full_name || email;
+    const course = profile.course || null;
+    const university = profile.university || null;
+
     // 4. Save analysis results to database
     const { data: insertData, error: saveError } = await supabaseAdmin
       .from('curriculum_analysis')
       .insert({
         user_id: user.id,
-        resume_text: resumeText,
-        job_description: jobDescription || null,
-        current_situation: currentSituation || null,
-        mentorship_questions: mentorshipQuestions || null,
-        analysis_result: analysisResult,
+        name,
+        email,
+        course,
+        university,
+        analysis_data: analysisResult,
+        status: 'completed',
         used_fallback: usedFallback,
         credits_used: 3,
       })
@@ -219,6 +225,84 @@ app.delete('/:id', authMiddleware, async (c) => {
   } catch (err) {
     console.error('Delete route error:', err);
     return c.json({ error: 'Erro interno do servidor ao excluir análise' }, 500);
+  }
+});
+
+const recessoCommentSchema = z.object({
+  startDate: z.string(),
+  endDate: z.string().optional().nullable(),
+  salario: z.string(),
+  horasDiarias: z.string(),
+  diasSemana: z.string(),
+  diasRecesso: z.number(),
+  valorRecesso: z.number(),
+});
+
+// POST /api/analysis/recesso-comment - Generate AI comment for recess calculation (consumes 1 credit)
+app.post('/recesso-comment', authMiddleware, zValidator('json', recessoCommentSchema), async (c) => {
+  const user = c.get('user');
+  const { startDate, endDate, salario, horasDiarias, diasSemana, diasRecesso, valorRecesso } = c.req.valid('json');
+
+  try {
+    // 1. Check user credits balance
+    const { data: profile, error: profileError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('credits')
+      .eq('id', user.id)
+      .single();
+
+    if (profileError || !profile) {
+      console.error('Profile fetch error:', profileError);
+      return c.json({ error: 'Erro ao verificar créditos do usuário' }, 500);
+    }
+
+    if (profile.credits < 1) {
+      return c.json(
+        {
+          error: 'Créditos insuficientes',
+          requiredCredits: 1,
+          availableCredits: profile.credits,
+          message: 'Você precisa de pelo menos 1 crédito para gerar o comentário da IA.',
+        },
+        402
+      );
+    }
+
+    // 2. Consume 1 credit
+    const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
+      'consume_credits',
+      {
+        user_uuid: user.id,
+        amount: 1,
+        description: 'Comentário da IA na calculadora de recesso',
+      }
+    );
+
+    if (consumeError || !consumeResult) {
+      console.error('Credits consumption error for recess comment:', consumeError);
+      return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+    }
+
+    // 3. Generate AI comment using Groq/Llama
+    const comment = await generateRecessoCommentAI({
+      startDate,
+      endDate: endDate || undefined,
+      salario,
+      horasDiarias,
+      diasSemana,
+      diasRecesso,
+      valorRecesso,
+    });
+
+    return c.json({
+      success: true,
+      comment,
+      creditsUsed: 1,
+      remainingCredits: profile.credits - 1,
+    });
+  } catch (err: any) {
+    console.error('Recesso comment error:', err);
+    return c.json({ error: err.message || 'Erro interno ao gerar comentário da IA' }, 500);
   }
 });
 

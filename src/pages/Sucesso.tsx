@@ -18,7 +18,7 @@ export default function Sucesso() {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const { toast } = useToast()
-  const { refresh } = useCredits()
+  const { credits, refresh } = useCredits()
   const [loading, setLoading] = useState(true)
   const [paymentData, setPaymentData] = useState<PaymentData | null>(null)
 
@@ -112,8 +112,13 @@ export default function Sucesso() {
                     Plano: <span className="font-semibold">{paymentData.planName}</span>
                   </p>
                   <p className="text-sm text-gray-600">
-                    Valor: <span className="font-semibold">R$ {paymentData.amount}</span>
+                    Valor: <span className="font-semibold">R$ {paymentData.amount.toFixed(2).replace('.', ',')}</span>
                   </p>
+                  {credits !== null && (
+                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-2 bg-yellow-500/10 py-1.5 px-3 rounded-lg inline-block">
+                      Seu novo saldo: {credits.credits} ⭐
+                    </p>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -121,16 +126,28 @@ export default function Sucesso() {
 
           {/* Botões de ação */}
           <div className="space-y-4">
-            <Button 
-              size="lg" 
-              className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700"
-              onClick={() => navigate('/analise-curriculo')}
-            >
-              <Rocket className="mr-2 h-5 w-5" />
-              Analisar Currículo
-            </Button>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 font-medium"
+                onClick={() => navigate('/analise-curriculo')}
+              >
+                <Rocket className="mr-2 h-5 w-5" />
+                Analisar Currículo
+              </Button>
+
+              <Button 
+                size="lg" 
+                variant="secondary"
+                className="font-medium bg-white hover:bg-gray-100 border text-slate-900"
+                onClick={() => navigate('/simulador-entrevistas')}
+              >
+                <Star className="mr-2 h-5 w-5 text-yellow-500 fill-yellow-500 animate-pulse" />
+                Simulador de Entrevistas
+              </Button>
+            </div>
             
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-wrap gap-4 justify-center">
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/dashboard')}
@@ -144,6 +161,13 @@ export default function Sucesso() {
                 onClick={() => navigate('/minhas-analises')}
               >
                 Ver Minhas Análises
+              </Button>
+
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/calculadora-recesso')}
+              >
+                Calculadora de Recesso
               </Button>
             </div>
           </div>

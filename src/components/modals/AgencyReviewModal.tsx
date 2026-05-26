@@ -52,6 +52,22 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
     }
     setLoading(true)
     try {
+      // Double check if already reviewed
+      const { data: existing, error: checkError } = await supabase
+        .from('agency_reviews')
+        .select('id')
+        .eq('agency_id', agencyId)
+        .eq('user_id', user.id)
+        .limit(1)
+
+      if (checkError) throw checkError
+
+      if (existing && existing.length > 0) {
+        toast.error('Você já enviou uma avaliação para esta agência.')
+        handleClose()
+        return
+      }
+
       const { error } = await supabase.from('agency_reviews').insert({
         agency_id: agencyId,
         user_id: user.id,

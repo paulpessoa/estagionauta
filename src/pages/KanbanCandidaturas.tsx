@@ -42,7 +42,8 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
-  GitMerge
+  GitMerge,
+  List
 } from 'lucide-react'
 import { format, addDays, isAfter, isBefore, startOfDay, isSameDay } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -50,6 +51,7 @@ import { toast } from 'sonner'
 
 import { ApplicationCard } from '@/components/kanban/ApplicationCard'
 import { KanbanReactFlow } from '@/components/kanban/KanbanReactFlow'
+import { KanbanTable } from '@/components/kanban/KanbanTable'
 
 const statusConfig = {
   interested: { label: 'Interessado', color: 'bg-gray-100 text-gray-800', icon: Eye },
@@ -74,7 +76,7 @@ export default function KanbanCandidaturas() {
   const [isLoading, setIsLoading] = useState(true)
   
   // States to toggle Views
-  const [viewMode, setViewMode] = useState<'board' | 'flow'>('board')
+  const [viewMode, setViewMode] = useState<'board' | 'table' | 'flow'>('table')
   const [selectedFlowStage, setSelectedFlowStage] = useState<string | null>(null)
 
   // Form state for new application
@@ -327,6 +329,14 @@ export default function KanbanCandidaturas() {
                 Lembretes ({todayReminders.length})
               </Button>
               <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                <Button 
+                  variant={viewMode === 'table' ? 'default' : 'ghost'} 
+                  size="sm" 
+                  onClick={() => setViewMode('table')}
+                  className="text-xs"
+                >
+                  <List className="h-4 w-4 mr-2" /> Tabela
+                </Button>
                 <Button 
                   variant={viewMode === 'board' ? 'default' : 'ghost'} 
                   size="sm" 
@@ -609,8 +619,34 @@ export default function KanbanCandidaturas() {
           </Card>
         )}
 
-        {/* Kanban Board or Flow */}
-        {viewMode === 'flow' ? (
+        {/* Kanban Board, Table or Flow */}
+        {viewMode === 'table' ? (
+          <KanbanTable
+            applications={filteredApplications}
+            onStatusChange={updateApplicationStatus}
+            onDelete={deleteApplication}
+            onEdit={(app) => {
+              setEditingApplication(app)
+              setFormData({
+                company: app.company,
+                position: app.position,
+                description: app.description || '',
+                salary: app.salary || '',
+                location: app.location || '',
+                contactPerson: app.contactPerson || '',
+                contactEmail: app.contactEmail || '',
+                contactPhone: app.contactPhone || '',
+                website: app.website || '',
+                notes: app.notes || '',
+                tags: app.tags.join(', ')
+              })
+              setIsAddModalOpen(true)
+            }}
+            onAddReminder={handleAddReminder}
+            onToggleReminder={toggleReminderCompletion}
+            statusConfig={statusConfig}
+          />
+        ) : viewMode === 'flow' ? (
           <div className="space-y-6">
             <KanbanReactFlow 
               applications={applications} 

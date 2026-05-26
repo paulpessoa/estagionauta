@@ -201,7 +201,8 @@ Regras cruciais:
 2. Leia a resposta anterior do candidato e responda de forma natural, comentando brevemente se necessário antes de formular a próxima pergunta.
 3. Não saia do personagem. Você não é um assistente de IA, você é o entrevistador.
 4. Mantenha suas falas extremamente concisas, no máximo 2 ou 3 frases curtas (cerca de 30 palavras), para que a resposta em áudio não fique longa e cansativa. Vá direto ao ponto.
-5. Se for o início da entrevista (histórico vazio), apresente-se brevemente e faça a primeira pergunta.`;
+5. Se for o início da entrevista (histórico vazio), apresente-se brevemente e faça a primeira pergunta.
+6. Escreva em português brasileiro perfeito, livre de erros gramaticais ou ortográficos. Garanta grafias corretas como "Entendo", "Organização", "Compreendo" e "Excelente".`;
 
   const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
     { role: 'system', content: systemPrompt }
@@ -226,7 +227,16 @@ Regras cruciais:
     throw new Error('Nenhuma resposta retornada da OpenAI para a simulação de entrevista');
   }
 
-  return content;
+  const cleanAIResponse = (text: string): string => {
+    return text
+      .replace(/\b([Ee])tendo\b/g, '$1ntendo')
+      .replace(/\b([Oo])ganiza/g, '$1rganiza')
+      .replace(/\b([Cc])opreendo\b/g, '$1ompreendo')
+      .replace(/\b([Cc])opreen/g, '$1ompreen')
+      .replace(/\b([Ee])xelente/g, '$1xcelente');
+  };
+
+  return cleanAIResponse(content);
 }
 
 export async function generateInterviewFeedbackAI(
@@ -285,6 +295,57 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
   }
 
   return JSON.parse(content) as SimulatorFeedback;
+}
+
+export async function generateRecessoCommentAI(data: {
+  startDate: string;
+  endDate?: string;
+  salario: string;
+  horasDiarias: string;
+  diasSemana: string;
+  diasRecesso: number;
+  valorRecesso: number;
+}): Promise<string> {
+  const { startDate, endDate, salario, horasDiarias, diasSemana, diasRecesso, valorRecesso } = data;
+
+  const systemPrompt = `Você é um especialista em legislação trabalhista de estágio brasileira (Lei nº 11.788/2008). 
+Analise os dados do cálculo de recesso fornecidos pelo usuário e dê um parecer ou conselho prático sobre seus direitos, se o cálculo está de acordo com a lei, o que ele precisa negociar com o contratante, etc.
+Responda em formato de texto limpo em português do Brasil de forma extremamente amigável, direta e profissional. Não use formatação markdown excessiva. Limite a resposta a no máximo 4 parágrafos curtos.`;
+
+  const userPrompt = `Dados do Estágio:
+- Data de início: ${startDate}
+- Data final/atual: ${endDate || 'Hoje'}
+- Bolsa-auxílio mensal: R$ ${salario}
+- Horas diárias: ${horasDiarias}h
+- Dias por semana: ${diasSemana} dias
+- Dias de recesso calculados: ${diasRecesso} dias
+- Valor total do recesso calculado: R$ ${valorRecesso.toFixed(2)}`;
+
+  const response = await openai.chat.completions.create({
+    model: 'llama-3.3-70b-versatile',
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    temperature: 0.7,
+    max_tokens: 600,
+  });
+
+  const contentResponse = response.choices[0]?.message?.content;
+  if (!contentResponse) {
+    throw new Error('Nenhuma resposta retornada da inteligência artificial');
+  }
+
+  const cleanText = (text: string): string => {
+    return text
+      .replace(/\b([Ee])tendo\b/g, '$1ntendo')
+      .replace(/\b([Oo])ganiza/g, '$1rganiza')
+      .replace(/\b([Cc])opreendo\b/g, '$1ompreendo')
+      .replace(/\b([Cc])opreen/g, '$1ompreen')
+      .replace(/\b([Ee])xelente/g, '$1xcelente');
+  };
+
+  return cleanText(contentResponse.trim());
 }
 
 

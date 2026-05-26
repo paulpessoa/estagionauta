@@ -176,7 +176,7 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
 
     // Count how many times the candidate has answered
     const candidateAnswersCount = updatedMessages.filter(m => m.role === 'candidate').length;
-    const MAX_ANSWERS = 5;
+    const MAX_ANSWERS = 20;
 
     let nextStatus = 'started';
     let feedback = null;
@@ -245,6 +245,76 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
   }
 });
 
+// POST /api/simulator/:id/end - Force finish the interview and get feedback
+app.post('/:id/end', authMiddleware, async (c) => {
+  const user = c.get('user');
+  const id = c.req.param('id');
+
+  try {
+    const { data: simulation, error: fetchError } = await supabaseAdmin
+      .from('interview_simulations')
+      .select('*')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (fetchError || !simulation) {
+      console.error('Error fetching simulation for ending:', fetchError);
+      return c.json({ error: 'Simulação de entrevista não encontrada' }, 404);
+    }
+
+    const sim = simulation as InterviewSimulation;
+
+    if (sim.status === 'completed') {
+      return c.json({ error: 'Esta entrevista já foi concluída' }, 400);
+    }
+
+    const candidateAnswersCount = sim.messages.filter(m => m.role === 'candidate').length;
+    if (candidateAnswersCount < 5) {
+      return c.json({ error: 'Você precisa responder pelo menos 5 perguntas para poder encerrar a simulação' }, 400);
+    }
+
+    // Generate feedback report
+    let feedback = null;
+    try {
+      feedback = await generateInterviewFeedbackAI(
+        sim.job_title,
+        sim.job_description,
+        sim.interviewer_type,
+        sim.messages
+      );
+    } catch (feedbackErr) {
+      console.error('Error generating AI feedback:', feedbackErr);
+      feedback = {
+        score: 70,
+        strengths: ['Participação completa na simulação de entrevista.'],
+        improvements: ['Ocorreu uma instabilidade na geração do feedback personalizado detalhado pela IA.'],
+        tips: 'Tente refazer a simulação mais tarde para receber a análise completa da nossa IA.',
+      };
+    }
+
+    const { data: updatedSimulation, error: updateError } = await supabaseAdmin
+      .from('interview_simulations')
+      .update({
+        status: 'completed',
+        feedback: feedback,
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError || !updatedSimulation) {
+      console.error('Error updating simulation in DB:', updateError);
+      return c.json({ error: 'Erro ao encerrar simulação no banco de dados' }, 500);
+    }
+
+    return c.json({ simulation: updatedSimulation });
+  } catch (err) {
+    console.error('Unexpected error ending simulation:', err);
+    return c.json({ error: 'Erro interno ao processar encerramento' }, 500);
+  }
+});
+
 // DELETE /api/simulator/:id - Delete specific simulation
 app.delete('/:id', authMiddleware, async (c) => {
   const user = c.get('user');
@@ -270,13 +340,17 @@ app.delete('/:id', authMiddleware, async (c) => {
 });
 
 // POST /api/simulator/tts - Generate Text-to-Speech audio
-app.post('/tts', authMiddleware, zValidator('json', z.object({ text: z.string().min(1) })), async (c) => {
-  const { text } = c.req.valid('json');
+app.post('/tts', authMiddleware, zValidator('json', z.object({ 
+  text: z.string().min(1),
+  voice: z.string().optional()
+})), async (c) => {
+  const { text, voice } = c.req.valid('json');
+  const selectedVoice = (voice && ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'].includes(voice)) ? voice : 'nova';
 
   try {
     const mp3 = await openai.audio.speech.create({
       model: "tts-1",
-      voice: "nova", // "alloy", "echo", "fable", "onyx", "nova", and "shimmer" (Nova is energetic/animated)
+      voice: selectedVoice as any, // "alloy", "echo", "fable", "onyx", "nova", and "shimmer" (Nova is energetic/animated)
       input: text,
     });
     

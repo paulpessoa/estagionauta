@@ -127,9 +127,44 @@ ${analysis.name}`)
 
       console.log('Analysis data received:', data)
 
+      // Map dynamic analysis data format if using backend structure
+      const rawData = data.analysis_data as any
+      let mappedData: AnalysisData
+
+      if (rawData && !rawData.notes && !rawData.notas && (rawData.pontosFortes || rawData.areasMelhoria)) {
+        const score = rawData.scoreGeral || 70
+        const marketFit = rawData.adequacaoMercado || score
+        const growth = rawData.potencialCrescimento || score
+        const toTen = (val: number) => Math.round((val || 70) / 10)
+
+        mappedData = {
+          notas: {
+            organizacao: Math.min(10, Math.max(1, toTen(score) + 1)),
+            ortografia: Math.min(10, Math.max(1, toTen(score))),
+            experiencias: Math.min(10, Math.max(1, toTen(growth))),
+            adequacao: Math.min(10, Math.max(1, toTen(marketFit))),
+            extracurriculares: Math.min(10, Math.max(1, toTen(growth) - 1)),
+            diferencial: Math.min(10, Math.max(1, toTen(marketFit) - 1)),
+            habilidades: Math.min(10, Math.max(1, toTen(score))),
+          },
+          analise: [
+            ...(rawData.pontosFortes || []),
+            ...(rawData.areasMelhoria || [])
+          ],
+          recomendacoes: rawData.recomendacoes || [],
+          tags: [
+            'Currículo',
+            'Análise IA',
+            ...(rawData.pontosFortes ? rawData.pontosFortes.map((p: string) => p.split(' ')[0]).slice(0, 3) : [])
+          ]
+        }
+      } else {
+        mappedData = rawData as AnalysisData
+      }
+
       const analysisWithTypedData = {
         ...data,
-        analysis_data: data.analysis_data as unknown as AnalysisData
+        analysis_data: mappedData
       }
 
       console.log('Processed analysis data:', analysisWithTypedData)

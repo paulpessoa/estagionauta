@@ -380,19 +380,27 @@ export default function AdminPage() {
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs uppercase bg-muted text-muted-foreground">
                       <tr>
-                        <th className="px-6 py-3">Usuário ID</th>
+                        <th className="px-6 py-3">Usuário</th>
                         <th className="px-6 py-3">Tipo</th>
                         <th className="px-6 py-3">Qtde</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {recentTransactions.map((tx) => (
-                        <tr key={tx.id}>
-                          <td className="px-6 py-4 text-xs">{tx.user_id}</td>
-                          <td className="px-6 py-4"><Badge variant="outline">{tx.type}</Badge></td>
-                          <td className="px-6 py-4 font-bold">{tx.amount}</td>
-                        </tr>
-                      ))}
+                      {recentTransactions.map((tx) => {
+                        const userName = tx.user_profiles?.full_name || 'Sem nome';
+                        const userEmail = tx.user_profiles?.email || 'Sem email';
+                        return (
+                          <tr key={tx.id}>
+                            <td className="px-6 py-4">
+                              <div className="font-semibold text-sm">{userName}</div>
+                              <div className="text-xs text-muted-foreground">{userEmail}</div>
+                              <div className="text-[10px] text-muted-foreground/60 font-mono mt-0.5">{tx.user_id}</div>
+                            </td>
+                            <td className="px-6 py-4"><Badge variant="outline">{tx.type}</Badge></td>
+                            <td className="px-6 py-4 font-bold">{tx.amount}</td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -405,7 +413,7 @@ export default function AdminPage() {
       case 'settings':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4">Configurações</h2>
+            <h2 className="text-2xl font-bold mb-4">Logs de Sistema</h2>
             <Card>
               <CardHeader>
                 <CardTitle>Logs de Sistema</CardTitle>
@@ -442,7 +450,7 @@ export default function AdminPage() {
               />
             )}
             <SidebarItem 
-              icon={<FileText className="h-5 w-5" />} label="Submissões" 
+              icon={<FileText className="h-5 w-5" />} label="Histórico de Análises" 
               active={activeTab === 'submissions'} onClick={() => setActiveTab('submissions')} 
             />
             {profile?.role === 'admin' && (
@@ -457,7 +465,7 @@ export default function AdminPage() {
             />
             {profile?.role === 'admin' && (
               <SidebarItem 
-                icon={<Settings className="h-5 w-5" />} label="Configurações" 
+                icon={<Settings className="h-5 w-5" />} label="Logs de Sistema" 
                 active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} 
               />
             )}
