@@ -83,6 +83,7 @@ export default function SimuladorEntrevistas() {
   // Voice States
   const [isListening, setIsListening] = useState(false)
   const [isPlayingAudio, setIsPlayingAudio] = useState(false)
+  const [isFetchingAudio, setIsFetchingAudio] = useState(false)
   const [isAudioEnabled, setIsAudioEnabled] = useState(true)
   const [preferredInputMode, setPreferredInputMode] = useState<"voice" | "text">("voice")
   const [inputMode, setInputMode] = useState<"voice" | "text">("voice")
@@ -165,6 +166,7 @@ export default function SimuladorEntrevistas() {
     }
 
     window.speechSynthesis?.cancel()
+    setIsFetchingAudio(true)
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
       // apiClient handles auth header internally
@@ -198,8 +200,10 @@ export default function SimuladorEntrevistas() {
         })
       }
     } catch (err: any) {
-      console.error('TTS error:', err)
-      toast.error(`Erro ao gerar voz: ${err.message || err}`)
+      console.error('Erro ao gerar áudio:', err)
+      toast.error('Erro ao gerar voz do entrevistador.')
+    } finally {
+      setIsFetchingAudio(false)
     }
   }
 
@@ -1102,16 +1106,16 @@ export default function SimuladorEntrevistas() {
                      </div>
                      <div className="text-center max-w-sm px-4">
                        <h3 className="text-2xl font-bold text-foreground">
-                         {actionLoading ? "Pensando..." : isPlayingAudio ? "Entrevistador Falando" : isListening ? "Ouvindo Você..." : "Sua Vez"}
+                         {actionLoading ? "Pensando..." : isFetchingAudio ? "Preparando Áudio..." : isPlayingAudio ? "Entrevistador Falando" : isListening ? "Ouvindo Você..." : "Sua Vez"}
                        </h3>
                        <p className="text-sm text-muted-foreground mt-2">
-                         {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? (answerInput || "Pode falar, estou captando seu áudio...") : "Toque no microfone abaixo para responder"}
+                         {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isFetchingAudio ? "Carregando a voz do entrevistador" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? (answerInput || "Pode falar, estou captando seu áudio...") : "Toque no microfone abaixo para responder"}
                        </p>
                      </div>
                    </div>
                    
                    {/* Background animated rings when active */}
-                   {(isPlayingAudio || isListening) && (
+                   {(isPlayingAudio || isListening || isFetchingAudio) && (
                       <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
                         <div className={`absolute h-72 w-72 rounded-full border border-current animate-ping ${isListening ? 'text-red-500/30' : 'text-violet-500/30'}`} style={{ animationDuration: '3s' }} />
                         <div className={`absolute h-96 w-96 rounded-full border border-current animate-ping ${isListening ? 'text-red-500/20' : 'text-violet-500/20'}`} style={{ animationDuration: '4s', animationDelay: '1s' }} />
