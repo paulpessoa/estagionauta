@@ -13,9 +13,9 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const app = new Hono<Env>();
 
 const PLANS = {
-  cosmonauta: { price: 199, credits: 30, name: 'Cosmonauta' },
-  astronauta: { price: 499, credits: 100, name: 'Astronauta' },
-  comandante: { price: 999, credits: 350, name: 'Comandante' },
+  cosmonauta: { price: 5970, credits: 30, name: 'Cosmonauta' },
+  astronauta: { price: 11920, credits: 80, name: 'Astronauta' },
+  comandante: { price: 19800, credits: 200, name: 'Comandante' },
 } as const;
 
 type PlanId = keyof typeof PLANS;
@@ -128,7 +128,7 @@ app.post('/verify-session', authMiddleware, zValidator('json', z.object({ sessio
 
       return c.json({
         credits,
-        analyses: plan ? plan.credits / 3 : 0,
+        analyses: plan ? Math.floor(plan.credits / 3) : 0,
         planName: plan ? plan.name : 'Personalizado',
         amount: session.amount_total ? session.amount_total / 100 : 0,
       });

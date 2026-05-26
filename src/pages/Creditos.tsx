@@ -33,7 +33,8 @@ const packages = [
     name: 'Cosmonauta',
     icon: Star,
     credits: 30,
-    price: 1.99,
+    price: 59.70,
+    pricePerCredit: 1.99,
     popular: false,
     color: 'border-slate-200 dark:border-slate-800'
   },
@@ -41,8 +42,9 @@ const packages = [
     id: 'astronauta',
     name: 'Astronauta',
     icon: Zap,
-    credits: 100,
-    price: 4.99,
+    credits: 80,
+    price: 119.20,
+    pricePerCredit: 1.49,
     popular: true,
     color: 'border-blue-500 ring-2 ring-blue-500/20'
   },
@@ -50,8 +52,9 @@ const packages = [
     id: 'comandante',
     name: 'Comandante',
     icon: Crown,
-    credits: 350,
-    price: 9.99,
+    credits: 200,
+    price: 198.00,
+    pricePerCredit: 0.99,
     popular: false,
     color: 'border-purple-500'
   }
@@ -190,6 +193,9 @@ export default function Creditos() {
                           <Separator className="my-4" />
                           <div className="text-2xl font-bold text-foreground mb-1">
                             R$ {pkg.price.toFixed(2).replace('.', ',')}
+                          </div>
+                          <div className="text-xs text-blue-600 dark:text-blue-400 font-semibold mb-1">
+                            R$ {pkg.pricePerCredit.toFixed(2).replace('.', ',')} / crédito
                           </div>
                           <div className="text-xs text-muted-foreground font-medium mb-4">
                             Pagamento Único
