@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -18,8 +18,11 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { toast } = useToast()
   const { user } = useAuth()
+  
+  const isRegistered = searchParams.get('registered') === 'true'
 
   // Redirect if already logged in
   useEffect(() => {
@@ -90,6 +93,16 @@ export default function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {isRegistered && (
+            <Alert className="border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 flex items-start gap-2">
+              <Mail className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              <AlertDescription className="font-medium text-xs leading-relaxed">
+                Cadastro realizado! Enviamos um e-mail de confirmação para você. 
+                Por favor, acesse sua caixa de entrada e clique no link de ativação antes de realizar o login.
+              </AlertDescription>
+            </Alert>
+          )}
+
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>

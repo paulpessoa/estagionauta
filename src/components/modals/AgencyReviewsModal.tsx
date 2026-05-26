@@ -58,9 +58,8 @@ export function AgencyReviewsModal({ isOpen, onClose, agencyId, agencyName }: Ag
     return Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        className={`h-4 w-4 ${
-          i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-        }`}
+        className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+          }`}
       />
     ))
   }
@@ -77,12 +76,7 @@ export function AgencyReviewsModal({ isOpen, onClose, agencyId, agencyName }: Ag
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <div className="flex items-center justify-between">
-            <DialogTitle>Avaliações - {agencyName}</DialogTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
-          </div>
+          <DialogTitle>Avaliações - {agencyName}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -116,7 +110,7 @@ export function AgencyReviewsModal({ isOpen, onClose, agencyId, agencyName }: Ag
                     <p className="text-sm font-medium text-muted-foreground mb-1">Comentário:</p>
                     <p className="text-sm">{review.comment}</p>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm font-medium text-muted-foreground mb-1">Justificativa da nota:</p>
                     <p className="text-sm">{review.justification}</p>

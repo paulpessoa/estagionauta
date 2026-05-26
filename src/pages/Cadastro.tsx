@@ -61,11 +61,7 @@ export default function Cadastro() {
       if (error) {
         setError(error.message)
       } else {
-        toast({
-          title: "Conta criada com sucesso!",
-          description: "Verifique seu email para confirmar sua conta.",
-        })
-        navigate('/login')
+        navigate('/login?registered=true')
       }
     } catch (error) {
       setError('Erro inesperado. Tente novamente.')

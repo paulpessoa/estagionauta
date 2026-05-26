@@ -83,7 +83,7 @@ const NavLinks = ({
           className={`transition-colors hover:text-foreground/80 text-foreground/60`}
           onClick={onLinkClick}
         >
-          Agências
+          Lista de Agências
         </Link>
         <Link
           to="/analise-curriculo"
@@ -408,7 +408,7 @@ export function Header() {
                           {profile.full_name || profile.email}
                         </p>
                         {profile.role !== "student" && (
-                           <Badge variant="secondary" className="text-xs w-fit">
+                          <Badge variant="secondary" className="text-xs w-fit">
                             {profile.role === "admin"
                               ? "Admin"
                               : profile.role === "moderator"

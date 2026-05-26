@@ -126,7 +126,7 @@ export function ResumeAnalysisForm({
     { title: "Momento Atual", description: "Sua situação atual", icon: Target },
     {
       title: "Vaga Específica",
-      description: "Opcional",
+      description: "Empresa e Requisitos",
       icon: GraduationCap
     },
     { title: "Currículo", description: "Upload do arquivo", icon: Upload }
@@ -363,18 +363,6 @@ export function ResumeAnalysisForm({
       case 2: // Vaga Específica (Opcional)
         return (
           <div className="space-y-6">
-            <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg">
-              <div className="flex items-start space-x-3">
-                <Target className="h-5 w-5 text-blue-600 mt-0.5" />
-                <div className="text-sm">
-                  <p className="text-blue-700 dark:text-blue-200">
-                    Se você tem uma vaga específica em mente, preencha as informações abaixo para analisarmos
-                    se seu currículo está adequado para ela.
-                  </p>
-                </div>
-              </div>
-            </div>
-
             <div className="space-y-4">
               <div>
                 <Label htmlFor="jobDescription">Descrição da vaga</Label>
@@ -409,11 +397,10 @@ export function ResumeAnalysisForm({
           <div className="space-y-6">
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-                isDragActive
-                  ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
-                  : "border-gray-300 hover:border-gray-400"
-              }`}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${isDragActive
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-950/20"
+                : "border-gray-300 hover:border-gray-400"
+                }`}
             >
               <input {...getInputProps()} />
               <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -529,16 +516,14 @@ export function ResumeAnalysisForm({
           return (
             <div
               key={index}
-              className={`flex flex-col items-center space-y-2 ${
-                index <= currentStep ? "text-blue-600" : "text-gray-400"
-              }`}
+              className={`flex flex-col items-center space-y-2 ${index <= currentStep ? "text-blue-600" : "text-gray-400"
+                }`}
             >
               <div
-                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  index <= currentStep
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-500"
-                }`}
+                className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${index <= currentStep
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-500"
+                  }`}
               >
                 <StepIcon className="h-4 w-4" />
               </div>
