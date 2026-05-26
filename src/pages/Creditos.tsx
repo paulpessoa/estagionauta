@@ -63,13 +63,13 @@ const subscriptionPlans = [
     name: 'Cosmonauta Pro',
     icon: Star,
     credits: 50,
-    price: 0.98,
+    price: 2.90,
+    annualPrice: 34.80,
     benefits: [
-      '50 créditos recorrentes mensais',
-      'Até 16 análises de currículo com IA',
-      'Acesso total ao Kanban de vagas',
-      'Suporte via e-mail em até 24h',
-      'Acesso gratuito à Extensão do Chrome'
+      '50 créditos por mês',
+      'Kanban de vagas completo',
+      'Suporte por e-mail',
+      'Sincronização premium com a Extensão'
     ],
     badge: 'Plano Pro',
     color: 'border-slate-200 dark:border-slate-800'
@@ -79,13 +79,13 @@ const subscriptionPlans = [
     name: 'Astronauta Pro',
     icon: Zap,
     credits: 150,
-    price: 2.49,
+    price: 5.90,
+    annualPrice: 70.80,
     benefits: [
-      '150 créditos recorrentes/mês',
-      'Até 50 análises de currículo/mês',
+      '150 créditos por mês',
       'Simulações de entrevista ilimitadas',
       'Geração de currículos ilimitada',
-      'Suporte prioritário via WhatsApp'
+      'Suporte prioritário'
     ],
     badge: 'Mais Popular',
     popular: true,
@@ -96,13 +96,13 @@ const subscriptionPlans = [
     name: 'Comandante Pro',
     icon: Crown,
     credits: 500,
-    price: 4.99,
+    price: 11.90,
+    annualPrice: 142.80,
     benefits: [
-      '500 créditos recorrentes/mês',
-      'Até 166 análises de currículo/mês',
-      'Simulações e gerações ilimitadas',
-      'Análise de vaga automática com IA',
-      'Acesso antecipado a novas ferramentas'
+      '500 créditos por mês',
+      'Todos os recursos ilimitados',
+      'Acesso antecipado a novidades',
+      'Assistente do Estagiário com IA'
     ],
     badge: 'Elite',
     color: 'border-purple-500'
@@ -240,7 +240,7 @@ export default function Creditos() {
                           : 'text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      Assinaturas Mensais
+                      Assinaturas Anuais
                       <span className="absolute -top-1.5 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-[9px] text-white px-2 py-0.5 rounded-full scale-90 border border-white dark:border-slate-800 font-bold">
                         Em Breve
                       </span>
@@ -334,14 +334,17 @@ export default function Creditos() {
                           <div>
                             <Separator className="my-4" />
                             <div className="text-2xl font-bold text-foreground mb-1">
-                              R$ {plan.price.toFixed(2).replace('.', ',')} / mês
+                              R$ {plan.price.toFixed(2).replace('.', ',')} / ano
+                            </div>
+                            <div className="text-xs text-muted-foreground mb-1">
+                              Equivalente a R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}/mês
                             </div>
                             
                             <div className="inline-flex items-center gap-1 mt-1 mb-4 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full text-[10px] font-bold border border-purple-100 dark:border-purple-900/30">
                               {(() => {
                                 const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 4.99 : 9.99;
-                                const disc = Math.round((1 - (plan.price / avulsoRef)) * 100);
-                                return `Economize ${disc}% vs. Avulso`;
+                                const disc = Math.round((1 - (plan.monthlyEquivalent / avulsoRef)) * 100);
+                                return `${disc}% mais barato que avulso`;
                               })()}
                             </div>
 

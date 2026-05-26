@@ -2,12 +2,11 @@ import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
-import { Check, Star, Zap, Crown, Sparkles } from 'lucide-react'
+import { Check, Star, Zap, Crown, Sparkles, Bot, Chrome } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
 import { apiClient } from '../lib/apiClient'
-import { StripeDebug } from '../components/StripeDebug'
 import { useNavigate } from 'react-router-dom'
 
 
@@ -17,7 +16,6 @@ const plans = [
     name: 'Cosmonauta',
     icon: Star,
     credits: 30,
-    analyses: 10,
     price: 1.99,
     popular: false
   },
@@ -26,7 +24,6 @@ const plans = [
     name: 'Astronauta',
     icon: Zap,
     credits: 80,
-    analyses: 26,
     price: 4.99,
     popular: true
   },
@@ -35,7 +32,6 @@ const plans = [
     name: 'Comandante',
     icon: Crown,
     credits: 200,
-    analyses: 66,
     price: 9.99,
     popular: false
   }
@@ -47,13 +43,12 @@ const subscriptionPlans = [
     name: 'Cosmonauta Pro',
     icon: Star,
     credits: 50,
-    price: 0.98,
+    price: 34.80,
+    monthlyEquivalent: 2.90,
     benefits: [
-      '50 créditos recorrentes mensais',
-      'Até 16 análises de currículo com IA',
-      'Acesso total ao Kanban de vagas',
-      'Suporte via e-mail em até 24h',
-      'Acesso gratuito à Extensão do Chrome'
+      'Kanban de vagas completo',
+      'Suporte por e-mail',
+      'Sincronização premium com a Extensão'
     ],
     badge: 'Plano Pro'
   },
@@ -62,13 +57,12 @@ const subscriptionPlans = [
     name: 'Astronauta Pro',
     icon: Zap,
     credits: 150,
-    price: 2.49,
+    price: 70.80,
+    monthlyEquivalent: 5.90,
     benefits: [
-      '150 créditos recorrentes/mês',
-      'Até 50 análises de currículo/mês',
       'Simulações de entrevista ilimitadas',
       'Geração de currículos ilimitada',
-      'Suporte prioritário via WhatsApp'
+      'Suporte prioritário'
     ],
     badge: 'Mais Popular',
     popular: true
@@ -78,13 +72,12 @@ const subscriptionPlans = [
     name: 'Comandante Pro',
     icon: Crown,
     credits: 500,
-    price: 4.99,
+    price: 142.80,
+    monthlyEquivalent: 11.90,
     benefits: [
-      '500 créditos recorrentes/mês',
-      'Até 166 análises de currículo/mês',
-      'Simulações e gerações ilimitadas',
-      'Análise de vaga automática com IA',
-      'Acesso antecipado a novas ferramentas'
+      'Todos os recursos ilimitados',
+      'Acesso antecipado a novidades',
+      'Assistente do Estagiário com IA'
     ],
     badge: 'Elite'
   }
@@ -188,7 +181,7 @@ export default function Precos() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Assinaturas Mensais
+              Assinaturas Anuais
               <span className="absolute -top-1.5 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-[10px] text-white px-2 py-0.5 rounded-full scale-90 border border-white dark:border-slate-800 font-bold">
                 Em Breve
               </span>
@@ -227,7 +220,7 @@ export default function Precos() {
                     </div>
                     <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400">
-                      Equivale a ~{Math.floor(plan.credits / 3)} análises completas
+                      {plan.credits} créditos • Válidos por 30 dias
                     </CardDescription>
                   </CardHeader>
                   
@@ -236,9 +229,6 @@ export default function Precos() {
                     <div className="text-center">
                       <div className="text-4xl font-bold text-gray-900 dark:text-white">
                         R$ {plan.price.toFixed(2).replace('.', ',')}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        {plan.credits} créditos inclusos
                       </div>
                     </div>
 
@@ -273,7 +263,7 @@ export default function Precos() {
           <div>
             <div className="text-center mb-8">
               <p className="text-sm text-muted-foreground">
-                Cobrança recorrente mensal • Cancele quando quiser diretamente no painel
+                Cobrança única anual • Créditos mensais recorrentes • Cancele a renovação quando quiser
               </p>
             </div>
 
@@ -306,7 +296,7 @@ export default function Precos() {
                       )}
                     </CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400">
-                      Receba {plan.credits} créditos mensais
+                      {plan.credits} créditos por mês
                     </CardDescription>
                   </CardHeader>
                   
@@ -316,16 +306,16 @@ export default function Precos() {
                       <div className="text-center mb-6 flex flex-col items-center">
                         <div className="text-4xl font-bold text-gray-900 dark:text-white">
                           R$ {plan.price.toFixed(2).replace('.', ',')}
-                          <span className="text-sm font-normal text-muted-foreground">/mês</span>
+                          <span className="text-sm font-normal text-muted-foreground">/ano</span>
                         </div>
-                        <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                          {plan.credits} créditos recorrentes
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                          Cobrado em uma única parcela • Equivalente a R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}/mês
                         </div>
                         <div className="inline-flex items-center gap-1.5 mt-3 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-xs font-bold border border-purple-100 dark:border-purple-900/30">
                           {(() => {
                             const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 4.99 : 9.99;
-                            const disc = Math.round((1 - (plan.price / avulsoRef)) * 100);
-                            return `Economize ${disc}% vs. Avulso`;
+                            const disc = Math.round((1 - (plan.monthlyEquivalent / avulsoRef)) * 100);
+                            return `${disc}% mais barato que avulso`;
                           })()}
                         </div>
                       </div>
@@ -360,113 +350,84 @@ export default function Precos() {
           </div>
         )}
 
-        {/* Tabela Comparativa de Limites */}
-        <div className="mt-20 max-w-5xl mx-auto">
+        {/* Como funciona */}
+        <div className="mt-20 max-w-4xl mx-auto">
           <h2 className="text-3xl font-bold text-center mb-4 text-gray-900 dark:text-white">
-            Comparativo de Recursos por Nível
+            Como funcionam os créditos?
           </h2>
           <p className="text-center text-gray-600 dark:text-gray-400 mb-10 max-w-xl mx-auto">
-            Entenda o que cada nível libera na plataforma para otimizar sua busca por estágio.
+            Cada ferramenta consome uma quantidade de créditos. Use como quiser, sem planos fixos.
           </p>
 
-          <div className="border rounded-2xl overflow-hidden shadow-sm bg-white dark:bg-gray-900">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[600px]">
-                <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-800/50 border-b">
-                    <th className="p-4 font-bold text-sm text-gray-700 dark:text-gray-300">Funcionalidade / Limite</th>
-                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Cosmonauta</th>
-                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Astronauta</th>
-                    <th className="p-4 font-bold text-sm text-center text-gray-700 dark:text-gray-300">Comandante</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y text-sm">
-                  <tr>
-                    <td className="p-4 font-medium">Créditos Inclusos (Recarga)</td>
-                    <td className="p-4 text-center">30 ⭐</td>
-                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">80 ⭐</td>
-                    <td className="p-4 text-center">200 ⭐</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Revisões de Currículo com IA (3 cr/cada)</td>
-                    <td className="p-4 text-center">Até 10/mês</td>
-                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Até 26/mês</td>
-                    <td className="p-4 text-center">Até 66/mês</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Simulações de Entrevista (2 cr/cada)</td>
-                    <td className="p-4 text-center">Até 5/mês</td>
-                    <td className="p-4 text-center">Até 20/mês</td>
-                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Gerações de Currículos (1 cr/cada)</td>
-                    <td className="p-4 text-center">Até 5/mês</td>
-                    <td className="p-4 text-center">Até 15/mês</td>
-                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Vagas no Kanban</td>
-                    <td className="p-4 text-center">Até 15 vagas</td>
-                    <td className="p-4 text-center">Até 50 vagas</td>
-                    <td className="p-4 text-center font-semibold text-blue-600 dark:text-blue-400">Ilimitado</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Lembretes de Agenda & Notificações</td>
-                    <td className="p-4 text-center text-red-500">❌ Não</td>
-                    <td className="p-4 text-center text-green-500 font-semibold">✅ Sim</td>
-                    <td className="p-4 text-center text-green-500 font-semibold">✅ Sim (Prioritário)</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4 font-medium">Integração com a Extensão do Chrome</td>
-                    <td className="p-4 text-center text-green-500 font-medium">✅ Gratuita</td>
-                    <td className="p-4 text-center text-green-500 font-medium">✅ Gratuita</td>
-                    <td className="p-4 text-center text-green-500 font-semibold">✅ Inteligência Artificial Auto-fill</td>
-                  </tr>
-                </tbody>
-              </table>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
+              <div className="text-3xl font-extrabold text-blue-600 mb-2">3 ⭐</div>
+              <p className="font-semibold text-sm">Análise de Currículo</p>
+              <p className="text-xs text-muted-foreground mt-1">Revisão completa com IA</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
+              <div className="text-3xl font-extrabold text-purple-600 mb-2">2 ⭐</div>
+              <p className="font-semibold text-sm">Simulador de Entrevista</p>
+              <p className="text-xs text-muted-foreground mt-1">5 rodadas de perguntas com IA</p>
+            </div>
+            <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
+              <div className="text-3xl font-extrabold text-green-600 mb-2">1 ⭐</div>
+              <p className="font-semibold text-sm">Gerador de Currículo</p>
+              <p className="text-xs text-muted-foreground mt-1">Geração automática de PDF</p>
             </div>
           </div>
         </div>
 
-        {/* Seção da Extensão do Chrome */}
+        {/* Em Breve: Extensão e Assistente IA */}
         <div className="mt-20 max-w-5xl mx-auto border-t pt-16">
-          <div className="grid md:grid-cols-2 gap-8 items-center bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8 rounded-3xl border border-blue-100 dark:border-gray-800">
-            <div>
+          <h2 className="text-3xl font-bold text-center mb-10 text-gray-900 dark:text-white">
+            Em Breve na Plataforma
+          </h2>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Extensão do Chrome */}
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-900 dark:to-gray-800 p-8 rounded-3xl border border-blue-100 dark:border-gray-800">
               <div className="inline-flex items-center gap-2 bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-300 px-3 py-1 rounded-full text-xs font-semibold mb-4">
-                <Sparkles className="h-3.5 w-3.5 text-blue-500 fill-blue-500" /> Em Breve: Extensão do Chrome
+                <Chrome className="h-3.5 w-3.5" /> Extensão do Chrome
               </div>
-              <h2 className="text-3xl font-extrabold mb-4 leading-tight">
-                Capture Vagas em 1 Clique direto no seu Navegador
-              </h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-6 text-sm leading-relaxed">
-                Nossa futura extensão gratuita do Chrome vai ajudar você a economizar tempo de preenchimento. 
-                Ao abrir a extensão em portais como LinkedIn, Gupy ou Cia de Talentos, ela captura os dados da vaga e os envia instantaneamente para o seu Kanban no Estagionauta.
+              <h3 className="text-xl font-extrabold mb-3 leading-tight">
+                Capture vagas e salve na hora
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                Capture dados do LinkedIn ou Gupy. Use o **modo gratuito** (salvando localmente com sua própria API Key de IA ou integrando ao Google Sheets) ou o **modo premium** sincronizado em nuvem no Estagionauta.
               </p>
-              <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500" />
-                  Captura automática de Título, Empresa, Requisitos e Link
+                  Grátis: LocalStorage + Google Sheets (Sua API Key)
                 </li>
                 <li className="flex items-center gap-2">
                   <Check className="h-4 w-4 text-green-500" />
-                  Sem redigitar ou copiar e colar
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  Gere currículos e cartas específicas para a vaga direto do dashboard
+                  Premium: Sincronização em nuvem e IA integrada
                 </li>
               </ul>
             </div>
-            
-            <div className="flex flex-col items-center justify-center p-6 bg-card border rounded-2xl shadow-sm text-center relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-xl"></div>
-              <Zap className="h-12 w-12 text-blue-500 mb-4 animate-bounce" />
-              <h3 className="font-bold text-lg mb-2">Busca de Vagas Descomplicada</h3>
-              <p className="text-xs text-muted-foreground max-w-xs mb-4">
-                Depois de salvar a vaga pela extensão, use o Simulador de Entrevistas e a Análise de IA na plataforma para aumentar suas chances de aprovação.
+
+            {/* Assistente do Estagiário */}
+            <div className="bg-gradient-to-br from-purple-50 to-fuchsia-50 dark:from-gray-900 dark:to-gray-800 p-8 rounded-3xl border border-purple-100 dark:border-gray-800">
+              <div className="inline-flex items-center gap-2 bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-300 px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                <Bot className="h-3.5 w-3.5" /> Assistente do Estagiário
+              </div>
+              <h3 className="text-xl font-extrabold mb-3 leading-tight">
+                Seu assistente pessoal com IA
+              </h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+                Um chat inteligente que tira dúvidas sobre processos seletivos, te ajuda a montar estratégias e revisa suas respostas.
               </p>
-              <Badge variant="outline" className="text-xs">Extensão Gratuita para Todos os Usuários</Badge>
+              <ul className="space-y-2 text-sm text-gray-700 dark:text-gray-300">
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  Disponível em planos futuros
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-green-500" />
+                  Integrado à extensão e à plataforma
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -536,9 +497,6 @@ export default function Precos() {
           </div>
         </div>
       </div>
-      
-      {/* Debug Stripe - Remover depois dos testes */}
-      <StripeDebug />
     </div>
   )
 }

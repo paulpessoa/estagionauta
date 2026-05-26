@@ -16,7 +16,6 @@ export interface StripePlan {
   name: string
   price: number
   credits: number
-  analyses: number
   stripePriceId: string
 }
 
@@ -27,7 +26,6 @@ export const STRIPE_PLANS: StripePlan[] = [
     name: 'Cosmonauta',
     price: 1.99,
     credits: 30,
-    analyses: 10,
     stripePriceId: ''
   },
   {
@@ -35,7 +33,6 @@ export const STRIPE_PLANS: StripePlan[] = [
     name: 'Astronauta',
     price: 4.99,
     credits: 80,
-    analyses: 26,
     stripePriceId: ''
   },
   {
@@ -43,7 +40,6 @@ export const STRIPE_PLANS: StripePlan[] = [
     name: 'Comandante',
     price: 9.99,
     credits: 200,
-    analyses: 66,
     stripePriceId: ''
   }
 ]
