@@ -12,6 +12,7 @@
     "test:e2e": "npx playwright test"
   },
   "dependencies": {
+    "@hello-pangea/dnd": "^18.0.1",
     "@hookform/resolvers": "^3.9.0",
     "@microsoft/clarity": "^1.0.0",
     "@radix-ui/react-accordion": "^1.2.0",

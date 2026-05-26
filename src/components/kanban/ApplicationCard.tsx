@@ -33,24 +33,24 @@ export interface ApplicationCardProps {
   onToggleReminder: (applicationId: string, reminderId: string) => void
   onDelete: (id: string) => void
   onEdit: (application: JobApplication) => void
+  provided?: any
 }
 
-export function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder, onDelete, onEdit }: ApplicationCardProps) {
+export function ApplicationCard({ application, onStatusChange, onAddReminder, onToggleReminder, onDelete, onEdit, provided }: ApplicationCardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-  const handleDragStart = (e: React.DragEvent) => {
-    e.dataTransfer.setData('applicationId', application.id)
-    e.dataTransfer.effectAllowed = 'move'
-  }
-
   return (
-    <Card 
-      className="cursor-pointer hover:shadow-md transition-shadow active:cursor-grabbing hover:border-primary/50"
-      draggable="true"
-      onDragStart={handleDragStart}
+    <div
+      ref={provided?.innerRef}
+      {...provided?.draggableProps}
+      {...provided?.dragHandleProps}
+      style={provided?.draggableProps?.style}
     >
+      <Card 
+        className="cursor-pointer hover:shadow-md transition-shadow active:cursor-grabbing hover:border-primary/50"
+      >
       <CardContent className="p-4">
         <div className="space-y-3">
           {/* Header */}
@@ -373,5 +373,6 @@ export function ApplicationCard({ application, onStatusChange, onAddReminder, on
         confirmText="Excluir"
       />
     </Card>
+    </div>
   )
 }

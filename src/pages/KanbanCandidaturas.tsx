@@ -14,6 +14,7 @@ import { AddReminderModal } from '@/components/modals/AddReminderModal'
 import { KanbanStats } from '@/components/kanban/KanbanStats'
 import { JobApplication, Reminder } from '@/types/kanban'
 import { apiClient } from '@/lib/apiClient'
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd'
 import { 
   Kanban, 
   Calendar as CalendarIcon, 
@@ -54,12 +55,16 @@ import { KanbanReactFlow } from '@/components/kanban/KanbanReactFlow'
 import { KanbanTable } from '@/components/kanban/KanbanTable'
 
 const statusConfig = {
-  interested: { label: 'Interessado', color: 'bg-gray-100 text-gray-800', icon: Eye },
-  applied: { label: 'Candidatado', color: 'bg-blue-100 text-blue-800', icon: FileText },
-  interview: { label: 'Entrevista', color: 'bg-yellow-100 text-yellow-800', icon: Users },
+  interested: { label: 'Interessado/Network', color: 'bg-gray-100 text-gray-800', icon: Eye },
+  applied: { label: 'Candidato', color: 'bg-blue-100 text-blue-800', icon: FileText },
   test: { label: 'Teste', color: 'bg-purple-100 text-purple-800', icon: Target },
+  group_dynamics: { label: 'Dinâmica em Grupo', color: 'bg-indigo-100 text-indigo-800', icon: Users },
+  interview: { label: 'Entrevista', color: 'bg-yellow-100 text-yellow-800', icon: Users },
+  cultural_fit: { label: 'Fit Cultural', color: 'bg-orange-100 text-orange-800', icon: Star },
+  resource: { label: 'Recurso', color: 'bg-cyan-100 text-cyan-800', icon: AlertCircle },
   offer: { label: 'Proposta', color: 'bg-green-100 text-green-800', icon: CheckCircle },
-  rejected: { label: 'Recusado', color: 'bg-red-100 text-red-800', icon: AlertCircle }
+  hired: { label: 'Contratado', color: 'bg-emerald-100 text-emerald-800', icon: CheckCircle },
+  rejected: { label: 'Reprovado/Feedback', color: 'bg-red-100 text-red-800', icon: AlertCircle }
 }
 
 export default function KanbanCandidaturas() {
@@ -71,6 +76,9 @@ export default function KanbanCandidaturas() {
   const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [filterStatus, setFilterStatus] = useState<string>('all')
+  const [filterPosition, setFilterPosition] = useState<string>('all')
+  const [sortBy, setSortBy] = useState<string>('appliedDateDesc')
+  const [reminderFilter, setReminderFilter] = useState<'today' | 'all_pending' | 'completed'>('today')
   const [searchTerm, setSearchTerm] = useState('')
   const [showReminders, setShowReminders] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -210,18 +218,6 @@ export default function KanbanCandidaturas() {
     }
   }
 
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault() // Necessário para permitir o drop
-  }
-
-  const handleDrop = (e: React.DragEvent, newStatus: JobApplication['status']) => {
-    e.preventDefault()
-    const applicationId = e.dataTransfer.getData('applicationId')
-    if (applicationId) {
-      updateApplicationStatus(applicationId, newStatus)
-    }
-  }
-
   const deleteApplication = async (id: string) => {
     try {
       await apiClient.delete(`/api/kanban/${id}`)
@@ -287,23 +283,113 @@ export default function KanbanCandidaturas() {
     setIsAddReminderModalOpen(true)
   }
 
+  // Drag and Drop End handler
+  const onDragEnd = async (result: any) => {
+    const { destination, source, draggableId } = result
+    if (!destination) return
+
+    if (
+      destination.droppableId === source.droppableId &&
+      destination.index === source.index
+    ) {
+      return
+    }
+
+    const newStatus = destination.droppableId as JobApplication['status']
+    const oldApplications = [...applications]
+
+    // Optimistic UI update
+    setApplications(prev => prev.map(app => 
+      app.id === draggableId ? { ...app, status: newStatus } : app
+    ))
+
+    try {
+      const updated = await apiClient.put<JobApplication>(`/api/kanban/${draggableId}`, { 
+        status: newStatus
+      })
+      setApplications(prev => prev.map(app => 
+        app.id === draggableId ? { ...app, status: updated.status, progress: updated.progress } : app
+      ))
+      toast.success(`Status atualizado para ${statusConfig[newStatus].label}`)
+    } catch (err) {
+      console.error('Erro ao atualizar status:', err)
+      toast.error('Não foi possível atualizar o status.')
+      setApplications(oldApplications)
+    }
+  }
+
+  const uniquePositions = Array.from(new Set(applications.map(app => app.position)))
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b))
+
   const filteredApplications = applications.filter(app => {
     const matchesStatus = filterStatus === 'all' || app.status === filterStatus
+    const matchesPosition = filterPosition === 'all' || app.position === filterPosition
     const matchesSearch = app.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          app.position.toLowerCase().includes(searchTerm.toLowerCase())
-    return matchesStatus && matchesSearch
+    return matchesStatus && matchesPosition && matchesSearch
+  })
+
+  const getNextReminderDate = (app: JobApplication) => {
+    const activeReminders = app.reminders?.filter(r => !r.completed) || []
+    if (activeReminders.length === 0) return Infinity
+    const nextReminder = activeReminders.reduce((earliest, current) => {
+      return new Date(current.date) < new Date(earliest.date) ? current : earliest
+    }, activeReminders[0])
+    return new Date(nextReminder.date).getTime()
+  }
+
+  const sortedApplications = [...filteredApplications].sort((a, b) => {
+    if (sortBy === 'appliedDateDesc') {
+      return new Date(b.appliedDate).getTime() - new Date(a.appliedDate).getTime()
+    }
+    if (sortBy === 'appliedDateAsc') {
+      return new Date(a.appliedDate).getTime() - new Date(b.appliedDate).getTime()
+    }
+    if (sortBy === 'progressDesc') {
+      return b.progress - a.progress
+    }
+    if (sortBy === 'progressAsc') {
+      return a.progress - b.progress
+    }
+    if (sortBy === 'nextReminder') {
+      return getNextReminderDate(a) - getNextReminderDate(b)
+    }
+    return 0
   })
 
   const getApplicationsByStatus = (status: JobApplication['status']) => {
-    return filteredApplications.filter(app => app.status === status)
+    return sortedApplications.filter(app => app.status === status)
   }
 
-  const todayReminders = applications
-    .flatMap(app => app.reminders)
-    .filter(reminder => !reminder.completed && 
-      (isSameDay(new Date(reminder.date), new Date()) || 
-       isBefore(new Date(reminder.date), new Date()))
-    )
+  const allRemindersMapped = applications.flatMap(app => 
+    (app.reminders || []).map(r => ({
+      ...r,
+      applicationId: app.id,
+      company: app.company,
+      position: app.position
+    }))
+  )
+
+  const activeTodayCount = allRemindersMapped.filter(r => 
+    !r.completed && (isSameDay(new Date(r.date), new Date()) || isBefore(new Date(r.date), new Date()))
+  ).length
+
+  const filteredReminders = allRemindersMapped.filter(reminder => {
+    const rDate = new Date(reminder.date)
+    const today = new Date()
+    
+    if (reminderFilter === 'today') {
+      return !reminder.completed && (isSameDay(rDate, today) || isBefore(rDate, today))
+    }
+    if (reminderFilter === 'all_pending') {
+      return !reminder.completed
+    }
+    if (reminderFilter === 'completed') {
+      return reminder.completed
+    }
+    return true
+  }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 
   return (
     <div className="min-h-screen bg-background">
@@ -313,7 +399,7 @@ export default function KanbanCandidaturas() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                Kanban de Candidaturas
+                Jornada de Candidaturas
               </h1>
               <p className="text-lg text-gray-600 dark:text-gray-300 mt-2">
                 Organize suas candidaturas e acompanhe seu progresso
@@ -326,7 +412,7 @@ export default function KanbanCandidaturas() {
                 className="flex items-center gap-2"
               >
                 <Bell className="h-4 w-4" />
-                Lembretes ({todayReminders.length})
+                Lembretes ({activeTodayCount})
               </Button>
               <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
                 <Button 
@@ -555,7 +641,7 @@ export default function KanbanCandidaturas() {
         </div>
 
         {/* Filters and Search */}
-        <div className="mb-6 flex flex-col md:flex-row gap-4">
+        <div className="mb-6 flex flex-col lg:flex-row gap-4">
           <div className="flex-1">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -567,19 +653,48 @@ export default function KanbanCandidaturas() {
               />
             </div>
           </div>
-          <Select value={filterStatus} onValueChange={setFilterStatus}>
-            <SelectTrigger className="w-full md:w-48">
-              <SelectValue placeholder="Filtrar por status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todos os status</SelectItem>
-              {Object.entries(statusConfig).map(([key, config]) => (
-                <SelectItem key={key} value={key}>
-                  {config.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          <div className="flex flex-wrap gap-2 lg:gap-4">
+            <Select value={filterStatus} onValueChange={setFilterStatus}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filtrar por status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos os status</SelectItem>
+                {Object.entries(statusConfig).map(([key, config]) => (
+                  <SelectItem key={key} value={key}>
+                    {config.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={filterPosition} onValueChange={setFilterPosition}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Filtrar por Vaga/Cargo" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as vagas</SelectItem>
+                {uniquePositions.map(pos => (
+                  <SelectItem key={pos} value={pos}>
+                    {pos}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full sm:w-48">
+                <SelectValue placeholder="Ordenar por" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="appliedDateDesc">Mais Recentes</SelectItem>
+                <SelectItem value="appliedDateAsc">Mais Antigas</SelectItem>
+                <SelectItem value="progressDesc">Progresso (Maior)</SelectItem>
+                <SelectItem value="progressAsc">Progresso (Menor)</SelectItem>
+                <SelectItem value="nextReminder">Próximo Lembrete</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Statistics */}
@@ -587,29 +702,87 @@ export default function KanbanCandidaturas() {
 
         {/* Reminders Panel */}
         {showReminders && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
-                Lembretes de Hoje
-              </CardTitle>
+          <Card className="mb-6 border-amber-500/20 shadow-sm animate-in fade-in slide-in-from-top-4 duration-200">
+            <CardHeader className="pb-3">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <CardTitle className="flex items-center gap-2 text-gray-900 dark:text-white">
+                  <Bell className="h-5 w-5 text-amber-500" />
+                  Painel de Lembretes
+                </CardTitle>
+                <div className="flex bg-gray-100 dark:bg-gray-800 p-1 rounded-lg self-start sm:self-auto">
+                  <Button 
+                    variant={reminderFilter === 'today' ? 'default' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setReminderFilter('today')}
+                    className="text-xs"
+                  >
+                    Hoje
+                  </Button>
+                  <Button 
+                    variant={reminderFilter === 'all_pending' ? 'default' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setReminderFilter('all_pending')}
+                    className="text-xs"
+                  >
+                    Pendentes
+                  </Button>
+                  <Button 
+                    variant={reminderFilter === 'completed' ? 'default' : 'ghost'} 
+                    size="sm" 
+                    onClick={() => setReminderFilter('completed')}
+                    className="text-xs"
+                  >
+                    Concluídos
+                  </Button>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              {todayReminders.length === 0 ? (
-                <p className="text-gray-500">Nenhum lembrete para hoje</p>
+              {filteredReminders.length === 0 ? (
+                <p className="text-gray-500 text-sm py-4 text-center">Nenhum lembrete nesta categoria.</p>
               ) : (
-                <div className="space-y-3">
-                  {todayReminders.slice(0, 5).map(reminder => (
-                    <div key={reminder.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{reminder.title}</p>
-                        <p className="text-sm text-gray-600">{reminder.description}</p>
-                        <p className="text-xs text-gray-500">
-                          {format(new Date(reminder.date), 'dd/MM/yyyy HH:mm', { locale: ptBR })}
+                <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
+                  {filteredReminders.map(reminder => (
+                    <div 
+                      key={reminder.id} 
+                      className={`flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-lg border gap-3 ${
+                        reminder.completed 
+                          ? 'bg-gray-50/50 dark:bg-gray-900/50 opacity-60 border-gray-100 dark:border-gray-800' 
+                          : 'bg-white dark:bg-gray-950 border-gray-200 dark:border-gray-800 hover:border-amber-500/30'
+                      }`}
+                    >
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <p className={`font-semibold text-sm ${reminder.completed ? 'line-through text-gray-500' : 'text-gray-900 dark:text-white'}`}>
+                            {reminder.title}
+                          </p>
+                          <Badge variant="outline" className="text-[10px]">
+                            {reminder.type === 'call' ? 'Ligação' :
+                             reminder.type === 'email' ? 'E-mail' :
+                             reminder.type === 'test' ? 'Teste' :
+                             reminder.type === 'interview' ? 'Entrevista' :
+                             reminder.type === 'follow-up' ? 'Acompanhamento' :
+                             reminder.type === 'deadline' ? 'Prazo' : reminder.type}
+                          </Badge>
+                          <span className="text-xs text-gray-500">
+                            • {reminder.position} na {reminder.company}
+                          </span>
+                        </div>
+                        {reminder.description && (
+                          <p className="text-xs text-gray-600 dark:text-gray-400">{reminder.description}</p>
+                        )}
+                        <p className="text-[10px] text-gray-500 flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {format(new Date(reminder.date), "dd 'de' MMMM 'às' HH:mm", { locale: ptBR })}
                         </p>
                       </div>
-                      <Button size="sm" variant="outline">
-                        Marcar como feito
+                      <Button 
+                        size="sm" 
+                        variant={reminder.completed ? 'secondary' : 'outline'}
+                        onClick={() => toggleReminderCompletion(reminder.applicationId, reminder.id)}
+                        className="self-end sm:self-auto text-xs shrink-0"
+                      >
+                        {reminder.completed ? 'Reabrir' : 'Concluir'}
                       </Button>
                     </div>
                   ))}
@@ -622,7 +795,7 @@ export default function KanbanCandidaturas() {
         {/* Kanban Board, Table or Flow */}
         {viewMode === 'table' ? (
           <KanbanTable
-            applications={filteredApplications}
+            applications={sortedApplications}
             onStatusChange={updateApplicationStatus}
             onDelete={deleteApplication}
             onEdit={(app) => {
@@ -709,59 +882,78 @@ export default function KanbanCandidaturas() {
             )}
           </div>
         ) : (
-          <div className="flex overflow-x-auto gap-6 pb-4 snap-x">
-            {Object.entries(statusConfig).map(([status, config]) => {
-              const StatusIcon = config.icon
-              const statusApplications = getApplicationsByStatus(status as JobApplication['status'])
-              
-              return (
-                <div 
-                  key={status} 
-                  className="space-y-4 min-w-[320px] snap-center bg-gray-50/50 dark:bg-gray-900/50 p-4 rounded-xl border-2 border-transparent transition-colors data-[drop=true]:border-primary/30"
-                  onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, status as JobApplication['status'])}
-                >
-                  <div className="flex items-center gap-2">
-                    <StatusIcon className="h-5 w-5" />
-                    <h3 className="font-semibold">{config.label}</h3>
-                    <Badge variant="secondary" className="ml-auto">
-                      {statusApplications.length}
-                    </Badge>
+          <DragDropContext onDragEnd={onDragEnd}>
+            <div className="flex overflow-x-auto gap-6 pb-4 snap-x">
+              {Object.entries(statusConfig).map(([status, config]) => {
+                const StatusIcon = config.icon
+                const statusApplications = getApplicationsByStatus(status as JobApplication['status'])
+                
+                return (
+                  <div 
+                    key={status} 
+                    className="flex flex-col min-w-[320px] max-w-[320px] snap-center bg-gray-50/50 dark:bg-gray-900/50 p-4 rounded-xl border border-gray-150 dark:border-gray-800"
+                  >
+                    <div className="flex items-center gap-2 mb-4">
+                      <StatusIcon className="h-4 w-4" />
+                      <h3 className="font-semibold text-sm truncate">{config.label}</h3>
+                      <Badge variant="secondary" className="ml-auto text-xs">
+                        {statusApplications.length}
+                      </Badge>
+                    </div>
+                    
+                    <Droppable droppableId={status}>
+                      {(provided, snapshot) => (
+                        <div
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          className={`flex-1 min-h-[450px] space-y-3 transition-colors rounded-lg p-1 ${
+                            snapshot.isDraggingOver ? 'bg-amber-500/5 dark:bg-amber-500/10 border border-dashed border-amber-500/30' : ''
+                          }`}
+                        >
+                          {statusApplications.map((application, index) => (
+                            <Draggable 
+                              key={application.id} 
+                              draggableId={application.id} 
+                              index={index}
+                            >
+                              {(provided, snapshot) => (
+                                <ApplicationCard 
+                                  application={application}
+                                  onStatusChange={updateApplicationStatus}
+                                  onAddReminder={handleAddReminder}
+                                  onToggleReminder={toggleReminderCompletion}
+                                  onDelete={deleteApplication}
+                                  onEdit={(app) => {
+                                    setEditingApplication(app)
+                                    setFormData({
+                                      company: app.company,
+                                      position: app.position,
+                                      description: app.description || '',
+                                      salary: app.salary || '',
+                                      location: app.location || '',
+                                      contactPerson: app.contactPerson || '',
+                                      contactEmail: app.contactEmail || '',
+                                      contactPhone: app.contactPhone || '',
+                                      website: app.website || '',
+                                      notes: app.notes || '',
+                                      tags: app.tags.join(', ')
+                                    })
+                                    setIsAddModalOpen(true)
+                                  }}
+                                  provided={provided}
+                                />
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                        </div>
+                      )}
+                    </Droppable>
                   </div>
-                  
-                  <div className="space-y-3">
-                    {statusApplications.map(application => (
-                      <ApplicationCard 
-                        key={application.id} 
-                        application={application}
-                        onStatusChange={updateApplicationStatus}
-                        onAddReminder={handleAddReminder}
-                        onToggleReminder={toggleReminderCompletion}
-                        onDelete={deleteApplication}
-                        onEdit={(app) => {
-                          setEditingApplication(app)
-                          setFormData({
-                            company: app.company,
-                            position: app.position,
-                            description: app.description || '',
-                            salary: app.salary || '',
-                            location: app.location || '',
-                            contactPerson: app.contactPerson || '',
-                            contactEmail: app.contactEmail || '',
-                            contactPhone: app.contactPhone || '',
-                            website: app.website || '',
-                            notes: app.notes || '',
-                            tags: app.tags.join(', ')
-                          })
-                          setIsAddModalOpen(true)
-                        }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+                )
+              })}
+            </div>
+          </DragDropContext>
         )}
       </div>
 
