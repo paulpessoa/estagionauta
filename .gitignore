@@ -87,3 +87,4 @@ playwright-report/
 api/test-results/
 .env.test
 
+scratch/
