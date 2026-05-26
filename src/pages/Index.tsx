@@ -122,6 +122,25 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Como Funciona Section */}
+      <section id="como-funciona" className="py-20 px-4 bg-white dark:bg-gray-800">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-slate-900 dark:text-white">
+              Como o Estagionauta Funciona?
+            </h2>
+            <p className="text-xl text-slate-800 dark:text-slate-200 max-w-2xl mx-auto">
+              Veja no vídeo abaixo como nossa plataforma vai impulsionar a sua carreira em poucos passos.
+            </p>
+          </div>
+          <div className="mx-auto max-w-4xl rounded-2xl overflow-hidden shadow-2xl aspect-video bg-slate-100 dark:bg-slate-900 flex flex-col items-center justify-center border-4 border-slate-200 dark:border-slate-700 relative group cursor-pointer">
+            <Youtube className="w-24 h-24 text-red-600 transition-transform group-hover:scale-110 z-10 drop-shadow-md" />
+            <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors"></div>
+            <p className="mt-4 font-semibold text-slate-600 dark:text-slate-400 z-10">Vídeo de Apresentação (Em Breve)</p>
+          </div>
+        </div>
+      </section>
+
       {/* Services Section */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-900">
         <div className="max-w-6xl mx-auto">

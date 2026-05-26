@@ -9,6 +9,20 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { Filter, X } from 'lucide-react'
 
+const agencyTypeLabels: Record<string, string> = {
+  faculdade: 'Faculdade/Universidade',
+  consultoria: 'Consultoria',
+  agencia_privada: 'Agência Privada',
+  orgao_publico: 'Órgão Público',
+  instituto: 'Instituto',
+  fundacao: 'Fundação',
+  outro: 'Outro',
+  startup: 'Startup',
+  remote: 'Remoto'
+}
+
+const getAgencyTypeLabel = (type: string) => agencyTypeLabels[type] || type
+
 export interface FilterState {
   search: string
   addressSearch: string
@@ -174,7 +188,7 @@ export function AgencyFilterSidebar({
               <SelectContent>
                 <SelectItem value="all">Todos os tipos</SelectItem>
                 {types.map((type) => (
-                  <SelectItem key={type} value={type}>{type}</SelectItem>
+                  <SelectItem key={type} value={type}>{getAgencyTypeLabel(type)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

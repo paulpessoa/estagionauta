@@ -7,13 +7,13 @@ import { useAuth } from '@/hooks/useAuth'
 import { useCredits } from '@/hooks/useCredits'
 import { useToast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/apiClient'
-import { 
-  Star, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
-  Sparkles, 
-  Coins, 
-  History, 
+import {
+  Star,
+  ArrowUpRight,
+  ArrowDownLeft,
+  Sparkles,
+  Coins,
+  History,
   ShoppingBag,
   Zap,
   Crown,
@@ -142,7 +142,7 @@ export default function Creditos() {
               Gerencie seus créditos, compre recargas e acompanhe seu histórico de uso.
             </p>
           </div>
-          
+
           <div className="bg-card border rounded-xl p-4 flex items-center gap-4 shadow-sm w-fit">
             <div className="p-3 bg-yellow-500/10 rounded-lg text-yellow-500">
               <Coins className="h-6 w-6 fill-yellow-500" />
@@ -157,39 +157,29 @@ export default function Creditos() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Coluna 1 & 2: Comprar Créditos */}
           <div className="lg:col-span-2 space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <ShoppingBag className="h-5 w-5 text-primary" />
-                  Comprar Pacotes de Créditos
-                </CardTitle>
-                <CardDescription>
-                  Adquira créditos avulsos para usar quando quiser. Seus créditos não expiram.
-                </CardDescription>
-              </CardHeader>
+            <Card className="pt-6">
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {packages.map((pkg) => {
                     const IconComponent = pkg.icon
                     return (
-                      <div 
-                        key={pkg.id} 
-                        className={`border rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:shadow-md ${pkg.color} ${
-                          pkg.popular ? 'bg-blue-50/10 dark:bg-blue-950/10' : 'bg-card'
-                        }`}
+                      <div
+                        key={pkg.id}
+                        className={`border rounded-2xl p-5 flex flex-col justify-between relative transition-all duration-300 hover:shadow-md ${pkg.color} ${pkg.popular ? 'bg-blue-50/10 dark:bg-blue-950/10' : 'bg-card'
+                          }`}
                       >
                         {pkg.popular && (
                           <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white">
                             Mais Popular
                           </Badge>
                         )}
-                        
+
                         <div>
                           <div className="flex justify-between items-start mb-4">
                             <h3 className="font-bold text-lg">{pkg.name}</h3>
                             <IconComponent className="h-6 w-6 text-primary" />
                           </div>
-                          
+
                           <div className="text-3xl font-extrabold text-foreground mb-1">
                             {pkg.credits} ⭐
                           </div>
@@ -198,11 +188,14 @@ export default function Creditos() {
 
                         <div>
                           <Separator className="my-4" />
-                          <div className="text-2xl font-bold text-foreground mb-4">
+                          <div className="text-2xl font-bold text-foreground mb-1">
                             R$ {pkg.price.toFixed(2).replace('.', ',')}
                           </div>
-                          
-                          <Button 
+                          <div className="text-xs text-muted-foreground font-medium mb-4">
+                            Pagamento Único
+                          </div>
+
+                          <Button
                             className="w-full"
                             variant={pkg.popular ? 'default' : 'outline'}
                             onClick={() => handlePurchase(pkg.id)}
@@ -266,9 +259,8 @@ export default function Creditos() {
                       return (
                         <div key={tx.id} className="flex justify-between items-start gap-3 p-3 rounded-lg border bg-card hover:bg-muted/30 transition-colors">
                           <div className="flex items-start gap-3">
-                            <div className={`p-2 rounded-full mt-0.5 ${
-                              isPositive ? 'bg-green-100 text-green-700 dark:bg-green-950/30' : 'bg-red-100 text-red-700 dark:bg-red-950/30'
-                            }`}>
+                            <div className={`p-2 rounded-full mt-0.5 ${isPositive ? 'bg-green-100 text-green-700 dark:bg-green-950/30' : 'bg-red-100 text-red-700 dark:bg-red-950/30'
+                              }`}>
                               {isPositive ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownLeft className="h-4 w-4" />}
                             </div>
                             <div>
@@ -276,7 +268,7 @@ export default function Creditos() {
                               <span className="text-xs text-muted-foreground">{formatDate(tx.created_at)}</span>
                             </div>
                           </div>
-                          
+
                           <span className={`font-bold text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
                             {isPositive ? '+' : ''}{tx.amount} ⭐
                           </span>

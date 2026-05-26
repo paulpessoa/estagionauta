@@ -246,16 +246,16 @@ export function ResumeAnalysisForm({
                 className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2"
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="yes" id="internship1" />
-                  <Label htmlFor="internship1">Sim, já fiz estágio</Label>
+                  <RadioGroupItem value="first" id="internship1" />
+                  <Label htmlFor="internship1">Buscando primeiro estágio</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="no" id="internship2" />
-                  <Label htmlFor="internship2">Não, nunca fiz estágio</Label>
+                  <RadioGroupItem value="past" id="internship2" />
+                  <Label htmlFor="internship2">Já estagiou</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="looking" id="internship3" />
-                  <Label htmlFor="internship3">Não, mas estou procurando</Label>
+                  <RadioGroupItem value="current" id="internship3" />
+                  <Label htmlFor="internship3">Estagiando atualmente</Label>
                 </div>
               </RadioGroup>
             </div>

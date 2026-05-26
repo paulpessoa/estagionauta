@@ -41,6 +41,7 @@ export default function CalculadoraRecessoPage() {
     diasRecesso: number
     valorRecesso: number
     periodoRecesso: string
+    mesesTrabalhados: number
   } | null>(null)
 
   const calculateRecesso = () => {
@@ -67,7 +68,8 @@ export default function CalculadoraRecessoPage() {
     setResult({
       diasRecesso,
       valorRecesso,
-      periodoRecesso: `${diasRecesso} dias corridos`
+      periodoRecesso: `${diasRecesso} dias corridos`,
+      mesesTrabalhados: monthsWorked
     })
     setAiComment(null)
   }
@@ -280,15 +282,19 @@ export default function CalculadoraRecessoPage() {
                   </div>
 
                   <div className="bg-purple-50 dark:bg-purple-950/30 p-4 rounded-lg">
-                    <h4 className="font-semibold mb-2">Detalhes do Cálculo</h4>
-                    <ul className="text-sm space-y-1 text-muted-foreground">
-                      <li>• A cada 12 meses: 30 dias de recesso</li>
-                      <li>
-                        • Valor diário: R${" "}
-                        {(parseFloat(formData.salario) / 30).toFixed(2)}
-                      </li>
-                      <li>• Recesso remunerado conforme a bolsa-auxílio</li>
-                    </ul>
+                    <h4 className="font-semibold mb-2">Detalhes e Fórmula de Cálculo</h4>
+                    <div className="text-sm space-y-2 text-muted-foreground">
+                      <p><strong>Fórmula base da lei:</strong></p>
+                      <ul className="list-none space-y-1 mb-3 text-xs md:text-sm bg-white dark:bg-gray-900 p-3 rounded border">
+                        <li><code>Dias = (Meses Trabalhados ÷ 12) × 30</code></li>
+                        <li><code>Valor = Dias × (Salário Mensal ÷ 30)</code></li>
+                      </ul>
+                      <p><strong>Aplicado ao seu caso:</strong></p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>Meses contabilizados: {result.mesesTrabalhados} meses.</li>
+                        <li>Valor diário calculado: R$ {(parseFloat(formData.salario) / 30).toFixed(2)}.</li>
+                      </ul>
+                    </div>
                   </div>
 
                   {aiComment ? (
@@ -355,10 +361,14 @@ export default function CalculadoraRecessoPage() {
                   </div>
                   {/* Disclaimer below buttons */}
                   {result && (
-                    <p className="mt-4 text-center text-sm text-muted-foreground italic">
-                      O resultado deste cálculo é apenas uma sugestão para
-                      apoiar sua negociação de folgas e férias. Aproveite!
-                    </p>
+                    <div className="mt-4 text-center">
+                      <p className="text-sm text-muted-foreground italic font-medium">
+                        O resultado deste cálculo é uma estimativa baseada na Lei nº 11.788/2008.
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Valores exatos podem variar devido a encargos retidos ou acordos corporativos específicos com a concedente.
+                      </p>
+                    </div>
                   )}
                 </CardContent>
               </Card>
@@ -436,16 +446,111 @@ export default function CalculadoraRecessoPage() {
     newWindow.document.write(`
       <html>
         <head>
-          <title>Recesso PDF</title>
+          <title>Recesso de Estágio - Estagionauta</title>
           <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            .result-container { background: #f9fafb; padding: 20px; border-radius: 8px; }
-            h4 { color: #6b21a8; }
+            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+            body { 
+              font-family: 'Inter', sans-serif; 
+              padding: 40px; 
+              color: #1f2937;
+              background-color: #ffffff;
+            }
+            .header {
+              text-align: center;
+              margin-bottom: 30px;
+              border-bottom: 2px solid #e5e7eb;
+              padding-bottom: 20px;
+            }
+            .header h1 {
+              color: #4f46e5;
+              margin: 0;
+              font-size: 24px;
+            }
+            .header p {
+              color: #6b7280;
+              margin-top: 5px;
+              font-size: 14px;
+            }
+            .result-container { 
+              padding: 20px 0; 
+            }
+            .grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr;
+              gap: 20px;
+              margin-bottom: 20px;
+            }
+            .card-box {
+              background-color: #f3f4f6;
+              padding: 20px;
+              border-radius: 8px;
+              border: 1px solid #e5e7eb;
+            }
+            .card-box h3 {
+              margin: 0 0 10px 0;
+              font-size: 14px;
+              color: #4b5563;
+              text-transform: uppercase;
+              letter-spacing: 0.05em;
+            }
+            .card-box p.value {
+              font-size: 28px;
+              font-weight: 700;
+              margin: 0;
+              color: #111827;
+            }
+            h4 { 
+              color: #4338ca; 
+              font-size: 18px;
+              margin-bottom: 10px;
+            }
+            .details {
+              background-color: #eef2ff;
+              padding: 20px;
+              border-radius: 8px;
+              margin-bottom: 20px;
+            }
+            .disclaimer {
+              margin-top: 40px;
+              padding-top: 20px;
+              border-top: 1px solid #e5e7eb;
+              font-size: 12px;
+              color: #6b7280;
+              text-align: center;
+              font-style: italic;
+            }
+            /* Hide buttons from print */
+            button, .flex.space-x-2 { display: none !important; }
+            svg { display: none !important; } /* hide icons if they break */
           </style>
         </head>
         <body>
-          <div class="result-container">
-            ${printContent.innerHTML}
+          <div class="header">
+            <h1>Relatório de Recesso de Estágio</h1>
+            <p>Gerado pelo Estagionauta</p>
+          </div>
+          
+          <div class="grid">
+            <div class="card-box">
+              <h3>Dias a Receber</h3>
+              <p class="value">${result.diasRecesso} dias</p>
+            </div>
+            <div class="card-box">
+              <h3>Valor Financeiro</h3>
+              <p class="value">R$ ${result.valorRecesso.toFixed(2)}</p>
+            </div>
+          </div>
+          
+          <div class="details">
+            <h4>Fórmula e Composição</h4>
+            <p><strong>Meses trabalhados:</strong> ${result.mesesTrabalhados}</p>
+            <p><strong>Salário mensal base:</strong> R$ ${formData.salario}</p>
+            <p><strong>Cálculo:</strong> (${result.mesesTrabalhados} / 12) * 30 dias de recesso garantidos pela Lei.</p>
+          </div>
+          
+          <div class="disclaimer">
+            <p>Este cálculo é uma estimativa matemática baseada na Lei nº 11.788/2008.</p>
+            <p>Aconselhamos verificar possíveis descontos ou particularidades junto à concedente do estágio ou instituição de ensino.</p>
           </div>
           <script>
             window.onload = function() {

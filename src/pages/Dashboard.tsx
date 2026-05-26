@@ -31,6 +31,32 @@ export default function Dashboard() {
     enabled: !!user?.id
   })
 
+  const { data: simulationsCount = 0 } = useQuery({
+    queryKey: ['user-simulations-count', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0
+      const { count } = await supabase
+        .from('interview_simulations')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+      return count || 0
+    },
+    enabled: !!user?.id
+  })
+
+  const { data: resumesCount = 0 } = useQuery({
+    queryKey: ['user-resumes-count', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return 0
+      const { count } = await supabase
+        .from('generated_resumes')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+      return count || 0
+    },
+    enabled: !!user?.id
+  })
+
   const { data: recentAnalyses = [] } = useQuery({
     queryKey: ['recent-analyses', user?.id],
     queryFn: async () => {
@@ -90,16 +116,31 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Plano</CardTitle>
+              <Star className="h-4 w-4 text-muted-foreground" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-xl md:text-2xl font-bold capitalize">
+                {profile?.subscription_tier || 'Gratuito'}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                plano atual
+              </p>
+            </CardContent>
+          </Card>
+
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Créditos</CardTitle>
               <CreditCard className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{profile?.credits || 0}</div>
+              <div className="text-xl md:text-2xl font-bold">{profile?.credits || 0}</div>
               <p className="text-xs text-muted-foreground">
-                créditos disponíveis
+                disponíveis
               </p>
             </CardContent>
           </Card>
@@ -110,37 +151,35 @@ export default function Dashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{analysisCount}</div>
+              <div className="text-xl md:text-2xl font-bold">{analysisCount}</div>
               <p className="text-xs text-muted-foreground">
-                currículos analisados
+                feitas
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Plano</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Simulações</CardTitle>
+              <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold capitalize">
-                {profile?.subscription_status || 'Free'}
-              </div>
+              <div className="text-xl md:text-2xl font-bold">{simulationsCount}</div>
               <p className="text-xs text-muted-foreground">
-                plano atual
+                realizadas
               </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Progresso</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Currículos</CardTitle>
+              <Award className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">85%</div>
+              <div className="text-xl md:text-2xl font-bold">{resumesCount}</div>
               <p className="text-xs text-muted-foreground">
-                perfil completo
+                gerados
               </p>
             </CardContent>
           </Card>

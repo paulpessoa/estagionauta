@@ -590,15 +590,60 @@ export default function ModeracaoAgencias() {
 }
 
 function FeedbackCard({ feedback }: { feedback: any }) {
+  const [isReplying, setIsReplying] = useState(false)
+  const [replyMessage, setReplyMessage] = useState('')
+  const [isSending, setIsSending] = useState(false)
+  const [status, setStatus] = useState(feedback.status || 'pending')
+
+  const handleSendReply = async () => {
+    if (!replyMessage.trim()) {
+      toast.error('Digite uma mensagem para responder.')
+      return
+    }
+
+    if (!feedback.email) {
+      toast.error('Este feedback não possui um e-mail associado.')
+      return
+    }
+
+    setIsSending(true)
+    try {
+      const response = await apiClient('/admin/reply-email', {
+        method: 'POST',
+        body: JSON.stringify({
+          feedbackId: feedback.id,
+          toEmail: feedback.email,
+          subject: 'Resposta ao seu feedback - Estagionauta',
+          message: replyMessage,
+        })
+      })
+
+      if (response.error) throw new Error(response.error)
+
+      toast.success('Resposta enviada com sucesso!')
+      setStatus('replied')
+      setIsReplying(false)
+      setReplyMessage('')
+    } catch (err) {
+      console.error('Erro ao enviar resposta:', err)
+      toast.error('Erro ao enviar resposta ao usuário.')
+    } finally {
+      setIsSending(false)
+    }
+  }
+
   const stars = Array.from({ length: 5 }, (_, i) => i + 1)
   return (
-    <Card className="hover:shadow-md transition-shadow">
+    <Card className={`transition-shadow ${status === 'replied' ? 'opacity-80' : 'hover:shadow-md'}`}>
       <CardHeader className="pb-2">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
           <div>
             <CardTitle className="text-md flex items-center gap-2">
               <Mail className="h-4 w-4 text-muted-foreground" />
               <span>{feedback.email || 'Anônimo'}</span>
+              {status === 'replied' && (
+                <Badge variant="outline" className="ml-2 text-green-600 border-green-200 bg-green-50">Respondido</Badge>
+              )}
             </CardTitle>
             <CardDescription className="text-xs mt-1 flex items-center gap-1">
               <Calendar className="h-3.5 w-3.5 mr-1 text-muted-foreground" />
@@ -623,9 +668,38 @@ function FeedbackCard({ feedback }: { feedback: any }) {
         </div>
       </CardHeader>
       <CardContent className="text-xs">
-        <div className="bg-muted/40 p-3 rounded-lg border border-border/50">
+        <div className="bg-muted/40 p-3 rounded-lg border border-border/50 mb-3">
           <p className="text-gray-700 dark:text-gray-300 italic">{feedback.comment}</p>
         </div>
+
+        {feedback.email && status !== 'replied' && (
+          <div className="flex flex-col gap-2 mt-2">
+            {!isReplying ? (
+              <Button variant="outline" size="sm" className="w-fit" onClick={() => setIsReplying(true)}>
+                <MessageSquare className="h-4 w-4 mr-2" />
+                Responder
+              </Button>
+            ) : (
+              <div className="space-y-3 p-3 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/30 rounded-md">
+                <p className="font-medium text-blue-800 dark:text-blue-300">Resposta via E-mail para {feedback.email}</p>
+                <textarea 
+                  className="w-full p-2 text-sm rounded-md border min-h-[80px]"
+                  placeholder="Escreva sua resposta..."
+                  value={replyMessage}
+                  onChange={(e) => setReplyMessage(e.target.value)}
+                />
+                <div className="flex items-center gap-2">
+                  <Button size="sm" disabled={isSending} onClick={handleSendReply}>
+                    {isSending ? 'Enviando...' : 'Enviar Resposta'}
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => setIsReplying(false)}>
+                    Cancelar
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   )

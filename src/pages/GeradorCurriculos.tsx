@@ -75,7 +75,16 @@ export default function GeradorCurriculos() {
     linkedin: "",
     github: "",
     summary: "",
-    experiences: [],
+    experiences: [
+      {
+        company: "",
+        position: "",
+        startDate: "",
+        endDate: "",
+        current: false,
+        description: ""
+      }
+    ],
     education: [],
     skills: [],
     languages: [],
@@ -572,7 +581,7 @@ export default function GeradorCurriculos() {
                       </TabsList>
                     </div>
 
-                    <ScrollArea className="max-h-[60vh] p-6">
+                    <ScrollArea className="h-[70vh] p-6">
                       {/* TAB 1: PERSONAL INFO */}
                       <TabsContent value="personal" className="space-y-4 mt-0">
                         <h3 className="text-lg font-bold border-b pb-2 mb-4">
@@ -690,6 +699,7 @@ export default function GeradorCurriculos() {
                           <Textarea
                             id="summary"
                             rows={4}
+                            maxLength={1000}
                             value={formData.summary}
                             onChange={(e) =>
                               setFormData((prev) => ({
@@ -793,6 +803,7 @@ export default function GeradorCurriculos() {
                                   <div className="space-y-2">
                                     <Label>Data de Início *</Label>
                                     <Input
+                                      type="month"
                                       value={exp.startDate}
                                       onChange={(e) =>
                                         handleExperienceChange(
@@ -801,15 +812,15 @@ export default function GeradorCurriculos() {
                                           e.target.value
                                         )
                                       }
-                                      placeholder="ex: Jan de 2023"
                                     />
                                   </div>
                                   <div className="space-y-2">
                                     <Label>Data de Fim (ou "Atual")</Label>
                                     <Input
+                                      type="month"
                                       disabled={exp.current}
                                       value={
-                                        exp.current ? "Atual" : exp.endDate
+                                        exp.current ? "" : exp.endDate
                                       }
                                       onChange={(e) =>
                                         handleExperienceChange(
@@ -818,7 +829,6 @@ export default function GeradorCurriculos() {
                                           e.target.value
                                         )
                                       }
-                                      placeholder="ex: Dez de 2024"
                                     />
                                   </div>
                                 </div>
@@ -849,6 +859,7 @@ export default function GeradorCurriculos() {
                                   </Label>
                                   <Textarea
                                     rows={3}
+                                    maxLength={1000}
                                     value={exp.description}
                                     onChange={(e) =>
                                       handleExperienceChange(
@@ -971,6 +982,7 @@ export default function GeradorCurriculos() {
                                     <div className="space-y-2">
                                       <Label>Data de Início *</Label>
                                       <Input
+                                        type="month"
                                         value={edu.startDate}
                                         onChange={(e) =>
                                           handleEducationChange(
@@ -979,15 +991,15 @@ export default function GeradorCurriculos() {
                                             e.target.value
                                           )
                                         }
-                                        placeholder="ex: Jan/2021"
                                       />
                                     </div>
                                     <div className="space-y-2">
                                       <Label>Conclusão</Label>
                                       <Input
+                                        type="month"
                                         disabled={edu.current}
                                         value={
-                                          edu.current ? "Cursando" : edu.endDate
+                                          edu.current ? "" : edu.endDate
                                         }
                                         onChange={(e) =>
                                           handleEducationChange(
@@ -996,7 +1008,6 @@ export default function GeradorCurriculos() {
                                             e.target.value
                                           )
                                         }
-                                        placeholder="ex: Dez/2024"
                                       />
                                     </div>
                                   </div>

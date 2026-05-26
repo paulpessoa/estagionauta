@@ -22,7 +22,6 @@ import { cn } from '@/lib/utils'
 
 const reviewSchema = z.object({
   rating: z.number().min(1, 'A nota é obrigatória.').max(5),
-  title: z.string().min(5, 'O título deve ter pelo menos 5 caracteres.').max(100),
   comment: z.string().min(20, 'O comentário deve ter pelo menos 20 caracteres.').max(1000),
   justification: z.string().min(10, 'A justificativa deve ter pelo menos 10 caracteres.').max(500),
 });
@@ -42,7 +41,7 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
   const [loading, setLoading] = useState(false)
   const { control, handleSubmit, register, formState: { errors }, reset } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: { rating: 0, title: '', comment: '', justification: '' },
+    defaultValues: { rating: 0, comment: '', justification: '' },
   });
 
   const onSubmit = async (data: ReviewFormData) => {
@@ -72,7 +71,6 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
         agency_id: agencyId,
         user_id: user.id,
         rating: data.rating,
-        title: data.title,
         comment: data.comment,
         justification: data.justification,
         status: 'pending' // Aguardando moderação
@@ -127,12 +125,6 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
               )}
             />
             {errors.rating && <p className="text-red-500 text-sm mt-1">{errors.rating.message}</p>}
-          </div>
-
-          <div>
-            <Label htmlFor="title">Título da sua avaliação *</Label>
-            <Input id="title" {...register('title')} placeholder="Ex: Ótima agência para área de TI" />
-            {errors.title && <p className="text-red-500 text-sm mt-1">{errors.title.message}</p>}
           </div>
 
           <div>

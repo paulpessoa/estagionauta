@@ -86,27 +86,19 @@ const NavLinks = ({
           Lista de Agências
         </Link>
         <Link
-          to="/analise-curriculo"
-          className={`transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1`}
+          to="/simulador-entrevistas"
+          className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
         >
-          Análise de Currículo
-          <Badge
-            variant="secondary"
-            className="text-xs bg-green-100 text-green-800"
-          >
-            com IA
-          </Badge>
-          {!isSupabaseAvailable && (
-            <AlertCircle className="h-3 w-3 text-yellow-500" />
-          )}
+          <Sparkles className="h-4 w-4" />
+          Simulador de Entrevistas
         </Link>
         <Link
-          to="/calculadora"
-          className={`transition-colors hover:text-foreground/80 text-foreground/60`}
+          to="/precos"
+          className="transition-colors hover:text-foreground/80 text-foreground/60"
           onClick={onLinkClick}
         >
-          Calculadora de Recesso
+          Planos
         </Link>
       </div>
       <AuthRequiredModal
