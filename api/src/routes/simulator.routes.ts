@@ -339,26 +339,61 @@ app.delete('/:id', authMiddleware, async (c) => {
   }
 });
 
-// POST /api/simulator/tts - Generate Text-to-Speech audio
+// POST /api/simulator/tts - Generate Text-to-Speech audio (with Supabase Storage cache)
 app.post('/tts', authMiddleware, zValidator('json', z.object({ 
   text: z.string().min(1),
   voice: z.string().optional()
 })), async (c) => {
   const { text, voice } = c.req.valid('json');
-  const selectedVoice = (voice && ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'].includes(voice)) ? voice : 'nova';
+  const VALID_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
+  const selectedVoice = (voice && VALID_VOICES.includes(voice)) ? voice : 'nova';
+
+  // Build a deterministic cache key from content
+  const { createHash } = await import('crypto');
+  const cacheKey = createHash('sha256').update(`${selectedVoice}:${text}`).digest('hex');
+  const storagePath = `tts-cache/${cacheKey}.mp3`;
+  const BUCKET = 'simulator-audio';
 
   try {
+    // 1. Check cache in Supabase Storage
+    const { data: cached } = await supabaseAdmin.storage
+      .from(BUCKET)
+      .download(storagePath);
+
+    if (cached) {
+      // Cache hit – return stored audio directly
+      const arrayBuffer = await cached.arrayBuffer();
+      c.header('Content-Type', 'audio/mpeg');
+      c.header('Content-Length', arrayBuffer.byteLength.toString());
+      c.header('X-Cache', 'HIT');
+      return c.body(arrayBuffer);
+    }
+  } catch {
+    // Cache miss or bucket error – proceed to generate
+  }
+
+  try {
+    // 2. Generate audio via OpenAI
     const mp3 = await openai.audio.speech.create({
-      model: "tts-1",
-      voice: selectedVoice as any, // "alloy", "echo", "fable", "onyx", "nova", and "shimmer" (Nova is energetic/animated)
+      model: 'tts-1',
+      voice: selectedVoice as any,
       input: text,
     });
-    
+
     const arrayBuffer = await mp3.arrayBuffer();
-    
+
+    // 3. Store in Supabase Storage for future requests (fire-and-forget)
+    supabaseAdmin.storage
+      .from(BUCKET)
+      .upload(storagePath, arrayBuffer, {
+        contentType: 'audio/mpeg',
+        upsert: false,
+      })
+      .catch((err) => console.error('TTS cache upload failed:', err));
+
     c.header('Content-Type', 'audio/mpeg');
     c.header('Content-Length', arrayBuffer.byteLength.toString());
-    
+    c.header('X-Cache', 'MISS');
     return c.body(arrayBuffer);
   } catch (err) {
     console.error('Error generating TTS:', err);

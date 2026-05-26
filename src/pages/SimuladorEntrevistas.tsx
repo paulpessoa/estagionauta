@@ -50,7 +50,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate, useParams } from "react-router-dom"
 import { TypewriterText } from "@/components/simulator/TypewriterText"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { supabase } from "@/integrations/supabase/client"
+// supabase client removed – auth token handled by apiClient internally
 
 export default function SimuladorEntrevistas() {
   const [currentView, setCurrentView] = useState<
@@ -74,6 +74,7 @@ export default function SimuladorEntrevistas() {
   const [jobTitle, setJobTitle] = useState("")
   const [jobDescription, setJobDescription] = useState("")
   const [interviewerType, setInterviewerType] = useState("behavioral")
+  const [voiceGender, setVoiceGender] = useState<'male' | 'female'>('female')
 
   // Chat input
   const [answerInput, setAnswerInput] = useState("")
@@ -144,44 +145,29 @@ export default function SimuladorEntrevistas() {
     }
   }
 
-  const speakText = async (text: string, isOnDemand = false) => {
+  // voice: male = onyx, female = nova (default). Resolved from voiceGender state.
+  const resolveVoice = (gender: 'male' | 'female') =>
+    gender === 'male' ? 'onyx' : 'nova'
+
+  const speakText = async (text: string, _isOnDemand = false) => {
     if (!isAudioEnabled) return
 
-    // Se o áudio estiver tocando E o botão for pressionado novamente, nós paramos o áudio (toggle)
     if (isPlayingAudio && audioRef.current) {
       audioRef.current.pause()
       setIsPlayingAudio(false)
       return
     }
 
-    window.speechSynthesis?.cancel() // Cancel local if any
+    window.speechSynthesis?.cancel()
     try {
-      const session = await supabase.auth.getSession()
-      const token = session.data.session?.access_token
-      if (!token) {
-        console.warn("Nenhum token de autenticação encontrado para o TTS.")
-        toast.error("Erro de autenticação: faça login novamente.")
-        return
-      }
-
-      const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3001"
-      const response = await fetch(
-        `${apiUrl}/api/simulator/tts`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({ 
-            text,
-            voice: selectedSimulation?.interviewer_type === "tech" ? "onyx" :
-                   selectedSimulation?.interviewer_type === "hard" ? "onyx" :
-                   selectedSimulation?.interviewer_type === "friendly" ? "alloy" :
-                   "shimmer"
-          })
-        }
-      )
+      const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+      // apiClient handles auth header internally
+      const headers = await (apiClient as any).getHeaders(true) as Record<string, string>
+      const response = await fetch(`${API_URL}/api/simulator/tts`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ text, voice: resolveVoice(voiceGender) })
+      })
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
@@ -191,27 +177,23 @@ export default function SimuladorEntrevistas() {
       const blob = await response.blob()
       const audioUrl = URL.createObjectURL(blob)
 
-      if (audioRef.current) {
-        audioRef.current.pause()
-      }
+      if (audioRef.current) audioRef.current.pause()
 
       const audio = new Audio(audioUrl)
       audioRef.current = audio
-
       audio.onplay = () => setIsPlayingAudio(true)
       audio.onended = () => setIsPlayingAudio(false)
       audio.onpause = () => setIsPlayingAudio(false)
 
       const playPromise = audio.play()
       if (playPromise !== undefined) {
-        playPromise.catch((e) => {
-          console.error("Autoplay ou erro de reprodução de áudio:", e)
-          toast.error("O navegador bloqueou a reprodução de áudio. Dê um clique na tela primeiro.")
+        playPromise.catch(() => {
+          toast.error('O navegador bloqueou a reprodução. Clique na tela e tente novamente.')
         })
       }
     } catch (err: any) {
-      console.error("Erro no TTS da OpenAI:", err)
-      toast.error(`Erro ao processar voz da IA: ${err.message || err}`)
+      console.error('TTS error:', err)
+      toast.error(`Erro ao gerar voz: ${err.message || err}`)
     }
   }
 
@@ -783,6 +765,45 @@ export default function SimuladorEntrevistas() {
                               Papo leve, integração de equipe e conversação
                               fluida.
                             </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Voice Gender Selection */}
+                    <div className="space-y-3">
+                      <Label>Voz do Entrevistador</Label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div
+                          onClick={() => setVoiceGender('female')}
+                          className={`flex gap-3 items-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                            voiceGender === 'female'
+                              ? 'border-violet-500 bg-violet-500/5 dark:bg-violet-500/10'
+                              : 'border-muted hover:border-violet-500/20 hover:bg-muted/10'
+                          }`}
+                        >
+                          <div className="h-9 w-9 rounded-lg bg-pink-100 dark:bg-pink-950/30 flex items-center justify-center text-pink-600 dark:text-pink-400 shrink-0">
+                            <Mic className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">Feminina</p>
+                            <p className="text-xs text-muted-foreground">Voz Nova (OpenAI)</p>
+                          </div>
+                        </div>
+                        <div
+                          onClick={() => setVoiceGender('male')}
+                          className={`flex gap-3 items-center p-4 rounded-xl border cursor-pointer transition-all duration-200 ${
+                            voiceGender === 'male'
+                              ? 'border-violet-500 bg-violet-500/5 dark:bg-violet-500/10'
+                              : 'border-muted hover:border-violet-500/20 hover:bg-muted/10'
+                          }`}
+                        >
+                          <div className="h-9 w-9 rounded-lg bg-blue-100 dark:bg-blue-950/30 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                            <Mic className="h-4 w-4" />
+                          </div>
+                          <div>
+                            <p className="font-semibold text-sm">Masculina</p>
+                            <p className="text-xs text-muted-foreground">Voz Onyx (OpenAI)</p>
                           </div>
                         </div>
                       </div>
