@@ -909,9 +909,10 @@ export default function SimuladorEntrevistas() {
                 </div>
               </div>
 
-              {/* Chat Messages Body */}
-              <ScrollArea className="flex-1 px-6 py-4 bg-muted/5">
-                <div className="space-y-6">
+              {/* Chat Messages Body or Immersive Voice Call */}
+              {inputMode === "text" ? (
+                <ScrollArea className="flex-1 px-6 py-4 bg-muted/5">
+                  <div className="space-y-6">
                   {/* Information Header card */}
                   <div className="bg-violet-500/5 border border-violet-500/10 p-4 rounded-xl text-xs text-violet-600 dark:text-violet-400 space-y-1">
                     <p className="font-semibold flex items-center gap-1">
@@ -1037,10 +1038,35 @@ export default function SimuladorEntrevistas() {
                   <div ref={messagesEndRef} />
                 </div>
               </ScrollArea>
+              ) : (
+                <div className="flex-1 flex flex-col items-center justify-center bg-muted/5 relative overflow-hidden">
+                   <div className="flex flex-col items-center gap-8 z-10">
+                     <div className={`relative h-40 w-40 rounded-full flex items-center justify-center bg-violet-100 shadow-2xl transition-all duration-500 ${isPlayingAudio ? 'ring-[16px] ring-violet-500/20 scale-105' : isListening ? 'ring-[16px] ring-red-500/20 scale-105' : 'ring-8 ring-muted/50'}`}>
+                       <img src="/logo.png" alt="IA" className={`h-20 w-auto object-contain transition-transform duration-700 ${isPlayingAudio ? 'scale-110' : ''}`} />
+                     </div>
+                     <div className="text-center max-w-sm px-4">
+                       <h3 className="text-2xl font-bold text-foreground">
+                         {actionLoading ? "Pensando..." : isPlayingAudio ? "Entrevistador Falando" : isListening ? "Ouvindo Você..." : "Sua Vez"}
+                       </h3>
+                       <p className="text-sm text-muted-foreground mt-2">
+                         {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? (answerInput || "Pode falar, estou captando seu áudio...") : "Toque no microfone abaixo para responder"}
+                       </p>
+                     </div>
+                   </div>
+                   
+                   {/* Background animated rings when active */}
+                   {(isPlayingAudio || isListening) && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-40">
+                        <div className={`absolute h-72 w-72 rounded-full border border-current animate-ping ${isListening ? 'text-red-500/30' : 'text-violet-500/30'}`} style={{ animationDuration: '3s' }} />
+                        <div className={`absolute h-96 w-96 rounded-full border border-current animate-ping ${isListening ? 'text-red-500/20' : 'text-violet-500/20'}`} style={{ animationDuration: '4s', animationDelay: '1s' }} />
+                      </div>
+                   )}
+                </div>
+              )}
 
-              {/* Visualizer for audio recording/playback */}
+              {/* Visualizer for audio recording/playback (Text Mode only) */}
               <AnimatePresence>
-                {(isListening || isPlayingAudio) && (
+                {(isListening || isPlayingAudio) && inputMode === "text" && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
@@ -1111,13 +1137,6 @@ export default function SimuladorEntrevistas() {
                 >
                   {inputMode === "voice" ? (
                     <div className="w-full flex flex-col items-center gap-3">
-                      {/* Visualizer and Text */}
-                      {isListening && (
-                        <div className="w-full min-h-[60px] p-4 bg-card border border-muted rounded-xl text-center text-sm text-muted-foreground italic max-h-[120px] overflow-y-auto">
-                          {answerInput || "Ouvindo... Pode falar."}
-                        </div>
-                      )}
-
                       <div className="flex items-center gap-4">
                         {/* Keyboard switch */}
                         <Button
