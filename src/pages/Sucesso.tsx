@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Button } from '../components/ui/button'
-import { CheckCircle, Star, Rocket, ArrowRight } from 'lucide-react'
+import { CheckCircle, ArrowRight } from 'lucide-react'
 import { apiClient } from '../lib/apiClient'
 import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
@@ -36,20 +36,17 @@ export default function Sucesso() {
     try {
       const result = await apiClient.post<PaymentData>('/api/stripe/verify-session', { sessionId })
       setPaymentData(result)
-      
-      // Atualizar créditos na interface
       await refresh()
-      
       toast({
-        title: "Pagamento confirmado!",
-        description: `Você recebeu ${result.credits} créditos.`,
+        title: 'Pagamento confirmado',
+        description: `${result.credits} créditos adicionados à sua conta.`,
       })
     } catch (error) {
       console.error('Erro ao verificar pagamento:', error)
       toast({
-        title: "Erro",
-        description: "Erro ao processar pagamento. Entre em contato conosco.",
-        variant: "destructive",
+        title: 'Erro',
+        description: 'Erro ao processar pagamento. Entre em contato conosco.',
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)
@@ -58,129 +55,89 @@ export default function Sucesso() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-lg">Processando pagamento...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Processando pagamento...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+    <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto text-center">
-          {/* Ícone de sucesso */}
-          <div className="mb-8">
-            <CheckCircle className="h-24 w-24 text-green-500 mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              Pagamento Confirmado!
+        <div className="max-w-lg mx-auto">
+
+          {/* Confirmação */}
+          <div className="text-center mb-10">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-foreground mb-2">
+              Pagamento confirmado
             </h1>
-            <p className="text-xl text-gray-600">
-              Seus créditos foram adicionados com sucesso
+            <p className="text-muted-foreground">
+              Seus créditos foram adicionados à sua conta.
             </p>
           </div>
 
-          {/* Detalhes do pagamento */}
+          {/* Detalhes */}
           {paymentData && (
             <Card className="mb-8">
-              <CardHeader>
-                <CardTitle className="flex items-center justify-center space-x-2">
-                  <Star className="h-6 w-6 text-yellow-500 fill-yellow-500" />
-                  <span>Detalhes da Compra</span>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base font-medium text-muted-foreground">
+                  Resumo da compra
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                  <div className="bg-green-50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-green-600">
-                      {paymentData.credits}
-                    </div>
-                    <div className="text-sm text-green-800">Créditos Adicionados</div>
-                  </div>
-                  <div className="bg-blue-50 rounded-lg p-4">
-                    <div className="text-2xl font-bold text-blue-600">
-                      {paymentData.analyses}
-                    </div>
-                    <div className="text-sm text-blue-800">Análises Disponíveis</div>
-                  </div>
+              <CardContent className="space-y-3">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Plano</span>
+                  <span className="font-semibold">{paymentData.planName}</span>
                 </div>
-                
-                <div className="text-center">
-                  <p className="text-sm text-gray-600">
-                    Plano: <span className="font-semibold">{paymentData.planName}</span>
-                  </p>
-                  <p className="text-sm text-gray-600">
-                    Valor: <span className="font-semibold">R$ {paymentData.amount.toFixed(2).replace('.', ',')}</span>
-                  </p>
-                  {credits !== null && (
-                    <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mt-2 bg-yellow-500/10 py-1.5 px-3 rounded-lg inline-block">
-                      Seu novo saldo: {credits.credits} ⭐
-                    </p>
-                  )}
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Créditos adicionados</span>
+                  <span className="font-semibold">{paymentData.credits}</span>
                 </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Valor cobrado</span>
+                  <span className="font-semibold">R$ {paymentData.amount.toFixed(2).replace('.', ',')}</span>
+                </div>
+                {credits !== null && (
+                  <>
+                    <div className="border-t pt-3 mt-3 flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">Novo saldo</span>
+                      <span className="text-lg font-bold">{credits.credits} créditos</span>
+                    </div>
+                  </>
+                )}
               </CardContent>
             </Card>
           )}
 
-          {/* Botões de ação */}
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 font-medium"
-                onClick={() => navigate('/analise-curriculo')}
-              >
-                <Rocket className="mr-2 h-5 w-5" />
-                Analisar Currículo
-              </Button>
-
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="font-medium bg-white hover:bg-gray-100 border text-slate-900"
-                onClick={() => navigate('/simulador-entrevistas')}
-              >
-                <Star className="mr-2 h-5 w-5 text-yellow-500 fill-yellow-500 animate-pulse" />
-                Simulador de Entrevistas
-              </Button>
-            </div>
-            
-            <div className="flex flex-wrap gap-4 justify-center">
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/dashboard')}
-              >
-                <ArrowRight className="mr-2 h-4 w-4" />
-                Ir para Dashboard
-              </Button>
-              
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/minhas-analises')}
-              >
-                Ver Minhas Análises
-              </Button>
-
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/calculadora-recesso')}
-              >
-                Calculadora de Recesso
-              </Button>
-            </div>
+          {/* Ações */}
+          <div className="space-y-3">
+            <Button
+              className="w-full"
+              onClick={() => navigate('/analise-curriculo')}
+            >
+              Analisar currículo
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => navigate('/simulador-entrevistas')}
+            >
+              Simulador de entrevistas
+            </Button>
+            <Button
+              variant="ghost"
+              className="w-full text-muted-foreground"
+              onClick={() => navigate('/dashboard')}
+            >
+              <ArrowRight className="mr-2 h-4 w-4" />
+              Ir para o dashboard
+            </Button>
           </div>
 
-          {/* Informações adicionais */}
-          <div className="mt-12 text-center">
-            <p className="text-sm text-gray-500">
-              Recebeu um email de confirmação? Se não, verifique sua caixa de spam.
-            </p>
-            <p className="text-sm text-gray-500 mt-2">
-              Precisa de ajuda? Entre em contato conosco.
-            </p>
-          </div>
         </div>
       </div>
     </div>

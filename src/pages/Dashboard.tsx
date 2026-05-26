@@ -7,10 +7,7 @@ import {
   FileText, 
   CreditCard, 
   BarChart3, 
-  TrendingUp, 
   Users, 
-  Building,
-  Star,
   Award
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
@@ -75,28 +72,28 @@ export default function Dashboard() {
   const quickActions = [
     {
       title: 'Analisar Currículo',
-      description: 'Envie seu currículo para análise',
+      description: 'Envie seu currículo e receba feedback detalhado com IA.',
       icon: FileText,
       href: '/analise-curriculo',
       color: 'bg-blue-500'
     },
     {
       title: 'Simulador de Entrevistas',
-      description: 'Pratique suas habilidades',
+      description: 'Pratique perguntas reais e melhore suas respostas com IA.',
       icon: Users,
       href: '/simulador-entrevistas',
       color: 'bg-green-500'
     },
     {
       title: 'Gerador de Currículos',
-      description: 'Crie currículos profissionais',
+      description: 'Crie um currículo profissional pronto para enviar.',
       icon: Award,
       href: '/gerador-curriculos',
       color: 'bg-purple-500'
     },
     {
       title: 'Kanban de Vagas',
-      description: 'Acompanhe o status das suas candidaturas em um quadro visual, gerencie etapas e não perca prazos.',
+      description: 'Acompanhe suas candidaturas em um quadro visual organizado.',
       icon: BarChart3,
       href: '/candidaturas',
       color: 'bg-orange-500'
@@ -116,21 +113,7 @@ export default function Dashboard() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Plano</CardTitle>
-              <Star className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-xl md:text-2xl font-bold capitalize">
-                {profile?.subscription_tier || 'Gratuito'}
-              </div>
-              <p className="text-xs text-muted-foreground">
-                plano atual
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
