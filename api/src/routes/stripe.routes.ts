@@ -13,9 +13,9 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const app = new Hono<Env>();
 
 const PLANS = {
-  cosmonauta: { price: 199, credits: 30, name: 'Cosmonauta' },
-  astronauta: { price: 499, credits: 80, name: 'Astronauta' },
-  comandante: { price: 999, credits: 200, name: 'Comandante' },
+  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 30, name: 'Cosmonauta' },
+  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 80, name: 'Astronauta' },
+  comandante: { priceId: env.STRIPE_PRICE_COMANDANTE_AVULSO, credits: 200, name: 'Comandante' },
 } as const;
 
 type PlanId = keyof typeof PLANS;
@@ -35,13 +35,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
       payment_method_types: ['card'], // Removed 'pix' to prevent errors if not enabled in Stripe
       line_items: [
         {
-          price_data: {
-            currency: 'brl',
-            product_data: {
-              name: `Plano ${plan.name} - ${plan.credits} Créditos`,
-            },
-            unit_amount: plan.price,
-          },
+          price: plan.priceId,
           quantity: 1,
         },
       ],

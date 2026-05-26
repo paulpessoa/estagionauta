@@ -16,6 +16,9 @@ const envSchema = z.object({
   BREVO_API_KEY: z.string().optional(),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
   OPENAI_API_KEY: z.string().min(1).optional(),
+  STRIPE_PRICE_ASTRONAUTA_AVULSO: z.string().min(1),
+  STRIPE_PRICE_COSMONAUTA_AVULSO: z.string().min(1),
+  STRIPE_PRICE_COMANDANTE_AVULSO: z.string().min(1),
 });
 
 const parseEnv = () => {
