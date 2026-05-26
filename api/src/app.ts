@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
+import { logger } from 'hono/logger';
 import stripeRoutes from './routes/stripe.routes.js';
 import creditsRoutes from './routes/credits.routes.js';
 import analysisRoutes from './routes/analysis.routes.js';
@@ -11,6 +12,8 @@ import adminRoutes from './routes/admin.routes.js';
 import userRoutes from './routes/user.routes.js';
 
 const app = new Hono();
+
+app.use('*', logger());
 
 
 // Configure CORS

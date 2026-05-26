@@ -10,6 +10,7 @@ import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
+import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
 
 const queryClient = new QueryClient();
@@ -92,6 +93,7 @@ function App() {
             <AuthProvider>
               <AppLayout />
               <Toaster />
+              <ToasterShadcn />
             </AuthProvider>
           </BrowserRouter>
         </HelmetProvider>
