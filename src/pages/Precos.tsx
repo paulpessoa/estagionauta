@@ -128,12 +128,6 @@ export default function Precos() {
     }
   }
 
-  const handleSubscribe = () => {
-    toast({
-      title: "Planos de Assinatura Em Breve!",
-      description: "Estamos finalizando a integração das assinaturas recorrentes. Por enquanto, utilize a Recarga de Créditos Avulsos!",
-    })
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -179,9 +173,6 @@ export default function Precos() {
               }`}
             >
               Assinaturas Anuais
-              <span className="absolute -top-1.5 -right-2 bg-gradient-to-r from-purple-500 to-indigo-500 text-[10px] text-white px-2 py-0.5 rounded-full scale-90 border border-white dark:border-slate-800 font-bold">
-                Em Breve
-              </span>
             </button>
           </div>
         </div>
@@ -330,10 +321,20 @@ export default function Precos() {
                           ? 'bg-purple-600 hover:bg-purple-700 text-white' 
                           : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
                       }`}
-                      onClick={handleSubscribe}
+                      onClick={() => handlePurchase(plan.id)}
+                      disabled={loading === plan.id}
                     >
-                      <Sparkles className="mr-2 h-4 w-4" />
-                      Assinar (Em Breve)
+                      {loading === plan.id ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                          <span>Processando...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Assinar
+                        </>
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
