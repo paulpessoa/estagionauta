@@ -354,12 +354,12 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
       input: text,
     });
     
-    const buffer = Buffer.from(await mp3.arrayBuffer());
+    const arrayBuffer = await mp3.arrayBuffer();
     
     c.header('Content-Type', 'audio/mpeg');
-    c.header('Content-Length', buffer.length.toString());
+    c.header('Content-Length', arrayBuffer.byteLength.toString());
     
-    return c.body(buffer);
+    return c.body(arrayBuffer);
   } catch (err) {
     console.error('Error generating TTS:', err);
     return c.json({ error: 'Erro ao gerar áudio' }, 500);
