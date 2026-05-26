@@ -119,11 +119,16 @@ export default function SimuladorEntrevistas() {
     }
   }, [])
 
-  const toggleListening = (e: React.MouseEvent) => {
-    e.preventDefault()
+  const toggleListening = (e?: React.MouseEvent) => {
+    e?.preventDefault()
     if (isListening) {
       recognitionRef.current?.stop()
       setIsListening(false)
+      
+      // Auto-send if in voice mode and there's text
+      if (inputMode === "voice" && answerInput.trim()) {
+        handleSendAnswer(undefined, answerInput)
+      }
     } else {
       if (recognitionRef.current) {
         // Stop speech synthesis and our custom audio if it's talking so we can listen clearly
@@ -320,23 +325,23 @@ export default function SimuladorEntrevistas() {
     }
   }
 
-  const handleSendAnswer = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!answerInput.trim() || !selectedSimulation) return
+  const handleSendAnswer = async (e?: React.FormEvent, overrideAnswer?: string) => {
+    e?.preventDefault()
+    const finalAnswer = overrideAnswer !== undefined ? overrideAnswer : answerInput
+    if (!finalAnswer.trim() || !selectedSimulation) return
 
     if (isListening) {
       recognitionRef.current?.stop()
       setIsListening(false)
     }
 
-    const tempAnswer = answerInput
     setAnswerInput("")
     setActionLoading(true)
 
     // Add local candidate response message immediately to user UI for responsiveness
     const optimisticMessage: SimulatorMessage = {
       role: "candidate",
-      content: tempAnswer,
+      content: finalAnswer,
       timestamp: new Date().toISOString()
     }
 
@@ -351,7 +356,7 @@ export default function SimuladorEntrevistas() {
     try {
       const data = await apiClient.post<{ simulation: InterviewSimulation }>(
         `/api/simulator/${selectedSimulation.id}/answer`,
-        { answer: tempAnswer }
+        { answer: finalAnswer }
       )
 
       setSelectedSimulation(data.simulation)
