@@ -179,38 +179,55 @@ export default function PrivacyPolicy() {
             </CardContent>
           </Card>
 
+          {/* Armazenamento e Retenção */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lock className="h-5 w-5 text-blue-600" />
+                Armazenamento e Retenção de Dados
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
+              <p>
+                <strong>Onde armazenamos seus dados:</strong> Todas as informações coletadas e os arquivos de currículo enviados são armazenados de forma segura nos servidores em nuvem da Supabase, localizados em data centers de alta segurança (como AWS ou Google Cloud), utilizando criptografia em trânsito e em repouso.
+              </p>
+              <p>
+                <strong>Período de retenção:</strong> Retemos suas informações apenas pelo tempo necessário para prestar nossos serviços ou até que você solicite a exclusão de seus dados. Os currículos analisados são retidos para exibição no seu histórico pessoal, mas podem ser excluídos definitivamente por você a qualquer momento por meio do painel de controle.
+              </p>
+            </CardContent>
+          </Card>
+
           {/* Seus Direitos */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-blue-600" />
-                Seus Direitos
+                Seus Direitos (LGPD)
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
-              <p>Você tem os seguintes direitos relacionados aos seus dados pessoais:</p>
-              <div className="grid gap-3">
+              <p>Você tem total controle sobre seus dados pessoais de acordo com a LGPD. Seus direitos incluem:</p>
+              <div className="grid gap-3 mb-4">
                 <div className="flex items-start gap-3">
                   <Badge variant="outline" className="mt-1">Acesso</Badge>
-                  <span className="text-sm">Solicitar acesso aos seus dados pessoais</span>
+                  <span className="text-sm">Solicitar confirmação e acesso aos dados armazenados sobre você.</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Badge variant="outline" className="mt-1">Correção</Badge>
-                  <span className="text-sm">Solicitar correção de dados imprecisos</span>
+                  <span className="text-sm">Solicitar a retificação de dados incorretos ou incompletos.</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Badge variant="outline" className="mt-1">Exclusão</Badge>
-                  <span className="text-sm">Solicitar exclusão de seus dados pessoais</span>
+                  <span className="text-sm">Solicitar a eliminação definitiva de seus dados da plataforma.</span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Badge variant="outline" className="mt-1">Portabilidade</Badge>
-                  <span className="text-sm">Receber seus dados em formato estruturado</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <Badge variant="outline" className="mt-1">Oposição</Badge>
-                  <span className="text-sm">Opor-se ao processamento de seus dados</span>
+                  <span className="text-sm">Requerer a transferência dos seus dados para outro provedor em formato estruturado.</span>
                 </div>
               </div>
+              <p className="text-sm border-t pt-4">
+                <strong>Como solicitar:</strong> Você pode excluir sua conta e seus dados diretamente na tela de Configurações da plataforma. Alternativamente, para solicitar a portabilidade, exportação ou esclarecer dúvidas de privacidade, envie um e-mail para <span className="font-semibold">contato@estagionauta.com.br</span>. Responderemos às solicitações de privacidade em um prazo regulatório de até 15 dias.
+              </p>
             </CardContent>
           </Card>
 

@@ -72,11 +72,11 @@ export default function TermosDeUso() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                Algumas operações dentro da plataforma (como revisões de currículo e simulações de entrevistas) exigem o consumo de <strong>créditos</strong>.
+                Algumas operações dentro da plataforma (como revisões de currículo e simulações de entrevistas) exigem o consumo de créditos.
               </p>
               <ul className="list-disc list-inside space-y-2 text-sm">
-                <li>Os créditos adquiridos por meio de recargas avulsas não expiram e permanecem na conta até serem utilizados.</li>
-                <li>As assinaturas mensais recorrentes (quando disponíveis) creditam um montante fixo de créditos a cada ciclo de faturamento.</li>
+                <li>Todos os créditos da plataforma, sejam adquiridos por meio de recarga avulsa ou recebidos via assinatura, possuem validade de 30 dias (1 mês) a partir da data de faturamento/aquisição. Créditos não utilizados expiram automaticamente ao fim deste período.</li>
+                <li>As assinaturas anuais creditam um montante fixo de créditos mensalmente a cada ciclo de faturamento.</li>
                 <li>Os pagamentos são processados de forma segura por meio do Stripe.</li>
                 <li><strong>Reembolso:</strong> Por se tratar de um serviço digital de consumo imediato (uma vez gerada a análise com IA), não realizamos reembolsos de créditos já consumidos. Reembolsos de pacotes de créditos não utilizados podem ser solicitados em até 7 (sete) dias após a compra, conforme o Código de Defesa do Consumidor brasileiro.</li>
               </ul>
@@ -96,10 +96,13 @@ export default function TermosDeUso() {
                 Nós nos esforçamos para proteger suas informações de identificação pessoal (PII) e garantir a conformidade com a LGPD (Lei Geral de Proteção de Dados).
               </p>
               <p>
+                <strong>Armazenamento:</strong> Todos os dados pessoais e currículos enviados são armazenados em servidores seguros em nuvem da Supabase (hospedados em infraestrutura de alta segurança como AWS ou Google Cloud), protegidos por criptografia e controle de acesso rígido.
+              </p>
+              <p>
                 Os currículos enviados em formato PDF para análise são lidos pela inteligência artificial para produzir os retornos estruturados. Não utilizamos seus arquivos ou dados para treinar modelos públicos de inteligência artificial de forma a expor sua identidade pessoal.
               </p>
               <p>
-                O usuário tem a total liberdade de atualizar, modificar ou excluir definitivamente seus dados de perfil e histórico através da tela de Configurações a qualquer momento.
+                <strong>Retenção e Exclusão:</strong> Os dados são mantidos pelo tempo necessário para a prestação do serviço ou até que você decida excluí-los. O usuário tem total liberdade de atualizar, modificar ou excluir definitivamente seus dados de perfil e histórico diretamente através do painel de Configurações, ou solicitando a exclusão/portabilidade formalmente por e-mail para <span className="font-semibold">contato@estagionauta.com.br</span>, com prazo de atendimento de até 15 dias úteis.
               </p>
             </CardContent>
           </Card>
