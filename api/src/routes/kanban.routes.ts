@@ -9,7 +9,7 @@ const app = new Hono<Env>();
 const jobApplicationSchema = z.object({
   company: z.string().min(1, 'Empresa é obrigatória'),
   position: z.string().min(1, 'Cargo é obrigatório'),
-  status: z.enum(['interested', 'applied', 'interview', 'test', 'offer', 'rejected']),
+  status: z.enum(['interested', 'applied', 'test', 'group_dynamics', 'interview', 'cultural_fit', 'resource', 'offer', 'hired', 'rejected']),
   appliedDate: z.string(),
   description: z.string().optional().default(''),
   salary: z.string().optional().nullable(),
@@ -24,7 +24,7 @@ const jobApplicationSchema = z.object({
   imageUrl: z.string().optional().nullable(),
   tags: z.array(z.string()).default([]),
   statusHistory: z.array(z.object({
-    status: z.enum(['interested', 'applied', 'interview', 'test', 'offer', 'rejected']),
+    status: z.enum(['interested', 'applied', 'test', 'group_dynamics', 'interview', 'cultural_fit', 'resource', 'offer', 'hired', 'rejected']),
     date: z.string(),
   })).optional(),
   feedbacks: z.array(z.object({
@@ -45,10 +45,14 @@ const reminderSchema = z.object({
 const getProgressFromStatus = (status: string): number => {
   const map: Record<string, number> = {
     interested: 0,
-    applied: 20,
-    test: 50,
-    interview: 75,
-    offer: 100,
+    applied: 10,
+    test: 30,
+    group_dynamics: 50,
+    interview: 70,
+    cultural_fit: 80,
+    resource: 90,
+    offer: 95,
+    hired: 100,
     rejected: 100
   };
   return map[status] ?? 0;

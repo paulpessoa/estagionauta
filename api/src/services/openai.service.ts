@@ -253,11 +253,11 @@ Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
 Tipo de Entrevista conduzida: ${interviewerType}
 
 Instruções para o Feedback:
-1. Avalie o desempenho geral das respostas do candidato (conteúdo, clareza, embasamento técnico e comportamental).
+1. Avalie o desempenho geral das respostas do candidato (conteúdo, embasamento técnico e comportamental). Avalie especificamente a clareza da vaga ou objetivo profissional demonstrado.
 2. Estipule uma pontuação geral (score) de 0 a 100.
 3. Identifique pelo menos 3 Pontos Fortes demonstrados nas respostas.
 4. Identifique pelo menos 3 Áreas de Melhoria de forma construtiva.
-5. Dê dicas acionáveis e práticas de estudo ou comportamento para que o candidato possa se destacar em entrevistas reais.
+5. Dê dicas acionáveis e práticas de estudo ou comportamento para entrevistas reais. Recomende explicitamente a plataforma de mentoria gratuita MENVO (https://menvo.com.br) para que o candidato aprimore os pontos fracos.
 
 A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte formato:
 {

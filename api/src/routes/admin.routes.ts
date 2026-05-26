@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { adminMiddleware } from '../middleware/admin.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
+import { env } from '../config/env.js';
 
 const app = new Hono<Env>();
 
@@ -23,6 +24,13 @@ const updateRoleSchema = z.object({
 
 const updateCreditsSchema = z.object({
   amount: z.number().int('O ajuste de créditos deve ser um número inteiro'),
+});
+
+const replyEmailSchema = z.object({
+  feedbackId: z.string().uuid(),
+  toEmail: z.string().email(),
+  subject: z.string().min(3),
+  message: z.string().min(5),
 });
 
 // GET /api/admin/stats - Retrieve consolidated statistics
@@ -246,6 +254,69 @@ app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json'
   } catch (err) {
     console.error('Admin update credits error:', err);
     return c.json({ error: 'Erro interno do servidor ao ajustar créditos' }, 500);
+  }
+});
+
+// POST /api/admin/reply-email - Reply to a user's feedback
+app.post('/reply-email', authMiddleware, adminMiddleware, zValidator('json', replyEmailSchema), async (c) => {
+  const admin = c.get('user');
+  if (!(await verifyIsAdmin(admin.id))) {
+    return c.json({ error: 'Acesso negado: Apenas administradores' }, 403);
+  }
+
+  const { feedbackId, toEmail, subject, message } = c.req.valid('json');
+
+  if (!env.BREVO_API_KEY) {
+    return c.json({ error: 'Serviço de e-mail não configurado neste ambiente (BREVO_API_KEY ausente)' }, 503);
+  }
+
+  try {
+    const emailData = {
+      sender: {
+        name: 'Equipe Estagionauta',
+        email: 'noreply@estagionauta.com.br',
+      },
+      to: [
+        {
+          email: toEmail,
+        },
+      ],
+      subject: subject,
+      htmlContent: `<div style="font-family: Arial, sans-serif; padding: 20px; color: #333;">
+          <h2>Resposta ao seu feedback</h2>
+          <div style="background-color: #f9f9f9; padding: 15px; border-left: 4px solid #667eea; margin-bottom: 20px;">
+            <p style="white-space: pre-wrap;">${message}</p>
+          </div>
+          <p>Obrigado por nos ajudar a melhorar o Estagionauta!</p>
+        </div>`,
+      textContent: message,
+    };
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'api-key': env.BREVO_API_KEY,
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    if (!response.ok) {
+      const errorData = (await response.json()) as any;
+      throw new Error(errorData.message || 'Erro ao enviar email');
+    }
+
+    // Optionally mark the feedback as replied in DB
+    await supabaseAdmin
+      .from('feedbacks')
+      .update({ status: 'replied' })
+      .eq('id', feedbackId);
+
+    return c.json({ success: true, message: 'Email de resposta enviado com sucesso' });
+  } catch (err) {
+    console.error('Admin reply email error:', err);
+    return c.json({ error: 'Erro ao enviar email de resposta' }, 500);
   }
 });
 

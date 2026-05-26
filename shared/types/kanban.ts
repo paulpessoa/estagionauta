@@ -10,7 +10,7 @@ export interface Reminder {
 }
 
 export interface StatusHistoryEntry {
-  status: 'interested' | 'applied' | 'interview' | 'test' | 'offer' | 'rejected';
+  status: 'interested' | 'applied' | 'test' | 'group_dynamics' | 'interview' | 'cultural_fit' | 'resource' | 'offer' | 'hired' | 'rejected';
   date: string;
 }
 
@@ -25,7 +25,7 @@ export interface JobApplication {
   user_id?: string;
   company: string;
   position: string;
-  status: 'interested' | 'applied' | 'interview' | 'test' | 'offer' | 'rejected';
+  status: 'interested' | 'applied' | 'test' | 'group_dynamics' | 'interview' | 'cultural_fit' | 'resource' | 'offer' | 'hired' | 'rejected';
   appliedDate: string;
   description: string;
   salary?: string;
