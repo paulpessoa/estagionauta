@@ -60,51 +60,45 @@ const packages = [
 const subscriptionPlans = [
   {
     id: 'cosmonauta_pro',
-    name: 'Cosmonauta Pro',
+    name: 'Básico',
     icon: Star,
     credits: 50,
-    price: 2.90,
-    annualPrice: 34.80,
+    price: 34.80,
+    monthlyEquivalent: 2.90,
     benefits: [
-      '50 créditos por mês',
       'Kanban de vagas completo',
       'Suporte por e-mail',
       'Sincronização premium com a Extensão'
     ],
-    badge: 'Plano Pro',
     color: 'border-slate-200 dark:border-slate-800'
   },
   {
     id: 'astronauta_pro',
-    name: 'Astronauta Pro',
+    name: 'Recomendado',
     icon: Zap,
     credits: 150,
-    price: 5.90,
-    annualPrice: 70.80,
+    price: 70.80,
+    monthlyEquivalent: 5.90,
     benefits: [
-      '150 créditos por mês',
       'Simulações de entrevista ilimitadas',
       'Geração de currículos ilimitada',
       'Suporte prioritário'
     ],
-    badge: 'Mais Popular',
     popular: true,
     color: 'border-blue-500 ring-2 ring-blue-500/20'
   },
   {
     id: 'comandante_pro',
-    name: 'Comandante Pro',
+    name: 'Avançado',
     icon: Crown,
     credits: 500,
-    price: 11.90,
-    annualPrice: 142.80,
+    price: 142.80,
+    monthlyEquivalent: 11.90,
     benefits: [
-      '500 créditos por mês',
       'Todos os recursos ilimitados',
       'Acesso antecipado a novidades',
       'Assistente do Estagiário com IA'
     ],
-    badge: 'Elite',
     color: 'border-purple-500'
   }
 ]
@@ -209,7 +203,7 @@ export default function Creditos() {
             </div>
             <div>
               <span className="text-sm text-muted-foreground block font-medium">Saldo Atual</span>
-              <span className="text-2xl font-bold text-foreground">{credits?.credits ?? 0} ⭐</span>
+              <span className="text-2xl font-bold text-foreground">{credits?.credits ?? 0} créditos</span>
             </div>
           </div>
         </div>
@@ -271,7 +265,7 @@ export default function Creditos() {
                             </div>
 
                             <div className="text-3xl font-extrabold text-foreground mb-1">
-                              {pkg.credits} ⭐
+                              {pkg.credits}
                             </div>
                             <span className="text-sm text-muted-foreground block mb-6">créditos</span>
                           </div>
@@ -326,18 +320,18 @@ export default function Creditos() {
                             </div>
 
                             <div className="text-3xl font-extrabold text-foreground mb-1">
-                              {plan.credits} ⭐
-                            </div>
+                               {plan.credits}
+                             </div>
                             <span className="text-sm text-muted-foreground block mb-4">créditos mensais</span>
                           </div>
 
-                          <div>
+                           <div>
                             <Separator className="my-4" />
                             <div className="text-2xl font-bold text-foreground mb-1">
-                              R$ {plan.price.toFixed(2).replace('.', ',')} / ano
+                              R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')} / mês
                             </div>
                             <div className="text-xs text-muted-foreground mb-1">
-                              Equivalente a R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}/mês
+                              Cobrado em parcela única de R$ {plan.price.toFixed(2).replace('.', ',')}/ano
                             </div>
                             
                             <div className="inline-flex items-center gap-1 mt-1 mb-4 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2 py-0.5 rounded-full text-[10px] font-bold border border-purple-100 dark:border-purple-900/30">
@@ -418,7 +412,7 @@ export default function Creditos() {
                           </div>
 
                           <span className={`font-bold text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                            {isPositive ? '+' : ''}{tx.amount} ⭐
+                            {isPositive ? '+' : ''}{tx.amount} créditos
                           </span>
                         </div>
                       )

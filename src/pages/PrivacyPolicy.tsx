@@ -36,14 +36,14 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                A Estagionauta ("nós", "nosso", "a empresa") está comprometida em proteger sua privacidade. 
-                Esta Política de Privacidade descreve como coletamos, usamos, armazenamos e protegemos suas 
+                A Estagionauta ("nós", "nosso", "a empresa") está comprometida em proteger sua privacidade.
+                Esta Política de Privacidade descreve como coletamos, usamos, armazenamos e protegemos suas
                 informações pessoais quando você utiliza nossos serviços.
               </p>
               <p>
-                Ao usar nossos serviços, você concorda com a coleta e uso de informações de acordo com 
-                esta política. Seus dados pessoais são utilizados apenas para fornecer e melhorar nossos 
-                serviços e não serão vendidos, alugados ou compartilhados com terceiros, exceto conforme 
+                Ao usar nossos serviços, você concorda com a coleta e uso de informações de acordo com
+                esta política. Seus dados pessoais são utilizados apenas para fornecer e melhorar nossos
+                serviços e não serão vendidos, alugados ou compartilhados com terceiros, exceto conforme
                 descrito nesta política.
               </p>
             </CardContent>
@@ -125,7 +125,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                <strong>Não vendemos, alugamos ou compartilhamos suas informações pessoais</strong> com 
+                <strong>Não vendemos, alugamos ou compartilhamos suas informações pessoais</strong> com
                 terceiros, exceto nas seguintes situações:
               </p>
               <ul className="space-y-2 text-sm">
@@ -155,7 +155,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                Implementamos medidas de segurança técnicas e organizacionais apropriadas para proteger 
+                Implementamos medidas de segurança técnicas e organizacionais apropriadas para proteger
                 suas informações pessoais contra acesso não autorizado, alteração, divulgação ou destruição.
               </p>
               <div className="grid md:grid-cols-2 gap-4 text-sm">
@@ -224,19 +224,17 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                Utilizamos cookies e tecnologias similares para melhorar sua experiência, analisar o uso 
-                do site e personalizar conteúdo. Você pode controlar o uso de cookies através das 
-                configurações do seu navegador.
+                Utilizamos cookies e tecnologias de rastreamento para analisar o tráfego do site, entender o comportamento do usuário e melhorar nossos serviços. Em conformidade com a LGPD, o uso de cookies não essenciais está sujeito ao seu consentimento explícito.
               </p>
               <div className="grid gap-3 text-sm">
                 <div>
-                  <strong>Cookies Essenciais:</strong> Necessários para o funcionamento básico do site
+                  <strong>Cookies Essenciais:</strong> Necessários para a autenticação, segurança e o funcionamento básico da plataforma. Estes cookies não podem ser desativados.
                 </div>
                 <div>
-                  <strong>Cookies de Análise:</strong> Nos ajudam a entender como você usa nosso site
+                  <strong>Google Analytics:</strong> Ferramenta utilizada para monitorar o tráfego e métricas de uso de forma agregada. Só é inicializada após sua aceitação no banner de privacidade.
                 </div>
                 <div>
-                  <strong>Cookies de Funcionalidade:</strong> Lembram suas preferências e configurações
+                  <strong>Microsoft Clarity:</strong> Serviço de gravação de sessões e análise visual de comportamento para nos ajudar a identificar bugs e otimizar fluxos de uso. Só é inicializado mediante seu consentimento.
                 </div>
               </div>
             </CardContent>
@@ -252,17 +250,17 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                Se você tiver dúvidas sobre esta Política de Privacidade ou sobre como tratamos seus dados, 
+                Se você tiver dúvidas sobre esta Política de Privacidade ou sobre como tratamos seus dados,
                 entre em contato conosco:
               </p>
               <div className="grid gap-3 text-sm">
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-blue-600" />
-                  <span>Email: privacy@estagionauta.com</span>
+                  <span>Email: contato@estagionauta.com.br</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="h-4 w-4 text-blue-600" />
-                  <span>Telefone: +55 (11) 99999-9999</span>
+                  <span>Telefone: +55 (81) 99509-7377</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <MapPin className="h-4 w-4 text-blue-600" />
@@ -282,7 +280,7 @@ export default function PrivacyPolicy() {
             </CardHeader>
             <CardContent className="space-y-4 text-gray-700 dark:text-gray-300">
               <p>
-                Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos você sobre 
+                Podemos atualizar esta Política de Privacidade periodicamente. Notificaremos você sobre
                 quaisquer alterações significativas através de:
               </p>
               <ul className="space-y-2 text-sm">
@@ -291,7 +289,7 @@ export default function PrivacyPolicy() {
                 <li>• Atualização da data de "Última atualização"</li>
               </ul>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Recomendamos que você revise esta política regularmente para se manter informado sobre 
+                Recomendamos que você revise esta política regularmente para se manter informado sobre
                 como protegemos suas informações.
               </p>
             </CardContent>
@@ -304,7 +302,7 @@ export default function PrivacyPolicy() {
             © {new Date().getFullYear()} Estagionauta. Todos os direitos reservados.
           </p>
           <p className="mt-2">
-            Esta política está em conformidade com a LGPD (Lei Geral de Proteção de Dados) e 
+            Esta política está em conformidade com a LGPD (Lei Geral de Proteção de Dados) e
             regulamentações internacionais de privacidade.
           </p>
         </div>

@@ -40,7 +40,7 @@ const plans = [
 const subscriptionPlans = [
   {
     id: 'cosmonauta_pro',
-    name: 'Cosmonauta Pro',
+    name: 'Básico',
     icon: Star,
     credits: 50,
     price: 34.80,
@@ -49,12 +49,11 @@ const subscriptionPlans = [
       'Kanban de vagas completo',
       'Suporte por e-mail',
       'Sincronização premium com a Extensão'
-    ],
-    badge: 'Plano Pro'
+    ]
   },
   {
     id: 'astronauta_pro',
-    name: 'Astronauta Pro',
+    name: 'Recomendado',
     icon: Zap,
     credits: 150,
     price: 70.80,
@@ -64,12 +63,11 @@ const subscriptionPlans = [
       'Geração de currículos ilimitada',
       'Suporte prioritário'
     ],
-    badge: 'Mais Popular',
     popular: true
   },
   {
     id: 'comandante_pro',
-    name: 'Comandante Pro',
+    name: 'Avançado',
     icon: Crown,
     credits: 500,
     price: 142.80,
@@ -78,8 +76,7 @@ const subscriptionPlans = [
       'Todos os recursos ilimitados',
       'Acesso antecipado a novidades',
       'Assistente do Estagiário com IA'
-    ],
-    badge: 'Elite'
+    ]
   }
 ]
 
@@ -289,11 +286,6 @@ export default function Precos() {
                     </div>
                     <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
                       {plan.name}
-                      {!plan.popular && (
-                        <Badge variant="outline" className="text-[10px] uppercase font-bold text-muted-foreground">
-                          {plan.badge}
-                        </Badge>
-                      )}
                     </CardTitle>
                     <CardDescription className="text-gray-600 dark:text-gray-400">
                       {plan.credits} créditos por mês
@@ -305,11 +297,11 @@ export default function Precos() {
                       {/* Price */}
                       <div className="text-center mb-6 flex flex-col items-center">
                         <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                          R$ {plan.price.toFixed(2).replace('.', ',')}
-                          <span className="text-sm font-normal text-muted-foreground">/ano</span>
+                          R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}
+                          <span className="text-sm font-normal text-muted-foreground">/mês</span>
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                          Cobrado em uma única parcela • Equivalente a R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}/mês
+                          Cobrado em parcela única de R$ {plan.price.toFixed(2).replace('.', ',')}/ano
                         </div>
                         <div className="inline-flex items-center gap-1.5 mt-3 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-xs font-bold border border-purple-100 dark:border-purple-900/30">
                           {(() => {
@@ -361,17 +353,17 @@ export default function Precos() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
-              <div className="text-3xl font-extrabold text-blue-600 mb-2">3 ⭐</div>
+              <div className="text-3xl font-extrabold text-blue-600 mb-2">3 créditos</div>
               <p className="font-semibold text-sm">Análise de Currículo</p>
               <p className="text-xs text-muted-foreground mt-1">Revisão completa com IA</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
-              <div className="text-3xl font-extrabold text-purple-600 mb-2">2 ⭐</div>
+              <div className="text-3xl font-extrabold text-purple-600 mb-2">2 créditos</div>
               <p className="font-semibold text-sm">Simulador de Entrevista</p>
               <p className="text-xs text-muted-foreground mt-1">5 rodadas de perguntas com IA</p>
             </div>
             <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border text-center shadow-sm">
-              <div className="text-3xl font-extrabold text-green-600 mb-2">1 ⭐</div>
+              <div className="text-3xl font-extrabold text-green-600 mb-2">1 crédito</div>
               <p className="font-semibold text-sm">Gerador de Currículo</p>
               <p className="text-xs text-muted-foreground mt-1">Geração automática de PDF</p>
             </div>
@@ -486,14 +478,23 @@ export default function Precos() {
             <p className="text-blue-100 mb-6">
               Análises precisas com IA para destacar seus pontos fortes
             </p>
-            <Button 
-              size="lg" 
-              className="bg-white text-blue-600 hover:bg-gray-100"
-              onClick={() => window.location.href = '/analise-curriculo'}
-            >
-              <Zap className="mr-2 h-5 w-5" />
-              Analisar Currículo
-            </Button>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+              <Button 
+                size="lg" 
+                className="bg-white text-blue-600 hover:bg-gray-100 w-full sm:w-auto"
+                onClick={() => window.location.href = '/analise-curriculo'}
+              >
+                Analisar Currículo
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline"
+                className="bg-transparent border-white text-white hover:bg-white/10 w-full sm:w-auto"
+                onClick={() => window.location.href = '/resultado-curriculo-exemplo'}
+              >
+                Ver Exemplo de Análise
+              </Button>
+            </div>
           </div>
         </div>
       </div>

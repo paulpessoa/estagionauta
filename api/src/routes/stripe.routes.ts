@@ -46,6 +46,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
         },
       ],
       mode: 'payment',
+      allow_promotion_codes: true,
       metadata: {
         userId: user.id,
         planId,

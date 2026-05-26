@@ -10,6 +10,7 @@ import { Suspense } from 'react';
 import { Loader2 } from 'lucide-react';
 import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
+import { CookieConsent } from './components/layout/CookieConsent';
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,7 @@ function AppLayout() {
       </main>
       <Footer />
       <ReviewModal />
+      <CookieConsent />
 
       {/* Floating Copilot Button */}
       <button
