@@ -33,8 +33,12 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
 
     agencies.forEach((agency) => {
       if (agency.latitude && agency.longitude) {
-        bounds.extend({ lat: agency.latitude, lng: agency.longitude })
-        hasCoords = true
+        const lat = Number(agency.latitude)
+        const lng = Number(agency.longitude)
+        if (!isNaN(lat) && !isNaN(lng)) {
+          bounds.extend({ lat, lng })
+          hasCoords = true
+        }
       }
     })
 
@@ -98,6 +102,11 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
     >
       {userLocation && <MarkerF position={userLocation} />}
       {agencies.map(agency => {
+        if (!agency.latitude || !agency.longitude) return null;
+        const lat = Number(agency.latitude)
+        const lng = Number(agency.longitude)
+        if (isNaN(lat) || isNaN(lng)) return null;
+
         const getContactUrl = () => {
           if (agency.website) {
             return agency.website.startsWith('http') ? agency.website : `https://${agency.website}`;
@@ -119,10 +128,10 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
           return null;
         };
 
-        return agency.latitude && agency.longitude && (
+        return (
           <MarkerF
             key={agency.id}
-            position={{ lat: agency.latitude, lng: agency.longitude }}
+            position={{ lat, lng }}
             onClick={() => handleMarkerClick(agency.id)}
             icon={{
               url: '/logo.png',
@@ -131,7 +140,7 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
           >
             {activeMarker === agency.id && (
               <InfoWindowF
-                position={{ lat: agency.latitude, lng: agency.longitude }}
+                position={{ lat, lng }}
                 onCloseClick={() => setActiveMarker(null)}
               >
                 <div className="p-3 max-w-sm bg-white dark:bg-gray-800 text-black dark:text-white rounded-md shadow-lg">

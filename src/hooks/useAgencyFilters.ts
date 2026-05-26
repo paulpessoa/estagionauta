@@ -2,7 +2,19 @@
 import { useMemo } from 'react'
 import { Agency } from '@/types/agency'
 import { getDistance } from '@/utils/geolocation'
-import { FilterState } from '@/components/agency/AgencyFilterSidebar'
+export interface FilterState {
+  search: string
+  addressSearch: string
+  state: string
+  city: string
+  type: string
+  areas: string[]
+  minRating: number
+  verifiedOnly: boolean
+  maxDistance: number
+  sortBy: string
+  useGeolocation: boolean
+}
 
 interface UseAgencyFiltersProps {
   agencies: Agency[]

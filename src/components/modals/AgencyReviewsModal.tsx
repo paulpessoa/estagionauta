@@ -106,15 +106,6 @@ export function AgencyReviewsModal({ isOpen, onClose, agencyId, agencyName }: Ag
                     <MessageSquare className="h-5 w-5 absolute top-4 left-4 text-muted-foreground/30" />
                     <p className="text-sm pl-8 text-foreground leading-relaxed italic">"{review.comment}"</p>
                   </div>
-
-                  {review.justification && (
-                    <div className="bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30 rounded-lg p-4">
-                      <p className="text-xs font-semibold text-blue-700 dark:text-blue-400 mb-1.5 flex items-center gap-1.5">
-                        <CheckCircle2 className="h-3.5 w-3.5" /> Justificativa da Nota
-                      </p>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{review.justification}</p>
-                    </div>
-                  )}
                 </div>
               </div>
             ))

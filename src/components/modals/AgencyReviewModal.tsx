@@ -23,7 +23,6 @@ import { cn } from '@/lib/utils'
 const reviewSchema = z.object({
   rating: z.number().min(1, 'A nota é obrigatória.').max(5),
   comment: z.string().min(20, 'O comentário deve ter pelo menos 20 caracteres.').max(1000),
-  justification: z.string().min(10, 'A justificativa deve ter pelo menos 10 caracteres.').max(500),
 });
 
 type ReviewFormData = z.infer<typeof reviewSchema>;
@@ -41,7 +40,7 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
   const [loading, setLoading] = useState(false)
   const { control, handleSubmit, register, formState: { errors }, reset } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
-    defaultValues: { rating: 0, comment: '', justification: '' },
+    defaultValues: { rating: 0, comment: '' },
   });
 
   const onSubmit = async (data: ReviewFormData) => {
@@ -72,7 +71,7 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
         user_id: user.id,
         rating: data.rating,
         comment: data.comment,
-        justification: data.justification,
+        justification: data.comment,
         status: 'pending' // Aguardando moderação
       })
 
@@ -131,12 +130,6 @@ export function AgencyReviewModal({ isOpen, onClose, agencyId, agencyName, onRev
             <Label htmlFor="comment">Seu comentário *</Label>
             <Textarea id="comment" {...register('comment')} placeholder="Descreva sua experiência com a agência, os pontos positivos e negativos." rows={4} />
             {errors.comment && <p className="text-red-500 text-sm mt-1">{errors.comment.message}</p>}
-          </div>
-
-          <div>
-            <Label htmlFor="justification">Justificativa da nota *</Label>
-            <Textarea id="justification" {...register('justification')} placeholder="Explique brevemente por que você deu essa nota. Isso ajuda na moderação." rows={2} />
-            {errors.justification && <p className="text-red-500 text-sm mt-1">{errors.justification.message}</p>}
           </div>
 
           <DialogFooter>

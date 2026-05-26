@@ -8,9 +8,7 @@ const STORAGE_KEY = 'user_saved_location'
 export function useUserLocation() {
   const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null)
   const [savedAddress, setSavedAddress] = useState<string>('')
-  const [useGeolocation, setUseGeolocation] = useState(false)
   const [addressSearch, setAddressSearch] = useState('')
-  const [geoLoading, setGeoLoading] = useState(false)
   
   const { geocodeAddress, loading: geocodeLoading } = useAddressGeocoding()
 
@@ -39,33 +37,6 @@ export function useUserLocation() {
     }
   }
 
-  // Solicitar geolocalização
-  const requestGeolocation = () => {
-    setGeoLoading(true)
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords
-        const newUserLocation = { lat: latitude, lng: longitude }
-        setUserLocation(newUserLocation)
-        setGeoLoading(false)
-        
-        const locationData: GeocodedLocation = {
-          lat: latitude,
-          lng: longitude,
-          address: `Minha Localização (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`
-        }
-        saveLocationToStorage(locationData)
-        setAddressSearch(locationData.address)
-        toast.success("Geolocalização ativada!")
-      },
-      () => {
-        toast.error("Não foi possível obter sua localização.")
-        setGeoLoading(false)
-        setUseGeolocation(false)
-      }
-    )
-  }
-
   // Buscar por endereço
   const searchByAddress = async (address: string) => {
     if (!address.trim()) {
@@ -86,46 +57,20 @@ export function useUserLocation() {
     setUserLocation(null)
     setSavedAddress('')
     setAddressSearch('')
-    setUseGeolocation(false)
     localStorage.removeItem(STORAGE_KEY)
   }
 
   // Alteração no campo de busca por endereço
   const handleAddressSearchChange = (value: string) => {
     setAddressSearch(value)
-    
-    // Se estiver digitando um endereço diferente da geolocalização, desmarcar "usar minha localização"
-    if (value && !value.startsWith('Minha Localização')) {
-      setUseGeolocation(false)
-    }
-  }
-
-  // Toggle geolocalização
-  const toggleGeolocation = () => {
-    const newValue = !useGeolocation
-    setUseGeolocation(newValue)
-    
-    if (newValue) {
-      requestGeolocation()
-    } else {
-      // Se desmarcar, manter endereço salvo se houver
-      if (savedAddress && !savedAddress.startsWith('Minha Localização')) {
-        setAddressSearch(savedAddress)
-      } else {
-        clearLocation()
-      }
-    }
   }
 
   return {
     userLocation,
     addressSearch,
-    useGeolocation,
     savedAddress,
-    geoLoading,
     geocodeLoading,
     handleAddressSearchChange,
-    toggleGeolocation,
     searchByAddress,
     clearLocation
   }

@@ -108,7 +108,7 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
                     title="Enviar E-mail"
                   >
                     <Mail className="h-3.5 w-3.5" />
-                    <span>E-mail</span>
+                    <span>{agency.email}</span>
                   </a>
                 )}
                 {agency.website && (
@@ -120,7 +120,7 @@ export function AgencyCard({ agency, onReviewClick, onViewReviews }: AgencyCardP
                     title="Acessar Website"
                   >
                     <Globe className="h-3.5 w-3.5" />
-                    <span>Website</span>
+                    <span>{agency.website}</span>
                   </a>
                 )}
                 {agency.instagram && (
