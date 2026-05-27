@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
   full_name TEXT,
   avatar_url TEXT,
   role public.user_role DEFAULT 'student',
-  credits INTEGER DEFAULT 20 NOT NULL,
+  credits INTEGER DEFAULT 5 NOT NULL,
   total_credits_used INTEGER DEFAULT 0 NOT NULL,
   total_credits_purchased INTEGER DEFAULT 0 NOT NULL,
   subscription_status TEXT DEFAULT 'free',
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
 );
 
 -- Ensure all columns are present (for safety on existing databases)
-ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 20 NOT NULL;
+ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 5 NOT NULL;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS total_credits_used INTEGER DEFAULT 0 NOT NULL;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS total_credits_purchased INTEGER DEFAULT 0 NOT NULL;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS bio TEXT;
@@ -248,19 +248,19 @@ BEGIN
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.email),
     NEW.raw_user_meta_data->>'avatar_url',
-    20,
+    5,
     0,
     0
   )
   ON CONFLICT (id) DO UPDATE SET
-    credits = COALESCE(user_profiles.credits, 20),
+    credits = COALESCE(user_profiles.credits, 5),
     total_credits_used = COALESCE(user_profiles.total_credits_used, 0),
     total_credits_purchased = COALESCE(user_profiles.total_credits_purchased, 0);
   
   -- Registrar créditos iniciais como bônus (apenas se não existir)
   IF NOT EXISTS (SELECT 1 FROM public.credit_transactions WHERE user_id = NEW.id AND type = 'bonus' AND description = 'Créditos iniciais de boas-vindas') THEN
     INSERT INTO public.credit_transactions (user_id, type, amount, description)
-    VALUES (NEW.id, 'bonus', 20, 'Créditos iniciais de boas-vindas');
+    VALUES (NEW.id, 'bonus', 5, 'Créditos iniciais de boas-vindas');
   END IF;
   
   RETURN NEW;
