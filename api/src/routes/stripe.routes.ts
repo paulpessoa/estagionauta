@@ -36,6 +36,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
   try {
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'], // Removed 'pix' to prevent errors if not enabled in Stripe
+      customer_email: user.email,
       line_items: [
         {
           price: plan.priceId,
