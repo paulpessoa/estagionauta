@@ -133,11 +133,11 @@ This section is automatically loaded into the agent's context via system rules. 
   - Detailed task progress in [task.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/task.md)
 
 ### 2. Status Checklist
-- [x] **Phase 1: Security Emergency**: Rotated keys, removed frontend service role client, cleaned legacy code, restricted CORS.
-- [x] **Phase 2: Hono.js Backend**: Created `/api` with Hono routes, configured TS, setup Docker, built routes for auth middleware, credits, analysis, Brevo email.
-- [/] **Phase 3: Integration & Features**: End-to-end integration and completing additional features (Kanban completed, starting Resume Generator).
-- [ ] **Phase 4: Tests & CI/CD**
-- [ ] **Phase 5: Polish & Scale**
+- [x] **FASE 0: Preparar Beta**: Renomear Kanban para Candidaturas, esconder afiliados, simplificar preços, habilitar PIX no Stripe, créditos de boas-vindas para 5, logs de email no admin.
+- [/] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
+- [ ] **FASE 2: Copilot WebAgent MVP**: Hono copilot routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
+- [ ] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
+- [ ] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
 
 ### 3. Log of Learnings & Configuration
 - **Credits & Quota Checks in Antigravity**:
