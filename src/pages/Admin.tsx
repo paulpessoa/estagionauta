@@ -174,7 +174,7 @@ export default function AdminPage() {
   }
 
   const sortedAndFilteredUsers = useMemo(() => {
-    let result = usersList.filter(user => {
+    const result = usersList.filter(user => {
       const term = searchTerm.toLowerCase()
       const matchesSearch = (
         (user.full_name || '').toLowerCase().includes(term) ||

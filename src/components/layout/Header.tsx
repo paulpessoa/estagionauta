@@ -25,13 +25,6 @@ import {
   Moon,
   LogIn,
   UserPlus,
-  FileScan,
-  Sparkles,
-  Home,
-  MapPin,
-  Calculator,
-  Trello,
-  LayoutDashboard,
   Monitor,
   Satellite,
   Zap,
@@ -90,7 +83,6 @@ const NavLinks = ({
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
         >
-          <Sparkles className="h-4 w-4" />
           Simulador de Entrevistas
         </Link>
         <Link
@@ -109,8 +101,7 @@ const NavLinks = ({
   )
 }
 
-// Componente do botão inteligente
-const SmartActionButton = ({ mobile = false }: { mobile?: boolean }) => {
+const SmartActionButton = ({ mobile = false, onLinkClick }: { mobile?: boolean; onLinkClick?: () => void }) => {
   const { user, profile, isSupabaseAvailable } = useAuth()
   const [showMagicLinkModal, setShowMagicLinkModal] = useState(false)
 
@@ -137,20 +128,23 @@ const SmartActionButton = ({ mobile = false }: { mobile?: boolean }) => {
             className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 text-white font-bold shadow-lg hover:from-cyan-600 hover:to-purple-700 transition-all duration-300"
             asChild
           >
-            <Link to="/login">
+            <Link to="/login" onClick={onLinkClick}>
               <LogIn className="mr-2 h-4 w-4" />
               Entrar
             </Link>
           </Button>
           <Button variant="outline" asChild className="justify-start">
-            <Link to="/cadastro">
+            <Link to="/cadastro" onClick={onLinkClick}>
               <UserPlus className="mr-2 h-4 w-4" />
               Criar Conta
             </Link>
           </Button>
           <Button
             variant="ghost"
-            onClick={() => setShowMagicLinkModal(true)}
+            onClick={() => {
+              setShowMagicLinkModal(true)
+              if (onLinkClick) onLinkClick()
+            }}
             className="justify-start"
           >
             <Zap className="mr-2 h-4 w-4" />
