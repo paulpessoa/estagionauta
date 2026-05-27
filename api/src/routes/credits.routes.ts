@@ -11,7 +11,7 @@ app.get('/', authMiddleware, async (c) => {
   try {
     const { data: profile, error } = await supabaseAdmin
       .from('user_profiles')
-      .select('credits, total_credits_used, total_credits_purchased')
+      .select('credits, total_credits_used, total_credits_purchased, subscription_status')
       .eq('id', user.id)
       .single();
 
@@ -24,6 +24,7 @@ app.get('/', authMiddleware, async (c) => {
       credits: profile?.credits ?? 0,
       total_credits_used: profile?.total_credits_used ?? 0,
       total_credits_purchased: profile?.total_credits_purchased ?? 0,
+      subscription_status: profile?.subscription_status ?? 'free',
     });
   } catch (err) {
     console.error('Credits error:', err);

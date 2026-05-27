@@ -75,6 +75,7 @@ export default function SimuladorEntrevistas() {
   const [jobDescription, setJobDescription] = useState("")
   const [interviewerType, setInterviewerType] = useState("behavioral")
   const [voiceGender, setVoiceGender] = useState<'male' | 'female'>('female')
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string>("free")
 
   // Chat input
   const [answerInput, setAnswerInput] = useState("")
@@ -173,6 +174,31 @@ export default function SimuladorEntrevistas() {
 
     window.speechSynthesis?.cancel()
     setIsFetchingAudio(true)
+
+    // Free fallback: use browser speechSynthesis if not premium
+    if (subscriptionStatus !== 'premium') {
+      if ("speechSynthesis" in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = "pt-BR";
+        
+        const voices = window.speechSynthesis.getVoices();
+        const ptVoice = voices.find(v => v.lang.startsWith("pt"));
+        if (ptVoice) {
+          utterance.voice = ptVoice;
+        }
+
+        utterance.onstart = () => setIsPlayingAudio(true);
+        utterance.onend = () => setIsPlayingAudio(false);
+        utterance.onerror = () => setIsPlayingAudio(false);
+
+        window.speechSynthesis.speak(utterance);
+      } else {
+        toast.error("Voz não suportada neste navegador.");
+      }
+      setIsFetchingAudio(false);
+      return;
+    }
+
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
       // apiClient handles auth header internally
@@ -279,8 +305,9 @@ export default function SimuladorEntrevistas() {
 
   const loadCredits = async () => {
     try {
-      const data = await apiClient.get<{ credits: number }>("/api/credits")
+      const data = await apiClient.get<{ credits: number; subscription_status?: string }>("/api/credits")
       setUserCredits(data.credits)
+      setSubscriptionStatus(data.subscription_status || "free")
     } catch (err) {
       console.error("Erro ao buscar créditos:", err)
     }
@@ -965,9 +992,27 @@ export default function SimuladorEntrevistas() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-muted-foreground font-medium">
-                    Perguntas Respondidas:
+                {subscriptionStatus !== "premium" && isAudioEnabled && (
+                <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center justify-between gap-4 text-xs text-amber-700 dark:text-amber-400">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+                    <span>
+                      O algoritmo de voz gratuito é mais lento e limitado pelo seu navegador. <strong>Pague para ter uma melhor experiência</strong> com voz ultra-realista e nos ajude a manter a plataforma no ar.
+                    </span>
+                  </div>
+                  <Button
+                    variant="link"
+                    className="p-0 h-auto text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 font-bold underline shrink-0"
+                    onClick={() => navigate("/precos")}
+                  >
+                    Ver Planos
+                  </Button>
+                </div>
+              )}
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground font-medium">
+                  Perguntas Respondidas:
                   </span>
                   <Badge variant="secondary" className="px-2 py-0.5 font-bold">
                     {getProgressCount()} / 20

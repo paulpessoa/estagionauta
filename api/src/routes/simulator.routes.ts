@@ -344,7 +344,24 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
   text: z.string().min(1),
   voice: z.string().optional()
 })), async (c) => {
+  const user = c.get('user');
   const { text, voice } = c.req.valid('json');
+
+  // Check subscription status
+  const { data: profile, error: profileErr } = await supabaseAdmin
+    .from('user_profiles')
+    .select('subscription_status')
+    .eq('id', user.id)
+    .single();
+
+  if (profileErr || !profile) {
+    return c.json({ error: 'Erro ao verificar perfil' }, 500);
+  }
+
+  if (profile.subscription_status !== 'premium') {
+    return c.json({ error: 'OpenAI TTS is only available for premium users' }, 403);
+  }
+
   const VALID_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
   const selectedVoice = (voice && VALID_VOICES.includes(voice)) ? voice : 'nova';
 
@@ -352,6 +369,7 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
   const { createHash } = await import('crypto');
   const cacheKey = createHash('sha256').update(`${selectedVoice}:${text}`).digest('hex');
   const storagePath = `tts-cache/${cacheKey}.mp3`;
+
   const BUCKET = 'simulator-audio';
 
   try {

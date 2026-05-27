@@ -1,17 +1,18 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import { Header } from './components/layout/Header';
 import { Footer } from './components/Footer';
 import { Toaster } from './components/ui/sonner';
 import { ThemeProvider } from './components/theme-provider';
 import { routes } from './route';
-import { Suspense } from 'react';
+import { Suspense, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
+import CopilotDrawer from './components/copilot/CopilotDrawer';
 
 const queryClient = new QueryClient();
 
@@ -19,10 +20,11 @@ import { toast } from 'sonner';
 import { BrainCircuit } from 'lucide-react';
 
 function AppLayout() {
+  const { user } = useAuth();
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+
   const handleCopilotClick = () => {
-    toast.info("Copilot IA pessoal está em desenvolvimento!", {
-      description: "Em breve, o Copilot ajudará você em tempo real durante suas simulações e candidaturas!"
-    });
+    setIsCopilotOpen((prev) => !prev);
   };
 
   return (
@@ -45,17 +47,24 @@ function AppLayout() {
       <ReviewModal />
       <CookieConsent />
 
-      {/* Floating Copilot Button */}
-      <button
-        onClick={handleCopilotClick}
-        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group"
-        title="Copilot IA (Em Desenvolvimento)"
-        style={{
-          animation: 'pulse-shadow 2s infinite'
-        }}
-      >
-        <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
-      </button>
+      {/* Floating Copilot Button - Only visible for authenticated users */}
+      {user && (
+        <>
+          <button
+            onClick={handleCopilotClick}
+            className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group shadow-lg"
+            title="Copilot do Estagiário"
+            style={{
+              animation: 'pulse-shadow 2s infinite'
+            }}
+          >
+            <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
+          </button>
+          
+          <CopilotDrawer isOpen={isCopilotOpen} onClose={() => setIsCopilotOpen(false)} />
+        </>
+      )}
+
 
       {/* Custom keyframe animation for shadow pulsing */}
       <style>{`

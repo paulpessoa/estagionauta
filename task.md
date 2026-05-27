@@ -65,10 +65,20 @@
 - [x] Ajustar visibilidade de itens no header e menu mobile com base no cargo (ocultar recursos de estudante para admin)
 - [x] Remover exibição de contador de créditos no header superior e simplificar link para "Meus Créditos"
 - [x] Inserir agência VAGGON de teste e 3 avaliações (pendente, aprovada e rejeitada) no banco de dados
-- [x] Adicionar colunas `status` e `moderation_reason` na tabela `agency_comments` via script de migração
+- [x] Adicionar colunas `status` e `moderation_reason` na tabela `agency_comments`
 - [x] Implementar rotas Hono de moderação de comentários: `GET /api/admin/comments` e `PUT /api/admin/comments/:id/moderate`
 - [x] Renderizar avatares e nomes reais dos estudantes nos comentários
 - [x] Ocultar botão de resposta para comentários próprios (bloquear autocomentários) e em respostas (limitar aninhamento a 1 nível)
 - [x] Adicionar aba de transparência de "Histórico de Moderação" nas agências para comentários removidos (nomes no formato `Estudante G***`)
 - [x] Integrar aba de moderação de "Comentários" no painel administrativo `/admin`
 
+## FASE 2 — Copilot WebAgent MVP
+
+- [x] Database migrations (`copilot_messages` & `copilot_abuse_logs` tables with RLS and admin permission triggers)
+- [x] Abuse & Rate Limit Service (`api/src/services/abuse.service.ts` limiting to 30 msg/hr, 100 msg/day, 15 msg/5min cooldown)
+- [x] Tools definitions & execution (`check_profile`, `check_credits`, `calculate_recess`, `analyze_resume` in `api/src/tools/`)
+- [x] Backend Routes (`api/src/routes/copilot.routes.ts` message chat loop, clear, and history)
+- [x] Enforce paid subscription for OpenAI TTS inside `api/src/routes/simulator.routes.ts`
+- [x] Update frontend `src/pages/SimuladorEntrevistas.tsx` to handle browser TTS fallback for free users and notice alert upgrade banner
+- [x] Integrate floating action button click toggler and glassmorphism slide drawer `CopilotDrawer.tsx` in frontend `src/App.tsx`
+- [x] Verify backend tests compile and pass via Vitest
