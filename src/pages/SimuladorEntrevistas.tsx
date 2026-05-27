@@ -121,16 +121,22 @@ export default function SimuladorEntrevistas() {
     }
   }, [])
 
+  const prevIsListening = useRef(isListening)
+  useEffect(() => {
+    if (prevIsListening.current === true && isListening === false) {
+      if (inputMode === "voice" && answerInput.trim()) {
+        handleSendAnswer(undefined, answerInput)
+      }
+    }
+    prevIsListening.current = isListening
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isListening, inputMode, answerInput])
+
   const toggleListening = (e?: React.MouseEvent) => {
     e?.preventDefault()
     if (isListening) {
       recognitionRef.current?.stop()
       setIsListening(false)
-      
-      // Auto-send if in voice mode and there's text
-      if (inputMode === "voice" && answerInput.trim()) {
-        handleSendAnswer(undefined, answerInput)
-      }
     } else {
       if (recognitionRef.current) {
         // Stop speech synthesis and our custom audio if it's talking so we can listen clearly
@@ -1032,7 +1038,7 @@ export default function SimuladorEntrevistas() {
                             {isInterviewer && (
                               <button
                                 onClick={() => speakText(msg.content, true)}
-                                className="absolute -right-10 top-2 p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-100 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                                className="absolute -right-10 top-2 p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-100 rounded-full transition-all opacity-100"
                                 title="Ouvir reposta"
                               >
                                 <Volume2 className="h-4 w-4" />
@@ -1109,7 +1115,7 @@ export default function SimuladorEntrevistas() {
                          {actionLoading ? "Pensando..." : isFetchingAudio ? "Preparando Áudio..." : isPlayingAudio ? "Entrevistador Falando" : isListening ? "Ouvindo Você..." : "Sua Vez"}
                        </h3>
                        <p className="text-sm text-muted-foreground mt-2">
-                         {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isFetchingAudio ? "Carregando a voz do entrevistador" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? (answerInput || "Pode falar, estou captando seu áudio...") : "Toque no microfone abaixo para responder"}
+                         {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isFetchingAudio ? "Carregando a voz do entrevistador" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? "Pode falar, estou captando seu áudio..." : "Toque no microfone abaixo para responder"}
                        </p>
                      </div>
                    </div>
@@ -1231,26 +1237,6 @@ export default function SimuladorEntrevistas() {
                             <Mic className="h-6 w-6" />
                           )}
                         </Button>
-
-                        {/* Send Button (only appears if there's text captured) */}
-                        <AnimatePresence>
-                          {answerInput.trim() && !isListening && (
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              exit={{ scale: 0 }}
-                            >
-                              <Button
-                                type="submit"
-                                disabled={actionLoading}
-                                className="h-12 w-12 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-md"
-                                title="Enviar resposta"
-                              >
-                                <Send className="h-5 w-5" />
-                              </Button>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
                       </div>
                     </div>
                   ) : (
