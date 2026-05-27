@@ -92,7 +92,7 @@ export default function Dashboard() {
             color: 'bg-purple-500'
         },
         {
-            title: 'Kanban de Vagas',
+            title: 'Candidaturas',
             description: 'Acompanhe suas candidaturas em um quadro visual organizado.',
             icon: BarChart3,
             href: '/candidaturas',

@@ -331,17 +331,17 @@ export default function HomePage() {
                   <BotMessageSquare className="h-6 w-6 text-indigo-600" />
                 </div>
                 <CardTitle className="text-xl text-indigo-700 dark:text-indigo-400">
-                  Kanban de Candidaturas
+                  Minhas Candidaturas
                 </CardTitle>
                 <CardDescription className="text-slate-700 dark:text-slate-200">
-                  Organize suas candidaturas com um Kanban inteligente
+                  Organize e acompanhe todas as suas candidaturas de estágio
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative">
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-200 mb-6">
                   <li className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 mr-2" />
-                    Visualização Kanban e Lista
+                    Quadro visual e lista
                   </li>
                   <li className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 mr-2" />

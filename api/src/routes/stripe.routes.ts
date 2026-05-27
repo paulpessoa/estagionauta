@@ -13,18 +13,15 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const app = new Hono<Env>();
 
 const PLANS = {
-  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 30, name: 'Cosmonauta Avulso', type: 'payment' },
-  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 80, name: 'Astronauta Avulso', type: 'payment' },
-  comandante: { priceId: env.STRIPE_PRICE_COMANDANTE_AVULSO, credits: 200, name: 'Comandante Avulso', type: 'payment' },
-  cosmonauta_pro: { priceId: env.STRIPE_PRICE_COSMONAUTA_ASSINATURA, credits: 30, name: 'Cosmonauta Assinatura', type: 'subscription' },
-  astronauta_pro: { priceId: env.STRIPE_PRICE_ASTRONAUTA_ASSINATURA, credits: 80, name: 'Astronauta Assinatura', type: 'subscription' },
-  comandante_pro: { priceId: env.STRIPE_PRICE_COMANDANTE_ASSINATURA, credits: 200, name: 'Comandante Assinatura', type: 'subscription' },
+  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 15, name: 'Cosmonauta', type: 'payment' },
+  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 45, name: 'Astronauta', type: 'payment' },
+  comandante: { priceId: env.STRIPE_PRICE_COMANDANTE_AVULSO, credits: 120, name: 'Comandante', type: 'payment' },
 } as const;
 
 type PlanId = keyof typeof PLANS;
 
 const checkoutSchema = z.object({
-  planId: z.enum(['cosmonauta', 'astronauta', 'comandante', 'cosmonauta_pro', 'astronauta_pro', 'comandante_pro']),
+  planId: z.enum(['cosmonauta', 'astronauta', 'comandante']),
 });
 
 // POST /api/stripe/checkout - Create checkout session
@@ -35,7 +32,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'], // Removed 'pix' to prevent errors if not enabled in Stripe
+      payment_method_types: ['card', 'pix'],
       customer_email: user.email,
       line_items: [
         {

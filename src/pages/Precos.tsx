@@ -15,70 +15,28 @@ const plans = [
     id: 'cosmonauta',
     name: 'Cosmonauta',
     icon: Star,
-    credits: 30,
-    price: 1.99,
+    credits: 15,
+    price: 2.99,
     popular: false
   },
   {
     id: 'astronauta',
     name: 'Astronauta',
     icon: Zap,
-    credits: 80,
-    price: 4.99,
+    credits: 45,
+    price: 6.99,
     popular: true
   },
   {
     id: 'comandante',
     name: 'Comandante',
     icon: Crown,
-    credits: 200,
-    price: 9.99,
+    credits: 120,
+    price: 14.99,
     popular: false
   }
 ]
 
-const subscriptionPlans = [
-  {
-    id: 'cosmonauta_pro',
-    name: 'Básico',
-    icon: Star,
-    credits: 50,
-    price: 34.80,
-    monthlyEquivalent: 2.90,
-    benefits: [
-      'Kanban de vagas completo',
-      'Suporte por e-mail',
-      'Sincronização premium com a Extensão'
-    ]
-  },
-  {
-    id: 'astronauta_pro',
-    name: 'Recomendado',
-    icon: Zap,
-    credits: 150,
-    price: 70.80,
-    monthlyEquivalent: 5.90,
-    benefits: [
-      'Simulações de entrevista ilimitadas',
-      'Geração de currículos ilimitada',
-      'Suporte prioritário'
-    ],
-    popular: true
-  },
-  {
-    id: 'comandante_pro',
-    name: 'Avançado',
-    icon: Crown,
-    credits: 500,
-    price: 142.80,
-    monthlyEquivalent: 11.90,
-    benefits: [
-      'Todos os recursos ilimitados',
-      'Acesso antecipado a novidades',
-      'Assistente do Estagiário com IA'
-    ]
-  }
-]
 
 
 export default function Precos() {
@@ -87,7 +45,6 @@ export default function Precos() {
   const { credits } = useCredits()
   const { toast } = useToast()
   const [loading, setLoading] = useState<string | null>(null)
-  const [billingType, setBillingType] = useState<'credits' | 'subscriptions'>('credits')
 
   useEffect(() => {
     if (user) {
@@ -151,197 +108,74 @@ export default function Precos() {
           )}
         </div>
 
-        {/* Tab Switcher */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-slate-100 dark:bg-slate-800/80 p-1.5 rounded-full inline-flex border border-slate-200/55 dark:border-slate-700/50">
-            <button
-              onClick={() => setBillingType('credits')}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ${
-                billingType === 'credits'
-                  ? 'bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-200/20'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Recarga de Créditos (Compra Única)
-            </button>
-            <button
-              onClick={() => setBillingType('subscriptions')}
-              className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 relative ${
-                billingType === 'subscriptions'
-                  ? 'bg-white dark:bg-slate-900 text-purple-600 dark:text-purple-400 shadow-sm border border-slate-200/20'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              Assinaturas Anuais
-            </button>
+        <div>
+          <div className="text-center mb-8">
+            <p className="text-sm text-muted-foreground">
+              Cada análise de currículo custa 3 créditos • Seus créditos são válidos por 6 meses
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {plans.map((plan) => (
+              <Card 
+                key={plan.id}
+                className={`relative flex flex-col justify-between ${
+                  plan.popular 
+                    ? 'border-2 border-blue-500 shadow-xl scale-105' 
+                    : 'border border-gray-200 dark:border-gray-700'
+                }`}
+              >
+                {plan.popular && (
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
+                    Mais Popular
+                  </Badge>
+                )}
+                
+                <CardHeader className="text-center pb-4">
+                  <div className="flex justify-center mb-2">
+                    <plan.icon className="h-10 w-10 text-blue-500" />
+                  </div>
+                  <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
+                  <CardDescription className="text-gray-600 dark:text-gray-400">
+                    {plan.credits} créditos • Válidos por 6 meses
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent className="space-y-6">
+                  {/* Price */}
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-gray-900 dark:text-white">
+                      R$ {plan.price.toFixed(2).replace('.', ',')}
+                    </div>
+                  </div>
+
+                  {/* Purchase Button */}
+                  <Button 
+                    className={`w-full ${
+                      plan.popular 
+                        ? 'bg-blue-600 hover:bg-blue-700' 
+                        : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
+                    }`}
+                    onClick={() => handlePurchase(plan.id)}
+                    disabled={loading === plan.id}
+                  >
+                    {loading === plan.id ? (
+                      <div className="flex items-center space-x-2">
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                        <span>Processando...</span>
+                      </div>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-2 h-4 w-4" />
+                        Comprar {plan.credits} Créditos
+                      </>
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
-
-        {/* Content based on selected billing type */}
-        {billingType === 'credits' ? (
-          <div>
-            <div className="text-center mb-8">
-              <p className="text-sm text-muted-foreground">
-                Cada análise de currículo custa 3 créditos • Seus créditos expiram em 30 dias após a compra
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-              {plans.map((plan) => (
-                <Card 
-                  key={plan.id}
-                  className={`relative flex flex-col justify-between ${
-                    plan.popular 
-                      ? 'border-2 border-blue-500 shadow-xl scale-105' 
-                      : 'border border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
-                      Mais Popular
-                    </Badge>
-                  )}
-                  
-                  <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-2">
-                      <plan.icon className="h-10 w-10 text-blue-500" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-400">
-                      {plan.credits} créditos • Válidos por 30 dias
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-6">
-                    {/* Price */}
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                        R$ {plan.price.toFixed(2).replace('.', ',')}
-                      </div>
-                    </div>
-
-                    {/* Purchase Button */}
-                    <Button 
-                      className={`w-full ${
-                        plan.popular 
-                          ? 'bg-blue-600 hover:bg-blue-700' 
-                          : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
-                      }`}
-                      onClick={() => handlePurchase(plan.id)}
-                      disabled={loading === plan.id}
-                    >
-                      {loading === plan.id ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Processando...</span>
-                        </div>
-                      ) : (
-                        <>
-                          <Sparkles className="mr-2 h-4 w-4" />
-                          Comprar {plan.credits} Créditos
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div>
-            <div className="text-center mb-8">
-              <p className="text-sm text-muted-foreground">
-                Cobrança única anual • Créditos mensais recorrentes • Cancele a renovação quando quiser
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto animate-fadeIn">
-              {subscriptionPlans.map((plan) => (
-                <Card 
-                  key={plan.id}
-                  className={`relative flex flex-col justify-between ${
-                    plan.popular 
-                      ? 'border-2 border-purple-500 shadow-xl scale-105' 
-                      : 'border border-gray-200 dark:border-gray-700'
-                  }`}
-                >
-                  {plan.popular && (
-                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-purple-500 text-white">
-                      Mais Popular
-                    </Badge>
-                  )}
-                  
-                  <CardHeader className="text-center pb-4">
-                    <div className="flex justify-center mb-2">
-                      <plan.icon className="h-10 w-10 text-purple-500" />
-                    </div>
-                    <CardTitle className="text-2xl font-bold flex items-center justify-center gap-2">
-                      {plan.name}
-                    </CardTitle>
-                    <CardDescription className="text-gray-600 dark:text-gray-400">
-                      {plan.credits} créditos por mês
-                    </CardDescription>
-                  </CardHeader>
-                  
-                  <CardContent className="space-y-6 flex-grow flex flex-col justify-between">
-                    <div>
-                      {/* Price */}
-                      <div className="text-center mb-6 flex flex-col items-center">
-                        <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                          R$ {plan.monthlyEquivalent.toFixed(2).replace('.', ',')}
-                          <span className="text-sm font-normal text-muted-foreground">/mês</span>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
-                          Cobrado em parcela única de R$ {plan.price.toFixed(2).replace('.', ',')}/ano
-                        </div>
-                        <div className="inline-flex items-center gap-1.5 mt-3 bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 px-2.5 py-1 rounded-full text-xs font-bold border border-purple-100 dark:border-purple-900/30">
-                          {(() => {
-                            const avulsoRef = plan.id.startsWith('cosmonauta') ? 1.99 : plan.id.startsWith('astronauta') ? 4.99 : 9.99;
-                            const disc = Math.round((1 - (plan.monthlyEquivalent / avulsoRef)) * 100);
-                            return `${disc}% mais barato que avulso`;
-                          })()}
-                        </div>
-                      </div>
-
-                      {/* Benefits list */}
-                      <ul className="space-y-2 mb-6">
-                        {plan.benefits.map((benefit, i) => (
-                          <li key={i} className="flex items-start text-xs text-muted-foreground gap-2">
-                            <Check className="h-3.5 w-3.5 text-green-500 shrink-0 mt-0.5" />
-                            <span>{benefit}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    {/* Subscribe Button */}
-                    <Button 
-                      className={`w-full ${
-                        plan.popular 
-                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                          : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
-                      }`}
-                      onClick={() => handlePurchase(plan.id)}
-                      disabled={loading === plan.id}
-                    >
-                      {loading === plan.id ? (
-                        <div className="flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                          <span>Processando...</span>
-                        </div>
-                      ) : (
-                        <>
-                          <Sparkles className="mr-2 h-4 w-4" />
-                          Assinar
-                        </>
-                      )}
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Como funciona */}
         <div className="mt-20 max-w-4xl mx-auto">
@@ -437,7 +271,7 @@ export default function Precos() {
                 Como funcionam os créditos?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Cada análise de currículo consome 3 créditos. Simulações consomem 2 créditos e geração consome 1 crédito. Os créditos são válidos por 30 dias após a compra.
+                Cada análise de currículo consome 3 créditos. Simulações consomem 2 créditos e geração consome 1 crédito. Os créditos são válidos por 6 meses após a compra.
               </p>
             </div>
             
@@ -455,7 +289,7 @@ export default function Precos() {
                 Os créditos expiram?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Sim! Para garantir o melhor fluxo de uso na plataforma, seus créditos expiram exatamente 1 mês (30 dias) após a data da compra.
+                Sim! Para garantir a sustentabilidade dos serviços, os seus créditos são válidos por 6 meses após a data da compra.
               </p>
             </div>
             

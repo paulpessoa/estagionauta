@@ -464,7 +464,7 @@ export function Header() {
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               <Kanban className="mr-2 h-4 w-4" />
-                              Kanban de Vagas
+                              Candidaturas
                             </Link>
                           </Button>
                         </>
@@ -646,7 +646,7 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link to="/candidaturas">
                           <Kanban className="mr-2 h-4 w-4" />
-                          Kanban de Vagas
+                          Candidaturas
                         </Link>
                       </DropdownMenuItem>
                     </>
