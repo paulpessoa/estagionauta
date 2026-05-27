@@ -37,6 +37,8 @@ export interface Profile {
   notification_settings?: NotificationSettings
   privacy_settings?: PrivacySettings
   appearance_settings?: AppearanceSettings
+  referral_code?: string | null
+  referred_by?: string | null
   created_at: string
   updated_at: string
 } 

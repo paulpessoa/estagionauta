@@ -18,7 +18,7 @@ const ResultadoCurriculoExemplo = lazy(() => import("./pages/ResultadoCurriculoE
 const Sucesso = lazy(() => import("./pages/Sucesso"))
 const NotFound = lazy(() => import("./pages/NotFound"))
 const Precos = lazy(() => import("./pages/Precos"))
-const Afiliados = lazy(() => import("./pages/Afiliados"))
+const ConvideAmigos = lazy(() => import("./pages/ConvideAmigos"))
 const SimuladorEntrevistas = lazy(() => import("./pages/SimuladorEntrevistas"))
 const GeradorCurriculos = lazy(() => import("./pages/GeradorCurriculos"))
 const KanbanCandidaturas = lazy(() => import("./pages/KanbanCandidaturas"))
@@ -131,7 +131,7 @@ export const routes = [
     component: ResultadoCurriculoExemplo
   },
   { path: "/sucesso", component: ProtectedSucesso },
-  { path: "/afiliados", component: Afiliados },
+  { path: "/convide-amigos", component: ConvideAmigos },
   { path: "/privacy-policy", component: PrivacyPolicy },
   { path: "/termos-de-uso", component: TermosDeUso },
   { path: "/status", component: Status },

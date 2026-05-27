@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -19,6 +19,8 @@ export default function Cadastro() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const referralCode = searchParams.get('ref') || ''
   const { toast } = useToast()
   const { user } = useAuth()
 
@@ -53,6 +55,7 @@ export default function Cadastro() {
         options: {
           data: {
             full_name: fullName,
+            referral_code: referralCode,
           },
           emailRedirectTo: `${window.location.origin}/`,
         },
