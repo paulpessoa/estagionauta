@@ -308,52 +308,50 @@ export default function Perfil() {
           </Card>
 
           {/* Informações Acadêmicas */}
-          {profile?.role === 'student' && (
-            <Card>
-              <CardHeader className="py-4">
-                <CardTitle className="flex items-center gap-2 text-xl">
-                  <GraduationCap className="h-5 w-5 text-violet-600" />
-                  Informações Acadêmicas
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="course">Curso</Label>
-                    <Input
-                      id="course"
-                      value={profileData.course}
-                      onChange={(e) => setProfileData({ ...profileData, course: e.target.value })}
-                      placeholder="Ex: Ciência da Computação"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="university">Universidade / Faculdade</Label>
-                    <Input
-                      id="university"
-                      value={profileData.university}
-                      onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
-                      placeholder="Ex: USP"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="period">Período</Label>
-                    <Select value={profileData.period} onValueChange={(value) => setProfileData({ ...profileData, period: value })}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o período" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="1-2">1º - 2º período</SelectItem>
-                        <SelectItem value="3-5">3º - 5º período</SelectItem>
-                        <SelectItem value="6+">6º período ou mais</SelectItem>
-                        <SelectItem value="formado">Formado</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+          <Card>
+            <CardHeader className="py-4">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <GraduationCap className="h-5 w-5 text-violet-600" />
+                Informações Acadêmicas
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="course">Curso</Label>
+                  <Input
+                    id="course"
+                    value={profileData.course}
+                    onChange={(e) => setProfileData({ ...profileData, course: e.target.value })}
+                    placeholder="Ex: Ciência da Computação"
+                  />
                 </div>
-              </CardContent>
-            </Card>
-          )}
+                <div>
+                  <Label htmlFor="university">Universidade / Faculdade</Label>
+                  <Input
+                    id="university"
+                    value={profileData.university}
+                    onChange={(e) => setProfileData({ ...profileData, university: e.target.value })}
+                    placeholder="Ex: USP"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="period">Período</Label>
+                  <Select value={profileData.period} onValueChange={(value) => setProfileData({ ...profileData, period: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o período" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1-2">1º - 2º período</SelectItem>
+                      <SelectItem value="3-5">3º - 5º período</SelectItem>
+                      <SelectItem value="6+">6º período ou mais</SelectItem>
+                      <SelectItem value="formado">Formado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           <div className="flex justify-end">
             <Button
