@@ -67,7 +67,10 @@ const ProtectedResultadoCurriculo = () =>
   )
 
 const ProtectedEmailLogs = () =>
-  React.createElement(ProtectedRoute, null, React.createElement(EmailLogs))
+  React.createElement(ProtectedRoute, {
+    requireRole: "moderator",
+    children: React.createElement(EmailLogs)
+  })
 
 // Rotas que requerem role específica
 const ProtectedAdmin = () =>
