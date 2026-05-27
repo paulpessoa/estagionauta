@@ -40,6 +40,8 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
   university TEXT,
   period TEXT,
   curriculo_slug TEXT UNIQUE,
+  referral_code TEXT UNIQUE,
+  referred_by UUID REFERENCES public.user_profiles(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, NOW()) NOT NULL
 );
@@ -48,6 +50,8 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 5 NOT NULL;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS total_credits_used INTEGER DEFAULT 0 NOT NULL;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS total_credits_purchased INTEGER DEFAULT 0 NOT NULL;
+ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS referral_code TEXT;
+ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS referred_by UUID;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS bio TEXT;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS phone TEXT;
 ALTER TABLE public.user_profiles ADD COLUMN IF NOT EXISTS linkedin_url TEXT;
@@ -241,8 +245,17 @@ CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER
 SECURITY DEFINER
 AS $$
+DECLARE
+  ref_code text;
+  referrer_id uuid;
 BEGIN
-  INSERT INTO public.user_profiles (id, email, full_name, avatar_url, credits, total_credits_used, total_credits_purchased)
+  ref_code := NEW.raw_user_meta_data->>'referral_code';
+  
+  IF ref_code IS NOT NULL THEN
+    SELECT id INTO referrer_id FROM public.user_profiles WHERE referral_code = ref_code;
+  END IF;
+
+  INSERT INTO public.user_profiles (id, email, full_name, avatar_url, credits, total_credits_used, total_credits_purchased, referral_code, referred_by)
   VALUES (
     NEW.id,
     NEW.email,
@@ -250,7 +263,9 @@ BEGIN
     NEW.raw_user_meta_data->>'avatar_url',
     5,
     0,
-    0
+    0,
+    UPPER(SUBSTRING(MD5(NEW.id::text) FROM 1 FOR 8)),
+    referrer_id
   )
   ON CONFLICT (id) DO UPDATE SET
     credits = COALESCE(user_profiles.credits, 5),
@@ -261,6 +276,18 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM public.credit_transactions WHERE user_id = NEW.id AND type = 'bonus' AND description = 'Créditos iniciais de boas-vindas') THEN
     INSERT INTO public.credit_transactions (user_id, type, amount, description)
     VALUES (NEW.id, 'bonus', 5, 'Créditos iniciais de boas-vindas');
+  END IF;
+
+  -- Se foi indicado por alguém, premiar o indicador
+  IF referrer_id IS NOT NULL THEN
+    IF NOT EXISTS (SELECT 1 FROM public.credit_transactions WHERE user_id = referrer_id AND type = 'bonus' AND description = 'Indicação de amigo: ' || NEW.email) THEN
+      INSERT INTO public.credit_transactions (user_id, type, amount, description)
+      VALUES (referrer_id, 'bonus', 3, 'Indicação de amigo: ' || NEW.email);
+      
+      UPDATE public.user_profiles
+      SET credits = credits + 3
+      WHERE id = referrer_id;
+    END IF;
   END IF;
   
   RETURN NEW;
