@@ -135,7 +135,7 @@ This section is automatically loaded into the agent's context via system rules. 
 ### 2. Status Checklist
 - [x] **FASE 0: Preparar Beta**: Renomear Kanban para Candidaturas, esconder afiliados, simplificar preços, habilitar PIX no Stripe, créditos de boas-vindas para 5, logs de email no admin.
 - [x] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
-- [ ] **FASE 2: Copilot WebAgent MVP**: Hono copilot routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
+- [x] **FASE 2: Copilot WebAgent MVP**: Hono copilot routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
 - [ ] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
 - [ ] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
 
@@ -150,6 +150,9 @@ This section is automatically loaded into the agent's context via system rules. 
   - Shared types: Extracted to `/shared/types` to avoid type duplication and keep frontend and backend in sync.
   - CORS Local Setup: Hono backend API must explicitly allow `http://localhost:8080` in development since the Vite frontend is configured on that port. Without it, local browser e2e testing will face CORS errors on credits/simulator endpoints.
   - Credit RPC Validation: The `consume_credits` RPC takes `user_uuid`, `amount`, and `description` parameters. The new `tests/simulator.spec.ts` successfully logs in, starts an interview (consuming 1 credit), and asserts that the credit decrement is exact.
+- **TTS & Copilot Integration**: Restructured the Text-To-Speech pipeline to run OpenAI TTS API exclusively for premium members, while falling back to native browser speech synthesis for free members. Added an notice warning upgrade banner inside the interview simulator. Created the Hono.js Copilot API with a rate limiter, cooldown logs, and a dynamic Groq tool calling loop (`check_profile`, `check_credits`, `calculate_recess`, `analyze_resume`).
+- **Supabase CLI Repair**: Resolved remote database sync issues caused by an anomalous empty row in `schema_migrations` using `supabase migration repair --status reverted ""` followed by marking existing versions as applied and executing `supabase db push`.
 - **Git Commit Workflow**:
   - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
+
 
