@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, HelpCircle, ShieldAlert } from 'lucide-react';
+import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Input } from '@/components/ui/input';
@@ -13,12 +13,12 @@ interface Message {
   created_at?: string;
 }
 
-interface CopilotDrawerProps {
+interface CoverDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
+export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -38,10 +38,10 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
   const loadHistory = async () => {
     setHistoryLoading(true);
     try {
-      const data = await apiClient.get<{ messages: Message[] }>('/api/copilot/history');
+      const data = await apiClient.get<{ messages: Message[] }>('/api/cover/history');
       setMessages(data.messages || []);
     } catch (err) {
-      console.error('Error loading copilot history:', err);
+      console.error('Error loading cover history:', err);
     } finally {
       setHistoryLoading(false);
     }
@@ -61,13 +61,12 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
 
     try {
       const data = await apiClient.post<{ response?: string; error?: string; reason?: string }>(
-        '/api/copilot/message',
+        '/api/cover/message',
         { message: textToSend }
       );
 
       if (data.error) {
         toast.error(data.error);
-        // Remove user message if not saved / rate limited
         setMessages((prev) => prev.slice(0, -1));
         return;
       }
@@ -76,9 +75,8 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
         setMessages((prev) => [...prev, { role: 'assistant', content: data.response! }]);
       }
     } catch (err: any) {
-      console.error('Error sending message to copilot:', err);
+      console.error('Error sending message to cover:', err);
       toast.error(err.message || 'Erro de conexão com o assistente.');
-      // Remove last message if failed
       setMessages((prev) => prev.slice(0, -1));
     } finally {
       setIsLoading(false);
@@ -86,14 +84,14 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
   };
 
   const handleClearChat = async () => {
-    if (!window.confirm('Tem certeza que deseja apagar todo o histórico de conversas com o Copilot?')) {
+    if (!window.confirm('Tem certeza que deseja apagar todo o histórico de conversas com o Cover?')) {
       return;
     }
 
     try {
-      await apiClient.delete('/api/copilot/clear');
+      await apiClient.delete('/api/cover/clear');
       setMessages([]);
-      toast.success('Histórico do Copilot limpo com sucesso.');
+      toast.success('Histórico do Cover limpo com sucesso.');
     } catch (err) {
       console.error('Error clearing chat:', err);
       toast.error('Erro ao limpar histórico de conversa.');
@@ -123,7 +121,6 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Overlay background */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.4 }}
@@ -132,7 +129,6 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
             className="fixed inset-0 bg-black z-40"
           />
 
-          {/* Sliding Panel */}
           <motion.div
             initial={{ x: '100%' }}
             animate={{ x: 0 }}
@@ -148,7 +144,7 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm leading-none flex items-center gap-1.5 text-foreground">
-                    Copilot do Estagiário
+                    Cover
                     <span className="text-[10px] bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 font-bold px-1.5 py-0.5 rounded-full">BETA</span>
                   </h3>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Assistente Inteligente do Estagionauta</p>
@@ -194,7 +190,7 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
                       </div>
                       <h4 className="font-bold text-md text-foreground">Olá, Estagionauta! 🚀</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        Sou o seu assistente pessoal. Posso te ajudar a automatizar ações na plataforma, analisar seu currículo, tirar dúvidas sobre o seu recesso de estágio e mais.
+                        Sou o Cover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo. O que deseja fazer hoje?
                       </p>
                     </div>
 
@@ -328,7 +324,7 @@ export default function CopilotDrawer({ isOpen, onClose }: CopilotDrawerProps) {
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Converse com o Copilot..."
+                  placeholder="Converse com o Cover..."
                   className="flex-grow bg-background/80 focus-visible:ring-violet-600"
                   disabled={isLoading}
                 />

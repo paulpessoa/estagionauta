@@ -505,6 +505,15 @@ export function Header() {
                       )}
                       <Button variant="ghost" asChild className="justify-start">
                         <Link
+                          to="/perfil"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <User className="mr-2 h-4 w-4" />
+                          Meu Perfil
+                        </Link>
+                      </Button>
+                      <Button variant="ghost" asChild className="justify-start">
+                        <Link
                           to="/configuracoes"
                           onClick={() => setMobileMenuOpen(false)}
                         >
@@ -676,6 +685,12 @@ export function Header() {
                   )}
 
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link to="/perfil">
+                      <User className="mr-2 h-4 w-4" />
+                      Meu Perfil
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/configuracoes">
                       <Settings className="mr-2 h-4 w-4" />

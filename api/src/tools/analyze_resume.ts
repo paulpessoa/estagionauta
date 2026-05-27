@@ -74,7 +74,7 @@ export async function runAnalyzeResume(userId: string, args: {
       {
         user_uuid: userId,
         amount: 3,
-        description: 'Análise de currículo via Copilot Assistente',
+        description: 'Análise de currículo via Cover Assistente',
       }
     );
 
@@ -93,8 +93,8 @@ export async function runAnalyzeResume(userId: string, args: {
       .from('curriculum_analysis')
       .insert({
         user_id: userId,
-        name: profile.full_name || 'Usuário do Copilot',
-        email: profile.email || 'copilot@estagionauta.com.br',
+        name: profile.full_name || 'Usuário do Cover',
+        email: profile.email || 'cover@estagionauta.com.br',
         course: profile.course || null,
         university: profile.university || null,
         analysis_data: analysis,
@@ -106,7 +106,7 @@ export async function runAnalyzeResume(userId: string, args: {
       .single();
 
     if (saveError) {
-      console.error('Error saving curriculum analysis from copilot:', saveError);
+      console.error('Error saving curriculum analysis from cover:', saveError);
     }
 
     return {

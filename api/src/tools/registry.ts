@@ -3,19 +3,19 @@ import { checkCreditsDefinition, runCheckCredits } from './check_credits.js';
 import { calculateRecessDefinition, runCalculateRecess } from './calculate_recess.js';
 import { analyzeResumeDefinition, runAnalyzeResume } from './analyze_resume.js';
 
-export const copilotTools = [
+export const coverTools = [
   checkProfileDefinition,
   checkCreditsDefinition,
   calculateRecessDefinition,
   analyzeResumeDefinition,
 ];
 
-export async function executeCopilotTool(
+export async function executeCoverTool(
   name: string,
   args: any,
   userId: string
 ): Promise<any> {
-  console.log(`[CopilotToolCalling] Executing tool: ${name} with args:`, args);
+  console.log(`[CoverToolCalling] Executing tool: ${name} with args:`, args);
 
   switch (name) {
     case 'check_profile':

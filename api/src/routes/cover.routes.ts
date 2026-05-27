@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { checkAbuse } from '../services/abuse.service.js';
-import { copilotTools, executeCopilotTool } from '../tools/registry.js';
+import { coverTools, executeCoverTool } from '../tools/registry.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
 
@@ -19,38 +19,35 @@ const messageSchema = z.object({
   message: z.string().min(1, 'A mensagem não pode ser vazia'),
 });
 
-// GET /api/copilot/history - Get recent chat history (e.g. for loading the drawer)
+// GET /api/cover/history - Get recent chat history
 app.get('/history', authMiddleware, async (c) => {
   const user = c.get('user');
 
   try {
     const { data: messages, error } = await supabaseAdmin
-      .from('copilot_messages')
+      .from('cover_messages')
       .select('role, content, name, created_at')
-      // Only show user and assistant messages to the frontend
       .in('role', ['user', 'assistant'])
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
       .limit(50);
 
     if (error) {
-      console.error('Error fetching copilot history:', error);
+      console.error('Error fetching cover history:', error);
       return c.json({ error: 'Erro ao carregar o histórico de conversas.' }, 500);
     }
 
     return c.json({ messages });
   } catch (err) {
-    console.error('Unexpected error fetching copilot history:', err);
+    console.error('Unexpected error fetching cover history:', err);
     return c.json({ error: 'Erro interno no servidor.' }, 500);
   }
 });
 
-// POST /api/copilot/message - Send message to Copilot and get response
+// POST /api/cover/message - Send message to Cover and get response
 app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c) => {
   const user = c.get('user');
   const { message } = c.req.valid('json');
-
-  // Retrieve client IP for abuse detection
   const ipAddress = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || '127.0.0.1';
 
   try {
@@ -68,9 +65,9 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       return c.json({ error: message, reason: abuseCheck.reason, cooldownRemaining: abuseCheck.cooldownRemaining }, 429);
     }
 
-    // 2. Save the user's message to the database
+    // 2. Save user message
     const { error: saveUserMsgErr } = await supabaseAdmin
-      .from('copilot_messages')
+      .from('cover_messages')
       .insert({
         user_id: user.id,
         role: 'user',
@@ -78,41 +75,45 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       });
 
     if (saveUserMsgErr) {
-      console.error('Error saving user message to database:', saveUserMsgErr);
-      return c.json({ error: 'Erro ao processar mensagem no banco de dados.' }, 500);
+      console.error('Error saving user message:', saveUserMsgErr);
+      return c.json({ error: 'Erro ao processar mensagem.' }, 500);
     }
 
-    // 3. Fetch past 15 messages for LLM context
+    // 3. Fetch past messages for context
     const { data: dbHistory, error: historyErr } = await supabaseAdmin
-      .from('copilot_messages')
+      .from('cover_messages')
       .select('role, content, name, tool_calls, tool_call_id')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
-      // Fetch slightly more to account for intermediate tool messages
       .limit(20);
 
     if (historyErr) {
-      console.log('Error fetching history, starting fresh context:', historyErr);
+      console.log('Error fetching history:', historyErr);
     }
 
-    // 4. Construct messages array for LLM
-    const systemPrompt = `Você é o Copilot do Estagiário (Assistente Oficial do Estagionauta). 
-Seu objetivo é ajudar estudantes e estagiários a navegarem pela plataforma Estagionauta, tirar dúvidas sobre a Lei do Estágio (Lei 11.788/2008), dar feedback de carreira e usar ferramentas integradas.
-Instruções importantes:
-- Responda em português brasileiro de forma amigável, clara e prestativa.
-- Nunca invente dados. Use as ferramentas disponibilizadas para consultar o saldo de créditos do usuário, recesso ou perfil do usuário.
-- Se o usuário pedir para calcular o recesso, chame a ferramenta 'calculate_recess'.
-- Se o usuário quiser saber se o perfil dele está completo, chame a ferramenta 'check_profile'.
-- Se o usuário quiser saber seus créditos, chame a ferramenta 'check_credits'.
-- Se o usuário quiser analisar o currículo dele, chame a ferramenta 'analyze_resume'. Avise que a análise custa 3 créditos.
-- Seja conciso e evite respostas excessivamente longas.`;
+    // 4. System Prompt with SITE MAP & BUSINESS RULES
+    const systemPrompt = `Você é o Cover (Assistente Inteligente Oficial do Estagionauta).
+Seu objetivo é ajudar estudantes e estagiários com dúvidas de estágio, orientar sobre a Lei do Estágio (Lei 11.788/2008), dar dicas de carreira e interagir com o site.
+
+REGRAS CRUCIAIS DE NAVEGAÇÃO (MAPA DO SITE):
+Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo na plataforma, use rigorosamente este mapa do site:
+1. Perfil do Usuário: A página "Meu Perfil" (caminho: '/perfil') é o local exclusivo onde o usuário edita suas informações pessoais e acadêmicas, como: Nome, Foto (avatar), Biografia, Telefone, LinkedIn, Curso, Universidade/Faculdade e Período de graduação. (IMPORTANTE: Nunca diga que essas informações são editadas na aba perfil de configurações, pois configurações e perfil agora são páginas totalmente separadas!)
+2. Configurações da Conta: A página "Configurações" (caminho: '/configuracoes') serve apenas para alterar a senha ou excluir a conta permanentemente (zona de perigo).
+3. Candidaturas (Kanban): A página "Candidaturas" (caminho: '/candidaturas') serve para organizar as vagas e processos seletivos do usuário.
+4. Simulador de Entrevistas: A página "Simulador de Entrevistas" (caminho: '/simulador-entrevistas') é onde o usuário treina com um entrevistador de IA por áudio ou chat (custa 1 crédito por nova simulação).
+5. Gerador de Currículos: A página "Gerador de Currículos" (caminho: '/gerador-curriculos') serve para criar e exportar currículos profissionais.
+6. Análise de Currículo por IA: A página "Análise de Currículo" (caminho: '/analise-curriculo') serve para enviar um currículo e obter uma nota e feedback estruturado da IA (custa 3 créditos por análise).
+7. Calculadora de Recesso: A página "Calculadora de Recesso" (caminho: '/calculadora') calcula o período e valor proporcional de recesso garantido pela lei.
+8. Indicar Amigos: A página "Indicar Amigos" (caminho: '/convide-amigos') permite ao usuário convidar amigos para ganhar créditos.
+9. Preços / Comprar Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
+
+Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas se o usuário pedir informações sobre créditos, perfil incompleto, cálculos de recesso ou análise de currículo.`;
 
     const apiMessages: any[] = [
       { role: 'system', content: systemPrompt },
     ];
 
     if (dbHistory && dbHistory.length > 0) {
-      // Map stored messages to OpenAI format
       for (const msg of dbHistory) {
         apiMessages.push({
           role: msg.role,
@@ -123,11 +124,9 @@ Instruções importantes:
         });
       }
     } else {
-      // Fallback: just add the current message
       apiMessages.push({ role: 'user', content: message });
     }
 
-    // 5. Tool completion loop (max 5 iterations)
     let loopCount = 0;
     let finalResponseText = '';
     const MAX_LOOPS = 5;
@@ -136,7 +135,7 @@ Instruções importantes:
       const response = await groq.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
         messages: apiMessages,
-        tools: copilotTools,
+        tools: coverTools,
         tool_choice: 'auto',
         temperature: 0.7,
       });
@@ -145,16 +144,15 @@ Instruções importantes:
       const aiMsg = choice.message;
 
       if (!aiMsg) {
-        throw new Error('Nenhuma resposta retornada da API.');
+        throw new Error('Nenhuma resposta do LLM.');
       }
 
-      // Check if LLM wanted to call tools
       if (aiMsg.tool_calls && aiMsg.tool_calls.length > 0) {
-        console.log(`[Copilot] LLM requested tools:`, aiMsg.tool_calls.map(tc => tc.function.name));
+        console.log(`[Cover] LLM requested tools:`, aiMsg.tool_calls.map(tc => tc.function.name));
 
-        // Save assistant tool call instruction in database
-        const { error: saveToolCallErr } = await supabaseAdmin
-          .from('copilot_messages')
+        // Save assistant tool call
+        await supabaseAdmin
+          .from('cover_messages')
           .insert({
             user_id: user.id,
             role: 'assistant',
@@ -162,29 +160,23 @@ Instruções importantes:
             tool_calls: aiMsg.tool_calls,
           });
 
-        if (saveToolCallErr) {
-          console.error('Error saving assistant tool calls:', saveToolCallErr);
-        }
-
-        // Push to internal API messages representation
         apiMessages.push(aiMsg);
 
-        // Execute all tool calls requested
         for (const toolCall of aiMsg.tool_calls) {
           const toolName = toolCall.function.name;
           const toolArgs = JSON.parse(toolCall.function.arguments);
 
           let toolResult;
           try {
-            toolResult = await executeCopilotTool(toolName, toolArgs, user.id);
+            toolResult = await executeCoverTool(toolName, toolArgs, user.id);
           } catch (toolError: any) {
             console.error(`Error running tool ${toolName}:`, toolError);
             toolResult = { error: toolError.message || 'Erro ao executar ferramenta.' };
           }
 
-          // Save tool response in database
-          const { error: saveToolResultErr } = await supabaseAdmin
-            .from('copilot_messages')
+          // Save tool response
+          await supabaseAdmin
+            .from('cover_messages')
             .insert({
               user_id: user.id,
               role: 'tool',
@@ -193,11 +185,6 @@ Instruções importantes:
               content: JSON.stringify(toolResult),
             });
 
-          if (saveToolResultErr) {
-            console.error('Error saving tool result:', saveToolResultErr);
-          }
-
-          // Push tool response message to LLM messages history
           apiMessages.push({
             role: 'tool',
             name: toolName,
@@ -208,21 +195,16 @@ Instruções importantes:
 
         loopCount++;
       } else {
-        // No tool calls, this is the final text response
         finalResponseText = aiMsg.content || '';
         
-        // Save the assistant's final response to the database
-        const { error: saveAssistantMsgErr } = await supabaseAdmin
-          .from('copilot_messages')
+        // Save assistant message
+        await supabaseAdmin
+          .from('cover_messages')
           .insert({
             user_id: user.id,
             role: 'assistant',
             content: finalResponseText,
           });
-
-        if (saveAssistantMsgErr) {
-          console.error('Error saving assistant message to database:', saveAssistantMsgErr);
-        }
 
         break;
       }
@@ -230,7 +212,7 @@ Instruções importantes:
 
     if (!finalResponseText && loopCount >= MAX_LOOPS) {
       finalResponseText = 'Desculpe, excedi o limite de processamento de ferramentas. O que mais posso ajudar?';
-      await supabaseAdmin.from('copilot_messages').insert({
+      await supabaseAdmin.from('cover_messages').insert({
         user_id: user.id,
         role: 'assistant',
         content: finalResponseText,
@@ -239,29 +221,29 @@ Instruções importantes:
 
     return c.json({ response: finalResponseText });
   } catch (err: any) {
-    console.error('Copilot processing error:', err);
+    console.error('Cover processing error:', err);
     return c.json({ error: 'Desculpe, ocorreu um erro interno ao processar sua mensagem.' }, 500);
   }
 });
 
-// DELETE /api/copilot/clear - Clear chat history
+// DELETE /api/cover/clear - Clear chat history
 app.delete('/clear', authMiddleware, async (c) => {
   const user = c.get('user');
 
   try {
     const { error } = await supabaseAdmin
-      .from('copilot_messages')
+      .from('cover_messages')
       .delete()
       .eq('user_id', user.id);
 
     if (error) {
-      console.error('Error clearing copilot messages:', error);
+      console.error('Error clearing cover messages:', error);
       return c.json({ error: 'Erro ao limpar histórico do chat.' }, 500);
     }
 
     return c.json({ success: true, message: 'Histórico limpo com sucesso.' });
   } catch (err) {
-    console.error('Unexpected error clearing copilot:', err);
+    console.error('Unexpected error clearing cover:', err);
     return c.json({ error: 'Erro interno no servidor.' }, 500);
   }
 });

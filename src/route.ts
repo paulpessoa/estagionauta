@@ -25,6 +25,7 @@ const KanbanCandidaturas = lazy(() => import("./pages/KanbanCandidaturas"))
 const Dashboard = lazy(() => import("./pages/Dashboard"))
 const MinhasAnalises = lazy(() => import("./pages/MinhasAnalises"))
 const Configuracoes = lazy(() => import("./pages/Configuracoes"))
+const Perfil = lazy(() => import("./pages/Perfil"))
 const Curriculo = lazy(() => import("./pages/Curriculo"))
 const Creditos = lazy(() => import("./pages/Creditos"))
 const EmailLogs = lazy(() => import("./pages/EmailLogs"))
@@ -55,6 +56,9 @@ const ProtectedKanbanCandidaturas = () =>
 
 const ProtectedConfiguracoes = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Configuracoes))
+
+const ProtectedPerfil = () =>
+  React.createElement(ProtectedRoute, null, React.createElement(Perfil))
 
 const ProtectedCreditos = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Creditos))
@@ -124,6 +128,7 @@ export const routes = [
   { path: "/precos", component: Precos },
   { path: "/comprar-creditos", component: Precos },
   { path: "/configuracoes", component: ProtectedConfiguracoes },
+  { path: "/perfil", component: ProtectedPerfil },
   { path: "/creditos", component: ProtectedCreditos },
   { path: "/resultado-curriculo/:id", component: ProtectedResultadoCurriculo },
   {

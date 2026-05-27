@@ -12,7 +12,7 @@ import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
-import CopilotDrawer from './components/copilot/CopilotDrawer';
+import CoverDrawer from './components/cover/CoverDrawer';
 
 const queryClient = new QueryClient();
 
@@ -21,10 +21,10 @@ import { BrainCircuit } from 'lucide-react';
 
 function AppLayout() {
   const { user } = useAuth();
-  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isCoverOpen, setIsCoverOpen] = useState(false);
 
-  const handleCopilotClick = () => {
-    setIsCopilotOpen((prev) => !prev);
+  const handleCoverClick = () => {
+    setIsCoverOpen((prev) => !prev);
   };
 
   return (
@@ -47,13 +47,13 @@ function AppLayout() {
       <ReviewModal />
       <CookieConsent />
 
-      {/* Floating Copilot Button - Only visible for authenticated users */}
+      {/* Floating Cover Button - Only visible for authenticated users */}
       {user && (
         <>
           <button
-            onClick={handleCopilotClick}
+            onClick={handleCoverClick}
             className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group shadow-lg"
-            title="Copilot do Estagiário"
+            title="Cover - Assistente Inteligente"
             style={{
               animation: 'pulse-shadow 2s infinite'
             }}
@@ -61,7 +61,7 @@ function AppLayout() {
             <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
           </button>
           
-          <CopilotDrawer isOpen={isCopilotOpen} onClose={() => setIsCopilotOpen(false)} />
+          <CoverDrawer isOpen={isCoverOpen} onClose={() => setIsCoverOpen(false)} />
         </>
       )}
 

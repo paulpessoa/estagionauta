@@ -82,3 +82,17 @@
 - [x] Update frontend `src/pages/SimuladorEntrevistas.tsx` to handle browser TTS fallback for free users and notice alert upgrade banner
 - [x] Integrate floating action button click toggler and glassmorphism slide drawer `CopilotDrawer.tsx` in frontend `src/App.tsx`
 - [x] Verify backend tests compile and pass via Vitest
+
+## FASE 2.5 — Renomear para Cover & Separar Perfil/Configurações
+
+- [x] Database migration: create SQL file `20260527201600_rename_copilot_to_cover.sql` and run `supabase db push`
+- [x] Rename Hono routes and test files to use "cover" instead of "copilot"
+- [x] Mount `/api/cover` in Hono app router
+- [x] Update table names and references in `abuse.service.ts` and route files
+- [x] Refactor tools registry to use "cover" terminology and inject site map into system prompt
+- [x] Rename frontend component folder/drawer and adjust references
+- [x] Create `/perfil` page allowing user to edit avatar, slug, name, phone, bio, linkedin, and academic info
+- [x] Clean up `/configuracoes` page to contain only password change and delete account
+- [x] Register new `/perfil` route in `src/route.ts` and update header dropdown/mobile navigation
+- [x] Verify Vitest tests pass and projects build successfully
+

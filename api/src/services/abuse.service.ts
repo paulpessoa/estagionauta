@@ -20,7 +20,7 @@ export async function checkAbuse(userId: string, ipAddress: string): Promise<Abu
   const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000).toISOString();
   
   const { data: recentCooldowns, error: cooldownError } = await supabaseAdmin
-    .from('copilot_abuse_logs')
+    .from('cover_abuse_logs')
     .select('created_at')
     .eq('user_id', userId)
     .eq('action', 'spam_cooldown')
@@ -47,7 +47,7 @@ export async function checkAbuse(userId: string, ipAddress: string): Promise<Abu
 
   // 2. Count messages in last 5 minutes to see if we should trigger a new cooldown
   const { count: fiveMinCount, error: count5Err } = await supabaseAdmin
-    .from('copilot_messages')
+    .from('cover_messages')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .eq('role', 'user')
@@ -70,7 +70,7 @@ export async function checkAbuse(userId: string, ipAddress: string): Promise<Abu
   // 3. Count messages in last 1 hour (limit 30)
   const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000).toISOString();
   const { count: hourlyCount, error: count1hErr } = await supabaseAdmin
-    .from('copilot_messages')
+    .from('cover_messages')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .eq('role', 'user')
@@ -91,7 +91,7 @@ export async function checkAbuse(userId: string, ipAddress: string): Promise<Abu
   // 4. Count messages in last 24 hours (limit 100)
   const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
   const { count: dailyCount, error: count24hErr } = await supabaseAdmin
-    .from('copilot_messages')
+    .from('cover_messages')
     .select('*', { count: 'exact', head: true })
     .eq('user_id', userId)
     .eq('role', 'user')
@@ -122,7 +122,7 @@ export async function logAbuse(
   details: string
 ): Promise<void> {
   const { error } = await supabaseAdmin
-    .from('copilot_abuse_logs')
+    .from('cover_abuse_logs')
     .insert({
       user_id: userId,
       ip_address: ipAddress || 'unknown',

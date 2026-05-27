@@ -16,7 +16,7 @@ vi.mock('../services/supabase.service.js', () => {
   };
 });
 
-describe('Copilot Tools & Abuse Service Tests', () => {
+describe('Cover Tools & Abuse Service Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -80,10 +80,10 @@ describe('Copilot Tools & Abuse Service Tests', () => {
       
       // Setup mock implementation based on table name
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
-        if (tableName === 'copilot_abuse_logs') {
+        if (tableName === 'cover_abuse_logs') {
           return { select: vi.fn().mockReturnValue({ eq: mockEq1Cooldown }) } as any;
         }
-        if (tableName === 'copilot_messages') {
+        if (tableName === 'cover_messages') {
           return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ gte: mockCount }) }) }) } as any;
         }
         return {} as any;
@@ -108,13 +108,13 @@ describe('Copilot Tools & Abuse Service Tests', () => {
       const mockInsert = vi.fn().mockResolvedValue({ error: null });
 
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
-        if (tableName === 'copilot_abuse_logs') {
+        if (tableName === 'cover_abuse_logs') {
           return {
             select: vi.fn().mockReturnValue({ eq: mockEq1Cooldown }),
             insert: mockInsert,
           } as any;
         }
-        if (tableName === 'copilot_messages') {
+        if (tableName === 'cover_messages') {
           return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ gte: mockCount }) }) }) } as any;
         }
         return {} as any;
