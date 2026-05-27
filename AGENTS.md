@@ -134,7 +134,7 @@ This section is automatically loaded into the agent's context via system rules. 
 
 ### 2. Status Checklist
 - [x] **FASE 0: Preparar Beta**: Renomear Kanban para Candidaturas, esconder afiliados, simplificar preços, habilitar PIX no Stripe, créditos de boas-vindas para 5, logs de email no admin.
-- [/] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
+- [x] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
 - [ ] **FASE 2: Copilot WebAgent MVP**: Hono copilot routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
 - [ ] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
 - [ ] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
