@@ -2,6 +2,7 @@ import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { checkAbuse } from '../services/abuse.service.js';
 import { runCalculateRecess } from '../tools/calculate_recess.js';
 import { runCheckCredits } from '../tools/check_credits.js';
+import { runUpdateProfile } from '../tools/update_profile.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 
 // Mock Supabase service
@@ -19,6 +20,46 @@ vi.mock('../services/supabase.service.js', () => {
 describe('Cover Tools & Abuse Service Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  describe('update_profile tool', () => {
+    it('updates profile fields successfully', async () => {
+      const mockEq = vi.fn().mockResolvedValue({ error: null });
+      const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
+      
+      vi.mocked(supabaseAdmin.from).mockReturnValue({
+        update: mockUpdate,
+      } as any);
+
+      const updates = {
+        course: 'Engenharia de Software',
+        university: 'Estácio de Sá',
+        period: '3-5',
+        invalid_field: 'ignored'
+      };
+
+      const result = await runUpdateProfile('user-id-123', updates);
+
+      expect(result.success).toBe(true);
+      expect(result.updatedFields).toContain('course');
+      expect(result.updatedFields).toContain('university');
+      expect(result.updatedFields).toContain('period');
+      expect(result.updatedFields).not.toContain('invalid_field');
+      
+      expect(supabaseAdmin.from).toHaveBeenCalledWith('user_profiles');
+      expect(mockEq).toHaveBeenCalledWith('id', 'user-id-123');
+      expect(mockUpdate).toHaveBeenCalledWith({
+        course: 'Engenharia de Software',
+        university: 'Estácio de Sá',
+        period: '3-5'
+      });
+    });
+
+    it('returns error if no valid fields provided', async () => {
+      const result = await runUpdateProfile('user-id-123', { foo: 'bar' });
+      expect(result.error).toBeDefined();
+      expect(result.error).toContain('Nenhum campo válido');
+    });
   });
 
   describe('calculate_recess tool', () => {
@@ -102,8 +143,8 @@ describe('Cover Tools & Abuse Service Tests', () => {
       
       // 5min count = 2, 1hour count = 35 (exceeds hourly limit of 30)
       const mockCount = vi.fn()
-        .mockResolvedValueOnce({ count: 2, error: null }) // 5 min count check
-        .mockResolvedValueOnce({ count: 35, error: null }); // 1 hour count check
+          .mockResolvedValueOnce({ count: 2, error: null }) // 5 min count check
+          .mockResolvedValueOnce({ count: 35, error: null }); // 1 hour count check
 
       const mockInsert = vi.fn().mockResolvedValue({ error: null });
 
