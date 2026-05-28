@@ -13,12 +13,12 @@ interface Message {
   created_at?: string;
 }
 
-interface CoverDrawerProps {
+interface RoverDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
+export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);

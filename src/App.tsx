@@ -12,7 +12,7 @@ import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
-import CoverDrawer from './components/rover/CoverDrawer';
+import RoverDrawer from './components/rover/RoverDrawer';
 
 const queryClient = new QueryClient();
 
@@ -61,7 +61,7 @@ function AppLayout() {
             <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
           </button>
 
-          <CoverDrawer isOpen={isCoverOpen} onClose={() => setIsCoverOpen(false)} />
+          <RoverDrawer isOpen={isCoverOpen} onClose={() => setIsCoverOpen(false)} />
         </>
       )}
 
