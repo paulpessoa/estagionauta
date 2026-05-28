@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { checkAbuse } from '../services/abuse.service.js';
-import { coverTools, executeCoverTool } from '../tools/registry.js';
+import { roverTools, executeRoverTool } from '../tools/registry.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
 
@@ -25,7 +25,7 @@ app.get('/history', authMiddleware, async (c) => {
 
   try {
     const { data: messages, error } = await supabaseAdmin
-      .from('cover_messages')
+      .from('rover_messages')
       .select('role, content, name, created_at')
       .in('role', ['user', 'assistant'])
       .eq('user_id', user.id)
@@ -67,7 +67,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
 
     // 2. Save user message
     const { error: saveUserMsgErr } = await supabaseAdmin
-      .from('cover_messages')
+      .from('rover_messages')
       .insert({
         user_id: user.id,
         role: 'user',
@@ -81,7 +81,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
 
     // 3. Fetch past messages for context
     const { data: dbHistory, error: historyErr } = await supabaseAdmin
-      .from('cover_messages')
+      .from('rover_messages')
       .select('role, content, name, tool_calls, tool_call_id')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true })
@@ -159,7 +159,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
       const response = await groq.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
         messages: apiMessages,
-        tools: coverTools,
+        tools: roverTools,
         tool_choice: 'auto',
         temperature: 0.7,
       });
@@ -176,7 +176,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
         // Save assistant tool call
         await supabaseAdmin
-          .from('cover_messages')
+          .from('rover_messages')
           .insert({
             user_id: user.id,
             role: 'assistant',
@@ -192,7 +192,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
           let toolResult;
           try {
-            toolResult = await executeCoverTool(toolName, toolArgs, user.id);
+            toolResult = await executeRoverTool(toolName, toolArgs, user.id);
           } catch (toolError: any) {
             console.error(`Error running tool ${toolName}:`, toolError);
             toolResult = { error: toolError.message || 'Erro ao executar ferramenta.' };
@@ -200,7 +200,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
           // Save tool response
           await supabaseAdmin
-            .from('cover_messages')
+            .from('rover_messages')
             .insert({
               user_id: user.id,
               role: 'tool',
@@ -234,7 +234,7 @@ Como posso ajudar você hoje?`;
 
         // Save assistant message
         await supabaseAdmin
-          .from('cover_messages')
+          .from('rover_messages')
           .insert({
             user_id: user.id,
             role: 'assistant',
@@ -247,7 +247,7 @@ Como posso ajudar você hoje?`;
 
     if (!finalResponseText && loopCount >= MAX_LOOPS) {
       finalResponseText = 'Desculpe, excedi o limite de processamento de ferramentas. O que mais posso ajudar?';
-      await supabaseAdmin.from('cover_messages').insert({
+      await supabaseAdmin.from('rover_messages').insert({
         user_id: user.id,
         role: 'assistant',
         content: finalResponseText,
@@ -267,7 +267,7 @@ app.delete('/clear', authMiddleware, async (c) => {
 
   try {
     const { error } = await supabaseAdmin
-      .from('cover_messages')
+      .from('rover_messages')
       .delete()
       .eq('user_id', user.id);
 

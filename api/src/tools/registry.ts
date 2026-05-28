@@ -7,7 +7,7 @@ import { checkCandidaturesDefinition, runCheckCandidatures } from './check_candi
 import { saveResumeDefinition, runSaveResume } from './save_resume.js';
 import { addCandidaturaDefinition, runAddCandidatura } from './add_candidatura.js';
 
-export const coverTools = [
+export const roverTools = [
   checkProfileDefinition,
   checkCreditsDefinition,
   calculateRecessDefinition,
@@ -18,12 +18,12 @@ export const coverTools = [
   addCandidaturaDefinition,
 ];
 
-export async function executeCoverTool(
+export async function executeRoverTool(
   name: string,
   args: any,
   userId: string
 ): Promise<any> {
-  console.log(`[CoverToolCalling] Executing tool: ${name} with args:`, args);
+  console.log(`[RoverToolCalling] Executing tool: ${name} with args:`, args);
 
   switch (name) {
     case 'check_profile':

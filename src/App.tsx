@@ -21,10 +21,10 @@ import { BrainCircuit } from 'lucide-react';
 
 function AppLayout() {
   const { user } = useAuth();
-  const [isCoverOpen, setIsCoverOpen] = useState(false);
+  const [isRoverOpen, setIsRoverOpen] = useState(false);
 
-  const handleCoverClick = () => {
-    setIsCoverOpen((prev) => !prev);
+  const handleRoverClick = () => {
+    setIsRoverOpen((prev) => !prev);
   };
 
   return (
@@ -51,7 +51,7 @@ function AppLayout() {
       {user && (
         <>
           <button
-            onClick={handleCoverClick}
+            onClick={handleRoverClick}
             className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group shadow-lg"
             title="Rover - Assistente Inteligente"
             style={{
@@ -61,7 +61,7 @@ function AppLayout() {
             <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
           </button>
 
-          <RoverDrawer isOpen={isCoverOpen} onClose={() => setIsCoverOpen(false)} />
+          <RoverDrawer isOpen={isRoverOpen} onClose={() => setIsRoverOpen(false)} />
         </>
       )}
 

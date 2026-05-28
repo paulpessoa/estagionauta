@@ -149,10 +149,10 @@ describe('Rover Tools & Abuse Service Tests', () => {
 
       // Setup mock implementation based on table name
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
-        if (tableName === 'cover_abuse_logs') {
+        if (tableName === 'rover_abuse_logs') {
           return { select: vi.fn().mockReturnValue({ eq: mockEq1Cooldown }) } as any;
         }
-        if (tableName === 'cover_messages') {
+        if (tableName === 'rover_messages') {
           return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ gte: mockCount }) }) }) } as any;
         }
         return {} as any;
@@ -177,13 +177,13 @@ describe('Rover Tools & Abuse Service Tests', () => {
       const mockInsert = vi.fn().mockResolvedValue({ error: null });
 
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
-        if (tableName === 'cover_abuse_logs') {
+        if (tableName === 'rover_abuse_logs') {
           return {
             select: vi.fn().mockReturnValue({ eq: mockEq1Cooldown }),
             insert: mockInsert,
           } as any;
         }
-        if (tableName === 'cover_messages') {
+        if (tableName === 'rover_messages') {
           return { select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ gte: mockCount }) }) }) } as any;
         }
         return {} as any;

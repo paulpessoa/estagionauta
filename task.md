@@ -85,7 +85,7 @@
 
 ## FASE 2.5 — Renomear para Rover & Separar Perfil/Configurações
 
-- [x] Database migration: create SQL file `20260527201600_rename_copilot_to_cover.sql` and run `supabase db push`
+- [x] Database migration: create SQL file `20260527201600_rename_copilot_to_rover.sql` and run `supabase db push`
 - [x] Rename Hono routes and test files to use "rover" instead of "copilot"
 - [x] Mount `/api/rover` in Hono app router
 - [x] Update table names and references in `abuse.service.ts` and route files
