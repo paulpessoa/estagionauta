@@ -3,6 +3,7 @@ import { checkAbuse } from '../services/abuse.service.js';
 import { runCalculateRecess } from '../tools/calculate_recess.js';
 import { runCheckCredits } from '../tools/check_credits.js';
 import { runUpdateProfile } from '../tools/update_profile.js';
+import { runCheckCandidatures } from '../tools/check_candidatures.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 
 // Mock Supabase service
@@ -59,6 +60,33 @@ describe('Cover Tools & Abuse Service Tests', () => {
       const result = await runUpdateProfile('user-id-123', { foo: 'bar' });
       expect(result.error).toBeDefined();
       expect(result.error).toContain('Nenhum campo válido');
+    });
+  });
+
+  describe('check_candidatures tool', () => {
+    it('queries and returns candidatures successfully', async () => {
+      const mockOrder = vi.fn().mockResolvedValue({
+        data: [
+          { company: 'Google', position: 'Software Engineer Intern', status: 'interview', progress: 50, next_action: 'RH Call', next_action_date: '2026-06-01', applied_date: '2026-05-20' }
+        ],
+        error: null
+      });
+      const mockEq = vi.fn().mockReturnValue({ order: mockOrder });
+      const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
+      
+      vi.mocked(supabaseAdmin.from).mockReturnValue({
+        select: mockSelect,
+      } as any);
+
+      const result = await runCheckCandidatures('user-id-123');
+
+      expect(result.success).toBe(true);
+      expect(result.total).toBe(1);
+      expect(result.candidaturas![0].empresa).toBe('Google');
+      expect(result.candidaturas![0].cargo).toBe('Software Engineer Intern');
+      expect(result.candidaturas![0].status).toBe('Entrevista');
+      expect(supabaseAdmin.from).toHaveBeenCalledWith('kanban_applications');
+      expect(mockEq).toHaveBeenCalledWith('user_id', 'user-id-123');
     });
   });
 

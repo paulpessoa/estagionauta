@@ -121,7 +121,7 @@ Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo 
 REGRA DE ATUALIZAÇÃO DE PERFIL:
 Você tem a capacidade de atualizar diretamente as informações de perfil do usuário. Se o usuário fornecer novos dados (como nome, telefone, linkedin, biografia, curso, universidade ou período acadêmico) ou solicitar que você preencha/altere/atualize essas informações, use a ferramenta 'update_profile' imediatamente para salvar as alterações no banco de dados e informe que a atualização foi realizada com sucesso.
 
-Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas se o usuário pedir informações sobre créditos, perfil incompleto, alterações/atualizações no perfil, cálculos de recesso ou análise de currículo.`;
+Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas se o usuário pedir informações sobre créditos, perfil incompleto, alterações/atualizações no perfil, cálculos de recesso, análise de currículo ou status/quantidade de candidaturas.`;
 
     const apiMessages: any[] = [
       { role: 'system', content: systemPrompt },

@@ -3,6 +3,7 @@ import { checkCreditsDefinition, runCheckCredits } from './check_credits.js';
 import { calculateRecessDefinition, runCalculateRecess } from './calculate_recess.js';
 import { analyzeResumeDefinition, runAnalyzeResume } from './analyze_resume.js';
 import { updateProfileDefinition, runUpdateProfile } from './update_profile.js';
+import { checkCandidaturesDefinition, runCheckCandidatures } from './check_candidatures.js';
 
 export const coverTools = [
   checkProfileDefinition,
@@ -10,6 +11,7 @@ export const coverTools = [
   calculateRecessDefinition,
   analyzeResumeDefinition,
   updateProfileDefinition,
+  checkCandidaturesDefinition,
 ];
 
 export async function executeCoverTool(
@@ -37,6 +39,8 @@ export async function executeCoverTool(
       });
     case 'update_profile':
       return await runUpdateProfile(userId, args);
+    case 'check_candidatures':
+      return await runCheckCandidatures(userId);
     default:
       throw new Error(`Ferramenta desconhecida: ${name}`);
   }
