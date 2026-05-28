@@ -19,7 +19,7 @@ const messageSchema = z.object({
   message: z.string().min(1, 'A mensagem não pode ser vazia'),
 });
 
-// GET /api/cover/history - Get recent chat history
+// GET /api/rover/history - Get recent chat history
 app.get('/history', authMiddleware, async (c) => {
   const user = c.get('user');
 
@@ -33,18 +33,18 @@ app.get('/history', authMiddleware, async (c) => {
       .limit(50);
 
     if (error) {
-      console.error('Error fetching cover history:', error);
+      console.error('Error fetching rover history:', error);
       return c.json({ error: 'Erro ao carregar o histórico de conversas.' }, 500);
     }
 
     return c.json({ messages });
   } catch (err) {
-    console.error('Unexpected error fetching cover history:', err);
+    console.error('Unexpected error fetching rover history:', err);
     return c.json({ error: 'Erro interno no servidor.' }, 500);
   }
 });
 
-// POST /api/cover/message - Send message to Cover and get response
+// POST /api/rover/message - Send message to Rover and get response
 app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c) => {
   const user = c.get('user');
   const { message } = c.req.valid('json');
@@ -101,7 +101,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
     const currentISO = now.toISOString().split('T')[0];
 
     // 4. System Prompt with SITE MAP & BUSINESS RULES
-    const systemPrompt = `Você é o Cover (Assistente Inteligente Oficial do Estagionauta).
+    const systemPrompt = `Você é o Rover (Assistente Inteligente Oficial do Estagionauta).
 A data de hoje é: ${currentDateStr} (formato ISO: ${currentISO}). Sempre use esta data de hoje como referência temporal absoluta para interpretar termos de data informados pelo usuário, como "hoje", "este ano", "mês passado", "estou estagiando desde janeiro deste ano", etc.
 
 Seu objetivo é ajudar estudantes e estagiários com dúvidas de estágio, orientar sobre a Lei do Estágio (Lei 11.788/2008), dar dicas de carreira e interagir com o site.
@@ -172,7 +172,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
       }
 
       if (aiMsg.tool_calls && aiMsg.tool_calls.length > 0) {
-        console.log(`[Cover] LLM requested tools:`, aiMsg.tool_calls.map(tc => tc.function.name));
+        console.log(`[Rover] LLM requested tools:`, aiMsg.tool_calls.map(tc => tc.function.name));
 
         // Save assistant tool call
         await supabaseAdmin
@@ -221,7 +221,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
       } else {
         finalResponseText = (aiMsg.content || '').trim();
         if (!finalResponseText) {
-          finalResponseText = `Olá! Sou o Cover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
+          finalResponseText = `Olá! Sou o Rover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
 
 1. 📋 **Verificar ou atualizar seu perfil** (diga "verificar meu perfil" ou me informe seus dados como curso, faculdade e período para eu atualizar);
 2. 📊 **Analisar seu currículo** com base em uma vaga (custa 3 créditos);
@@ -231,7 +231,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
 Como posso ajudar você hoje?`;
         }
-        
+
         // Save assistant message
         await supabaseAdmin
           .from('cover_messages')
@@ -256,12 +256,12 @@ Como posso ajudar você hoje?`;
 
     return c.json({ response: finalResponseText });
   } catch (err: any) {
-    console.error('Cover processing error:', err);
+    console.error('Rover processing error:', err);
     return c.json({ error: 'Desculpe, ocorreu um erro interno ao processar sua mensagem.' }, 500);
   }
 });
 
-// DELETE /api/cover/clear - Clear chat history
+// DELETE /api/rover/clear - Clear chat history
 app.delete('/clear', authMiddleware, async (c) => {
   const user = c.get('user');
 
@@ -272,13 +272,13 @@ app.delete('/clear', authMiddleware, async (c) => {
       .eq('user_id', user.id);
 
     if (error) {
-      console.error('Error clearing cover messages:', error);
+      console.error('Error clearing rover messages:', error);
       return c.json({ error: 'Erro ao limpar histórico do chat.' }, 500);
     }
 
     return c.json({ success: true, message: 'Histórico limpo com sucesso.' });
   } catch (err) {
-    console.error('Unexpected error clearing cover:', err);
+    console.error('Unexpected error clearing rover:', err);
     return c.json({ error: 'Erro interno no servidor.' }, 500);
   }
 });

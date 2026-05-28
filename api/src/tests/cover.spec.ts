@@ -18,7 +18,7 @@ vi.mock('../services/supabase.service.js', () => {
   };
 });
 
-describe('Cover Tools & Abuse Service Tests', () => {
+describe('Rover Tools & Abuse Service Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -27,7 +27,7 @@ describe('Cover Tools & Abuse Service Tests', () => {
     it('updates profile fields successfully', async () => {
       const mockEq = vi.fn().mockResolvedValue({ error: null });
       const mockUpdate = vi.fn().mockReturnValue({ eq: mockEq });
-      
+
       vi.mocked(supabaseAdmin.from).mockReturnValue({
         update: mockUpdate,
       } as any);
@@ -46,7 +46,7 @@ describe('Cover Tools & Abuse Service Tests', () => {
       expect(result.updatedFields).toContain('university');
       expect(result.updatedFields).toContain('period');
       expect(result.updatedFields).not.toContain('invalid_field');
-      
+
       expect(supabaseAdmin.from).toHaveBeenCalledWith('user_profiles');
       expect(mockEq).toHaveBeenCalledWith('id', 'user-id-123');
       expect(mockUpdate).toHaveBeenCalledWith({
@@ -73,7 +73,7 @@ describe('Cover Tools & Abuse Service Tests', () => {
       });
       const mockEq = vi.fn().mockReturnValue({ order: mockOrder });
       const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
-      
+
       vi.mocked(supabaseAdmin.from).mockReturnValue({
         select: mockSelect,
       } as any);
@@ -121,7 +121,7 @@ describe('Cover Tools & Abuse Service Tests', () => {
       });
       const mockEq = vi.fn().mockReturnValue({ single: mockSingle });
       const mockSelect = vi.fn().mockReturnValue({ eq: mockEq });
-      
+
       vi.mocked(supabaseAdmin.from).mockReturnValue({
         select: mockSelect,
       } as any);
@@ -143,10 +143,10 @@ describe('Cover Tools & Abuse Service Tests', () => {
       const mockGteCooldown = vi.fn().mockReturnValue({ order: mockOrderCooldown });
       const mockEq2Cooldown = vi.fn().mockReturnValue({ gte: mockGteCooldown });
       const mockEq1Cooldown = vi.fn().mockReturnValue({ eq: mockEq2Cooldown });
-      
+
       // 2. Count messages queries
       const mockCount = vi.fn().mockResolvedValue({ count: 5, error: null });
-      
+
       // Setup mock implementation based on table name
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
         if (tableName === 'cover_abuse_logs') {
@@ -168,11 +168,11 @@ describe('Cover Tools & Abuse Service Tests', () => {
       const mockGteCooldown = vi.fn().mockReturnValue({ order: mockOrderCooldown });
       const mockEq2Cooldown = vi.fn().mockReturnValue({ gte: mockGteCooldown });
       const mockEq1Cooldown = vi.fn().mockReturnValue({ eq: mockEq2Cooldown });
-      
+
       // 5min count = 2, 1hour count = 35 (exceeds hourly limit of 30)
       const mockCount = vi.fn()
-          .mockResolvedValueOnce({ count: 2, error: null }) // 5 min count check
-          .mockResolvedValueOnce({ count: 35, error: null }); // 1 hour count check
+        .mockResolvedValueOnce({ count: 2, error: null }) // 5 min count check
+        .mockResolvedValueOnce({ count: 35, error: null }); // 1 hour count check
 
       const mockInsert = vi.fn().mockResolvedValue({ error: null });
 

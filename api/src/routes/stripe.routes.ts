@@ -32,7 +32,7 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card', 'pix'],
+      payment_method_types: ['card'],
       customer_email: user.email,
       line_items: [
         {

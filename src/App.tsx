@@ -12,7 +12,7 @@ import ReviewModal from './components/modals/ReviewModal'
 import { HelmetProvider } from 'react-helmet-async';
 import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
-import CoverDrawer from './components/cover/CoverDrawer';
+import CoverDrawer from './components/rover/CoverDrawer';
 
 const queryClient = new QueryClient();
 
@@ -47,20 +47,20 @@ function AppLayout() {
       <ReviewModal />
       <CookieConsent />
 
-      {/* Floating Cover Button - Only visible for authenticated users */}
+      {/* Floating Rover Button - Only visible for authenticated users */}
       {user && (
         <>
           <button
             onClick={handleCoverClick}
             className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group shadow-lg"
-            title="Cover - Assistente Inteligente"
+            title="Rover - Assistente Inteligente"
             style={{
               animation: 'pulse-shadow 2s infinite'
             }}
           >
             <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
           </button>
-          
+
           <CoverDrawer isOpen={isCoverOpen} onClose={() => setIsCoverOpen(false)} />
         </>
       )}

@@ -149,7 +149,7 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
                       <img
                         src={agency.logo_url}
                         alt={agency.name}
-                        className="w-10 h-10 rounded-full object-cover border"
+                        className="w-10 h-10 rounded-full object-rover border"
                       />
                     )}
                     <div className="flex-1">

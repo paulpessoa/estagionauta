@@ -204,7 +204,7 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
 
   const handleSubmit = async () => {
     if (!agency) return
-    
+
     setLoading(true)
     try {
       let uploadedLogoUrl = formData.logo_url
@@ -254,14 +254,14 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
 
       if (error) throw error
 
-      const updatedAgency: Agency = { 
-        ...agency, 
-        ...formData, 
-        logo_url: uploadedLogoUrl 
+      const updatedAgency: Agency = {
+        ...agency,
+        ...formData,
+        logo_url: uploadedLogoUrl
       }
       onSave(updatedAgency)
       onClose()
-      
+
       toast.success('Agência atualizada com sucesso!')
     } catch (error) {
       console.error('Erro ao atualizar agência:', error)
@@ -280,13 +280,13 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
         <DialogHeader>
           <DialogTitle>Editar Agência</DialogTitle>
         </DialogHeader>
-        
+
         <div className="grid gap-4 py-4">
           {/* Logo Upload Section */}
           <div className="flex items-center gap-4 border-b pb-4 mb-2">
             <div className="relative h-16 w-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden border">
               {logoPreview ? (
-                <img src={logoPreview} alt="Logo preview" className="h-full w-full object-cover" />
+                <img src={logoPreview} alt="Logo preview" className="h-full w-full object-rover" />
               ) : (
                 <Camera className="h-6 w-6 text-muted-foreground" />
               )}
@@ -296,7 +296,7 @@ export function EditAgencyModal({ isOpen, onClose, agency, onSave }: EditAgencyM
                 </div>
               )}
             </div>
-            
+
             <div className="flex flex-col gap-1.5">
               <Label>Logo da Agência</Label>
               <div className="flex gap-2">

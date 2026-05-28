@@ -135,8 +135,8 @@ This section is automatically loaded into the agent's context via system rules. 
 ### 2. Status Checklist
 - [x] **FASE 0: Preparar Beta**: Renomear Kanban para Candidaturas, esconder afiliados, simplificar preços, habilitar PIX no Stripe, créditos de boas-vindas para 5, logs de email no admin.
 - [x] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
-- [x] **FASE 2: Cover WebAgent MVP**: Hono cover routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
-- [x] **FASE 2.5: Rebranding & Split Perfil/Configurações**: Renomear para Cover, separar perfil de configurações no front, injetar mapa do site no prompt.
+- [x] **FASE 2: Rover WebAgent MVP**: Hono rover routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
+- [x] **FASE 2.5: Rebranding & Split Perfil/Configurações**: Renomear para Rover, separar perfil de configurações no front, injetar mapa do site no prompt.
 - [ ] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
 - [ ] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
 
@@ -151,7 +151,7 @@ This section is automatically loaded into the agent's context via system rules. 
   - Shared types: Extracted to `/shared/types` to avoid type duplication and keep frontend and backend in sync.
   - CORS Local Setup: Hono backend API must explicitly allow `http://localhost:8080` in development since the Vite frontend is configured on that port. Without it, local browser e2e testing will face CORS errors on credits/simulator endpoints.
   - Credit RPC Validation: The `consume_credits` RPC takes `user_uuid`, `amount`, and `description` parameters. The new `tests/simulator.spec.ts` successfully logs in, starts an interview (consuming 1 credit), and asserts that the credit decrement is exact.
-- **TTS & Cover Integration**: Restructured the Text-To-Speech pipeline to run OpenAI TTS API exclusively for premium members, while falling back to native browser speech synthesis for free members. Added an notice warning upgrade banner inside the interview simulator. Created the Hono.js Cover API (formerly Copilot) with a rate limiter, cooldown logs, a dynamic Groq tool calling loop (`check_profile`, `check_credits`, `calculate_recess`, `analyze_resume`), and a comprehensive site map in the system prompt to guide user navigation accurately.
+- **TTS & Rover Integration**: Restructured the Text-To-Speech pipeline to run OpenAI TTS API exclusively for premium members, while falling back to native browser speech synthesis for free members. Added an notice warning upgrade banner inside the interview simulator. Created the Hono.js Rover API (formerly Copilot) with a rate limiter, cooldown logs, a dynamic Groq tool calling loop (`check_profile`, `check_credits`, `calculate_recess`, `analyze_resume`), and a comprehensive site map in the system prompt to guide user navigation accurately.
 - **Profile & Settings Split**: Segregated user profile editing fields (avatar, slug, name, phone, bio, linkedin, and academic details) into a new, clean `/perfil` page, keeping `/configuracoes` strictly focused on password management and account deletion to improve UX.
 - **Supabase CLI Repair**: Resolved remote database sync issues caused by an anomalous empty row in `schema_migrations` using `supabase migration repair --status reverted ""` followed by marking existing versions as applied and executing `supabase db push`.
 - **Git Commit Workflow**:

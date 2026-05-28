@@ -38,10 +38,10 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
   const loadHistory = async () => {
     setHistoryLoading(true);
     try {
-      const data = await apiClient.get<{ messages: Message[] }>('/api/cover/history');
+      const data = await apiClient.get<{ messages: Message[] }>('/api/rover/history');
       setMessages(data.messages || []);
     } catch (err) {
-      console.error('Error loading cover history:', err);
+      console.error('Error loading rover history:', err);
     } finally {
       setHistoryLoading(false);
     }
@@ -61,7 +61,7 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
 
     try {
       const data = await apiClient.post<{ response?: string; error?: string; reason?: string }>(
-        '/api/cover/message',
+        '/api/rover/message',
         { message: textToSend }
       );
 
@@ -75,7 +75,7 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
         setMessages((prev) => [...prev, { role: 'assistant', content: data.response! }]);
       }
     } catch (err: any) {
-      console.error('Error sending message to cover:', err);
+      console.error('Error sending message to rover:', err);
       toast.error(err.message || 'Erro de conexão com o assistente.');
       setMessages((prev) => prev.slice(0, -1));
     } finally {
@@ -84,14 +84,14 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
   };
 
   const handleClearChat = async () => {
-    if (!window.confirm('Tem certeza que deseja apagar todo o histórico de conversas com o Cover?')) {
+    if (!window.confirm('Tem certeza que deseja apagar todo o histórico de conversas com o Rover?')) {
       return;
     }
 
     try {
-      await apiClient.delete('/api/cover/clear');
+      await apiClient.delete('/api/rover/clear');
       setMessages([]);
-      toast.success('Histórico do Cover limpo com sucesso.');
+      toast.success('Histórico do Rover limpo com sucesso.');
     } catch (err) {
       console.error('Error clearing chat:', err);
       toast.error('Erro ao limpar histórico de conversa.');
@@ -144,7 +144,7 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
                 </div>
                 <div>
                   <h3 className="font-bold text-sm leading-none flex items-center gap-1.5 text-foreground">
-                    Cover
+                    Rover
                     <span className="text-[10px] bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 font-bold px-1.5 py-0.5 rounded-full">BETA</span>
                   </h3>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Assistente Inteligente do Estagionauta</p>
@@ -190,7 +190,7 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
                       </div>
                       <h4 className="font-bold text-md text-foreground">Olá, Estagionauta! 🚀</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed">
-                        Sou o Cover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo. O que deseja fazer hoje?
+                        Sou o Rover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo. O que deseja fazer hoje?
                       </p>
                     </div>
 
@@ -231,25 +231,22 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
                     {messages.map((msg, index) => (
                       <div
                         key={index}
-                        className={`flex gap-3 max-w-[85%] ${
-                          msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
-                        }`}
+                        className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+                          }`}
                       >
                         <div
-                          className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${
-                            msg.role === 'user'
-                              ? 'bg-violet-600 text-white'
-                              : 'bg-muted border border-muted/80 text-muted-foreground'
-                          }`}
+                          className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${msg.role === 'user'
+                            ? 'bg-violet-600 text-white'
+                            : 'bg-muted border border-muted/80 text-muted-foreground'
+                            }`}
                         >
                           {msg.role === 'user' ? <User className="h-3.5 w-3.5" /> : <BrainCircuit className="h-3.5 w-3.5" />}
                         </div>
                         <div
-                          className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${
-                            msg.role === 'user'
-                              ? 'bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/10 rounded-tr-none'
-                              : 'bg-muted/60 dark:bg-muted/30 border border-muted/50 rounded-tl-none text-foreground'
-                          }`}
+                          className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
+                            ? 'bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/10 rounded-tr-none'
+                            : 'bg-muted/60 dark:bg-muted/30 border border-muted/50 rounded-tl-none text-foreground'
+                            }`}
                         >
                           {msg.content}
                         </div>
@@ -324,7 +321,7 @@ export default function CoverDrawer({ isOpen, onClose }: CoverDrawerProps) {
                 <Input
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Converse com o Cover..."
+                  placeholder="Converse com o Rover..."
                   className="flex-grow bg-background/80 focus-visible:ring-violet-600"
                   disabled={isLoading}
                 />
