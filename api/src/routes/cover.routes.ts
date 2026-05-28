@@ -198,7 +198,18 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
         loopCount++;
       } else {
-        finalResponseText = aiMsg.content || '';
+        finalResponseText = (aiMsg.content || '').trim();
+        if (!finalResponseText) {
+          finalResponseText = `Olá! Sou o Cover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
+
+1. 📋 **Verificar ou atualizar seu perfil** (diga "verificar meu perfil" ou me informe seus dados como curso, faculdade e período para eu atualizar);
+2. 📊 **Analisar seu currículo** com base em uma vaga (custa 3 créditos);
+3. 📅 **Calcular seu recesso proporcional** de estágio (diga "calcular recesso");
+4. 💰 **Consultar seu saldo de créditos** (diga "verificar meus créditos");
+5. 🤝 **Simular entrevistas** no simulador de entrevistas.
+
+Como posso ajudar você hoje?`;
+        }
         
         // Save assistant message
         await supabaseAdmin
