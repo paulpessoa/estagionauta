@@ -1190,7 +1190,17 @@ export default function SimuladorEntrevistas() {
                   </div>
                 </div>
 
-                {subscriptionStatus !== "premium" && isAudioEnabled && (
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground font-medium">
+                    Perguntas Respondidas:
+                  </span>
+                  <Badge variant="secondary" className="px-2 py-0.5 font-bold">
+                    {getProgressCount()} / 20
+                  </Badge>
+                </div>
+              </div>
+
+              {subscriptionStatus !== "premium" && isAudioEnabled && (
                 <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center justify-between gap-4 text-xs text-amber-700 dark:text-amber-400">
                   <div className="flex items-center gap-2">
                     <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
@@ -1207,16 +1217,6 @@ export default function SimuladorEntrevistas() {
                   </Button>
                 </div>
               )}
-
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground font-medium">
-                  Perguntas Respondidas:
-                  </span>
-                  <Badge variant="secondary" className="px-2 py-0.5 font-bold">
-                    {getProgressCount()} / 20
-                  </Badge>
-                </div>
-              </div>
 
               {/* Chat Messages Body or Immersive Voice Call */}
               {inputMode === "text" ? (
