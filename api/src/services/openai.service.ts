@@ -178,7 +178,9 @@ export async function generateNextInterviewQuestionAI(
   jobTitle: string,
   jobDescription: string | null,
   interviewerType: string,
-  messageHistory: SimulatorMessage[]
+  messageHistory: SimulatorMessage[],
+  candidateProfile?: any,
+  companyName?: string | null
 ): Promise<string> {
   const interviewerTones: Record<string, string> = {
     tech: 'Você é um entrevistador puramente técnico, focado em hard skills, arquitetura de sistemas, conceitos fundamentais e resolução de problemas práticos. Faça perguntas diretas e desafie as decisões técnicas do candidato.',
@@ -189,9 +191,31 @@ export async function generateNextInterviewQuestionAI(
 
   const toneInstruction = interviewerTones[interviewerType] || interviewerTones.friendly;
 
+  let profileInfo = '';
+  if (candidateProfile) {
+    profileInfo = `
+INFORMAÇÕES SOBRE O CANDIDATO:
+- Nome completo: ${candidateProfile.full_name || 'Não informado'}
+- Curso: ${candidateProfile.course || 'Não informado'}
+- Instituição de Ensino / Faculdade: ${candidateProfile.university || 'Não informada'}
+- Período: ${candidateProfile.period || 'Não informado'}
+- Biografia / Resumo Profissional: ${candidateProfile.bio || 'Não informado'}
+- LinkedIn: ${candidateProfile.linkedin_url || 'Não informado'}
+
+Aja como um entrevistador que leu o currículo do candidato e já conhece esses dados básicos. Use-os de forma profissional nas suas interações (ex: "Vi aqui no seu perfil que você estuda X...").`;
+  }
+
+  let companyInfo = '';
+  if (companyName) {
+    companyInfo = `
+EMPRESA/AGÊNCIA DA VAGA:
+- Esta entrevista simula um processo seletivo para a empresa/agência: ${companyName}.
+Direcione o contexto das suas falas e perguntas para essa empresa/agência específica, fazendo o candidato se sentir em uma entrevista real para ela.`;
+  }
+
   const systemPrompt = `Você é um entrevistador profissional experiente conduzindo uma simulação de entrevista de emprego realista.
 Cargo pretendido: ${jobTitle}
-Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
+Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}${companyInfo}${profileInfo}
 
 Instrução de tom e personalidade:
 ${toneInstruction}
@@ -243,17 +267,30 @@ export async function generateInterviewFeedbackAI(
   jobTitle: string,
   jobDescription: string | null,
   interviewerType: string,
-  messageHistory: SimulatorMessage[]
+  messageHistory: SimulatorMessage[],
+  candidateProfile?: any,
+  companyName?: string | null
 ): Promise<SimulatorFeedback> {
+  let profileInfo = '';
+  if (candidateProfile) {
+    profileInfo = `\nCandidato: ${candidateProfile.full_name || 'Não informado'} (Estudante de ${candidateProfile.course || 'Não informado'} na ${candidateProfile.university || 'Não informada'} - ${candidateProfile.period || 'Não informado'}).`;
+  }
+
+  let companyInfo = '';
+  if (companyName) {
+    companyInfo = `\nEmpresa/Agência alvo do processo seletivo: ${companyName}.`;
+  }
+
   const systemPrompt = `Você é um especialista sênior em recrutamento e seleção de talentos.
 Analise o histórico completo da simulação de entrevista de emprego e forneça um relatório de feedback construtivo e detalhado em português brasileiro.
+${profileInfo}${companyInfo}
 
 Cargo pretendido: ${jobTitle}
 Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
 Tipo de Entrevista conduzida: ${interviewerType}
 
 Instruções para o Feedback:
-1. Avalie o desempenho geral das respostas do candidato (conteúdo, embasamento técnico e comportamental). Avalie especificamente a clareza da vaga ou objetivo profissional demonstrado.
+1. Avalie o desempenho geral das respostas do candidato (conteúdo, embasamento técnico e comportamental). Avalie especificamente a clareza da vaga ou objetivo profissional demonstrado. Se houver descrição da vaga/empresa fornecida, analise de forma explícita e detalhada se as respostas e o perfil do candidato se adequam às necessidades e expectativas dessa vaga e empresa/agência.
 2. Estipule uma pontuação geral (score) de 0 a 100.
 3. Identifique pelo menos 3 Pontos Fortes demonstrados nas respostas.
 4. Identifique pelo menos 3 Áreas de Melhoria de forma construtiva.

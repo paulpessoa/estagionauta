@@ -16,7 +16,7 @@ export async function runCheckCandidatures(userId: string) {
   try {
     const { data: apps, error } = await supabaseAdmin
       .from('kanban_applications')
-      .select('id, company, position, status, progress, next_action, next_action_date, applied_date')
+      .select('id, company, position, status, progress, next_action, next_action_date, applied_date, description, notes')
       .eq('user_id', userId)
       .order('applied_date', { ascending: false });
 
@@ -38,6 +38,7 @@ export async function runCheckCandidatures(userId: string) {
     };
 
     const formattedApps = (apps || []).map(app => ({
+      id: app.id,
       empresa: app.company,
       cargo: app.position,
       status: statusMap[app.status] || app.status,
@@ -45,6 +46,8 @@ export async function runCheckCandidatures(userId: string) {
       proxima_acao: app.next_action || 'Nenhuma cadastrada',
       data_proxima_acao: app.next_action_date || 'Nenhuma',
       data_candidatura: app.applied_date,
+      descricao_vaga: app.description || 'Não informada',
+      observacoes: app.notes || 'Nenhuma',
     }));
 
     return {

@@ -20,6 +20,8 @@ export interface InterviewSimulation {
   status: 'started' | 'completed';
   messages: SimulatorMessage[];
   feedback: SimulatorFeedback | null;
+  company_name?: string | null;
+  agency_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -28,6 +30,8 @@ export interface StartSimulationRequest {
   job_title: string;
   job_description?: string;
   interviewer_type: string;
+  company_name?: string | null;
+  agency_id?: string | null;
 }
 
 export interface AnswerSimulationRequest {

@@ -19,6 +19,8 @@ const startSimulationSchema = z.object({
   job_title: z.string().min(2, 'O título do cargo é obrigatório'),
   job_description: z.string().optional(),
   interviewer_type: z.string().min(2, 'O tipo de entrevistador é obrigatório'),
+  company_name: z.string().optional().nullable(),
+  agency_id: z.string().uuid().optional().nullable(),
 });
 
 // Schema for sending an answer
@@ -77,7 +79,7 @@ app.get('/:id', authMiddleware, async (c) => {
 // POST /api/simulator/start - Start a new simulation (consumes 1 credit)
 app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), async (c) => {
   const user = c.get('user');
-  const { job_title, job_description, interviewer_type } = c.req.valid('json');
+  const { job_title, job_description, interviewer_type, company_name, agency_id } = c.req.valid('json');
 
   try {
     // 1. Consume 1 credit
@@ -95,12 +97,21 @@ app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), as
       return c.json({ error: 'Créditos insuficientes para iniciar a simulação' }, 402);
     }
 
+    // Fetch user profile to feed the AI interviewer
+    const { data: profile } = await supabaseAdmin
+      .from('user_profiles')
+      .select('full_name, course, university, period, bio, linkedin_url')
+      .eq('id', user.id)
+      .single();
+
     // 2. Generate the first question from the AI interviewer
     const firstQuestion = await generateNextInterviewQuestionAI(
       job_title,
       job_description || null,
       interviewer_type,
-      [] // Empty message history
+      [], // Empty message history
+      profile || null,
+      company_name || null
     );
 
     const initialMessages: SimulatorMessage[] = [
@@ -122,6 +133,8 @@ app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), as
         status: 'started',
         messages: initialMessages,
         feedback: null,
+        company_name: company_name || null,
+        agency_id: agency_id || null,
       })
       .select()
       .single();
@@ -158,7 +171,7 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
       return c.json({ error: 'Simulação de entrevista não encontrada' }, 404);
     }
 
-    const sim = simulation as InterviewSimulation;
+    const sim = simulation as any;
 
     if (sim.status === 'completed') {
       return c.json({ error: 'Esta entrevista já foi concluída' }, 400);
@@ -176,10 +189,17 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
 
     // Count how many times the candidate has answered
     const candidateAnswersCount = updatedMessages.filter(m => m.role === 'candidate').length;
-    const MAX_ANSWERS = 20;
+    const MAX_ANSWERS = 5; // Limite de 5 perguntas conforme requisitos da plataforma
 
     let nextStatus = 'started';
     let feedback = null;
+
+    // Fetch user profile to provide context to OpenAI
+    const { data: profile } = await supabaseAdmin
+      .from('user_profiles')
+      .select('full_name, course, university, period, bio, linkedin_url')
+      .eq('id', user.id)
+      .single();
 
     if (candidateAnswersCount >= MAX_ANSWERS) {
       // 3a. Interview is finished, generate feedback report
@@ -189,7 +209,9 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
           sim.job_title,
           sim.job_description,
           sim.interviewer_type,
-          updatedMessages
+          updatedMessages,
+          profile || null,
+          sim.company_name
         );
       } catch (feedbackErr) {
         console.error('Error generating AI feedback:', feedbackErr);
@@ -208,7 +230,9 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
           sim.job_title,
           sim.job_description,
           sim.interviewer_type,
-          updatedMessages
+          updatedMessages,
+          profile || null,
+          sim.company_name
         );
         updatedMessages.push({
           role: 'interviewer',
@@ -263,16 +287,23 @@ app.post('/:id/end', authMiddleware, async (c) => {
       return c.json({ error: 'Simulação de entrevista não encontrada' }, 404);
     }
 
-    const sim = simulation as InterviewSimulation;
+    const sim = simulation as any;
 
     if (sim.status === 'completed') {
       return c.json({ error: 'Esta entrevista já foi concluída' }, 400);
     }
 
-    const candidateAnswersCount = sim.messages.filter(m => m.role === 'candidate').length;
-    if (candidateAnswersCount < 5) {
-      return c.json({ error: 'Você precisa responder pelo menos 5 perguntas para poder encerrar a simulação' }, 400);
+    const candidateAnswersCount = sim.messages.filter((m: any) => m.role === 'candidate').length;
+    if (candidateAnswersCount < 1) {
+      return c.json({ error: 'Você precisa responder pelo menos 1 pergunta para poder encerrar a simulação' }, 400);
     }
+
+    // Fetch user profile
+    const { data: profile } = await supabaseAdmin
+      .from('user_profiles')
+      .select('full_name, course, university, period, bio, linkedin_url')
+      .eq('id', user.id)
+      .single();
 
     // Generate feedback report
     let feedback = null;
@@ -281,7 +312,9 @@ app.post('/:id/end', authMiddleware, async (c) => {
         sim.job_title,
         sim.job_description,
         sim.interviewer_type,
-        sim.messages
+        sim.messages,
+        profile || null,
+        sim.company_name
       );
     } catch (feedbackErr) {
       console.error('Error generating AI feedback:', feedbackErr);

@@ -43,14 +43,17 @@ import {
   MicOff,
   Volume2,
   VolumeX,
-  Keyboard
+  Keyboard,
+  Briefcase
 } from "lucide-react"
 import { toast } from "sonner"
 import { motion, AnimatePresence } from "framer-motion"
 import { useNavigate, useParams } from "react-router-dom"
 import { TypewriterText } from "@/components/simulator/TypewriterText"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-// supabase client removed – auth token handled by apiClient internally
+import { supabase } from "@/integrations/supabase/client"
+import type { Agency } from "@/types/agency"
+import type { JobApplication } from "@/types/kanban"
 
 export default function SimuladorEntrevistas() {
   const [currentView, setCurrentView] = useState<
@@ -76,6 +79,13 @@ export default function SimuladorEntrevistas() {
   const [interviewerType, setInterviewerType] = useState("behavioral")
   const [voiceGender, setVoiceGender] = useState<'male' | 'female'>('female')
   const [subscriptionStatus, setSubscriptionStatus] = useState<string>("free")
+  const [companyName, setCompanyName] = useState("")
+  const [agencyId, setAgencyId] = useState<string | null>(null)
+  const [agencies, setAgencies] = useState<Agency[]>([])
+  const [applications, setApplications] = useState<JobApplication[]>([])
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string>("")
+  const [agencySearchText, setAgencySearchText] = useState("")
+  const [showAgencySuggestions, setShowAgencySuggestions] = useState(false)
 
   // Chat input
   const [answerInput, setAnswerInput] = useState("")
@@ -249,7 +259,91 @@ export default function SimuladorEntrevistas() {
   useEffect(() => {
     loadHistory()
     loadCredits()
+    fetchAgenciesAndApplications()
   }, [])
+
+  // Handle click outside suggestions
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      if (!target.closest("#agencyAutocomplete") && !target.closest(".agency-suggestions")) {
+        setShowAgencySuggestions(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
+
+  const fetchAgenciesAndApplications = async () => {
+    try {
+      // 1. Fetch approved agencies from Supabase
+      const { data: agencyData, error: agencyError } = await supabase
+        .from("agencies")
+        .select("*")
+        .eq("status", "approved")
+        .order("name", { ascending: true })
+
+      if (agencyError) {
+        console.error("Erro ao buscar agências:", agencyError)
+      } else {
+        setAgencies((agencyData as any) || [])
+      }
+
+      // 2. Fetch job applications from Hono backend
+      const appData = await apiClient.get<JobApplication[]>("/api/kanban")
+      setApplications(appData || [])
+    } catch (err) {
+      console.error("Erro ao buscar dados adicionais para o simulador:", err)
+    }
+  }
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      interested: 'Interessado',
+      applied: 'Candidato',
+      test: 'Teste',
+      group_dynamics: 'Dinâmica em Grupo',
+      interview: 'Entrevista',
+      cultural_fit: 'Fit Cultural',
+      resource: 'Recurso',
+      offer: 'Proposta',
+      hired: 'Contratado',
+      rejected: 'Reprovado/Feedback'
+    }
+    return labels[status] || status
+  }
+
+  const handleImportApplication = (appId: string) => {
+    setSelectedApplicationId(appId)
+    if (!appId) {
+      setJobTitle("")
+      setJobDescription("")
+      setCompanyName("")
+      setAgencyId(null)
+      setAgencySearchText("")
+      return
+    }
+
+    const app = applications.find((a) => a.id === appId)
+    if (app) {
+      setJobTitle(app.position || "")
+      setJobDescription(app.description || "")
+      setCompanyName(app.company || "")
+      
+      // Try to find if there is an approved agency with the same name (case-insensitive)
+      const matchedAgency = agencies.find(
+        (agency) => agency.name.toLowerCase() === app.company.toLowerCase()
+      )
+      if (matchedAgency) {
+        setAgencyId(matchedAgency.id)
+        setAgencySearchText(matchedAgency.name)
+      } else {
+        setAgencyId(null)
+        setAgencySearchText("")
+      }
+      toast.success("Dados da candidatura importados!")
+    }
+  }
 
   // Handle routing based on URL ID and loaded simulations
   useEffect(() => {
@@ -336,7 +430,9 @@ export default function SimuladorEntrevistas() {
         {
           job_title: jobTitle,
           job_description: jobDescription || undefined,
-          interviewer_type: interviewerType
+          interviewer_type: interviewerType,
+          company_name: companyName || undefined,
+          agency_id: agencyId || undefined
         }
       )
       setSimulations((prev) => [data.simulation, ...prev])
@@ -690,6 +786,31 @@ export default function SimuladorEntrevistas() {
 
                 <form onSubmit={handleStartSimulation}>
                   <CardContent className="space-y-6 pt-6">
+                    {/* Import from Candidatura */}
+                    {applications.length > 0 && (
+                      <div className="space-y-2 p-4 rounded-xl border border-violet-500/10 bg-violet-500/5 dark:bg-violet-500/5">
+                        <Label htmlFor="importApplication" className="text-violet-600 dark:text-violet-400 font-semibold flex items-center gap-1.5 text-sm">
+                          <Sparkles className="h-4 w-4 animate-pulse text-violet-500" /> Importar de Candidatura Ativa
+                        </Label>
+                        <select
+                          id="importApplication"
+                          value={selectedApplicationId}
+                          onChange={(e) => handleImportApplication(e.target.value)}
+                          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <option value="">-- Selecione uma candidatura para importar --</option>
+                          {applications.map((app) => (
+                            <option key={app.id} value={app.id}>
+                              {app.company} - {app.position} ({getStatusLabel(app.status)})
+                            </option>
+                          ))}
+                        </select>
+                        <p className="text-[11px] text-muted-foreground">
+                          Isso preencherá automaticamente o cargo, descrição e empresa, tentando associar com agências cadastradas.
+                        </p>
+                      </div>
+                    )}
+
                     {/* Job Title */}
                     <div className="space-y-2">
                       <Label htmlFor="jobTitle">Cargo Pretendido *</Label>
@@ -716,6 +837,82 @@ export default function SimuladorEntrevistas() {
                         onChange={(e) => setJobDescription(e.target.value)}
                         className="border-muted focus-visible:ring-violet-500 resize-y"
                       />
+                    </div>
+
+                    {/* Empresa & Agência */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Empresa Contratante */}
+                      <div className="space-y-2">
+                        <Label htmlFor="companyName">Empresa Contratante (Opcional)</Label>
+                        <Input
+                          id="companyName"
+                          placeholder="Ex: Google, Itaú, etc."
+                          value={companyName}
+                          onChange={(e) => setCompanyName(e.target.value)}
+                          className="border-muted focus-visible:ring-violet-500"
+                        />
+                      </div>
+
+                      {/* Agência de Integração */}
+                      <div className="space-y-2 relative">
+                        <Label htmlFor="agencyAutocomplete">Agente/Agência de Integração (Opcional)</Label>
+                        <div className="relative">
+                          <Input
+                            id="agencyAutocomplete"
+                            placeholder="Buscar agência (Ex: CIEE, NUBE...)"
+                            value={agencySearchText}
+                            onChange={(e) => {
+                              setAgencySearchText(e.target.value)
+                              setShowAgencySuggestions(true)
+                              if (!e.target.value) {
+                                setAgencyId(null)
+                              }
+                            }}
+                            onFocus={() => setShowAgencySuggestions(true)}
+                            className="border-muted focus-visible:ring-violet-500"
+                          />
+                          {agencyId && (
+                            <span className="absolute right-3 top-2.5 flex h-5 items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                              Selecionada
+                            </span>
+                          )}
+                        </div>
+                        
+                        {showAgencySuggestions && agencySearchText.trim().length > 0 && (
+                          <div className="absolute z-50 w-full mt-1 max-h-60 overflow-auto rounded-md border border-muted bg-popover p-1 text-popover-foreground shadow-md agency-suggestions">
+                            {agencies.filter(agency => 
+                              agency.name.toLowerCase().includes(agencySearchText.toLowerCase())
+                            ).length === 0 ? (
+                              <div className="py-2 px-3 text-xs text-muted-foreground">Nenhuma agência cadastrada encontrada.</div>
+                            ) : (
+                              agencies
+                                .filter(agency => 
+                                  agency.name.toLowerCase().includes(agencySearchText.toLowerCase())
+                                )
+                                .map((agency) => (
+                                  <button
+                                    key={agency.id}
+                                    type="button"
+                                    onClick={() => {
+                                      setAgencyId(agency.id)
+                                      setAgencySearchText(agency.name)
+                                      setShowAgencySuggestions(false)
+                                      toast.success(`Agência ${agency.name} selecionada!`)
+                                    }}
+                                    className="w-full text-left px-3 py-2 text-sm rounded-sm hover:bg-muted transition-colors flex items-center justify-between"
+                                  >
+                                    <span>{agency.name}</span>
+                                    {agency.city && agency.state && (
+                                      <span className="text-xs text-muted-foreground text-[10px]">
+                                        {agency.city}/{agency.state}
+                                      </span>
+                                    )}
+                                  </button>
+                                ))
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
 
                     {/* Interviewer Type Selection */}
@@ -987,7 +1184,8 @@ export default function SimuladorEntrevistas() {
                       {getInterviewerBadge(selectedSimulation.interviewer_type)}
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Simulador de Entrevista de Emprego com IA
+                      {selectedSimulation.company_name ? `Entrevista para ${selectedSimulation.company_name}` : "Simulador de Entrevista de Emprego com IA"}
+                      {selectedSimulation.agency_id && ` (via ${agencies.find(a => a.id === selectedSimulation.agency_id)?.name || 'Agência'})`}
                     </p>
                   </div>
                 </div>
@@ -1420,14 +1618,34 @@ export default function SimuladorEntrevistas() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent className="text-sm space-y-4">
-                      <div>
-                        <h4 className="font-semibold text-foreground mb-1">
-                          Vaga Alvo / Contexto:
-                        </h4>
-                        <p className="text-muted-foreground line-clamp-3">
-                          {selectedSimulation.job_description ||
-                            "Nenhum requisito adicional fornecido."}
-                        </p>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <h4 className="font-semibold text-foreground mb-1">
+                            Vaga Alvo / Contexto:
+                          </h4>
+                          <p className="text-muted-foreground line-clamp-3">
+                            {selectedSimulation.job_description ||
+                              "Nenhum requisito adicional fornecido."}
+                          </p>
+                        </div>
+                        {(selectedSimulation.company_name || selectedSimulation.agency_id) && (
+                          <div>
+                            <h4 className="font-semibold text-foreground mb-1">
+                              Empresa & Agência:
+                            </h4>
+                            <div className="text-sm text-muted-foreground space-y-1">
+                              {selectedSimulation.company_name && (
+                                <p><strong>Empresa:</strong> {selectedSimulation.company_name}</p>
+                              )}
+                              {selectedSimulation.agency_id && (
+                                <p>
+                                  <strong>Agência:</strong>{" "}
+                                  {agencies.find(a => a.id === selectedSimulation.agency_id)?.name || "Agência Selecionada"}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                     <CardFooter className="border-t border-muted/50 bg-muted/5 py-4 flex flex-wrap gap-4 text-xs text-muted-foreground">
