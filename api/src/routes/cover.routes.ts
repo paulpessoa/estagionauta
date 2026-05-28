@@ -91,8 +91,19 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       console.log('Error fetching history:', historyErr);
     }
 
+    const now = new Date();
+    const currentDateStr = now.toLocaleDateString('pt-BR', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    const currentISO = now.toISOString().split('T')[0];
+
     // 4. System Prompt with SITE MAP & BUSINESS RULES
     const systemPrompt = `Você é o Cover (Assistente Inteligente Oficial do Estagionauta).
+A data de hoje é: ${currentDateStr} (formato ISO: ${currentISO}). Sempre use esta data de hoje como referência temporal absoluta para interpretar termos de data informados pelo usuário, como "hoje", "este ano", "mês passado", "estou estagiando desde janeiro deste ano", etc.
+
 Seu objetivo é ajudar estudantes e estagiários com dúvidas de estágio, orientar sobre a Lei do Estágio (Lei 11.788/2008), dar dicas de carreira e interagir com o site.
 
 REGRAS CRUCIAIS DE NAVEGAÇÃO (MAPA DO SITE):

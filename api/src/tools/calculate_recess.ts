@@ -31,7 +31,6 @@ export async function runCalculateRecess(args: {
 }) {
   try {
     const { startDate, endDate, salario } = args;
-
     const start = new Date(startDate);
     const end = endDate ? new Date(endDate) : new Date();
 
@@ -39,10 +38,17 @@ export async function runCalculateRecess(args: {
       return { error: 'Data de início inválida. Use o formato YYYY-MM-DD.' };
     }
 
-    // Calculate months worked
-    const monthsWorked =
-      (end.getFullYear() - start.getFullYear()) * 12 +
-      (end.getMonth() - start.getMonth());
+    // Reset hours to avoid timezone differences affecting daily diff
+    const utcStart = Date.UTC(start.getFullYear(), start.getMonth(), start.getDate());
+    const utcEnd = Date.UTC(end.getFullYear(), end.getMonth(), end.getDate());
+    
+    const diffTime = utcEnd - utcStart;
+    const diffDays = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+    
+    // Calculate months worked (fraction of 15 days or more counts as a month)
+    const fullMonths = Math.floor(diffDays / 30);
+    const remainderDays = diffDays % 30;
+    const monthsWorked = remainderDays >= 15 ? fullMonths + 1 : fullMonths;
 
     // For every 12 months, student gets 30 days of recess
     const diasRecesso = Math.max(0, Math.floor((monthsWorked / 12) * 30));
