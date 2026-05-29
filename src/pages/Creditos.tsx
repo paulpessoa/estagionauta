@@ -17,7 +17,8 @@ import {
   ShoppingBag,
   Zap,
   Crown,
-  Loader2
+  Loader2,
+  Clock
 } from 'lucide-react'
 
 interface Transaction {
@@ -248,6 +249,18 @@ export default function Creditos() {
                       <li><strong>Simulador de Entrevistas com IA:</strong> 2 créditos</li>
                       <li><strong>Gerador de Currículos com IA:</strong> 1 crédito</li>
                       <li><strong>Acompanhamento de Candidaturas:</strong> Gratuito (limites conforme o nível do plano)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="mt-4 bg-yellow-500/10 p-4 rounded-xl text-sm flex items-start gap-3 border border-yellow-500/20">
+                  <Clock className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-bold block mb-1 text-yellow-800 dark:text-yellow-500">Validade dos Créditos</span>
+                    <ul className="list-disc pl-4 text-yellow-700 dark:text-yellow-400/90 space-y-1">
+                      <li><strong>Créditos Gratuitos:</strong> Não acumulam. Expiram e são renovados no dia 1º de cada mês.</li>
+                      <li><strong>Créditos Avulsos (Pagos):</strong> Têm validade de 6 meses a partir da data da compra.</li>
+                      <li>O sistema sempre consome primeiro os créditos mais antigos (gratuitos ou pagos).</li>
                     </ul>
                   </div>
                 </div>
