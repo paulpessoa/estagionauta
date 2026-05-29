@@ -19,7 +19,7 @@ const plans = [
     price: 0,
     originalPrice: 0,
     popular: false,
-    description: '10 créditos mensais gratuitos para começar'
+    description: '10 créditos mensais gratuitos automáticos no cadastro'
   },
   {
     id: 'cosmonauta',
@@ -29,7 +29,7 @@ const plans = [
     price: 5.97,
     originalPrice: 9.90,
     popular: true,
-    description: '30 créditos adicionais + 10 gratuitos todo mês'
+    description: 'Recarga avulsa de 30 créditos + 10 créditos gratuitos mensais'
   },
   {
     id: 'astronauta',
@@ -39,7 +39,7 @@ const plans = [
     price: 14.97,
     originalPrice: 24.90,
     popular: false,
-    description: '90 créditos adicionais + 10 gratuitos todo mês'
+    description: 'Recarga avulsa de 90 créditos + 10 créditos gratuitos mensais'
   }
 ]
 
@@ -146,7 +146,7 @@ export default function Precos() {
                     {plan.description}
                   </CardDescription>
                   <div className="text-xs text-muted-foreground mt-1 bg-muted/60 dark:bg-muted/30 py-1 px-2.5 rounded-full inline-block mx-auto font-medium">
-                    {plan.credits} créditos mensais
+                    {plan.credits} créditos no total
                   </div>
                 </CardHeader>
                 
@@ -161,7 +161,7 @@ export default function Precos() {
                         <div className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">
                           R$ {plan.price.toFixed(2).replace('.', ',')}
                           <span className="text-xs text-muted-foreground font-normal ml-1">
-                            {"/ mês"}
+                            {" pagamento único"}
                           </span>
                         </div>
                       </div>
@@ -198,7 +198,7 @@ export default function Precos() {
                       ) : (
                         <>
                           <Sparkles className="mr-2 h-4 w-4" />
-                          Assinar {plan.name}
+                          Comprar {plan.name}
                         </>
                       )}
                     </Button>

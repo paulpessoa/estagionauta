@@ -37,7 +37,7 @@ const packages = [
     originalPrice: 0,
     popular: false,
     color: 'border-slate-200 dark:border-slate-800',
-    description: '10 créditos mensais'
+    description: '10 créditos mensais gratuitos automáticos'
   },
   {
     id: 'cosmonauta',
@@ -48,7 +48,7 @@ const packages = [
     originalPrice: 9.90,
     popular: true,
     color: 'border-violet-500 ring-2 ring-violet-500/20',
-    description: '40 créditos mensais'
+    description: 'Recarga avulsa de 30 créditos + 10 gratuitos'
   },
   {
     id: 'astronauta',
@@ -59,7 +59,7 @@ const packages = [
     originalPrice: 24.90,
     popular: false,
     color: 'border-purple-500',
-    description: '100 créditos mensais'
+    description: 'Recarga avulsa de 90 créditos + 10 gratuitos'
   }
 ]
 
@@ -202,7 +202,7 @@ export default function Creditos() {
                               </div>
                               <div className="text-2xl font-bold text-foreground flex items-baseline gap-1 mt-0.5">
                                 R$ {pkg.price.toFixed(2).replace('.', ',')}
-                                <span className="text-xs text-muted-foreground font-normal">{"/mês"}</span>
+                                <span className="text-xs text-muted-foreground font-normal">{" pagamento único"}</span>
                               </div>
                             </div>
                           ) : (
@@ -230,7 +230,7 @@ export default function Creditos() {
                               ) : (
                                 <Sparkles className="h-4 w-4 mr-2" />
                               )}
-                              Assinar
+                              Comprar
                             </Button>
                           )}
                         </div>

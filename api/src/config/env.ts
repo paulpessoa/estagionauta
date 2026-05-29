@@ -18,9 +18,8 @@ const envSchema = z.object({
   OPENAI_API_KEY: z.string().min(1).optional(),
   STRIPE_PRICE_ASTRONAUTA_ASSINATURA: z.string().min(1),
   STRIPE_PRICE_COSMONAUTA_ASSINATURA: z.string().min(1),
-  STRIPE_PRICE_COMANDANTE_ASSINATURA: z.string().min(1).optional(),
-  STRIPE_PRICE_ASTRONAUTA_AVULSO: z.string().min(1).optional(),
-  STRIPE_PRICE_COSMONAUTA_AVULSO: z.string().min(1).optional(),
+  STRIPE_PRICE_ASTRONAUTA_AVULSO: z.string().min(1),
+  STRIPE_PRICE_COSMONAUTA_AVULSO: z.string().min(1),
   STRIPE_PRICE_COMANDANTE_AVULSO: z.string().min(1).optional(),
 });
 
