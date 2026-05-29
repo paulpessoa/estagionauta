@@ -87,7 +87,7 @@ describe('Sprint 1 Rover Tools Tests', () => {
 
   describe('start_interview tool', () => {
     it('consumes credit and returns simulation url', async () => {
-      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null });
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null } as any);
 
       const mockSingleProfile = vi.fn().mockResolvedValue({ data: { full_name: 'John Doe' }, error: null });
       const mockEqProfile = vi.fn().mockReturnValue({ single: mockSingleProfile });
@@ -147,7 +147,7 @@ describe('Sprint 1 Rover Tools Tests', () => {
         return {} as any;
       });
 
-      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null });
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null } as any);
 
       const result = await runGenerateResume('user-123', { jobTitle: 'Backend Dev' });
 
@@ -262,7 +262,7 @@ describe('Sprint 1 Rover Tools Tests', () => {
 
       expect(result.success).toBe(true);
       expect(result.total).toBe(1);
-      expect(result.invitees[0].name).toBe('Bob');
+      expect(result.invitees![0].name).toBe('Bob');
     });
   });
 
@@ -363,7 +363,7 @@ describe('Sprint 1 Rover Tools Tests', () => {
         return {} as any;
       });
 
-      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null });
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null } as any);
 
       // Mock OpenAI completions.create
       vi.mock('openai', () => {
@@ -459,8 +459,8 @@ describe('Sprint 1 Rover Tools Tests', () => {
       const result = await runListAvailableTasks('user-123');
 
       expect(result.success).toBe(true);
-      expect(result.tasks.length).toBe(4);
-      expect(result.tasks[0].completed).toBe(true);
+      expect(result.tasks!.length).toBe(4);
+      expect(result.tasks![0].completed).toBe(true);
     });
   });
 
@@ -493,7 +493,7 @@ describe('Sprint 1 Rover Tools Tests', () => {
         return {} as any;
       });
 
-      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null });
+      vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null } as any);
 
       const result = await runClaimTaskReward('user-123', { taskKey: 'complete_profile' });
 
