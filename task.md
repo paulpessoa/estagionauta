@@ -96,3 +96,38 @@
 - [x] Register new `/perfil` route in `src/route.ts` and update header dropdown/mobile navigation
 - [x] Verify Vitest tests pass and projects build successfully
 
+## FASE 2.6 — Rover Tools Blueprint (Sprint 1)
+
+- [x] Database migrations for Sprint 1 (user_reminders, referral_invites, user_tasks tables with RLS and triggers)
+- [x] Implement buy_credits tool (Stripe checkout generator)
+- [x] Implement start_interview tool (Verification, credit consumption, and session initialization)
+- [x] Implement generate_resume tool (AI markdown CV builder optimized for specific candidatures)
+- [x] Implement analyze_candidatura tool (AI compatibility report, score, strengths, and tips)
+- [x] Implement update_candidatura tool (Move Kanban status and recalculate progress)
+- [x] Implement get_referral_link tool (Retrieve personal referral link)
+- [x] Implement invite_friend tool (E-mail invite via Brevo + pending invite insertion)
+- [x] Implement list_invitees tool (Status list of friends invited)
+- [x] Implement check_referral_stats tool (Referrals summary dashboard)
+- [x] Implement list_available_tasks tool (Gamified available tasks & validation checks)
+- [x] Implement claim_task_reward tool (Task completion reward redemption)
+- [x] Implement request_password_reset tool (Secure recovery email flow via Supabase Auth)
+- [x] Implement Prompt Injection Filter guardrail in rover routes
+- [x] Register new tools in registry.ts and update system prompt instructions
+- [x] Write comprehensive unit tests for all 12 tools and guardrails (passing 20/20 specs)
+- [x] Deploy to Google Cloud Run and verify production logs
+
+## FASE 2.7 — Rover Tools Blueprint (Sprint 2)
+
+- [x] Implement database support for reminders & FIFO credits tracking
+- [x] Implement reminders tools (`create_reminder`, `list_reminders`, `update_reminder`)
+- [x] Implement credit histories & expiration tools (`check_credit_history`, `check_credit_expiry`)
+- [x] Implement user dashboard query tools (`list_past_interviews`, `list_resumes`, `candidatura_stats`, `check_account_status`)
+- [x] Implement UI router helper tool (`navigate_to`)
+- [x] Implement PII Redaction Filter guardrail (CPF & Credit Card data) in rover API routes
+- [x] Integrate OpenAI Content Moderation API guardrail in rover message handlers
+- [x] Register the 10 Sprint 2 tools in the registry and map them to system prompt rules
+- [x] Write 18 unit tests in `sprint2_tools.spec.ts` covering all tools and safety guardrails
+- [x] Verify successful Vitest suite execution (38/38 specs passing) and clean TypeScript build
+
+
+

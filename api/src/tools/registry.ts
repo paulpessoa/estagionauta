@@ -21,6 +21,18 @@ import { listAvailableTasksDefinition, runListAvailableTasks } from './list_avai
 import { claimTaskRewardDefinition, runClaimTaskReward } from './claim_task_reward.js';
 import { requestPasswordResetDefinition, runRequestPasswordReset } from './request_password_reset.js';
 
+// Sprint 2 new tools
+import { createReminderDefinition, runCreateReminder } from './create_reminder.js';
+import { listRemindersDefinition, runListReminders } from './list_reminders.js';
+import { updateReminderDefinition, runUpdateReminder } from './update_reminder.js';
+import { checkCreditHistoryDefinition, runCheckCreditHistory } from './check_credit_history.js';
+import { checkCreditExpiryDefinition, runCheckCreditExpiry } from './check_credit_expiry.js';
+import { listPastInterviewsDefinition, runListPastInterviews } from './list_past_interviews.js';
+import { candidaturaStatsDefinition, runCandidaturaStats } from './candidatura_stats.js';
+import { listResumesDefinition, runListResumes } from './list_resumes.js';
+import { checkAccountStatusDefinition, runCheckAccountStatus } from './check_account_status.js';
+import { navigateToDefinition, runNavigateTo } from './navigate_to.js';
+
 export const roverTools = [
   checkProfileDefinition,
   checkCreditsDefinition,
@@ -43,6 +55,17 @@ export const roverTools = [
   listAvailableTasksDefinition,
   claimTaskRewardDefinition,
   requestPasswordResetDefinition,
+  // Sprint 2
+  createReminderDefinition,
+  listRemindersDefinition,
+  updateReminderDefinition,
+  checkCreditHistoryDefinition,
+  checkCreditExpiryDefinition,
+  listPastInterviewsDefinition,
+  candidaturaStatsDefinition,
+  listResumesDefinition,
+  checkAccountStatusDefinition,
+  navigateToDefinition,
 ];
 
 export async function executeRoverTool(
@@ -101,6 +124,27 @@ export async function executeRoverTool(
       return await runClaimTaskReward(userId, args);
     case 'request_password_reset':
       return await runRequestPasswordReset(userId);
+    // Sprint 2
+    case 'create_reminder':
+      return await runCreateReminder(userId, args);
+    case 'list_reminders':
+      return await runListReminders(userId, args);
+    case 'update_reminder':
+      return await runUpdateReminder(userId, args);
+    case 'check_credit_history':
+      return await runCheckCreditHistory(userId, args);
+    case 'check_credit_expiry':
+      return await runCheckCreditExpiry(userId);
+    case 'list_past_interviews':
+      return await runListPastInterviews(userId, args);
+    case 'candidatura_stats':
+      return await runCandidaturaStats(userId);
+    case 'list_resumes':
+      return await runListResumes(userId);
+    case 'check_account_status':
+      return await runCheckAccountStatus(userId);
+    case 'navigate_to':
+      return await runNavigateTo(userId, args);
     default:
       throw new Error(`Ferramenta desconhecida: ${name}`);
   }

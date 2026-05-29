@@ -15,6 +15,9 @@ const groq = new OpenAI({
   baseURL: 'https://api.groq.com/openai/v1',
 });
 
+// Client for OpenAI Content Moderation API
+const openaiClient = env.OPENAI_API_KEY ? new OpenAI({ apiKey: env.OPENAI_API_KEY }) : null;
+
 const messageSchema = z.object({
   message: z.string().min(1, 'A mensagem não pode ser vazia'),
 });
@@ -33,8 +36,19 @@ const PROMPT_INJECTION_PATTERNS = [
   /ignore\s+above/i
 ];
 
-function detectPromptInjection(message: string): boolean {
+export function detectPromptInjection(message: string): boolean {
   return PROMPT_INJECTION_PATTERNS.some(pattern => pattern.test(message));
+}
+
+export function redactPII(text: string): string {
+  // Redigir CPF (ex: 123.456.789-00 ou 12345678900)
+  const cpfRegex = /\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b/g;
+  // Redigir número de cartão de crédito (ex: 4111-2222-3333-4444 ou 16 dígitos)
+  const cardRegex = /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g;
+  
+  return text
+    .replace(cpfRegex, '[CPF REDIGIDO]')
+    .replace(cardRegex, '[CARTÃO REDIGIDO]');
 }
 
 // GET /api/rover/history - Get recent chat history
@@ -92,13 +106,32 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       }, 400);
     }
 
-    // 2. Save user message
+    // 1.6. Content Moderation Guardrail
+    if (openaiClient) {
+      try {
+        const modRes = await openaiClient.moderations.create({ input: message });
+        if (modRes.results[0]?.flagged) {
+          await logAbuse(user.id, ipAddress, 'content_moderation', `Mensagem ofensiva bloqueada: "${message.substring(0, 200)}"`);
+          return c.json({ 
+            error: 'Sua mensagem viola as nossas diretrizes de comunidade. Por favor, seja respeitoso(a).',
+            reason: 'content_moderation'
+          }, 400);
+        }
+      } catch (modErr) {
+        console.error('Content moderation call failed:', modErr);
+      }
+    }
+
+    // 1.7. PII Redaction Guardrail
+    const redactedMessage = redactPII(message);
+
+    // 2. Save user message (saving the redacted version)
     const { error: saveUserMsgErr } = await supabaseAdmin
       .from('rover_messages')
       .insert({
         user_id: user.id,
         role: 'user',
-        content: message,
+        content: redactedMessage,
       });
 
     if (saveUserMsgErr) {
@@ -144,6 +177,28 @@ Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo 
 7. Calculadora de Recesso: A página "Calculadora de Recesso" (caminho: '/calculadora') calcula o período e valor proporcional de recesso garantido pela lei.
 8. Indicar Amigos: A página "Indicar Amigos" (caminho: '/convide-amigos') permite ao usuário convidar amigos para ganhar créditos.
 9. Preços / Comprar Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
+
+REGRA DE NAVEGAÇÃO DIRETA (REDIRECT):
+Se o usuário pedir explicitamente para ir, navegar, abrir, ou acessar alguma página do site (ex: "me leva pro simulador", "ir para perfil"), chame a ferramenta 'navigate_to' informando a página de destino correspondente.
+
+REGRA DE LEMBRETES:
+1. Para criar lembretes (ex: "me lembre de enviar o teste técnico amanhã às 14h"), chame a ferramenta 'create_reminder' informando título, data/hora e opcionalmente uma candidaturaId vinculada.
+2. Para listar lembretes ativos ou passados, use 'list_reminders'.
+3. Para atualizar data, título ou cancelar/concluir um lembrete (marcar como enviado, cancelled, pending), use 'update_reminder'.
+
+REGRA DE HISTÓRICOS DE CRÉDITOS E VALIDADE:
+1. Se o usuário quiser consultar o extrato de créditos ou histórico detalhado de compras/gastos, use 'check_credit_history'.
+2. Se o usuário quiser saber quando seus créditos vão expirar (validade de 6 meses por lote/FIFO), use 'check_credit_expiry'.
+
+REGRA DE HISTÓRICO DE ENTREVISTAS:
+Se o usuário quiser ver ou listar as simulações de entrevista anteriores realizadas, chame 'list_past_interviews'.
+
+REGRA DE CURRÍCULOS SALVOS:
+Se o usuário quiser ver os currículos que ele já criou ou salvou, use 'list_resumes'.
+
+REGRA DE ESTATÍSTICAS E STATUS DA CONTA:
+1. Se o usuário quiser saber o status geral da conta (plano ativo, se é premium, data de cadastro), chame 'check_account_status'.
+2. Para ver estatísticas do Kanban (quantas candidaturas por estágio), use 'candidatura_stats'.
 
 REGRA DE COMPRA DE CRÉDITOS:
 Se o usuário solicitar a compra de créditos, upgrade de conta, preços ou como adquirir créditos, chame a ferramenta 'buy_credits' passando o plano correspondente (cosmonauta ou astronauta) e mostre o link retornado para o usuário clicar.
@@ -194,7 +249,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
         });
       }
     } else {
-      apiMessages.push({ role: 'user', content: message });
+      apiMessages.push({ role: 'user', content: redactedMessage });
     }
 
     let loopCount = 0;
