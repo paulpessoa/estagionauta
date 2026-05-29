@@ -25,21 +25,21 @@ const plans = [
     id: 'cosmonauta',
     name: 'Cosmonauta',
     icon: Zap,
-    credits: 40,
+    credits: 30,
     price: 5.97,
     originalPrice: 9.90,
     popular: true,
-    description: 'Recarga avulsa de 30 créditos + 10 créditos gratuitos mensais'
+    description: '30 créditos avulsos (+ 10 gratuitos que você já recebe todo mês)'
   },
   {
     id: 'astronauta',
     name: 'Astronauta',
     icon: Crown,
-    credits: 100,
+    credits: 90,
     price: 14.97,
     originalPrice: 24.90,
     popular: false,
-    description: 'Recarga avulsa de 90 créditos + 10 créditos gratuitos mensais'
+    description: '90 créditos avulsos (+ 10 gratuitos que você já recebe todo mês)'
   }
 ]
 

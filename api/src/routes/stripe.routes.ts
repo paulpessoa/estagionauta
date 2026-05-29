@@ -13,8 +13,8 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const app = new Hono<Env>();
 
 const PLANS = {
-  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 40, name: 'Cosmonauta', type: 'payment' },
-  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 100, name: 'Astronauta', type: 'payment' },
+  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 30, name: 'Cosmonauta', type: 'payment' },
+  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 90, name: 'Astronauta', type: 'payment' },
 } as const;
 
 type PlanId = keyof typeof PLANS;

@@ -43,23 +43,23 @@ const packages = [
     id: 'cosmonauta',
     name: 'Cosmonauta',
     icon: Zap,
-    credits: 40,
+    credits: 30,
     price: 5.97,
     originalPrice: 9.90,
     popular: true,
     color: 'border-violet-500 ring-2 ring-violet-500/20',
-    description: 'Recarga avulsa de 30 créditos + 10 gratuitos'
+    description: '30 créditos avulsos (+ 10 gratuitos mensais)'
   },
   {
     id: 'astronauta',
     name: 'Astronauta',
     icon: Crown,
-    credits: 100,
+    credits: 90,
     price: 14.97,
     originalPrice: 24.90,
     popular: false,
     color: 'border-purple-500',
-    description: 'Recarga avulsa de 90 créditos + 10 gratuitos'
+    description: '90 créditos avulsos (+ 10 gratuitos mensais)'
   }
 ]
 
