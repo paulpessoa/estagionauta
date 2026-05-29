@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
-import { checkAbuse } from '../services/abuse.service.js';
+import { checkAbuse, logAbuse } from '../services/abuse.service.js';
 import { roverTools, executeRoverTool } from '../tools/registry.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
@@ -18,6 +18,24 @@ const groq = new OpenAI({
 const messageSchema = z.object({
   message: z.string().min(1, 'A mensagem não pode ser vazia'),
 });
+
+const PROMPT_INJECTION_PATTERNS = [
+  /ignore(e)?\s+(as|todas|os)?\s*(instru(ç|c)(õ|o)es|diretrizes|regras|prompts)/i,
+  /ignore\s+previous\s+instructions/i,
+  /system\s+override/i,
+  /voc(ê|e)\s+agora\s+(é|e)\s+um/i,
+  /you\s+are\s+now\s+a/i,
+  /esque(ç|c)a\s+(o\s+que|tudo)/i,
+  /forget\s+(what|everything)/i,
+  /dan\s+mode/i,
+  /jailbreak/i,
+  /n(ã|a)o\s+siga\s+as/i,
+  /ignore\s+above/i
+];
+
+function detectPromptInjection(message: string): boolean {
+  return PROMPT_INJECTION_PATTERNS.some(pattern => pattern.test(message));
+}
 
 // GET /api/rover/history - Get recent chat history
 app.get('/history', authMiddleware, async (c) => {
@@ -65,6 +83,15 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       return c.json({ error: message, reason: abuseCheck.reason, cooldownRemaining: abuseCheck.cooldownRemaining }, 429);
     }
 
+    // 1.5. Prompt Injection Filter
+    if (detectPromptInjection(message)) {
+      await logAbuse(user.id, ipAddress, 'prompt_injection', `Mensagem suspeita bloqueada: "${message.substring(0, 200)}"`);
+      return c.json({ 
+        error: 'Mensagem bloqueada por questões de segurança (detecção de comportamento ou comando suspeito).',
+        reason: 'prompt_injection'
+      }, 400);
+    }
+
     // 2. Save user message
     const { error: saveUserMsgErr } = await supabaseAdmin
       .from('rover_messages')
@@ -100,7 +127,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
     });
     const currentISO = now.toISOString().split('T')[0];
 
-    // 4. System Prompt with SITE MAP & BUSINESS RULES
+    // 4. System Prompt with SITE MAP, BUSINESS RULES & ALL NEW TOOLS
     const systemPrompt = `Você é o Rover (Assistente Inteligente Oficial do Estagionauta).
 A data de hoje é: ${currentDateStr} (formato ISO: ${currentISO}). Sempre use esta data de hoje como referência temporal absoluta para interpretar termos de data informados pelo usuário, como "hoje", "este ano", "mês passado", "estou estagiando desde janeiro deste ano", etc.
 
@@ -118,20 +145,39 @@ Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo 
 8. Indicar Amigos: A página "Indicar Amigos" (caminho: '/convide-amigos') permite ao usuário convidar amigos para ganhar créditos.
 9. Preços / Comprar Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
 
+REGRA DE COMPRA DE CRÉDITOS:
+Se o usuário solicitar a compra de créditos, upgrade de conta, preços ou como adquirir créditos, chame a ferramenta 'buy_credits' passando o plano correspondente (cosmonauta ou astronauta) e mostre o link retornado para o usuário clicar.
+
+REGRA DE INICIAR SIMULAÇÃO DE ENTREVISTA:
+Se o usuário pedir para iniciar, simular ou treinar uma entrevista de emprego (ou similar), use a ferramenta 'start_interview' passando o cargo alvo (jobTitle) e outros detalhes de vaga. Forneça o link seguro retornado.
+
+REGRA DE GERAÇÃO E SALVAMENTO DE CURRÍCULO:
+Se o usuário pedir para gerar um currículo para uma vaga específica das candidaturas dele:
+1. Primeiro, chame a ferramenta 'check_candidatures' ou 'generate_resume' diretamente se os detalhes forem informados.
+2. Ao gerar, chame 'generate_resume' para otimizar por IA e salvar o currículo no painel dele, fornecendo o link do editor ('/gerador-curriculos').
+
+REGRA DE ANÁLISE DE COMPATIBILIDADE DE VAGA:
+Se o usuário solicitar uma análise de fit/adequação ou feedback técnico de uma vaga do Kanban dele, use a ferramenta 'analyze_candidatura' com o ID da candidatura e exponha as notas e recomendações detalhadamente.
+
+REGRA DE ATUALIZAÇÃO E MOVIMENTAÇÃO DE VAGAS:
+Se o usuário solicitar para alterar informações, notas, salário ou mover o status de uma vaga no Kanban (ex: "passei para a fase de entrevista na empresa X"), chame a ferramenta 'update_candidatura' com o ID da vaga e informe o sucesso.
+
 REGRA DE ATUALIZAÇÃO DE PERFIL:
 Você tem a capacidade de atualizar diretamente as informações de perfil do usuário. Se o usuário fornecer novos dados (como nome, telefone, linkedin, biografia, curso, universidade ou período acadêmico) ou solicitar que você preencha/altere/atualize essas informações, use a ferramenta 'update_profile' imediatamente para salvar as alterações no banco de dados e informe que a atualização foi realizada com sucesso.
 
 REGRA DE CADASTRO DE VAGAS:
-Se o usuário pedir para cadastrar, adicionar, registrar ou salvar uma nova vaga ou candidatura que ele encontrou, use a ferramenta 'add_candidatura' passando as informações fornecidas (empresa, cargo, salário, local, descrição/observações) para salvá-la diretamente no painel Kanban dele.
+Se o usuário pedir para cadastrar, adicionar, registrar ou salvar uma nova vaga ou candidatura que ele encontrou, use a ferramenta 'add_candidatura' passando as informações fornecidas para salvá-la diretamente no painel Kanban dele.
 
-REGRA DE GERAÇÃO E SALVAMENTO DE CURRÍCULO:
-Se o usuário pedir para gerar um currículo para uma vaga específica das candidaturas dele:
-1. Primeiro, chame a ferramenta 'check_candidatures' para listar e encontrar a vaga em questão e ler os detalhes dela (como empresa, cargo, descrição de vaga/requisitos).
-2. Segundo, chame 'check_profile' para obter as informações pessoais e acadêmicas atuais do usuário.
-3. Terceiro, escreva um currículo em Markdown perfeitamente otimizado e sob medida para a vaga. Não inclua blocos de código markdown (\`\`\`markdown e \`\`\`), apenas o texto cru formatado em Markdown com títulos (# e ##).
-4. Quarto, chame a ferramenta 'save_resume' para salvar esse currículo gerado no banco de dados para o usuário, informando a ele que o currículo foi salvo com sucesso e já está disponível na página "Gerador de Currículos" (caminho: '/gerador-curriculos').
+REGRA DE CONVITE E INDICAÇÕES DE AMIGOS:
+Se o usuário quiser convidar amigos por email, use a ferramenta 'invite_friend' passando o e-mail e nome. Para obter seu link de indicação, use 'get_referral_link'. Para ver estatísticas de indicações, use 'check_referral_stats'.
 
-Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas se o usuário pedir informações sobre créditos, perfil incompleto, alterações/atualizações no perfil, cálculos de recesso, análise de currículo, status/quantidade de candidaturas, cadastro de vagas ou salvamento de currículos.`;
+REGRA DE TAREFAS GAMIFICADAS E RECOMPENSAS:
+Se o usuário quiser ganhar créditos grátis ou ver tarefas disponíveis, use 'list_available_tasks'. Para resgatar uma recompensa de tarefa concluída, use 'claim_task_reward' com a chave correspondente.
+
+REGRA DE RECUPERAÇÃO DE SENHA:
+Se o usuário pedir para mudar ou recuperar a senha da conta de forma segura, chame 'request_password_reset' para disparar o email com o token de redefinição oficial do Supabase Auth. Não peça ou trate senhas no chat.
+
+Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas de acordo com as necessidades expressas pelo usuário.`;
 
     const apiMessages: any[] = [
       { role: 'system', content: systemPrompt },
