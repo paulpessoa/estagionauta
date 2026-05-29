@@ -13,15 +13,14 @@ const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 const app = new Hono<Env>();
 
 const PLANS = {
-  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_AVULSO, credits: 15, name: 'Cosmonauta', type: 'payment' },
-  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_AVULSO, credits: 45, name: 'Astronauta', type: 'payment' },
-  comandante: { priceId: env.STRIPE_PRICE_COMANDANTE_AVULSO, credits: 120, name: 'Comandante', type: 'payment' },
+  cosmonauta: { priceId: env.STRIPE_PRICE_COSMONAUTA_ASSINATURA, credits: 40, name: 'Cosmonauta', type: 'subscription' },
+  astronauta: { priceId: env.STRIPE_PRICE_ASTRONAUTA_ASSINATURA, credits: 100, name: 'Astronauta', type: 'subscription' },
 } as const;
 
 type PlanId = keyof typeof PLANS;
 
 const checkoutSchema = z.object({
-  planId: z.enum(['cosmonauta', 'astronauta', 'comandante']),
+  planId: z.enum(['cosmonauta', 'astronauta']),
 });
 
 // POST /api/stripe/checkout - Create checkout session
@@ -32,7 +31,6 @@ app.post('/checkout', authMiddleware, zValidator('json', checkoutSchema), async 
 
   try {
     const session = await stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
       customer_email: user.email,
       line_items: [
         {

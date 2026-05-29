@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card'
 import { Badge } from '../components/ui/badge'
-import { Check, Star, Zap, Crown, Sparkles, Bot, Chrome } from 'lucide-react'
+import { Check, Star, Zap, Crown, Sparkles, Bot, Chrome, Loader2 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useCredits } from '../hooks/useCredits'
 import { useToast } from '../hooks/use-toast'
@@ -12,28 +12,34 @@ import { useNavigate } from 'react-router-dom'
 
 const plans = [
   {
+    id: 'gratuito',
+    name: 'Gratuito',
+    icon: Star,
+    credits: 10,
+    price: 0,
+    originalPrice: 0,
+    popular: false,
+    description: '10 créditos mensais gratuitos para começar'
+  },
+  {
     id: 'cosmonauta',
     name: 'Cosmonauta',
-    icon: Star,
-    credits: 15,
-    price: 2.99,
-    popular: false
+    icon: Zap,
+    credits: 40,
+    price: 5.97,
+    originalPrice: 9.90,
+    popular: true,
+    description: '30 créditos adicionais + 10 gratuitos todo mês'
   },
   {
     id: 'astronauta',
     name: 'Astronauta',
-    icon: Zap,
-    credits: 45,
-    price: 6.99,
-    popular: true
-  },
-  {
-    id: 'comandante',
-    name: 'Comandante',
     icon: Crown,
-    credits: 120,
-    price: 14.99,
-    popular: false
+    credits: 100,
+    price: 14.97,
+    originalPrice: 24.90,
+    popular: false,
+    description: '90 créditos adicionais + 10 gratuitos todo mês'
   }
 ]
 
@@ -121,56 +127,82 @@ export default function Precos() {
                 key={plan.id}
                 className={`relative flex flex-col justify-between ${
                   plan.popular 
-                    ? 'border-2 border-blue-500 shadow-xl scale-105' 
-                    : 'border border-gray-200 dark:border-gray-700'
+                    ? 'border-2 border-violet-600 shadow-xl dark:shadow-violet-950/20 scale-105' 
+                    : 'border border-gray-200 dark:border-gray-800'
                 }`}
               >
                 {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-blue-500 text-white">
+                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-violet-600 text-white font-bold tracking-wide">
                     Mais Popular
                   </Badge>
                 )}
                 
                 <CardHeader className="text-center pb-4">
                   <div className="flex justify-center mb-2">
-                    <plan.icon className="h-10 w-10 text-blue-500" />
+                    <plan.icon className={`h-10 w-10 ${plan.popular ? 'text-violet-600' : 'text-blue-500'}`} />
                   </div>
                   <CardTitle className="text-2xl font-bold">{plan.name}</CardTitle>
-                  <CardDescription className="text-gray-600 dark:text-gray-400">
-                    {plan.credits} créditos • Válidos por 6 meses
+                  <CardDescription className="text-gray-600 dark:text-gray-400 mt-2">
+                    {plan.description}
                   </CardDescription>
+                  <div className="text-xs text-muted-foreground mt-1 bg-muted/60 dark:bg-muted/30 py-1 px-2.5 rounded-full inline-block mx-auto font-medium">
+                    {plan.credits} créditos mensais
+                  </div>
                 </CardHeader>
                 
-                <CardContent className="space-y-6">
-                  {/* Price */}
+                <CardContent className="space-y-6 flex-grow flex flex-col justify-end">
+                  {/* Price with promo anchor */}
                   <div className="text-center">
-                    <div className="text-4xl font-bold text-gray-900 dark:text-white">
-                      R$ {plan.price.toFixed(2).replace('.', ',')}
-                    </div>
+                    {plan.price > 0 ? (
+                      <div className="flex flex-col items-center justify-center">
+                        <div className="text-sm line-through text-muted-foreground font-medium">
+                          De R$ {plan.originalPrice.toFixed(2).replace('.', ',')}
+                        </div>
+                        <div className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">
+                          R$ {plan.price.toFixed(2).replace('.', ',')}
+                          <span className="text-xs text-muted-foreground font-normal ml-1">
+                            {"/ mês"}
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-4xl font-extrabold text-gray-900 dark:text-white">
+                        Grátis
+                      </div>
+                    )}
                   </div>
 
                   {/* Purchase Button */}
-                  <Button 
-                    className={`w-full ${
-                      plan.popular 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
-                    }`}
-                    onClick={() => handlePurchase(plan.id)}
-                    disabled={loading === plan.id}
-                  >
-                    {loading === plan.id ? (
-                      <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Processando...</span>
-                      </div>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2 h-4 w-4" />
-                        Comprar {plan.credits} Créditos
-                      </>
-                    )}
-                  </Button>
+                  {plan.id === 'gratuito' ? (
+                    <Button 
+                      className="w-full bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed"
+                      disabled
+                    >
+                      Já Ativo no Cadastro
+                    </Button>
+                  ) : (
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-bold' 
+                          : 'bg-gray-900 hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100'
+                      }`}
+                      onClick={() => handlePurchase(plan.id)}
+                      disabled={loading === plan.id}
+                    >
+                      {loading === plan.id ? (
+                        <div className="flex items-center space-x-2 justify-center">
+                          <Loader2 className="animate-spin h-4 w-4" />
+                          <span>Processando...</span>
+                        </div>
+                      ) : (
+                        <>
+                          <Sparkles className="mr-2 h-4 w-4" />
+                          Assinar {plan.name}
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             ))}
