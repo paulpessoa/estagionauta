@@ -29,31 +29,37 @@ interface Transaction {
 
 const packages = [
   {
+    id: 'gratuito',
+    name: 'Gratuito',
+    icon: Star,
+    credits: 10,
+    price: 0,
+    originalPrice: 0,
+    popular: false,
+    color: 'border-slate-200 dark:border-slate-800',
+    description: '10 créditos mensais'
+  },
+  {
     id: 'cosmonauta',
     name: 'Cosmonauta',
-    icon: Star,
-    credits: 15,
-    price: 2.99,
-    popular: false,
-    color: 'border-slate-200 dark:border-slate-800'
+    icon: Zap,
+    credits: 40,
+    price: 5.97,
+    originalPrice: 9.90,
+    popular: true,
+    color: 'border-violet-500 ring-2 ring-violet-500/20',
+    description: '40 créditos mensais'
   },
   {
     id: 'astronauta',
     name: 'Astronauta',
-    icon: Zap,
-    credits: 45,
-    price: 6.99,
-    popular: true,
-    color: 'border-blue-500 ring-2 ring-blue-500/20'
-  },
-  {
-    id: 'comandante',
-    name: 'Comandante',
     icon: Crown,
-    credits: 120,
-    price: 14.99,
+    credits: 100,
+    price: 14.97,
+    originalPrice: 24.90,
     popular: false,
-    color: 'border-purple-500'
+    color: 'border-purple-500',
+    description: '100 créditos mensais'
   }
 ]
 
@@ -188,26 +194,45 @@ export default function Creditos() {
 
                         <div>
                           <Separator className="my-4" />
-                          <div className="text-2xl font-bold text-foreground mb-1">
-                            R$ {pkg.price.toFixed(2).replace('.', ',')}
-                          </div>
-                          <div className="text-xs text-muted-foreground font-medium mb-4">
-                            Pagamento Único
-                          </div>
+                          
+                          {pkg.price > 0 ? (
+                            <div className="mb-4">
+                              <div className="text-xs line-through text-muted-foreground font-medium">
+                                De R$ {pkg.originalPrice?.toFixed(2).replace('.', ',')}
+                              </div>
+                              <div className="text-2xl font-bold text-foreground flex items-baseline gap-1 mt-0.5">
+                                R$ {pkg.price.toFixed(2).replace('.', ',')}
+                                <span className="text-xs text-muted-foreground font-normal">{"/mês"}</span>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="text-2xl font-bold text-foreground mb-4">
+                              Grátis
+                            </div>
+                          )}
 
-                          <Button
-                            className="w-full"
-                            variant={pkg.popular ? 'default' : 'outline'}
-                            onClick={() => handlePurchase(pkg.id)}
-                            disabled={purchaseLoading !== null}
-                          >
-                            {purchaseLoading === pkg.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                            ) : (
-                              <Sparkles className="h-4 w-4 mr-2" />
-                            )}
-                            Comprar
-                          </Button>
+                          {pkg.id === 'gratuito' ? (
+                            <Button
+                              className="w-full bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed"
+                              disabled
+                            >
+                              Já Ativo
+                            </Button>
+                          ) : (
+                            <Button
+                              className="w-full"
+                              variant={pkg.popular ? 'default' : 'outline'}
+                              onClick={() => handlePurchase(pkg.id)}
+                              disabled={purchaseLoading !== null}
+                            >
+                              {purchaseLoading === pkg.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                              ) : (
+                                <Sparkles className="h-4 w-4 mr-2" />
+                              )}
+                              Assinar
+                            </Button>
+                          )}
                         </div>
                       </div>
                     )
