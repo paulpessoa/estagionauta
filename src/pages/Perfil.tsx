@@ -9,7 +9,8 @@ import { Separator } from '@/components/ui/separator'
 import { AvatarUpload } from '@/components/ui/avatar-upload'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { User, GraduationCap, Loader2, CheckCircle, XCircle } from 'lucide-react'
+import { User, GraduationCap, Loader2, CheckCircle, XCircle, Briefcase } from 'lucide-react'
+import { Switch } from '@/components/ui/switch'
 import { supabase } from '@/integrations/supabase/client'
 
 export default function Perfil() {
@@ -25,7 +26,8 @@ export default function Perfil() {
     course: '',
     university: '',
     period: '',
-    linkedin_url: ''
+    linkedin_url: '',
+    is_currently_interning: false
   })
 
   const [slug, setSlug] = useState('')
@@ -43,7 +45,8 @@ export default function Perfil() {
         course: profile.course || '',
         university: profile.university || '',
         period: profile.period || '',
-        linkedin_url: profile.linkedin_url || ''
+        linkedin_url: profile.linkedin_url || '',
+        is_currently_interning: profile.is_currently_interning || false
       })
       setSlug(profile.curriculo_slug || '')
     }
@@ -57,6 +60,7 @@ export default function Perfil() {
     profileData.university !== (profile.university || '') ||
     profileData.period !== (profile.period || '') ||
     profileData.linkedin_url !== (profile.linkedin_url || '') ||
+    profileData.is_currently_interning !== (profile.is_currently_interning || false) ||
     slug !== (profile.curriculo_slug || '')
   ) : false
 
@@ -77,6 +81,7 @@ export default function Perfil() {
           university: profileData.university,
           period: profileData.period,
           linkedin_url: profileData.linkedin_url,
+          is_currently_interning: profileData.is_currently_interning,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id)
@@ -342,13 +347,30 @@ export default function Perfil() {
                       <SelectValue placeholder="Selecione o período" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1-2">1º - 2º período</SelectItem>
-                      <SelectItem value="3-5">3º - 5º período</SelectItem>
-                      <SelectItem value="6+">6º período ou mais</SelectItem>
-                      <SelectItem value="formado">Formado</SelectItem>
+                      <SelectItem value="1-2">1º ao 2º período</SelectItem>
+                      <SelectItem value="3-5">3º ao 5º período</SelectItem>
+                      <SelectItem value="6+">6º período em diante</SelectItem>
+                      <SelectItem value="graduated">Formado há até 1 ano</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-muted/20 rounded-lg border border-border">
+                <div className="flex items-center gap-3">
+                  <Briefcase className="h-5 w-5 text-violet-600" />
+                  <div>
+                    <Label htmlFor="is_currently_interning" className="font-semibold text-sm cursor-pointer">
+                      Estou estagiando atualmente
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">Marque se você está em um estágio no momento.</p>
+                  </div>
+                </div>
+                <Switch
+                  id="is_currently_interning"
+                  checked={profileData.is_currently_interning}
+                  onCheckedChange={(checked) => setProfileData({ ...profileData, is_currently_interning: checked })}
+                />
               </div>
             </CardContent>
           </Card>

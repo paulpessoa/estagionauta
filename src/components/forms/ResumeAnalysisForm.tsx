@@ -116,7 +116,8 @@ export function ResumeAnalysisForm({
         ...prev,
         course: profile.course || "",
         university: profile.university || "",
-        period: profile.period || ""
+        period: profile.period || "",
+        hasInternship: profile.is_currently_interning ? "current" : prev.hasInternship
       }))
     }
   }, [profile])

@@ -33,6 +33,7 @@ export interface Profile {
   university: string | null
   period: string | null
   linkedin_url: string | null
+  is_currently_interning?: boolean
   curriculo_slug?: string | null
   notification_settings?: NotificationSettings
   privacy_settings?: PrivacySettings

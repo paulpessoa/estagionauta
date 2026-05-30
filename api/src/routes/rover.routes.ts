@@ -263,10 +263,14 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
         tools: roverTools,
         tool_choice: 'auto',
         temperature: 0.7,
+        max_tokens: 4096,
       });
 
       const choice = response.choices[0];
       const aiMsg = choice.message;
+      const finishReason = choice.finish_reason;
+
+      console.log(`[Rover] finish_reason: ${finishReason}`);
 
       if (!aiMsg) {
         throw new Error('Nenhuma resposta do LLM.');
@@ -321,6 +325,13 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
         loopCount++;
       } else {
         finalResponseText = (aiMsg.content || '').trim();
+
+        // Handle truncated responses
+        if (finishReason === 'length' && finalResponseText) {
+          finalResponseText += '\n\n⚠️ _A resposta foi cortada por limite de tamanho. Tente perguntar de forma mais específica._';
+          console.warn('[Rover] Response was truncated (finish_reason=length)');
+        }
+
         if (!finalResponseText) {
           finalResponseText = `Olá! Sou o Rover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
 

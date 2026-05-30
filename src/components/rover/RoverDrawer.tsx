@@ -39,7 +39,11 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     setHistoryLoading(true);
     try {
       const data = await apiClient.get<{ messages: Message[] }>('/api/rover/history');
-      setMessages(data.messages || []);
+      // Filter out tool-call messages that have null/empty content
+      const visibleMessages = (data.messages || []).filter(
+        (msg) => msg.content && msg.content.trim() !== ''
+      );
+      setMessages(visibleMessages);
     } catch (err) {
       console.error('Error loading rover history:', err);
     } finally {
