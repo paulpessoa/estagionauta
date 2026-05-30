@@ -33,6 +33,7 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"))
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"))
 const Status = lazy(() => import("./pages/Status"))
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"))
+const Recompensas = lazy(() => import("./pages/Recompensas"))
 
 // Componentes protegidos
 const ProtectedDashboard = () =>
@@ -101,6 +102,9 @@ const ProtectedSimuladorEntrevistas = () =>
 const ProtectedSucesso = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Sucesso))
 
+const ProtectedRecompensas = () =>
+  React.createElement(ProtectedRoute, null, React.createElement(Recompensas))
+
 export const routes = [
   { path: "/", component: HomePage },
   { path: "/dashboard", component: ProtectedDashboard },
@@ -138,6 +142,7 @@ export const routes = [
   },
   { path: "/sucesso", component: ProtectedSucesso },
   { path: "/convide-amigos", component: ConvideAmigos },
+  { path: "/recompensas", component: ProtectedRecompensas },
   { path: "/privacy-policy", component: PrivacyPolicy },
   { path: "/termos-de-uso", component: TermosDeUso },
   { path: "/status", component: Status },

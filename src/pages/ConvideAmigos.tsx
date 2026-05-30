@@ -6,11 +6,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/hooks/useAuth'
 import { apiClient } from '@/lib/apiClient'
-import { 
-  Users, 
-  Copy, 
-  Check, 
-  Gift, 
+import {
+  Users,
+  Copy,
+  Check,
+  Gift,
   Coins,
   Share2,
   Sparkles,
@@ -44,16 +44,16 @@ interface ReferralStats {
 
 export default function ConvideAmigos() {
   const { profile } = useAuth()
-  
+
   // Stats state
   const [stats, setStats] = useState<ReferralStats | null>(null)
   const [loadingStats, setLoadingStats] = useState(true)
-  
+
   // Invite form state
   const [inviteName, setInviteName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
   const [submittingInvite, setSubmittingInvite] = useState(false)
-  
+
   // Copy state
   const [copiedCode, setCopiedCode] = useState(false)
   const [copiedLink, setCopiedLink] = useState(false)
@@ -96,7 +96,7 @@ export default function ConvideAmigos() {
   // Handle invite submission
   const handleSendInvite = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!inviteName.trim()) {
       toast.error('Por favor, informe o nome do seu amigo.')
       return
@@ -173,12 +173,9 @@ export default function ConvideAmigos() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50/40 via-background to-violet-50/40 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        
+
         {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <div className="inline-flex items-center gap-1.5 bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 px-3.5 py-1 rounded-full text-xs font-bold border border-violet-100 dark:border-violet-900/30 mb-4 shadow-sm">
-            <Gift className="h-3.5 w-3.5" /> Indique e Ganhe
-          </div>
           <h1 className="text-4xl font-extrabold text-foreground tracking-tight sm:text-5xl leading-none bg-clip-text bg-gradient-to-r from-violet-600 to-indigo-600 dark:from-violet-400 dark:to-indigo-400">
             Traga seus amigos para o Estagionauta
           </h1>
@@ -234,7 +231,7 @@ export default function ConvideAmigos() {
 
         {/* Blocos de Ação Principais */}
         <div className="grid lg:grid-cols-3 gap-8 mb-12">
-          
+
           {/* Link block */}
           <Card className="lg:col-span-2 shadow-sm border border-border/80 bg-card/45 backdrop-blur-sm flex flex-col justify-between">
             <CardHeader className="pb-4">
@@ -288,7 +285,7 @@ export default function ConvideAmigos() {
               <form onSubmit={handleSendInvite} className="space-y-4">
                 <div className="space-y-1">
                   <Label htmlFor="friend-name" className="text-xs font-bold text-muted-foreground uppercase">Nome do Amigo</Label>
-                  <Input 
+                  <Input
                     id="friend-name"
                     placeholder="Ex: Paul McCartney"
                     value={inviteName}
@@ -299,7 +296,7 @@ export default function ConvideAmigos() {
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor="friend-email" className="text-xs font-bold text-muted-foreground uppercase">E-mail do Amigo</Label>
-                  <Input 
+                  <Input
                     id="friend-email"
                     type="email"
                     placeholder="Ex: paul@beatles.com"
@@ -309,9 +306,9 @@ export default function ConvideAmigos() {
                     className="focus-visible:ring-violet-600 border-border/80"
                   />
                 </div>
-                <Button 
-                  type="submit" 
-                  disabled={submittingInvite} 
+                <Button
+                  type="submit"
+                  disabled={submittingInvite}
                   className="w-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 transition-all font-semibold active:scale-98 shadow-sm flex items-center justify-center gap-2"
                 >
                   {submittingInvite ? (

@@ -33,7 +33,9 @@ import {
   Star,
   X,
   Shield,
-  Kanban
+  Kanban,
+  Gift,
+  Coins
 } from "lucide-react"
 import { useState } from "react"
 import { useTheme } from "next-themes"
@@ -357,16 +359,38 @@ export function Header() {
                     {/* Ícones de créditos */}
 
                     {!(isAdmin || isModerator) && (
-                      <Link
-                        to="/creditos"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
-                      >
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm text-foreground">
-                          Meus Créditos
-                        </span>
-                      </Link>
+                      <>
+                        <Link
+                          to="/creditos"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
+                        >
+                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                          <span className="text-sm text-foreground">
+                            Meus Créditos
+                          </span>
+                        </Link>
+                        <Link
+                          to="/recompensas"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
+                        >
+                          <Coins className="h-4 w-4 text-violet-600 animate-pulse" />
+                          <span className="text-sm text-foreground">
+                            Recompensas
+                          </span>
+                        </Link>
+                        <Link
+                          to="/convide-amigos"
+                          onClick={() => setMobileMenuOpen(false)}
+                          className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
+                        >
+                          <Gift className="h-4 w-4 text-pink-600" />
+                          <span className="text-sm text-foreground">
+                            Indicar Amigos
+                          </span>
+                        </Link>
+                      </>
                     )}
 
                     <div className="flex items-center space-x-3">
@@ -631,6 +655,18 @@ export function Header() {
                         <Link to="/creditos">
                           <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
                           Meus Créditos
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/recompensas">
+                          <Coins className="mr-2 h-4 w-4 text-violet-600" />
+                          Recompensas
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/convide-amigos">
+                          <Gift className="mr-2 h-4 w-4 text-pink-600" />
+                          Indicar Amigos
                         </Link>
                       </DropdownMenuItem>
                     </>
