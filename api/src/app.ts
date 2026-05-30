@@ -11,6 +11,7 @@ import simulatorRoutes from './routes/simulator.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import userRoutes from './routes/user.routes.js';
 import roverRoutes from './routes/rover.routes.js';
+import referralRoutes from './routes/referral.routes.js';
 
 const app = new Hono();
 
@@ -49,6 +50,7 @@ app.route('/api/simulator', simulatorRoutes);
 app.route('/api/admin', adminRoutes);
 app.route('/api/user', userRoutes);
 app.route('/api/rover', roverRoutes);
+app.route('/api/referral', referralRoutes);
 
 export default app;
 

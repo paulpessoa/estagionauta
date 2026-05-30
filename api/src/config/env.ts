@@ -14,6 +14,7 @@ const envSchema = z.object({
   STRIPE_SUCCESS_URL: z.string().url().optional(),
   STRIPE_CANCEL_URL: z.string().url().optional(),
   BREVO_API_KEY: z.string().optional(),
+  BREVO_SENDER_EMAIL: z.string().email().default('contato@estagionauta.com.br'),
   CLIENT_URL: z.string().url().default('http://localhost:5173'),
   OPENAI_API_KEY: z.string().min(1).optional(),
   STRIPE_PRICE_ASTRONAUTA_ASSINATURA: z.string().min(1),

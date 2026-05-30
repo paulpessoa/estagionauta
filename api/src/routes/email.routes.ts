@@ -229,7 +229,7 @@ app.post('/send', authMiddleware, zValidator('json', emailSchema), async (c) => 
         const emailData = {
           sender: {
             name: 'Estagionauta',
-            email: 'noreply@estagionauta.com.br',
+            email: env.BREVO_SENDER_EMAIL,
           },
           replyTo: {
             name: userProfile.full_name || 'Estagionauta',
@@ -272,7 +272,7 @@ app.post('/send', authMiddleware, zValidator('json', emailSchema), async (c) => 
         // Log successful send to DB
         await saveEmailHistory({
           to_email: toEmail,
-          from_email: 'noreply@estagionauta.com.br',
+          from_email: env.BREVO_SENDER_EMAIL,
           subject: subject,
           status: 'sent',
           provider: 'brevo',
@@ -289,7 +289,7 @@ app.post('/send', authMiddleware, zValidator('json', emailSchema), async (c) => 
         // Log failed send to DB
         await saveEmailHistory({
           to_email: toEmail,
-          from_email: 'noreply@estagionauta.com.br',
+          from_email: env.BREVO_SENDER_EMAIL,
           subject: subject,
           status: 'failed',
           provider: 'brevo',

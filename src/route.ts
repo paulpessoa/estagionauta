@@ -32,6 +32,7 @@ const EmailLogs = lazy(() => import("./pages/EmailLogs"))
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"))
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"))
 const Status = lazy(() => import("./pages/Status"))
+const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"))
 
 // Componentes protegidos
 const ProtectedDashboard = () =>
@@ -140,6 +141,7 @@ export const routes = [
   { path: "/privacy-policy", component: PrivacyPolicy },
   { path: "/termos-de-uso", component: TermosDeUso },
   { path: "/status", component: Status },
+  { path: "/r/:referralCode", component: ReferralRedirect },
   { path: "/curriculo/:slug", component: Curriculo },
   { path: "*", component: NotFound }
 ]

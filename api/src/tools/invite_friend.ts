@@ -138,7 +138,7 @@ Equipe Estagionauta
           body: JSON.stringify({
             sender: {
               name: 'Estagionauta',
-              email: 'noreply@estagionauta.com.br',
+              email: env.BREVO_SENDER_EMAIL,
             },
             to: [
               {
@@ -158,7 +158,7 @@ Equipe Estagionauta
           const result = await response.json() as any;
           await supabaseAdmin.from('email_logs').insert({
             to_email: email,
-            from_email: 'noreply@estagionauta.com.br',
+            from_email: env.BREVO_SENDER_EMAIL,
             subject: `${referrerName} te convidou para o Estagionauta! 🚀`,
             status: 'sent',
             provider: 'brevo',

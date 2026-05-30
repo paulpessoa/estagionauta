@@ -274,7 +274,7 @@ app.post('/reply-email', authMiddleware, adminMiddleware, zValidator('json', rep
     const emailData = {
       sender: {
         name: 'Equipe Estagionauta',
-        email: 'noreply@estagionauta.com.br',
+        email: env.BREVO_SENDER_EMAIL,
       },
       to: [
         {
