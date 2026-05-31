@@ -16,7 +16,6 @@ import { useAgencyFilters } from '@/hooks/useAgencyFilters'
 import { useDebounce } from '@/hooks/useDebounce'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
 import { AgencyReviewsModal } from '@/components/modals/AgencyReviewsModal'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -25,7 +24,6 @@ export interface FilterState {
   state: string
   city: string
   type: string
-  minRating: number
   verifiedOnly: boolean
 }
 
@@ -101,7 +99,6 @@ export default function AgenciasPage() {
     state: '',
     city: '',
     type: '',
-    minRating: 0,
     verifiedOnly: true
   })
 
@@ -234,7 +231,6 @@ export default function AgenciasPage() {
       state: '',
       city: '',
       type: '',
-      minRating: 0,
       verifiedOnly: true
     })
     setSearchTerm('')
@@ -257,7 +253,6 @@ export default function AgenciasPage() {
     filters.state ||
     filters.city ||
     filters.type ||
-    filters.minRating > 0 ||
     searchTerm
   )
 
@@ -271,16 +266,47 @@ export default function AgenciasPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-7xl mx-auto mb-8">
           <div className="bg-card border rounded-xl p-6 shadow-sm space-y-6">
-            {/* Primeira linha: Busca por nome */}
-            <div className="space-y-2">
-              <Label htmlFor="search-name" className="text-sm font-semibold">Buscar agência</Label>
-              <Input
-                id="search-name"
-                placeholder="Ex: CIEE, NUBE, Integração, Administração, TI..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full"
-              />
+            {/* Primeira linha: Busca por nome + Agências encontradas + Toggle Lista/Mapa */}
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="space-y-2 flex-1 w-full">
+                <Label htmlFor="search-name" className="text-sm font-semibold">Buscar agência</Label>
+                <Input
+                  id="search-name"
+                  placeholder="Ex: CIEE, NUBE, Integração, Administração, TI..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+              <div className="flex items-center gap-3 shrink-0 justify-between md:justify-end w-full md:w-auto">
+                <div className="text-sm font-medium text-muted-foreground">
+                  {filteredAgencies.length} {filteredAgencies.length === 1 ? 'agência encontrada' : 'agências encontradas'}
+                </div>
+                <div className="flex rounded-lg border bg-background p-1">
+                  <button
+                    onClick={() => setViewMode('list')}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      viewMode === 'list' 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    <List className="h-4 w-4" />
+                    <span>Lista</span>
+                  </button>
+                  <button
+                    onClick={() => setViewMode('map')}
+                    className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                      viewMode === 'map' 
+                        ? 'bg-primary text-primary-foreground shadow-sm' 
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                  >
+                    <Map className="h-4 w-4" />
+                    <span>Mapa</span>
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Segunda linha: Filtros em Grid */}
@@ -331,68 +357,19 @@ export default function AgenciasPage() {
               </div>
             </div>
 
-            {/* Terceira linha: Sliders e Botão de Limpar */}
-            <div className="flex flex-col md:flex-row gap-6 items-end justify-between pt-4 border-t">
-              <div className="space-y-2 w-full md:max-w-xs">
-                <div className="flex justify-between text-sm">
-                  <Label className="font-semibold">Avaliação Mínima</Label>
-                  <span className="text-muted-foreground font-medium">
-                    {filters.minRating || 'Qualquer'} {filters.minRating > 0 && '★'}
-                  </span>
-                </div>
-                <Slider
-                  min={0}
-                  max={5}
-                  step={0.5}
-                  value={[filters.minRating]}
-                  onValueChange={(val) => handleFilterChange('minRating', val[0])}
-                />
+            {/* Terceira linha: Limpar Filtros */}
+            {isAnyFilterActive && (
+              <div className="flex justify-end pt-4 border-t">
+                <Button
+                  variant="ghost"
+                  onClick={clearFilters}
+                  className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2"
+                >
+                  <X className="h-4 w-4" />
+                  Limpar Filtros
+                </Button>
               </div>
-
-              <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
-                <div className="text-sm font-medium text-muted-foreground">
-                  {filteredAgencies.length} {filteredAgencies.length === 1 ? 'agência encontrada' : 'agências encontradas'}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {isAnyFilterActive && (
-                    <Button
-                      variant="ghost"
-                      onClick={clearFilters}
-                      className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-2"
-                    >
-                      <X className="h-4 w-4" />
-                      Limpar Filtros
-                    </Button>
-                  )}
-
-                  <div className="flex rounded-lg border bg-background p-1">
-                    <button
-                      onClick={() => setViewMode('list')}
-                      className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                        viewMode === 'list' 
-                          ? 'bg-primary text-primary-foreground shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                      }`}
-                    >
-                      <List className="h-4 w-4" />
-                      <span>Lista</span>
-                    </button>
-                    <button
-                      onClick={() => setViewMode('map')}
-                      className={`flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                        viewMode === 'map' 
-                          ? 'bg-primary text-primary-foreground shadow-sm' 
-                          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                      }`}
-                    >
-                      <Map className="h-4 w-4" />
-                      <span>Mapa</span>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
         </div>
 
