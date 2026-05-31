@@ -40,7 +40,7 @@ export function Footer() {
               <Github className="h-6 w-6 hover:text-gray-400 transition-colors" />
             </a> */}
             <a
-              href="https://www.instagram.com/oestagionauta"
+              href="https://www.instagram.com/estagionauta"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
