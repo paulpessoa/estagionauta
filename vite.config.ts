@@ -43,9 +43,6 @@ export default defineConfig(({ mode }) => ({
             if (id.includes('recharts') || id.includes('chart.js') || id.includes('react-chartjs-2')) {
               return 'vendor-charts';
             }
-            if (id.includes('reactflow')) {
-              return 'vendor-reactflow';
-            }
             if (id.includes('@hello-pangea/dnd') || id.includes('dnd')) {
               return 'vendor-dnd';
             }

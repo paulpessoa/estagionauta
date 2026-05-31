@@ -43,7 +43,6 @@ import {
   ChevronDown,
   ChevronUp,
   Star,
-  GitMerge,
   List
 } from 'lucide-react'
 import { format, addDays, isAfter, isBefore, startOfDay, isSameDay } from 'date-fns'
@@ -51,7 +50,6 @@ import { ptBR } from 'date-fns/locale'
 import { toast } from 'sonner'
 
 import { ApplicationCard } from '@/components/kanban/ApplicationCard'
-import { KanbanReactFlow } from '@/components/kanban/KanbanReactFlow'
 import { KanbanTable } from '@/components/kanban/KanbanTable'
 
 const statusConfig = {
@@ -84,8 +82,7 @@ export default function KanbanCandidaturas() {
   const [isLoading, setIsLoading] = useState(true)
   
   // States to toggle Views
-  const [viewMode, setViewMode] = useState<'board' | 'table' | 'flow'>('table')
-  const [selectedFlowStage, setSelectedFlowStage] = useState<string | null>(null)
+  const [viewMode, setViewMode] = useState<'board' | 'table'>('table')
 
   // Form state for new application
   const [formData, setFormData] = useState({
@@ -430,14 +427,6 @@ export default function KanbanCandidaturas() {
                   className="text-xs"
                 >
                   <Kanban className="h-4 w-4 mr-2" /> Quadro
-                </Button>
-                <Button 
-                  variant={viewMode === 'flow' ? 'default' : 'ghost'} 
-                  size="sm" 
-                  onClick={() => setViewMode('flow')}
-                  className="text-xs"
-                >
-                  <GitMerge className="h-4 w-4 mr-2" /> Fluxo
                 </Button>
               </div>
               <Dialog 
@@ -792,7 +781,7 @@ export default function KanbanCandidaturas() {
           </Card>
         )}
 
-        {/* Kanban Board, Table or Flow */}
+        {/* Kanban Board or Table */}
         {viewMode === 'table' ? (
           <KanbanTable
             applications={sortedApplications}
@@ -819,68 +808,6 @@ export default function KanbanCandidaturas() {
             onToggleReminder={toggleReminderCompletion}
             statusConfig={statusConfig}
           />
-        ) : viewMode === 'flow' ? (
-          <div className="space-y-6">
-            <KanbanReactFlow 
-              applications={applications} 
-              statusConfig={statusConfig} 
-              selectedStage={selectedFlowStage}
-              onSelectStage={setSelectedFlowStage}
-            />
-            
-            {/* List of cards below the flow when a stage is selected */}
-            {selectedFlowStage && (
-              <div className="bg-white dark:bg-gray-950 p-6 rounded-xl border shadow-sm mt-8">
-                <div className="flex items-center gap-3 mb-6">
-                  {(() => {
-                    const Icon = statusConfig[selectedFlowStage as keyof typeof statusConfig].icon
-                    return <div className={`p-2 rounded-lg ${statusConfig[selectedFlowStage as keyof typeof statusConfig].color}`}><Icon className="h-5 w-5" /></div>
-                  })()}
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                    Vagas em: {statusConfig[selectedFlowStage as keyof typeof statusConfig].label}
-                  </h3>
-                  <Badge variant="outline" className="ml-auto">
-                    {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).length} vagas
-                  </Badge>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).map(application => (
-                    <ApplicationCard 
-                      key={application.id} 
-                      application={application}
-                      onStatusChange={updateApplicationStatus}
-                      onAddReminder={handleAddReminder}
-                      onToggleReminder={toggleReminderCompletion}
-                      onDelete={deleteApplication}
-                      onEdit={(app) => {
-                        setEditingApplication(app)
-                        setFormData({
-                          company: app.company,
-                          position: app.position,
-                          description: app.description || '',
-                          salary: app.salary || '',
-                          location: app.location || '',
-                          contactPerson: app.contactPerson || '',
-                          contactEmail: app.contactEmail || '',
-                          contactPhone: app.contactPhone || '',
-                          website: app.website || '',
-                          notes: app.notes || '',
-                          tags: app.tags.join(', ')
-                        })
-                        setIsAddModalOpen(true)
-                      }}
-                    />
-                  ))}
-                  {getApplicationsByStatus(selectedFlowStage as JobApplication['status']).length === 0 && (
-                    <p className="text-gray-500 py-8 text-center col-span-full border-2 border-dashed rounded-xl">
-                      Nenhuma candidatura nesta fase ainda.
-                    </p>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>
             <div className="flex overflow-x-auto gap-6 pb-4 snap-x">
