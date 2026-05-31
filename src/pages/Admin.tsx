@@ -16,35 +16,41 @@ import {
   Users, 
   FileText, 
   Settings, 
-  Mail, 
-  Download,
-  Eye,
-  MessageSquare,
-  Calendar,
-  Star,
   Search,
   Plus,
   Minus,
-  Building2,
   AlertTriangle,
   LayoutDashboard,
-  ShieldCheck,
-  CreditCard
+  MessageSquare,
+  Star,
+  Trash2
 } from 'lucide-react'
-import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
 import { apiClient } from '@/lib/apiClient'
 import ModeracaoAgencias from './admin/ModeracaoAgencias'
-
-type AdminTab = 'overview' | 'users' | 'submissions' | 'transactions' | 'moderation' | 'settings'
+import EmailLogs from './EmailLogs'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function AdminPage() {
   const { profile, isLoading: authLoading } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const pathname = location.pathname
   
-  const [activeTab, setActiveTab] = useState<AdminTab>('overview')
+  let activeTab = 'overview'
+  if (pathname === '/admin/usuarios') activeTab = 'users'
+  else if (pathname === '/admin/history') activeTab = 'submissions'
+  else if (pathname === '/admin/logs') activeTab = 'settings'
+
+  const setActiveTab = (tab: string) => {
+    if (tab === 'overview') navigate('/admin')
+    else if (tab === 'users') navigate('/admin/usuarios')
+    else if (tab === 'submissions') navigate('/admin/history')
+    else if (tab === 'settings') navigate('/admin/logs')
+  }
+
   const [stats, setStats] = useState({
     totalUsers: 0,
     resumesAnalyzed: 0,
@@ -57,27 +63,25 @@ export default function AdminPage() {
 
   const [recentSubmissions, setRecentSubmissions] = useState<any[]>([])
   const [loadingSubmissions, setLoadingSubmissions] = useState(true)
+  const [submissionSearchTerm, setSubmissionSearchTerm] = useState('')
 
   const [usersList, setUsersList] = useState<any[]>([])
   const [searchTerm, setSearchTerm] = useState('')
   const [loadingUsers, setLoadingUsers] = useState(true)
 
-  const [recentTransactions, setRecentTransactions] = useState<any[]>([])
-  const [loadingTransactions, setLoadingTransactions] = useState(true)
-
   // User filter & sort states
   const [userRoleFilter, setUserRoleFilter] = useState('all')
   const [userSortBy, setUserSortBy] = useState('date_desc')
-
-  // Transaction filter, search & sort states
-  const [txSearchTerm, setTxSearchTerm] = useState('')
-  const [txTypeFilter, setTxTypeFilter] = useState('all')
-  const [txSortBy, setTxSortBy] = useState('date_desc')
 
   // Modal state for adjust credits dialog
   const [isAdjustCreditsOpen, setIsAdjustCreditsOpen] = useState(false)
   const [selectedUserForCredits, setSelectedUserForCredits] = useState<any | null>(null)
   const [creditsAdjustmentAmount, setCreditsAdjustmentAmount] = useState('0')
+
+  // Modal state for delete user dialog
+  const [isDeleteUserOpen, setIsDeleteUserOpen] = useState(false)
+  const [selectedUserForDelete, setSelectedUserForDelete] = useState<any | null>(null)
+  const [isDeletingUser, setIsDeletingUser] = useState(false)
 
   useEffect(() => {
     if (authLoading) return
@@ -88,13 +92,14 @@ export default function AdminPage() {
       return
     }
 
-    loadStats()
-    loadSubmissions()
-    if (profile.role === 'admin') {
+    if (activeTab === 'overview') {
+      loadStats()
+    } else if (activeTab === 'users' && profile.role === 'admin') {
       loadUsers()
-      loadTransactions()
+    } else if (activeTab === 'submissions') {
+      loadSubmissions()
     }
-  }, [authLoading, profile, navigate])
+  }, [authLoading, profile, navigate, activeTab])
 
   const loadStats = async () => {
     setLoadingStats(true)
@@ -133,18 +138,6 @@ export default function AdminPage() {
     }
   }
 
-  const loadTransactions = async () => {
-    setLoadingTransactions(true)
-    try {
-      const data = await apiClient.get<any[]>('/api/admin/transactions')
-      setRecentTransactions(data || [])
-    } catch (e) {
-      console.error('Erro ao carregar transações:', e)
-    } finally {
-      setLoadingTransactions(false)
-    }
-  }
-
   const handleUpdateRole = async (userId: string, newRole: string) => {
     try {
       await apiClient.put(`/api/admin/users/${userId}/role`, { role: newRole })
@@ -173,14 +166,29 @@ export default function AdminPage() {
     }
   }
 
+  const handleDeleteUser = async () => {
+    if (!selectedUserForDelete) return
+    setIsDeletingUser(true)
+    try {
+      await apiClient.delete(`/api/admin/users/${selectedUserForDelete.id}`)
+      toast.success('Usuário excluído com sucesso')
+      setUsersList(prev => prev.filter(u => u.id !== selectedUserForDelete.id))
+      setIsDeleteUserOpen(false)
+    } catch (e: any) {
+      console.error('Erro ao excluir usuário:', e)
+      toast.error(e.message || 'Erro ao excluir usuário')
+    } finally {
+      setIsDeletingUser(false)
+      setSelectedUserForDelete(null)
+    }
+  }
+
   const sortedAndFilteredUsers = useMemo(() => {
     const result = usersList.filter(user => {
       const term = searchTerm.toLowerCase()
       const matchesSearch = (
         (user.full_name || '').toLowerCase().includes(term) ||
-        (user.email || '').toLowerCase().includes(term) ||
-        (user.course || '').toLowerCase().includes(term) ||
-        (user.university || '').toLowerCase().includes(term)
+        (user.email || '').toLowerCase().includes(term)
       )
       
       const matchesRole = userRoleFilter === 'all' || user.role === userRoleFilter
@@ -188,69 +196,29 @@ export default function AdminPage() {
     })
 
     result.sort((a, b) => {
-      if (userSortBy === 'name_asc') {
-        return (a.full_name || '').localeCompare(b.full_name || '')
-      }
-      if (userSortBy === 'name_desc') {
-        return (b.full_name || '').localeCompare(a.full_name || '')
-      }
-      if (userSortBy === 'credits_desc') {
-        return b.credits - a.credits
-      }
-      if (userSortBy === 'credits_asc') {
-        return a.credits - b.credits
-      }
-      if (userSortBy === 'date_desc') {
-        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-      }
-      if (userSortBy === 'date_asc') {
-        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
-      }
+      if (userSortBy === 'name_asc') return (a.full_name || '').localeCompare(b.full_name || '')
+      if (userSortBy === 'name_desc') return (b.full_name || '').localeCompare(a.full_name || '')
+      if (userSortBy === 'credits_desc') return b.credits - a.credits
+      if (userSortBy === 'credits_asc') return a.credits - b.credits
+      if (userSortBy === 'ltv_desc') return (b.total_paid || 0) - (a.total_paid || 0)
+      if (userSortBy === 'date_desc') return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
+      if (userSortBy === 'date_asc') return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
       return 0
     })
 
     return result
   }, [usersList, searchTerm, userRoleFilter, userSortBy])
 
-  const filteredTransactions = useMemo(() => {
-    let result = [...recentTransactions]
-
-    // Search term filter
-    if (txSearchTerm) {
-      const term = txSearchTerm.toLowerCase()
-      result = result.filter(tx => {
-        const userName = (tx.user_profiles?.full_name || '').toLowerCase()
-        const userEmail = (tx.user_profiles?.email || '').toLowerCase()
-        const txType = (tx.type || '').toLowerCase()
-        const txId = (tx.user_id || '').toLowerCase()
-        return userName.includes(term) || userEmail.includes(term) || txType.includes(term) || txId.includes(term)
-      })
-    }
-
-    // Type filter
-    if (txTypeFilter !== 'all') {
-      result = result.filter(tx => tx.type === txTypeFilter)
-    }
-
-    // Sort
-    result.sort((a, b) => {
-      if (txSortBy === 'date_desc') {
-        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime()
-      }
-      if (txSortBy === 'date_asc') {
-        return new Date(a.created_at || 0).getTime() - new Date(b.created_at || 0).getTime()
-      }
-      if (txSortBy === 'amount_desc') {
-        return b.amount - a.amount
-      }
-      if (txSortBy === 'amount_asc') {
-        return a.amount - b.amount
-      }
-      return 0
-    })
-
-    return result
-  }, [recentTransactions, txSearchTerm, txTypeFilter, txSortBy])
+  const filteredSubmissions = useMemo(() => {
+    if (!submissionSearchTerm) return recentSubmissions
+    const term = submissionSearchTerm.toLowerCase()
+    return recentSubmissions.filter(sub => 
+      (sub.name || '').toLowerCase().includes(term) ||
+      (sub.email || '').toLowerCase().includes(term) ||
+      (sub.course || '').toLowerCase().includes(term) ||
+      (sub.university || '').toLowerCase().includes(term)
+    )
+  }, [recentSubmissions, submissionSearchTerm])
 
   if (authLoading) {
     return (
@@ -282,14 +250,6 @@ export default function AdminPage() {
                     </p>
                   </div>
                 </div>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className="bg-white dark:bg-gray-800 border-yellow-300 dark:border-yellow-700 text-yellow-800 dark:text-yellow-200 hover:bg-yellow-100 dark:hover:bg-yellow-900"
-                  onClick={() => setActiveTab('moderation')}
-                >
-                  Ir para Moderação
-                </Button>
               </div>
             )}
 
@@ -342,6 +302,11 @@ export default function AdminPage() {
                 </CardContent>
               </Card>
             </div>
+
+            <div className="mt-8">
+              <h3 className="text-xl font-bold mb-4">Moderação</h3>
+              <ModeracaoAgencias />
+            </div>
           </div>
         )
       case 'users':
@@ -351,7 +316,7 @@ export default function AdminPage() {
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                   <CardTitle>Gerenciamento de Usuários</CardTitle>
-                  <CardDescription>Visualize, altere cargos e gerencie créditos</CardDescription>
+                  <CardDescription>Visualize, altere cargos, créditos e acompanhe métricas de LTV</CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative w-full sm:w-60">
@@ -384,7 +349,7 @@ export default function AdminPage() {
                     <option value="name_asc">Nome (A-Z)</option>
                     <option value="name_desc">Nome (Z-A)</option>
                     <option value="credits_desc">Créditos (Maior)</option>
-                    <option value="credits_asc">Créditos (Menor)</option>
+                    <option value="ltv_desc">LTV (Maior)</option>
                   </select>
                 </div>
               </div>
@@ -399,31 +364,40 @@ export default function AdminPage() {
               ) : (
                 <div className="overflow-x-auto border rounded-lg">
                   <table className="w-full text-sm text-left">
-                    <thead className="text-xs uppercase bg-muted text-muted-foreground">
+                    <thead className="text-xs uppercase bg-muted text-muted-foreground whitespace-nowrap">
                       <tr>
-                        <th className="px-6 py-3">Usuário</th>
-                        <th className="px-6 py-3">Cargo</th>
-                        <th className="px-6 py-3">Créditos</th>
-                        <th className="px-6 py-3 text-right">Ações</th>
+                        <th className="px-4 py-3">Usuário</th>
+                        <th className="px-4 py-3">Cargo</th>
+                        <th className="px-4 py-3">Créditos</th>
+                        <th className="px-4 py-3">LTV / Refs</th>
+                        <th className="px-4 py-3 text-right">Ações</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
                       {sortedAndFilteredUsers.map((user) => (
                         <tr key={user.id} className="hover:bg-muted/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="font-semibold">{user.full_name || 'Sem nome'}</div>
-                            <div className="text-xs text-muted-foreground">{user.email}</div>
-                            {user.created_at && (
-                              <div className="text-[10px] text-muted-foreground/60 mt-0.5">
-                                Cadastrado em: {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                          <td className="px-4 py-3 min-w-[200px]">
+                            <div className="flex items-center space-x-3">
+                              <Avatar className="h-8 w-8">
+                                <AvatarImage src={user.avatar_url || ''} />
+                                <AvatarFallback>{user.full_name?.charAt(0) || user.email?.charAt(0) || 'U'}</AvatarFallback>
+                              </Avatar>
+                              <div>
+                                <div className="font-semibold">{user.full_name || 'Sem nome'}</div>
+                                <div className="text-xs text-muted-foreground">{user.email}</div>
+                                {user.created_at && (
+                                  <div className="text-[10px] text-muted-foreground/60 mt-0.5">
+                                    Cadastrado em: {new Date(user.created_at).toLocaleDateString('pt-BR')}
+                                  </div>
+                                )}
                               </div>
-                            )}
+                            </div>
                           </td>
-                          <td className="px-6 py-4">
+                          <td className="px-4 py-3">
                             <select
                               value={user.role || 'student'}
                               onChange={(e) => handleUpdateRole(user.id, e.target.value)}
-                              className="bg-transparent text-sm border rounded p-1"
+                              className="bg-transparent text-sm border rounded p-1 w-full max-w-[120px]"
                             >
                               <option value="student">Estudante</option>
                               <option value="agency">Agência</option>
@@ -431,23 +405,38 @@ export default function AdminPage() {
                               <option value="admin">Admin</option>
                             </select>
                           </td>
-                          <td className="px-6 py-4">
-                            <div className="flex items-center space-x-2">
+                          <td className="px-4 py-3">
+                            <div className="flex items-center space-x-1">
                               <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleUpdateCredits(user.id, -1)}><Minus className="h-3 w-3" /></Button>
                               <span className="font-semibold text-xs min-w-[20px] text-center">{user.credits}</span>
                               <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => handleUpdateCredits(user.id, 1)}><Plus className="h-3 w-3" /></Button>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-right">
+                          <td className="px-4 py-3 whitespace-nowrap">
+                            <div className="text-xs">
+                              <div><span className="text-muted-foreground">LTV:</span> <span className="font-semibold text-emerald-600">R$ {user.total_paid || 0}</span></div>
+                              <div><span className="text-muted-foreground">Indicações:</span> <span className="font-semibold">{user.referrals_count || 0}</span></div>
+                            </div>
+                          </td>
+                          <td className="px-4 py-3 text-right space-x-2 whitespace-nowrap">
                             <Button
-                              variant="outline" size="xs" className="text-xs py-1 px-2 h-7"
+                              variant="outline" size="sm" className="h-8"
                               onClick={() => {
                                 setSelectedUserForCredits(user)
                                 setCreditsAdjustmentAmount('0')
                                 setIsAdjustCreditsOpen(true)
                               }}
                             >
-                              Ajustar
+                              Créditos
+                            </Button>
+                            <Button
+                              variant="destructive" size="icon" className="h-8 w-8"
+                              onClick={() => {
+                                setSelectedUserForDelete(user)
+                                setIsDeleteUserOpen(true)
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4" />
                             </Button>
                           </td>
                         </tr>
@@ -463,119 +452,69 @@ export default function AdminPage() {
         return (
           <Card>
             <CardHeader>
-              <CardTitle>Análises Recentes</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {loadingSubmissions ? (
-                <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
-              ) : (
-                <div className="space-y-4">
-                  {recentSubmissions.map((sub) => (
-                    <div key={sub.id} className="flex flex-col sm:flex-row justify-between p-4 border rounded-xl hover:bg-muted/30">
-                      <div>
-                        <p className="font-semibold">{sub.name}</p>
-                        <p className="text-xs text-muted-foreground">{sub.email}</p>
-                      </div>
-                      <Badge variant={sub.status === 'completed' ? 'default' : 'secondary'}>
-                        {sub.status}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )
-      case 'transactions':
-        return (
-          <Card>
-            <CardHeader>
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
-                  <CardTitle>Histórico de Créditos</CardTitle>
-                  <CardDescription>Consulte o extrato detalhado de consumo e adição de créditos</CardDescription>
+                  <CardTitle>Histórico de Análises</CardTitle>
+                  <CardDescription>Todas as análises de currículos realizadas</CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative w-full sm:w-60">
                     <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
-                      placeholder="Buscar por usuário, email..."
-                      value={txSearchTerm}
-                      onChange={(e) => setTxSearchTerm(e.target.value)}
+                      placeholder="Buscar por nome, curso, faculdade..."
+                      value={submissionSearchTerm}
+                      onChange={(e) => setSubmissionSearchTerm(e.target.value)}
                       className="pl-9"
                     />
                   </div>
-                  <select
-                    value={txTypeFilter}
-                    onChange={(e) => setTxTypeFilter(e.target.value)}
-                    className="bg-background text-sm border rounded-lg p-2 focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="all">Todos os Tipos</option>
-                    <option value="add_credits">Adição (+)</option>
-                    <option value="consume_credits">Consumo (-)</option>
-                  </select>
-                  <select
-                    value={txSortBy}
-                    onChange={(e) => setTxSortBy(e.target.value)}
-                    className="bg-background text-sm border rounded-lg p-2 focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="date_desc">Mais Recentes</option>
-                    <option value="date_asc">Mais Antigos</option>
-                    <option value="amount_desc">Maior Valor</option>
-                    <option value="amount_asc">Menor Valor</option>
-                  </select>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              {loadingTransactions ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-                </div>
-              ) : filteredTransactions.length === 0 ? (
-                <div className="text-center py-12 text-muted-foreground">Nenhuma transação encontrada.</div>
+              {loadingSubmissions ? (
+                <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>
+              ) : filteredSubmissions.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">Nenhuma análise encontrada.</div>
               ) : (
                 <div className="overflow-x-auto border rounded-lg">
                   <table className="w-full text-sm text-left">
                     <thead className="text-xs uppercase bg-muted text-muted-foreground">
                       <tr>
-                        <th className="px-6 py-3">Usuário</th>
+                        <th className="px-6 py-3">Candidato</th>
+                        <th className="px-6 py-3">Curso / Instituição</th>
                         <th className="px-6 py-3">Data</th>
-                        <th className="px-6 py-3">Tipo</th>
-                        <th className="px-6 py-3">Qtde</th>
+                        <th className="px-6 py-3">Status</th>
+                        <th className="px-6 py-3 text-right">Ação</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y">
-                      {filteredTransactions.map((tx) => {
-                        const userName = tx.user_profiles?.full_name || 'Sem nome';
-                        const userEmail = tx.user_profiles?.email || 'Sem email';
-                        const txDate = tx.created_at 
-                          ? new Date(tx.created_at).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
-                          : 'Sem data';
-                        const isConsume = tx.type === 'consume_credits';
-
-                        return (
-                          <tr key={tx.id} className="hover:bg-muted/50 transition-colors">
-                            <td className="px-6 py-4">
-                              <div className="font-semibold text-sm">{userName}</div>
-                              <div className="text-xs text-muted-foreground">{userEmail}</div>
-                              <div className="text-[10px] text-muted-foreground/60 font-mono mt-0.5">{tx.user_id}</div>
-                            </td>
-                            <td className="px-6 py-4 text-xs text-muted-foreground">
-                              {txDate}
-                            </td>
-                            <td className="px-6 py-4">
-                              <Badge variant={isConsume ? "secondary" : "default"}>
-                                {isConsume ? 'Consumo' : 'Adição'}
-                              </Badge>
-                              <div className="text-[10px] text-muted-foreground/60 mt-0.5 font-mono">{tx.type}</div>
-                            </td>
-                            <td className={`px-6 py-4 font-bold text-sm ${isConsume ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
-                              {isConsume ? '-' : '+'}{tx.amount}
-                            </td>
-                          </tr>
-                        );
-                      })}
+                      {filteredSubmissions.map((sub) => (
+                        <tr key={sub.id} className="hover:bg-muted/50 transition-colors">
+                          <td className="px-6 py-4">
+                            <div className="font-semibold">{sub.name || 'Sem nome'}</div>
+                            <div className="text-xs text-muted-foreground">{sub.email || 'Sem email'}</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="text-sm truncate max-w-[200px]" title={sub.course}>{sub.course || '-'}</div>
+                            <div className="text-xs text-muted-foreground truncate max-w-[200px]" title={sub.university}>{sub.university || '-'}</div>
+                          </td>
+                          <td className="px-6 py-4 text-xs text-muted-foreground">
+                            {sub.created_at ? new Date(sub.created_at).toLocaleDateString('pt-BR') : '-'}
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge variant={sub.status === 'completed' ? 'default' : 'secondary'}>
+                              {sub.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-right">
+                             {sub.status === 'completed' && (
+                               <Button variant="outline" size="sm" onClick={() => navigate(`/resultado-curriculo/${sub.id}`)}>
+                                 Ver Detalhes
+                               </Button>
+                             )}
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -583,34 +522,25 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         )
-      case 'moderation':
-        return <ModeracaoAgencias />
       case 'settings':
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-bold mb-4">Logs de Sistema</h2>
-            <Card>
-              <CardHeader>
-                <CardTitle>Logs de Sistema</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Button variant="outline" asChild>
-                  <Link to="/email-logs">
-                    <Mail className="h-4 w-4 mr-2" />
-                    Visualizar Logs de Email
-                  </Link>
-                </Button>
-              </CardContent>
-            </Card>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold">Logs de Sistema</h2>
+            </div>
+            {/* Componente que já existia independentemente, agora integrado no tab */}
+            <div className="border rounded-xl bg-card overflow-hidden">
+              <EmailLogs />
+            </div>
           </div>
         )
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex flex-col md:flex-row pt-16">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 md:min-h-[calc(100vh-3.5rem)] flex-shrink-0">
+      <aside className="w-full md:w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 md:min-h-[calc(100vh-4rem)] flex-shrink-0">
         <div className="p-4 md:p-6">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Admin Dashboard</h2>
           <nav className="space-y-1">
@@ -627,16 +557,6 @@ export default function AdminPage() {
             <SidebarItem 
               icon={<FileText className="h-5 w-5" />} label="Histórico de Análises" 
               active={activeTab === 'submissions'} onClick={() => setActiveTab('submissions')} 
-            />
-            {profile?.role === 'admin' && (
-              <SidebarItem 
-                icon={<CreditCard className="h-5 w-5" />} label="Créditos" 
-                active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} 
-              />
-            )}
-            <SidebarItem 
-              icon={<ShieldCheck className="h-5 w-5" />} label="Moderação" 
-              active={activeTab === 'moderation'} onClick={() => setActiveTab('moderation')} 
             />
             {profile?.role === 'admin' && (
               <SidebarItem 
@@ -698,6 +618,27 @@ export default function AdminPage() {
               }}
             >
               Confirmar Ajuste
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal para exclusão de usuário */}
+      <Dialog open={isDeleteUserOpen} onOpenChange={setIsDeleteUserOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-red-600">Excluir Usuário</DialogTitle>
+            <DialogDescription>
+              Tem certeza que deseja excluir o usuário <span className="font-semibold">{selectedUserForDelete?.full_name || selectedUserForDelete?.email}</span>? 
+              <br/><br/>Esta ação é <strong>irreversível</strong>. Todos os dados associados serão perdidos.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteUserOpen(false)} disabled={isDeletingUser}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteUser} disabled={isDeletingUser}>
+              {isDeletingUser ? 'Excluindo...' : 'Sim, excluir usuário'}
             </Button>
           </DialogFooter>
         </DialogContent>

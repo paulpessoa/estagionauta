@@ -8,7 +8,9 @@ import {
     CreditCard,
     BarChart3,
     Users,
-    Award
+    Award,
+    Coins,
+    Gift
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -97,6 +99,20 @@ export default function Dashboard() {
             icon: BarChart3,
             href: '/candidaturas',
             color: 'bg-orange-500'
+        },
+        {
+            title: 'Recompensas',
+            description: 'Veja como ganhar mais créditos.',
+            icon: Coins,
+            href: '/recompensas',
+            color: 'bg-violet-500'
+        },
+        {
+            title: 'Indicar Amigos',
+            description: 'Convide amigos e ganhe bônus exclusivos.',
+            icon: Gift,
+            href: '/convide-amigos',
+            color: 'bg-pink-500'
         }
     ]
 
@@ -171,7 +187,7 @@ export default function Dashboard() {
                 {/* Quick Actions */}
                 <div>
                     <h2 className="text-2xl font-bold mb-6">Ações Rápidas</h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {quickActions.map((action, index) => (
                             <Card key={index} className="hover:shadow-lg transition-shadow cursor-pointer">
                                 <Link to={action.href}>

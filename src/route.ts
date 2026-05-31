@@ -114,6 +114,9 @@ export const routes = [
   { path: "/cadastro", component: Cadastro },
 
   { path: "/admin", component: ProtectedAdmin },
+  { path: "/admin/usuarios", component: ProtectedAdmin },
+  { path: "/admin/history", component: ProtectedAdmin },
+  { path: "/admin/logs", component: ProtectedAdmin },
 
   { path: "/cadastro-agencia", component: CadastroAgencia },
 
