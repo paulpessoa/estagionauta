@@ -259,7 +259,7 @@ export default function Creditos() {
                     <span className="font-bold block mb-1 text-yellow-800 dark:text-yellow-500">Validade dos Créditos</span>
                     <ul className="list-disc pl-4 text-yellow-700 dark:text-yellow-400/90 space-y-1">
                       <li><strong>Créditos Gratuitos:</strong> Não acumulam. Expiram e são renovados no dia 1º de cada mês.</li>
-                      <li><strong>Créditos Avulsos (Pagos):</strong> Têm validade de 6 meses a partir da data da compra.</li>
+                      <li><strong>Créditos Avulsos (Pagos):</strong> Têm validade de 2 meses a partir da data da compra.</li>
                       <li>O sistema sempre consome primeiro os créditos mais antigos (gratuitos ou pagos).</li>
                     </ul>
                   </div>

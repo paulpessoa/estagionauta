@@ -151,7 +151,7 @@ export default function ConvideAmigos() {
     {
       icon: Coins,
       title: "3. Ganhe Créditos",
-      description: "Você ganha 3 créditos no cadastro do seu amigo, e mais 5 créditos se ele fizer a primeira compra.",
+      description: "Você ganha 3 créditos após seu amigo realizar a primeira simulação ou análise, e mais 5 créditos se ele fizer a primeira compra (limite máximo de 15 créditos acumulados).",
       color: "bg-yellow-500/10 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400"
     }
   ]
@@ -413,7 +413,9 @@ export default function ConvideAmigos() {
               <TrendingUp className="h-4.5 w-4.5" /> Observações Importantes
             </span>
             <ul className="list-disc pl-5 space-y-2 text-xs text-muted-foreground font-medium">
-              <li>Os créditos recebidos via indicação são classificados como créditos bônus e possuem **validade de 6 meses** a partir da data de ganho.</li>
+              <li>Os créditos recebidos via indicação são classificados como créditos bônus e possuem **validade de 2 meses** a partir da data de ganho.</li>
+              <li>O limite máximo de bônus acumulado por indicar amigos é de **15 créditos** no total por usuário.</li>
+              <li>O bônus de indicação inicial é creditado somente depois que o amigo indicado realiza sua primeira atividade (como uma análise ou simulação) para validar a autenticidade da conta.</li>
               <li>Tentativas de fraudar o sistema de indicações criando contas falsas ou duplicadas resultarão no banimento permanente das contas e perda de todos os créditos associados.</li>
               <li>O Estagionauta se reserva o direito de alterar os valores de premiação em créditos a qualquer momento.</li>
             </ul>

@@ -188,7 +188,7 @@ REGRA DE LEMBRETES:
 
 REGRA DE HISTÓRICOS DE CRÉDITOS E VALIDADE:
 1. Se o usuário quiser consultar o extrato de créditos ou histórico detalhado de compras/gastos, use 'check_credit_history'.
-2. Se o usuário quiser saber quando seus créditos vão expirar (validade de 6 meses por lote/FIFO), use 'check_credit_expiry'.
+2. Se o usuário quiser saber quando seus créditos vão expirar (validade de 2 meses por lote/FIFO), use 'check_credit_expiry'.
 
 REGRA DE HISTÓRICO DE ENTREVISTAS:
 Se o usuário quiser ver ou listar as simulações de entrevista anteriores realizadas, chame 'list_past_interviews'.

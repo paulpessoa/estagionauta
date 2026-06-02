@@ -129,5 +129,16 @@
 - [x] Write 18 unit tests in `sprint2_tools.spec.ts` covering all tools and safety guardrails
 - [x] Verify successful Vitest suite execution (38/38 specs passing) and clean TypeScript build
 
+## FASE 2.8 — Importador de Usuários do Jotform (Menvo)
+
+- [x] Backend: Validar e integrar a chave `MENVO_JOTFORM_API_KEY` no parser de configurações `env.ts`
+- [x] Backend: Criar endpoints `GET /api/admin/jotform/forms` e `GET /api/admin/jotform/submissions/:formId` com parser inteligente de respostas
+- [x] Backend: Criar endpoint `POST /api/admin/jotform/import` que cria o usuário, define 10 créditos, gera o link de acesso seguro e envia o convite personalizado por e-mail (Brevo)
+- [x] Frontend: Atualizar `/admin/importador` (`ImportadorUsuarios.tsx`) para listar formulários e submissões com status local comparado em tempo real
+- [x] Frontend: Criar botões de atalhos rápidos para os formulários sugeridos (`92985548715676` e `200697163523354`)
+- [x] Frontend: Integrar ação em bloco "Cadastrar & Enviar Convites" que executa a importação no backend
+- [x] Verificação: Validar build do frontend, backend e rodar testes do Vitest (46/46 specs passando)
+
+
 
 

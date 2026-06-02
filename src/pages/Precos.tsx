@@ -117,7 +117,7 @@ export default function Precos() {
         <div>
           <div className="text-center mb-8">
             <p className="text-sm text-muted-foreground">
-              Cada análise de currículo custa 3 créditos • Seus créditos são válidos por 6 meses
+              Cada análise de currículo custa 3 créditos • Seus créditos são válidos por 2 meses
             </p>
           </div>
           
@@ -303,7 +303,7 @@ export default function Precos() {
                 Como funcionam os créditos?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Cada análise de currículo consome 3 créditos. Simulações consomem 2 créditos e geração consome 1 crédito. Os créditos são válidos por 6 meses após a compra.
+                Cada análise de currículo consome 3 créditos. Simulações consomem 2 créditos e geração consome 1 crédito. Os créditos são válidos por 2 meses após a compra.
               </p>
             </div>
             
@@ -321,7 +321,7 @@ export default function Precos() {
                 Os créditos expiram?
               </h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Sim! Para garantir a sustentabilidade dos serviços, os seus créditos são válidos por 6 meses após a data da compra.
+                Sim! Para garantir a sustentabilidade dos serviços, os seus créditos são válidos por 2 meses após a data da compra.
               </p>
             </div>
             
