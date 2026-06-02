@@ -78,14 +78,21 @@ const NavLinks = ({
           className={`transition-colors hover:text-foreground/80 text-foreground/60`}
           onClick={onLinkClick}
         >
-          Lista de Agências
+          Agências
+        </Link>
+        <Link
+          to="/analise-curriculo"
+          className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
+          onClick={handleCurriculoIAClick}
+        >
+          Análise de Currículo
         </Link>
         <Link
           to="/simulador-entrevistas"
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
         >
-          Simulador de Entrevistas
+          Simulador
         </Link>
         {user && profile && !(isAdmin || isModerator) && (
           <Link
@@ -420,7 +427,7 @@ export function Header() {
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Monitor className="mr-2 h-4 w-4" />
-                          Simulador de Entrevistas
+                          Simulador
                         </Link>
                       </Button>
 
@@ -461,20 +468,20 @@ export function Header() {
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               <FileText className="mr-2 h-4 w-4" />
-                              Minhas Análises
+                              Análises de Currículo
                             </Link>
                           </Button>
                         </>
                       )}
 
-                      {/* Lista de Agências (visível para todos) */}
+                      {/* Agências (visível para todos) */}
                       <Button variant="ghost" asChild className="justify-start">
                         <Link
                           to="/agencias"
                           onClick={() => setMobileMenuOpen(false)}
                         >
                           <Building2 className="mr-2 h-4 w-4" />
-                          Lista de Agências
+                          Agências
                         </Link>
                       </Button>
 
@@ -660,7 +667,7 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link to="/minhas-analises">
                           <FileText className="mr-2 h-4 w-4" />
-                          Minhas Análises
+                          Análises de Currículos
                         </Link>
                       </DropdownMenuItem>
                     </>
