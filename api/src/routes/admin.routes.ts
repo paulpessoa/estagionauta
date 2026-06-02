@@ -33,6 +33,13 @@ const replyEmailSchema = z.object({
   message: z.string().min(5),
 });
 
+const feedbackJotformSchema = z.object({
+  email: z.string().email(),
+  rating: z.number().int().min(1).max(5),
+  comment: z.string().optional(),
+  source: z.string().default('jotform'),
+});
+
 // GET /api/admin/stats - Retrieve consolidated statistics
 app.get('/stats', authMiddleware, adminMiddleware, async (c) => {
   try {
@@ -87,10 +94,6 @@ app.get('/users', authMiddleware, adminMiddleware, async (c) => {
       .not('referred_by', 'is', null);
 
     // Fetch all purchase transactions to calculate LTV (total_paid)
-    // Here we consider the cost of credits or just sum the amounts of type 'purchase'
-    // If amount is credits, we might need a way to convert to currency, but we can assume amount * price or just store 'amount' as LTV.
-    // Wait, the transaction amount is credits. We'll return it as 'total_paid' in credits, or we can just fetch total_credits_purchased from profile.
-    // Let's also fetch total_credits_purchased if available, or just use credit_transactions.
     const { data: purchases } = await supabaseAdmin
       .from('credit_transactions')
       .select('user_id, amount')
@@ -105,7 +108,6 @@ app.get('/users', authMiddleware, adminMiddleware, async (c) => {
 
     const ltvCounts = (purchases || []).reduce((acc: any, curr) => {
       if (curr.user_id) {
-        // Assuming 1 credit = R$ 1 for simplicity in LTV, or just sending the amount of credits purchased
         acc[curr.user_id] = (acc[curr.user_id] || 0) + curr.amount;
       }
       return acc;
@@ -114,7 +116,7 @@ app.get('/users', authMiddleware, adminMiddleware, async (c) => {
     const enrichedUsers = (users || []).map(u => ({
       ...u,
       referrals_count: referralCounts[u.id] || 0,
-      total_paid: ltvCounts[u.id] || 0 // Assuming 'total_paid' is based on credits purchased for now
+      total_paid: ltvCounts[u.id] || 0
     }));
 
     return c.json(enrichedUsers);
@@ -172,7 +174,6 @@ app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', u
   const { role } = c.req.valid('json');
 
   try {
-    // 1. Fetch current role for logging
     const { data: targetUser, error: fetchError } = await supabaseAdmin
       .from('user_profiles')
       .select('role')
@@ -187,7 +188,6 @@ app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', u
       return c.json({ success: true, message: 'Usuário já possui este cargo' });
     }
 
-    // 2. Perform role update (service role connection bypasses our trigger block)
     const { error: updateError } = await supabaseAdmin
       .from('user_profiles')
       .update({ role })
@@ -198,7 +198,6 @@ app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', u
       return c.json({ error: 'Erro ao atualizar cargo' }, 500);
     }
 
-    // 3. Insert audit log record
     const ipAddress = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
     const { error: auditError } = await supabaseAdmin
       .from('admin_audit_logs')
@@ -222,7 +221,7 @@ app.put('/users/:id/role', authMiddleware, adminMiddleware, zValidator('json', u
   }
 });
 
-// PUT /api/admin/users/:id/credits - Adjust user credits securely (relational adjustment)
+// PUT /api/admin/users/:id/credits - Adjust user credits securely
 app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json', updateCreditsSchema), async (c) => {
   const admin = c.get('user');
   if (!(await verifyIsAdmin(admin.id))) {
@@ -232,7 +231,6 @@ app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json'
   const { amount } = c.req.valid('json');
 
   try {
-    // 1. Fetch current credits for logging
     const { data: targetUser, error: fetchError } = await supabaseAdmin
       .from('user_profiles')
       .select('credits')
@@ -246,7 +244,6 @@ app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json'
     const currentCredits = targetUser.credits;
     const newCredits = Math.max(0, currentCredits + amount);
 
-    // 2. Update user's credits
     const { error: updateError } = await supabaseAdmin
       .from('user_profiles')
       .update({ credits: newCredits })
@@ -257,7 +254,6 @@ app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json'
       return c.json({ error: 'Erro ao atualizar créditos' }, 500);
     }
 
-    // 3. Insert transaction log
     const { error: txError } = await supabaseAdmin
       .from('credit_transactions')
       .insert({
@@ -271,7 +267,6 @@ app.put('/users/:id/credits', authMiddleware, adminMiddleware, zValidator('json'
       console.error('Credit transaction logging error:', txError);
     }
 
-    // 4. Insert audit log record
     const ipAddress = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
     const { error: auditError } = await supabaseAdmin
       .from('admin_audit_logs')
@@ -345,7 +340,6 @@ app.post('/reply-email', authMiddleware, adminMiddleware, zValidator('json', rep
       throw new Error(errorData.message || 'Erro ao enviar email');
     }
 
-    // Optionally mark the feedback as replied in DB
     await supabaseAdmin
       .from('feedbacks')
       .update({ status: 'replied' })
@@ -392,16 +386,13 @@ app.delete('/users/:id', authMiddleware, adminMiddleware, async (c) => {
   }
 
   try {
-    // Excluir via Auth admin
     const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(targetId);
 
     if (authError) {
       console.error('Error deleting user from auth:', authError);
-      // Fallback: tentar excluir do banco (embora ON DELETE CASCADE deva cuidar disso)
       await supabaseAdmin.from('user_profiles').delete().eq('id', targetId);
     }
     
-    // Log the action
     const ipAddress = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || 'unknown';
     await supabaseAdmin
       .from('admin_audit_logs')
@@ -439,14 +430,12 @@ app.get('/external-users', authMiddleware, adminMiddleware, async (c) => {
     const { createClient } = await import('@supabase/supabase-js');
     const menvoClient = createClient(url, key, { auth: { persistSession: false } });
 
-    // Fetch auth users
     const { data: authData, error: authError } = await menvoClient.auth.admin.listUsers();
     if (authError) {
       console.error('Error listing external auth users:', authError);
       return c.json({ error: 'Erro ao listar usuários do auth externo: ' + authError.message }, 500);
     }
 
-    // Try fetching profiles table if it exists to get more details (like name)
     let profiles: any[] = [];
     const { data: profilesData, error: profilesError } = await menvoClient
       .from('profiles')
@@ -456,7 +445,6 @@ app.get('/external-users', authMiddleware, adminMiddleware, async (c) => {
     if (!profilesError && profilesData) {
       profiles = profilesData;
     } else {
-      // Try 'user_profiles' if 'profiles' fails
       const { data: userProfilesData, error: userProfilesError } = await menvoClient
         .from('user_profiles')
         .select('*')
@@ -466,7 +454,6 @@ app.get('/external-users', authMiddleware, adminMiddleware, async (c) => {
       }
     }
 
-    // Combine them
     const users = (authData.users || []).map((user: any) => {
       const profile = profiles.find((p: any) => p.id === user.id || p.email === user.email || p.user_id === user.id);
       return {
@@ -680,7 +667,7 @@ const importJotformSchema = z.object({
   }))
 });
 
-// POST /api/admin/jotform/import - Import selected Jotform candidates, create auth, update profile to 10 credits and send Brevo invitation
+// POST /api/admin/jotform/import - Import selected Jotform candidates
 app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', importJotformSchema), async (c) => {
   const admin = c.get('user');
   if (!(await verifyIsAdmin(admin.id))) {
@@ -701,7 +688,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
 
   for (const user of users) {
     try {
-      // 1. Check if user already exists in profiles
       const { data: existingUser } = await supabaseAdmin
         .from('user_profiles')
         .select('id, email')
@@ -713,7 +699,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
         continue;
       }
 
-      // 2. Create user in Supabase Auth
       const tempPassword = Math.random().toString(36).slice(-12) + 'A1!';
       const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
         email: user.email,
@@ -732,14 +717,13 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
 
       const newUserId = authData.user.id;
 
-      // 3. Update the newly created profile with phone, course, university, 10 credits and raw_import_data
       const { error: profileError } = await supabaseAdmin
         .from('user_profiles')
         .update({
           phone: user.phone || '',
           course: user.course || '',
           university: user.university || '',
-          credits: 10, // Give 10 credits initial balance
+          credits: 10,
           raw_import_data: user.profile_data || null
         })
         .eq('id', newUserId);
@@ -748,7 +732,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
         console.error(`Error updating profile for ${user.email}:`, profileError);
       }
 
-      // 4. Update/insert credit transactions: Add additional 5 credits transaction log (trigger gives 5)
       await supabaseAdmin
         .from('credit_transactions')
         .insert({
@@ -758,7 +741,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
           description: 'Bônus de boas-vindas da importação Jotform (+5 créditos)'
         });
 
-      // 5. Download and Upload resume PDF to curriculum-files bucket
       let fileUrl = '';
       if (user.resume_url) {
         try {
@@ -767,7 +749,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
             const arrayBuffer = await downloadRes.arrayBuffer();
             const buffer = Buffer.from(arrayBuffer);
             
-            // Extract filename or generate one
             let originalFilename = 'curriculo.pdf';
             try {
               const urlPath = new URL(user.resume_url).pathname;
@@ -802,7 +783,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
         }
       }
 
-      // 6. Link in curriculum_analysis
       if (fileUrl) {
         const { error: analysisError } = await supabaseAdmin
           .from('curriculum_analysis')
@@ -831,7 +811,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
         }
       }
 
-      // 7. Generate recovery link pointing to the frontend reset-password route
       const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
         type: 'recovery',
         email: user.email,
@@ -847,7 +826,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
 
       const inviteLink = linkData.properties.action_link;
 
-      // 8. Send invitation email via Brevo
       const emailData = {
         sender: {
           name: 'Paul Pessoa - Estagionauta',
@@ -859,68 +837,128 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
             name: user.full_name
           },
         ],
-        subject: 'Convite Especial: Conheça o Estagionauta!',
-        htmlContent: `<div style="font-family: Arial, sans-serif; padding: 25px; color: #1e293b; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; line-height: 1.6;">
-            <div style="text-align: center; margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 15px;">
-              <h1 style="color: #4f46e5; margin: 0; font-size: 24px;">Convite Especial: Conheça o Estagionauta</h1>
+        subject: 'Vem pro Estagionauta! Comece com 10 créditos grátis',
+        htmlContent: `<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; padding: 32px 20px; color: #2c3e50; max-width: 600px; margin: 0 auto; background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);">
+          <!-- Header -->
+          <div style="text-align: center; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 2px solid #e8eef5;">
+            <h1 style="color: #4f46e5; margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">
+              Vem pro Estagionauta!
+            </h1>
+            <p style="margin: 12px 0 0 0; color: #6b7280; font-size: 14px; font-weight: 500;">A plataforma que vai acelerar sua carreira</p>
+          </div>
+
+          <!-- Main content -->
+          <div style="margin-bottom: 28px;">
+            <p style="margin: 0 0 16px 0; color: #374151; font-size: 15px; line-height: 1.6;">
+              Oi ${user.full_name},
+            </p>
+            
+            <p style="margin: 0 0 16px 0; color: #374151; font-size: 15px; line-height: 1.6;">
+              Você se inscreveu no nosso grupo no @estagiorecife e agora tem acesso a uma plataforma completa pra acelerar sua carreira. Desenvolvi o Estagionauta pra ajudar centenas de estudantes como você a se destacar no mercado de estágio.
+            </p>
+
+            <p style="margin: 0 0 20px 0; color: #374151; font-size: 15px; line-height: 1.6;">
+              Aqui você encontra ferramentas poderosas:
+            </p>
+
+            <!-- Features list -->
+            <div style="background: #f9fafb; padding: 20px; border-radius: 10px; border-left: 4px solid #4f46e5; margin-bottom: 20px;">
+              <ul style="margin: 0; padding: 0; list-style: none;">
+                <li style="margin-bottom: 12px; display: flex; gap: 10px;">
+                  <span style="flex-shrink: 0; color: #4f46e5; font-weight: bold;">•</span>
+                  <span style="color: #374151; font-size: 14px;"><strong>Análise inteligente de currículo:</strong> Envie seu PDF e receba feedback detalhado com pontos fortes, áreas de melhoria e recomendações.</span>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; gap: 10px;">
+                  <span style="flex-shrink: 0; color: #4f46e5; font-weight: bold;">•</span>
+                  <span style="color: #374151; font-size: 14px;"><strong>Gerador de currículos:</strong> Crie um currículo profissional formatado conforme as melhores práticas de recrutadores.</span>
+                </li>
+                <li style="margin-bottom: 12px; display: flex; gap: 10px;">
+                  <span style="flex-shrink: 0; color: #4f46e5; font-weight: bold;">•</span>
+                  <span style="color: #374151; font-size: 14px;"><strong>Simulador de entrevistas:</strong> Treine com IA simulando entrevistas reais para empresas específicas.</span>
+                </li>
+                <li style="display: flex; gap: 10px;">
+                  <span style="flex-shrink: 0; color: #4f46e5; font-weight: bold;">•</span>
+                  <span style="color: #374151; font-size: 14px;"><strong>Rover - Seu copiloto:</strong> Assistente virtual que responde dúvidas sobre carreira, mercado e desenvolvimento profissional.</span>
+                </li>
+              </ul>
             </div>
-            <p>Ola, <strong>${user.full_name}</strong>,</p>
-            <p>Estou entrando em contato pois voce se inscreveu anteriormente para fazer parte do nosso grupo de WhatsApp no perfil <strong>instagram.com/estagiorecife</strong>. Devido a correria do dia a dia, por um tempo nao consegui dar a atencao e o retorno que todos voces mereciam. Como este e um trabalho voluntario que realizo com muito carinho, peco desculpas pela demora.</p>
-            
-            <p>Pensando em como ajudar voce e centenas de outros estudantes de forma automatizada e eficiente com os desafios da busca por estagio, eu desenvolvi o <strong>Estagionauta</strong>. Esta e uma plataforma completa com ferramentas gratuitas e premium para acelerar sua carreira.</p>
 
-            <p>Aqui esta o que voce encontrara no Estagionauta para se destacar no mercado:</p>
-            <ul style="padding-left: 20px; color: #334155; margin: 15px 0;">
-              <li style="margin-bottom: 8px;"><strong>Analise inteligente e otimizacao de curriculo por inteligencia artificial:</strong> envie seu curriculo em PDF e receba uma avaliacao detalhada com notas, pontos fortes e recomendacoes praticas de melhoria.</li>
-              <li style="margin-bottom: 8px;"><strong>Gerador de curriculos profissional:</strong> crie um curriculo formatado de acordo com as melhores praticas recomendadas por recrutadores.</li>
-              <li style="margin-bottom: 8px;"><strong>Simulador de entrevistas de emprego com IA:</strong> treine suas respostas com nossa inteligencia artificial simulando entrevistas para empresas e cargos especificos, recebendo feedback em tempo real.</li>
-              <li style="margin-bottom: 8px;"><strong>Rover, o agente web inteligente e copiloto de carreira:</strong> um assistente virtual disponivel na plataforma para responder duvidas sobre legislacao de estagio, calcular recesso e analisar seu perfil.</li>
-            </ul>
-
-            <p>Como voce ja demonstrou interesse em evoluir profissionalmente no EstagiRecife, adicionei <strong>10 creditos gratuitos</strong> na sua conta como presente de boas-vindas para voce testar todos os recursos imediatamente.</p>
-
-            <div style="margin: 30px 0; text-align: center;">
-              <a href="${inviteLink}" style="background-color: #4f46e5; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);">Ativar Minha Conta e Resgatar 10 Creditos</a>
+            <!-- Credits highlight -->
+            <div style="background: linear-gradient(135deg, #f0f4ff 0%, #f5f0ff 100%); padding: 18px; border-radius: 10px; border: 2px solid #4f46e5; margin-bottom: 20px; text-align: center;">
+              <p style="margin: 0 0 8px 0; color: #4f46e5; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">PRESENTE DE BOAS-VINDAS</p>
+              <p style="margin: 0; color: #2c3e50; font-size: 24px; font-weight: 700;">10 Créditos Grátis</p>
+              <p style="margin: 8px 0 0 0; color: #6b7280; font-size: 13px;">Para você começar a usar as ferramentas sem custar nada</p>
             </div>
+
+            <!-- Mentor section -->
+            <div style="background: #f3f4f6; padding: 16px; border-radius: 8px; margin-bottom: 24px; border-left: 4px solid #6b21a8;">
+              <p style="margin: 0 0 8px 0; color: #6b21a8; font-size: 13px; font-weight: 600; text-transform: uppercase;">Para profissionais formados</p>
+              <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.5;">
+                Se você já está formado e quer compartilhar sua experiência, junte-se ao Menvo como mentor voluntário. Ajude jovens profissionais a alcançarem seus sonhos e expanda sua rede.
+                <a href="https://menvo.com.br" target="_blank" style="color: #4f46e5; text-decoration: none; font-weight: 600;">Conheça o Menvo</a>
+              </p>
+            </div>
+          </div>
+
+          <!-- CTA Button -->
+          <div style="margin: 32px 0; text-align: center;">
+            <a href="${inviteLink}" style="background: linear-gradient(135deg, #4f46e5 0%, #3f3cdb 100%); color: #ffffff; padding: 16px 40px; text-decoration: none; border-radius: 10px; font-weight: 600; display: inline-block; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: transform 0.2s, box-shadow 0.2s; font-size: 16px;">
+              Ativar Conta e Usar Créditos
+            </a>
+          </div>
+
+          <p style="text-align: center; margin: 16px 0 0 0; color: #9ca3af; font-size: 12px;">
+            Se o botão não funcionar, copie e cole este link no seu navegador:<br>
+            <code style="background: #f3f4f6; padding: 8px 12px; border-radius: 4px; display: inline-block; margin-top: 8px; word-break: break-all; color: #4f46e5; font-size: 11px;">${inviteLink}</code>
+          </p>
+
+          <!-- Feedback Section -->
+          <div style="background: #f9fafb; padding: 24px; border-radius: 10px; margin: 32px 0; text-align: center;">
+            <p style="margin: 0 0 16px 0; color: #2c3e50; font-weight: 600; font-size: 15px;">O que achou desta iniciativa?</p>
+            <p style="margin: 0 0 16px 0; color: #6b7280; font-size: 13px;">Sua opinião é essencial pra gente melhorar. Clique em uma estrela ou deixe um comentário.</p>
             
-            <p style="font-size: 12px; color: #64748b; margin-top: 15px;">Se o botao acima nao funcionar, copie e cole o link a seguir no seu navegador:</p>
-            <p style="font-size: 11px; color: #4f46e5; word-break: break-all; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px dashed #cbd5e1; margin-top: 5px;">${inviteLink}</p>
-            
-            <div style="margin: 30px 0; text-align: center; background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
-              <p style="margin: 0 0 12px 0; font-weight: bold; color: #1e293b; font-size: 15px;">O que voce achou deste convite?</p>
-              <div style="display: inline-block;">
-                <a href="${env.CLIENT_URL}/feedback?rating=1&email=${encodeURIComponent(user.email)}" style="text-decoration: none; display: inline-block; width: 42px; height: 42px; line-height: 42px; margin: 0 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #64748b; font-size: 18px; font-weight: bold; text-align: center;">1 ★</a>
-                <a href="${env.CLIENT_URL}/feedback?rating=2&email=${encodeURIComponent(user.email)}" style="text-decoration: none; display: inline-block; width: 42px; height: 42px; line-height: 42px; margin: 0 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #64748b; font-size: 18px; font-weight: bold; text-align: center;">2 ★</a>
-                <a href="${env.CLIENT_URL}/feedback?rating=3&email=${encodeURIComponent(user.email)}" style="text-decoration: none; display: inline-block; width: 42px; height: 42px; line-height: 42px; margin: 0 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #64748b; font-size: 18px; font-weight: bold; text-align: center;">3 ★</a>
-                <a href="${env.CLIENT_URL}/feedback?rating=4&email=${encodeURIComponent(user.email)}" style="text-decoration: none; display: inline-block; width: 42px; height: 42px; line-height: 42px; margin: 0 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; color: #64748b; font-size: 18px; font-weight: bold; text-align: center;">4 ★</a>
-                <a href="${env.CLIENT_URL}/feedback?rating=5&email=${encodeURIComponent(user.email)}" style="text-decoration: none; display: inline-block; width: 42px; height: 42px; line-height: 42px; margin: 0 4px; border: 1px solid #4f46e5; border-radius: 6px; background: #4f46e5; color: #ffffff; font-size: 18px; font-weight: bold; text-align: center;">5 ★</a>
+            <div style="display: flex; justify-content: center; gap: 8px; margin-bottom: 16px;">
+              <a href="${env.CLIENT_URL}/feedback?rating=1&email=${encodeURIComponent(user.email)}&source=jotform" style="display: inline-block; width: 48px; height: 48px; line-height: 48px; text-align: center; background: #fee2e2; border-radius: 50%; text-decoration: none; font-size: 20px; transition: transform 0.2s; border: 2px solid transparent;" title="Péssimo">1</a>
+              <a href="${env.CLIENT_URL}/feedback?rating=2&email=${encodeURIComponent(user.email)}&source=jotform" style="display: inline-block; width: 48px; height: 48px; line-height: 48px; text-align: center; background: #fecaca; border-radius: 50%; text-decoration: none; font-size: 20px; transition: transform 0.2s; border: 2px solid transparent;" title="Ruim">2</a>
+              <a href="${env.CLIENT_URL}/feedback?rating=3&email=${encodeURIComponent(user.email)}&source=jotform" style="display: inline-block; width: 48px; height: 48px; line-height: 48px; text-align: center; background: #fef3c7; border-radius: 50%; text-decoration: none; font-size: 20px; transition: transform 0.2s; border: 2px solid transparent;" title="Neutro">3</a>
+              <a href="${env.CLIENT_URL}/feedback?rating=4&email=${encodeURIComponent(user.email)}&source=jotform" style="display: inline-block; width: 48px; height: 48px; line-height: 48px; text-align: center; background: #dbeafe; border-radius: 50%; text-decoration: none; font-size: 20px; transition: transform 0.2s; border: 2px solid transparent;" title="Bom">4</a>
+              <a href="${env.CLIENT_URL}/feedback?rating=5&email=${encodeURIComponent(user.email)}&source=jotform" style="display: inline-block; width: 48px; height: 48px; line-height: 48px; text-align: center; background: #dcfce7; border-radius: 50%; text-decoration: none; font-size: 20px; transition: transform 0.2s; border: 2px solid transparent;" title="Excelente">5</a>
+            </div>
+
+            <p style="margin: 0; color: #6b7280; font-size: 12px;">
+              <a href="${env.CLIENT_URL}/feedback?email=${encodeURIComponent(user.email)}&source=jotform&show_comment=true" style="color: #4f46e5; text-decoration: none; font-weight: 600;">Deixar comentário</a>
+            </p>
+          </div>
+
+          <!-- Support section -->
+          <div style="background: #f0fdf4; padding: 16px; border-radius: 8px; margin-bottom: 24px; border-left: 4px solid #22c55e;">
+            <p style="margin: 0 0 8px 0; color: #15803d; font-size: 13px; font-weight: 600;">Dúvidas ou sugestões?</p>
+            <p style="margin: 0; color: #374151; font-size: 14px; line-height: 1.5;">
+              Estou aqui pra ajudar! Responda este e-mail ou me envie mensagem pelo WhatsApp +55 81 99509-7377
+            </p>
+          </div>
+
+          <!-- Footer -->
+          <div style="border-top: 2px solid #e8eef5; padding-top: 24px; margin-top: 32px;">
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+              <img src="https://github.com/paulmspessoa.png" alt="Paul Pessoa" style="width: 64px; height: 64px; border-radius: 50%; border: 3px solid #e8eef5;" />
+              <div>
+                <h4 style="margin: 0; color: #2c3e50; font-size: 15px; font-weight: 600;">Paul Pessoa</h4>
+                <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 13px;">Criador do Estagionauta & Software Developer</p>
+                <div style="margin-top: 8px; display: flex; gap: 12px;">
+                  <a href="https://www.linkedin.com/in/paulmspessoa" target="_blank" style="color: #4f46e5; text-decoration: none; font-size: 12px; font-weight: 600;">LinkedIn</a>
+                  <a href="https://wa.me/5581995097377" target="_blank" style="color: #4f46e5; text-decoration: none; font-size: 12px; font-weight: 600;">WhatsApp</a>
+                </div>
               </div>
-              <p style="margin: 12px 0 0 0; font-size: 12px; color: #64748b;">Clique em uma nota acima para nos dar seu feedback sobre a plataforma.</p>
             </div>
 
-            <p style="font-size: 13px; color: #64748b;"><strong>Aviso sobre Privacidade (LGPD):</strong> Caso nao deseje fazer parte deste projeto e queira parar de receber mensagens, basta responder diretamente a este e-mail solicitando a remocao do seu contato. Como a lista de cadastros do Jotform atingiu o limite maximo de armazenamento da ferramenta, estaremos excluindo definitivamente a base de dados do Jotform em breve.</p>
-            
-            <p style="font-size: 14px; color: #334155; margin-top: 20px;">Se voce tiver qualquer duvida, pode falar diretamente comigo respondendo a este e-mail em <a href="mailto:contato@estagionauta.com.br" style="color: #4f46e5; text-decoration: none;">contato@estagionauta.com.br</a> ou pelo meu <a href="https://wa.me/5581995097377" style="color: #4f46e5; text-decoration: none;">WhatsApp</a>.</p>
-
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 30px 0;" />
-            
-            <table border="0" cellpadding="0" cellspacing="0" style="margin-top: 20px;">
-              <tr>
-                <td style="vertical-align: top; padding-right: 15px;">
-                  <img src="https://github.com/paulmspessoa.png" alt="Paul Pessoa" style="width: 70px; height: 70px; border-radius: 50%; border: 2px solid #e2e8f0; display: block;" />
-                </td>
-                <td style="vertical-align: middle;">
-                  <h4 style="margin: 0; color: #1e293b; font-size: 16px;">Paul Pessoa</h4>
-                  <p style="margin: 3px 0 0 0; color: #64748b; font-size: 13px;">Idealizador do Estagionauta &amp; Software Developer</p>
-                  <p style="margin: 5px 0 0 0; font-size: 12px;">
-                    <a href="https://www.linkedin.com/in/paulmspessoa" target="_blank" style="color: #4f46e5; text-decoration: none; margin-right: 10px; font-weight: bold;">LinkedIn</a>
-                    <a href="https://wa.me/5581995097377" target="_blank" style="color: #4f46e5; text-decoration: none; font-weight: bold;">WhatsApp (+55 81 99509-7377)</a>
-                  </p>
-                </td>
-              </tr>
-            </table>
-          </div>`,
-        textContent: `Ola, ${user.full_name}. Voce foi convidado para o Estagionauta! Ative sua conta usando o link a seguir: ${inviteLink} - Caso tenha duvidas, entre em contato em contato@estagionauta.com.br ou pelo WhatsApp +55 81 99509-7377.`,
+            <p style="margin: 16px 0 0 0; padding-top: 16px; border-top: 1px solid #e8eef5; color: #9ca3af; font-size: 11px; line-height: 1.6;">
+              <strong>Privacidade:</strong> Você recebeu este e-mail porque se inscreveu no @estagiorecife ou na plataforma Estagionauta. Sua privacidade é nossa prioridade (LGPD). Se não deseja mais receber mensagens, 
+              <a href="mailto:contato@estagionauta.com.br?subject=Desinscrever" style="color: #4f46e5; text-decoration: none;">clique aqui para se desinscrever</a>.
+            </p>
+          </div>
+        </div>`,
+        textContent: `Vem pro Estagionauta!\n\nOlá ${user.full_name},\n\nVocê se inscreveu no @estagiorecife e agora tem 10 créditos grátis para começar a usar a plataforma.\n\nAcesse agora: ${inviteLink}\n\nAqui você encontra:\n- Análise inteligente de currículo\n- Gerador de currículos\n- Simulador de entrevistas com IA\n- Rover, seu copiloto de carreira\n\nProfissional formado? Seja mentor no Menvo: https://menvo.com.br\n\nDúvidas?\nE-mail: contato@estagionauta.com.br\nWhatsApp: +55 81 99509-7377\n\nAbração,\nPaul Pessoa`,
       };
 
       const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -937,7 +975,6 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
         console.error(`Error sending Brevo email to ${user.email}`);
       }
 
-      // Log email to database
       await supabaseAdmin.from('email_logs').insert({
         to_email: user.email,
         subject: emailData.subject,
@@ -953,6 +990,35 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
   }
 
   return c.json(results);
+});
+
+// POST /api/feedback-jotform - Specialized endpoint for Jotform feedback (with source tracking)
+app.post('/feedback-jotform', zValidator('json', feedbackJotformSchema), async (c) => {
+  const { email, rating, comment, source } = c.req.valid('json');
+
+  try {
+    const { error } = await supabaseAdmin
+      .from('feedbacks')
+      .insert({
+        email: email.trim(),
+        rating,
+        comment: comment?.trim() || null,
+        source, // Track source (jotform, email, etc)
+        created_at: new Date().toISOString()
+      });
+
+    if (error) throw error;
+
+    return c.json({ 
+      success: true, 
+      message: 'Feedback recebido com sucesso! Obrigado pela sua opinião.' 
+    });
+  } catch (err: any) {
+    console.error('Feedback Jotform error:', err);
+    return c.json({ 
+      error: 'Erro ao registrar feedback. Tente novamente.' 
+    }, 500);
+  }
 });
 
 export default app;
