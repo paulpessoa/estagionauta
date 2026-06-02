@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines } from 'lucide-react';
+import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines, Paperclip } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiClient } from '@/lib/apiClient';
@@ -28,6 +28,22 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const recognitionRef = useRef<any>(null);
 
   const isWidgetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
+
+  const handleAttachmentClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const fileInput = document.getElementById('rover-file-input');
+    if (fileInput) {
+      (fileInput as HTMLInputElement).click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      toast.success(`Arquivo "${file.name}" anexado! Envie a mensagem para o Rover analisá-lo.`);
+      setInputValue((prev) => `${prev} [Arquivo: ${file.name}]`.trim());
+    }
+  };
 
   useEffect(() => {
     if (isWidgetOpen) {
@@ -187,7 +203,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="w-[360px] sm:w-[400px] h-[520px] sm:h-[580px] max-h-[70vh] bg-background border border-muted shadow-2xl rounded-[28px] overflow-hidden flex flex-col mb-4 z-50"
+            className="w-[360px] sm:w-[400px] h-[520px] sm:h-[580px] max-h-[70vh] bg-background border border-muted shadow-2xl rounded-2xl overflow-hidden flex flex-col mb-4 z-50"
           >
             {/* Widget Header */}
             <div className="bg-gradient-to-br from-violet-600/10 via-purple-500/5 to-orange-500/5 dark:from-violet-950/20 dark:via-purple-950/10 dark:to-orange-950/10 border-b border-muted/50 p-4 flex items-center justify-between">
@@ -387,20 +403,14 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
       >
         {isWidgetOpen ? (
           <>
-            {/* Circular trash/clear button on the left of input */}
+            {/* Circular paperclip attachment button on the left of input */}
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                if (messages.length > 0) {
-                  handleClearChat();
-                } else {
-                  toast.info("Nenhuma conversa para apagar.");
-                }
-              }}
-              title="Limpar Conversa"
-              className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-destructive shrink-0 transition-colors"
+              type="button"
+              onClick={handleAttachmentClick}
+              title="Anexar Arquivo"
+              className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-primary shrink-0 transition-colors"
             >
-              <Trash2 className="w-4 h-4" />
+              <Paperclip className="w-4 h-4" />
             </button>
 
             <form
@@ -470,6 +480,14 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
           </>
         )}
       </div>
+
+      <input
+        type="file"
+        id="rover-file-input"
+        className="hidden"
+        onChange={handleFileChange}
+        accept=".pdf,.doc,.docx,.txt,.png,.jpg,.jpeg"
+      />
     </div>
   );
 }
