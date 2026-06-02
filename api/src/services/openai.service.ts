@@ -71,7 +71,7 @@ Adicione ao JSON:
     messages: [
       {
         role: 'system',
-        content: 'Você é um especialista em recrutamento e análise de currículos. Forneça análises objetivas e construtivas em português brasileiro. A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido.',
+        content: 'Você é um especialista em recrutamento e análise de currículos. Forneça análises objetivas e construtivas em português brasileiro. A sua resposta deve ser EXCLUSIVAMENTE um JSON válido conforme o formato solicitado.',
       },
       {
         role: 'user',
@@ -92,7 +92,62 @@ Adicione ao JSON:
 }
 
 export async function generateResumeAI(data: ResumeProfileData): Promise<string> {
-  let prompt = `Você é um redator profissional de currículos e especialista em recrutamento. Crie um currículo altamente otimizado e bem formatado em Markdown para o seguinte candidato:
+  // Determinar se é vaga de tech/engenharia/produto para decidir sobre GitHub
+  const jobTitleLower = (data.jobTitle || '').toLowerCase();
+  const isTechRole = /desenvolv|tech|software|engenharia|frontend|backend|fullstack|mobile|devops|arquitetura|produto|engineer/i.test(jobTitleLower);
+
+  let prompt = `Você é um recrutador especialista no mercado de trabalho brasileiro de início de carreira e triagem automatizada por ATS (Applicant Tracking Systems). Sua tarefa é estruturar e otimizar as informações do usuário em um currículo altamente competitivo para vagas de emprego e agências de estágio (CIEE, IEL, ABRE, Super Estágios).
+
+O currículo gerado DEVE obrigatoriamente respeitar as seguintes regras estruturais para evitar eliminação automática em triagens:
+
+## ARQUITETURA DE SEÇÕES E ORDEM OBRIGATÓRIA:
+
+1. **CABEÇALHO - DADOS DE CONTATO:**
+   - Nome completo
+   - E-mail (texto limpo, SEM sintaxe markdown exposta. Use apenas: email@example.com)
+   - Telefone com DDD (ex: (81) 99509-7377)
+   - Localização (apenas Cidade/Estado)
+   ${isTechRole ? '- LinkedIn\n   - GitHub (apenas para vagas de tecnologia)' : '- LinkedIn\n   - Portfólio ou Behance (se aplicável; omita GitHub)'}
+
+2. **OBJETIVO / VAGA ALVO:**
+   Posicionado logo abaixo do cabeçalho, indicando claramente a área e o nível pretendido.
+   Exemplo: "Objetivo: Estágio em Marketing Digital e E-commerce, com foco em estratégias de crescimento"
+
+3. **RESUMO PROFISSIONAL:**
+   - Máximo 4 linhas
+   - Contextualizar o curso atual, principais interesses, resultados prévios
+   - INCLUIR OBRIGATORIAMENTE a disponibilidade de horário para estágios
+   - Exemplo: "Estudante de Administração com foco em gestão de projetos. Disponível para estágio de 6h diárias no período vespertino."
+
+4. **EXPERIÊNCIAS PROFISSIONAIS (Inclui Voluntariado):**
+   - Listar em ordem cronológica inversa (mais recente primeiro)
+   - Usar bullets descritivos que começam com verbos de ação (Desenvolveu, Implantou, Coordenou, etc)
+   - Manter resultados quantificados e estatísticos fornecidos pelo usuário
+   - SEM reduções ou diluições do impacto
+
+5. **FORMAÇÃO ACADÊMICA:**
+   - Nome do Curso
+   - Instituição
+   - Data de início
+   - Data explícita de "Previsão de Conclusão: Mês/Ano" (MANDATÓRIO para contratos de estágio)
+   - Exemplo: "Administração de Empresas • Universidade Federal de Pernambuco • Previsão de Conclusão: Dezembro de 2027"
+
+6. **COMPETÊNCIAS / HABILIDADES:**
+   - NÃO gere listas verticais longas
+   - Agrupe as competências em categorias horizontais SEPARADAS POR " | "
+   - Exemplo: "Ferramentas de Mídia: Google Ads, Meta Ads | Análise: Excel, Tableau | Soft Skills: Comunicação Assertiva, Trabalho em Equipe"
+
+7. **IDIOMAS:**
+   - Listar idiomas e respectivos níveis de forma sucinta
+   - Exemplo: "Português (Nativo) | Inglês (Intermediário)"
+
+## DIRETRIZES DE FORMATAÇÃO DO TEXTO:
+
+- **DATAS**: NUNCA use formato técnico "AAAA-MM". Use formato brasileiro abreviado: "mar/2025 a dez/2025" ou "ago/2024 - Atual"
+- **CONCISÃO**: Escreva de forma estratégica e densa para garantir que a estrutura caiba em UMA PÁGINA A4
+- **LIMPEZA**: Aplicar .trim() em todas as strings para remover quebras de linha residuais
+
+## DADOS DO CANDIDATO:
 
 NOME COMPLETO: ${data.fullName}
 E-MAIL: ${data.email}
@@ -106,56 +161,67 @@ RESUMO PROFISSIONAL:
 ${data.summary}
 
 EXPERIÊNCIAS PROFISSIONAIS:
-${data.experiences.map((exp, idx) => `
+${data.experiences && data.experiences.length > 0 ? data.experiences.map((exp, idx) => `
 Experiência ${idx + 1}:
 Empresa: ${exp.company}
 Cargo: ${exp.position}
-Período: de ${exp.startDate} a ${exp.current ? 'Atual' : exp.endDate}
+Período: ${exp.startDate} a ${exp.current ? 'Atual' : exp.endDate}
 Descrição das atividades e conquistas:
 ${exp.description}
-`).join('\n')}
+`).join('\n') : 'Nenhuma experiência informada'}
 
 FORMAÇÃO ACADÊMICA:
-${data.education.map((edu, idx) => `
+${data.education && data.education.length > 0 ? data.education.map((edu, idx) => `
 Formação ${idx + 1}:
 Instituição: ${edu.institution}
 Grau/Curso: ${edu.degree} em ${edu.fieldOfStudy}
-Período: de ${edu.startDate} a ${edu.current ? 'Atual' : edu.endDate}
-`).join('\n')}
+Período: ${edu.startDate} a ${edu.current ? 'Atual' : edu.endDate}
+`).join('\n') : 'Nenhuma formação informada'}
 
 HABILIDADES:
-${data.skills.join(', ')}
+${data.skills && data.skills.length > 0 ? data.skills.join(', ') : 'Não informado'}
 
 IDIOMAS:
-${data.languages?.join(', ') || 'Não informado'}
+${data.languages && data.languages.length > 0 ? data.languages.join(', ') : 'Não informado'}
 `;
 
   if (data.jobTitle || data.jobDescription) {
     prompt += `
 
-VAGA ALVO:
+VAGA ALVO - INFORMAÇÕES CRÍTICAS:
 Cargo: ${data.jobTitle || 'Não informado'}
 Descrição/Requisitos da Vaga:
 ${data.jobDescription || 'Não informado'}
 
-ATENÇÃO: Adapte e otimize o currículo especificamente para essa vaga alvo, destacando as experiências, palavras-chave e habilidades que são mais relevantes para o cargo.`;
+ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga alvo, destacando:
+- Experiências e palavras-chave que são mais relevantes para o cargo
+- Habilidades técnicas (hard skills) que exatamente correspondem aos requisitos
+- Se a vaga for de tecnologia, GitHub deve ser destacado; caso contrário, priorize portfólio/Behance
+`;
   }
 
   prompt += `
 
-INSTRUÇÕES DE FORMATAÇÃO:
-1. Retorne APENAS o currículo completo formatado em Markdown profissional. Não inclua observações, introduções ou explicações antes ou depois.
-2. Utilize cabeçalhos claros (H1 para o nome, H2 para as seções principais).
-3. Use tópicos (bullet points) nas experiências para descrever as realizações de forma objetiva, começando por verbos de ação e destacando conquistas.
-4. Mantenha um layout limpo, elegante e profissional.
-5. Remova seções vazias ou não informadas.`;
+## INSTRUÇÕES FINAIS DE FORMATAÇÃO:
+
+1. Retorne APENAS o currículo completo formatado em Markdown profissional. Nada de observações, blocos de código ou explicações.
+2. Utilize cabeçalhos claros:
+   - # para o NOME DO CANDIDATO no topo
+   - ## para as seções principais (OBJETIVO, EXPERIÊNCIAS, FORMAÇÃO, etc)
+   - ### para subsections se necessário
+3. Use tópicos (bullet points •) nas experiências para descrever conquistas, começando com verbos de ação
+4. Mantenha layout limpo, elegante e profissional
+5. Remova seções vazias ou não informadas
+6. CRÍTICO: Limpar TODA e QUALQUER sintaxe Markdown exposta (ex: [email@gmail.com](mailto:email@gmail.com) deve ser apenas email@gmail.com)
+7. Aplicar .trim() em strings finais para eliminar quebras de linha residuais
+8. Garantir que todo o conteúdo caiba em UMA página A4`;
 
   const response = await openai.chat.completions.create({
     model: 'llama-3.3-70b-versatile',
     messages: [
       {
         role: 'system',
-        content: 'Você é um especialista em recrutamento. Crie currículos otimizados e profissionais em português brasileiro. Retorne exclusivamente o conteúdo em Markdown, sem blocos de código markdown (sem ```markdown ... ```), apenas o texto cru.',
+        content: 'Você é um especialista em recrutamento e ATS. Crie currículos otimizados, profissionais e adequados ao mercado brasileiro de estágios em português brasileiro. Retorne EXCLUSIVAMENTE o conteúdo em Markdown, sem comentários ou blocos de código. Siga rigorosamente as regras de estrutura, formatação de datas em português, agrupamento horizontal de habilidades e inclusão obrigatória de previsão de conclusão e disponibilidade de horário.',
       },
       {
         role: 'user',
@@ -171,7 +237,11 @@ INSTRUÇÕES DE FORMATAÇÃO:
     throw new Error('Nenhuma resposta retornada da OpenAI para o gerador de currículo');
   }
 
-  return content;
+  // Limpar markdown exposto e trim
+  return content
+    .replace(/\[([^\]]+)\]\(mailto:([^\)]+)\)/g, '$1') // Remove markdown de email
+    .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '$1') // Remove outros markdown de links inline
+    .trim();
 }
 
 export async function generateNextInterviewQuestionAI(
@@ -183,10 +253,10 @@ export async function generateNextInterviewQuestionAI(
   companyName?: string | null
 ): Promise<string> {
   const interviewerTones: Record<string, string> = {
-    tech: 'Você é um entrevistador puramente técnico, focado em hard skills, arquitetura de sistemas, conceitos fundamentais e resolução de problemas práticos. Faça perguntas diretas e desafie as decisões técnicas do candidato.',
-    behavioral: 'Você é um entrevistador de Recursos Humanos focado em soft skills, aspectos comportamentais, liderança, comunicação e adequação cultural. Use metodologias como a técnica STAR (Situação, Tarefa, Ação, Resultado) para avaliar respostas anteriores.',
-    hard: 'Você é um entrevistador extremamente exigente, incisivo e direto. Você questiona profundamente as respostas do candidato, pressionando-o para testar sua capacidade de raciocinar sob estresse e resolver dilemas complexos.',
-    friendly: 'Você é um entrevistador caloroso, amigável e empático. Seu objetivo é fazer com que o candidato se sinta confortável, promovendo um diálogo fluido e construtivo, mas sem perder o foco na avaliação profissional.',
+    tech: 'Você é um entrevistador puramente técnico, focado em hard skills, arquitetura de sistemas, conceitos fundamentais e resolução de problemas práticos. Faça perguntas diretas e desafiadoras.',
+    behavioral: 'Você é um entrevistador de Recursos Humanos focado em soft skills, aspectos comportamentais, liderança, comunicação e adequação cultural. Use metodologias como a técnica STAR.',
+    hard: 'Você é um entrevistador extremamente exigente, incisivo e direto. Você questiona profundamente as respostas do candidato, pressionando-o para testar sua capacidade de raciocinar sob pressão.',
+    friendly: 'Você é um entrevistador caloroso, amigável e empático. Seu objetivo é fazer com que o candidato se sinta confortável, promovendo um diálogo fluido e construtivo, mas sem perder rigor profissional.',
   };
 
   const toneInstruction = interviewerTones[interviewerType] || interviewerTones.friendly;
@@ -202,7 +272,7 @@ INFORMAÇÕES SOBRE O CANDIDATO:
 - Biografia / Resumo Profissional: ${candidateProfile.bio || 'Não informado'}
 - LinkedIn: ${candidateProfile.linkedin_url || 'Não informado'}
 
-Aja como um entrevistador que leu o currículo do candidato e já conhece esses dados básicos. Use-os de forma profissional nas suas interações (ex: "Vi aqui no seu perfil que você estuda X...").`;
+Aja como um entrevistador que leu o currículo do candidato e já conhece esses dados básicos. Use-os de forma profissional nas suas interações.`;
   }
 
   let companyInfo = '';
@@ -210,7 +280,7 @@ Aja como um entrevistador que leu o currículo do candidato e já conhece esses 
     companyInfo = `
 EMPRESA/AGÊNCIA DA VAGA:
 - Esta entrevista simula um processo seletivo para a empresa/agência: ${companyName}.
-Direcione o contexto das suas falas e perguntas para essa empresa/agência específica, fazendo o candidato se sentir em uma entrevista real para ela.`;
+Direcione o contexto das suas falas e perguntas para essa empresa/agência específica.`;
   }
 
   const systemPrompt = `Você é um entrevistador profissional experiente conduzindo uma simulação de entrevista de emprego realista.
@@ -273,7 +343,7 @@ export async function generateInterviewFeedbackAI(
 ): Promise<SimulatorFeedback> {
   let profileInfo = '';
   if (candidateProfile) {
-    profileInfo = `\nCandidato: ${candidateProfile.full_name || 'Não informado'} (Estudante de ${candidateProfile.course || 'Não informado'} na ${candidateProfile.university || 'Não informada'} - ${candidateProfile.period || 'Não informado'}).`;
+    profileInfo = `\nCandidato: ${candidateProfile.full_name || 'Não informado'} (Estudante de ${candidateProfile.course || 'Não informado'} na ${candidateProfile.university || 'Não informada'})`;
   }
 
   let companyInfo = '';
@@ -290,11 +360,11 @@ Descrição/Requisitos da vaga: ${jobDescription || 'Não informado'}
 Tipo de Entrevista conduzida: ${interviewerType}
 
 Instruções para o Feedback:
-1. Avalie o desempenho geral das respostas do candidato (conteúdo, embasamento técnico e comportamental). Avalie especificamente a clareza da vaga ou objetivo profissional demonstrado. Se houver descrição da vaga/empresa fornecida, analise de forma explícita e detalhada se as respostas e o perfil do candidato se adequam às necessidades e expectativas dessa vaga e empresa/agência.
+1. Avalie o desempenho geral das respostas do candidato (conteúdo, embasamento técnico e comportamental). Avalie especificamente a clareza da vaga ou objetivo profissional demonstrado.
 2. Estipule uma pontuação geral (score) de 0 a 100.
 3. Identifique pelo menos 3 Pontos Fortes demonstrados nas respostas.
 4. Identifique pelo menos 3 Áreas de Melhoria de forma construtiva.
-5. Dê dicas acionáveis e práticas de estudo ou comportamento para entrevistas reais. Recomende explicitamente a plataforma de mentoria gratuita MENVO (https://menvo.com.br) para que o candidato aprimore os pontos fracos.
+5. Dê dicas acionáveis e práticas de estudo ou comportamento para entrevistas reais. Recomende explicitamente a plataforma de mentoria gratuita MENVO (https://menvo.com.br) para que o candidato continue melhorando.
 
 A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte formato:
 {
@@ -346,8 +416,8 @@ export async function generateRecessoCommentAI(data: {
   const { startDate, endDate, salario, horasDiarias, diasSemana, diasRecesso, valorRecesso } = data;
 
   const systemPrompt = `Você é um especialista em legislação trabalhista de estágio brasileira (Lei nº 11.788/2008). 
-Analise os dados do cálculo de recesso fornecidos pelo usuário e dê um parecer ou conselho prático sobre seus direitos, se o cálculo está de acordo com a lei, o que ele precisa negociar com o contratante, etc.
-Responda em formato de texto limpo em português do Brasil de forma extremamente amigável, direta e profissional. Não use formatação markdown excessiva. Limite a resposta a no máximo 4 parágrafos curtos.`;
+Analise os dados do cálculo de recesso fornecidos pelo usuário e dê um parecer ou conselho prático sobre seus direitos, se o cálculo está de acordo com a lei, o que ele precisa negociar com a empresa e dicas de como proceder.
+Responda em formato de texto limpo em português do Brasil de forma extremamente amigável, direta e profissional. Não use formatação markdown excessiva. Limite a resposta a no máximo 4 parágrafos.`;
 
   const userPrompt = `Dados do Estágio:
 - Data de início: ${startDate}
@@ -384,5 +454,3 @@ Responda em formato de texto limpo em português do Brasil de forma extremamente
 
   return cleanText(contentResponse.trim());
 }
-
-
