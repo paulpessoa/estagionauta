@@ -87,27 +87,14 @@ const NavLinks = ({
         >
           Simulador de Entrevistas
         </Link>
-        {(!user || !profile) ? (
+        {user && profile && !(isAdmin || isModerator) && (
           <Link
-            to="/precos"
-            className="transition-colors hover:text-foreground/80 text-foreground/60"
+            to="/convide-amigos"
+            className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
             onClick={onLinkClick}
           >
-            Planos
+            <Gift className="h-4 w-4 text-pink-600" /> Indicar Amigos
           </Link>
-        ) : (
-          !(isAdmin || isModerator) && (
-            <>
-
-              <Link
-                to="/convide-amigos"
-                className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
-                onClick={onLinkClick}
-              >
-                <Gift className="h-4 w-4 text-pink-600" /> Indicar Amigos
-              </Link>
-            </>
-          )
         )}
       </div>
       <AuthRequiredModal
@@ -356,7 +343,9 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <div className="flex flex-col space-y-6 pt-6">
-                <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
+                {(!user || !profile) && (
+                  <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
+                )}
 
                 {!isSupabaseAvailable && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
@@ -424,20 +413,20 @@ export function Header() {
                         </Link>
                       </Button>
 
+                      {/* Simulador de Entrevistas (visível para todos) */}
+                      <Button variant="ghost" asChild className="justify-start">
+                        <Link
+                          to="/simulador-entrevistas"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Monitor className="mr-2 h-4 w-4" />
+                          Simulador de Entrevistas
+                        </Link>
+                      </Button>
 
-                      {/* Se for usuário comum, mostramos Minhas Análises e as ferramentas estudantis */}
+                      {/* Se for usuário comum, mostramos ferramentas estudantis */}
                       {!(isAdmin || isModerator) && (
                         <>
-                          <Button variant="ghost" asChild className="justify-start">
-                            <Link
-                              to="/minhas-analises"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <FileText className="mr-2 h-4 w-4" />
-                              Minhas Análises
-                            </Link>
-                          </Button>
-
                           <Button
                             variant="ghost"
                             asChild
@@ -451,6 +440,7 @@ export function Header() {
                               Gerador de Currículos
                             </Link>
                           </Button>
+
                           <Button
                             variant="ghost"
                             asChild
@@ -464,8 +454,29 @@ export function Header() {
                               Candidaturas
                             </Link>
                           </Button>
+
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link
+                              to="/minhas-analises"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <FileText className="mr-2 h-4 w-4" />
+                              Minhas Análises
+                            </Link>
+                          </Button>
                         </>
                       )}
+
+                      {/* Lista de Agências (visível para todos) */}
+                      <Button variant="ghost" asChild className="justify-start">
+                        <Link
+                          to="/agencias"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          <Building2 className="mr-2 h-4 w-4" />
+                          Lista de Agências
+                        </Link>
+                      </Button>
 
                       {/* Se for Admin/Moderator, mostramos Painel Administrativo */}
                       {(isAdmin || isModerator) && (
@@ -484,7 +495,20 @@ export function Header() {
                         </Button>
                       )}
 
-                      {/* Se for usuário comum plano free, comprar créditos */}
+                      {/* Indicação de amigos (somente estudantes) */}
+                      {!(isAdmin || isModerator) && (
+                        <Button variant="ghost" asChild className="justify-start">
+                          <Link
+                            to="/convide-amigos"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Gift className="mr-2 h-4 w-4 text-pink-600" />
+                            Indicar Amigos
+                          </Link>
+                        </Button>
+                      )}
+
+                      {/* Comprar créditos (estudante free) */}
                       {!(isAdmin || isModerator) && profile.subscription_status === "free" && (
                         <Button
                           variant="ghost"
@@ -500,6 +524,8 @@ export function Header() {
                           </Link>
                         </Button>
                       )}
+
+                      {/* Recompensas (somente estudantes) */}
                       {!(isAdmin || isModerator) && (
                         <Button
                           variant="ghost"
