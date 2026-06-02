@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://www.estagionauta.com.br/sitemap.xml
+Sitemap: https://estagionauta.com.br/sitemap.xml
