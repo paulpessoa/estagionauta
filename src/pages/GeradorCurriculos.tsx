@@ -740,7 +740,7 @@ export default function GeradorCurriculos() {
                             onClick={handleAddExperience}
                             className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 flex items-center gap-1"
                           >
-                            <Plus className="h-4 w-4" /> Adicionar Experiência
+                            <Plus className="h-4 w-4" /> Adicionar
                           </Button>
                         </div>
 
@@ -904,7 +904,7 @@ export default function GeradorCurriculos() {
                             onClick={handleAddEducation}
                             className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 flex items-center gap-1"
                           >
-                            <Plus className="h-4 w-4" /> Adicionar Formação
+                            <Plus className="h-4 w-4" /> Adicionar
                           </Button>
                         </div>
 
@@ -1083,7 +1083,7 @@ export default function GeradorCurriculos() {
                                 variant="outline"
                                 className="text-indigo-600 border-indigo-200"
                               >
-                                Adicionar
+                                <Plus className="h-4 w-4" /> Adicionar
                               </Button>
                             </div>
 
@@ -1133,7 +1133,7 @@ export default function GeradorCurriculos() {
                                 variant="outline"
                                 className="text-indigo-600 border-indigo-200"
                               >
-                                Adicionar
+                                <Plus className="h-4 w-4" /> Adicionar
                               </Button>
                             </div>
 
@@ -1163,12 +1163,6 @@ export default function GeradorCurriculos() {
 
                         {/* TARGET JOB INFO */}
                         <div className="space-y-4 pt-4 border-t">
-                          <div className="flex gap-2 items-center">
-                            <Sparkles className="h-5 w-5 text-indigo-500 animate-pulse" />
-                            <h3 className="text-lg font-bold">
-                              Otimização Inteligente para Vaga Alvo
-                            </h3>
-                          </div>
                           <p className="text-sm text-gray-500">
                             Ao fornecer o cargo e a descrição da vaga de
                             interesse, a Inteligência Artificial irá reescrever
@@ -1233,7 +1227,7 @@ export default function GeradorCurriculos() {
                             ) : (
                               <>
                                 <Wand2 className="h-4 w-4" />
-                                Gerar Currículo Otimizado (1 Crédito)
+                                Gerar Currículo Otimizado
                               </>
                             )}
                           </Button>

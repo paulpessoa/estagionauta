@@ -64,11 +64,11 @@ export default function ReviewModal() {
   return (
     <>
       {/* Floating feedback button */}
-     <button
+      <button
         onClick={handleOpen}
         aria-label="Deixar sugestão"
         className="
-          fixed bottom-4 left-1/2 transform -translate-x-1/2
+          fixed bottom-4 left-24 transform -translate-x-1/2
           bg-gradient-to-r from-purple-500 to-pink-500 
           hover:from-purple-600 hover:to-pink-600
           dark:from-purple-600 dark:to-pink-600
@@ -91,7 +91,7 @@ export default function ReviewModal() {
           <DialogHeader>
             <DialogTitle className='text-center'>Deixe sua avaliação</DialogTitle>
             <p className="text-center text-sm text-muted-foreground mt-2 mb-4">
-              Somos muito gratos pela sua opinião! <br/> Isso nos ajuda muito a melhorar e crescer. <br/> Valeu demais!
+              Somos muito gratos pela sua opinião! <br /> Isso nos ajuda muito a melhorar e crescer. <br /> Valeu demais!
             </p>
           </DialogHeader>
           <div className="flex space-x-2 justify-center mb-4">
@@ -99,9 +99,8 @@ export default function ReviewModal() {
               <Star
                 key={star}
                 size={32}
-                className={`cursor-pointer transition-colors ${
-                  (hoverRating || rating) >= star ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                }`}
+                className={`cursor-pointer transition-colors ${(hoverRating || rating) >= star ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                  }`}
                 onClick={() => handleStarClick(star)}
                 onMouseEnter={() => setHoverRating(star)}
                 onMouseLeave={() => setHoverRating(0)}
@@ -125,23 +124,23 @@ export default function ReviewModal() {
           </div>
           <DialogFooter className="mt-6">
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                <Button 
-                  variant="outline" 
-                  onClick={handleClose} 
-                  disabled={loading}
-                  className="flex-1 py-2.5"
-                >
-                  Fechar
-                </Button>
-                <Button 
-                onClick={handleSubmitFeedback} 
-                  disabled={loading} 
-                  variant="default"
-                  className="flex-1 py-2.5"
-                >
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={loading}
+                className="flex-1 py-2.5"
+              >
+                Fechar
+              </Button>
+              <Button
+                onClick={handleSubmitFeedback}
+                disabled={loading}
+                variant="default"
+                className="flex-1 py-2.5"
+              >
                 {loading ? 'Enviando...' : 'Enviar Feedback'}
-                </Button>
-              </div>
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

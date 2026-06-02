@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines, Paperclip } from 'lucide-react';
+import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines, Paperclip, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiClient } from '@/lib/apiClient';
@@ -24,10 +24,72 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [viewportOffset, setViewportOffset] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const isWidgetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
+
+  const expandCapsule = () => {
+    setIsExpanded(true);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  const startCollapseTimer = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      if (!isListening) {
+        setIsExpanded(false);
+      }
+    }, 5000);
+  };
+
+  const handleCapsuleClick = (e: React.MouseEvent) => {
+    if (!isWidgetOpen) {
+      if (!isExpanded) {
+        e.stopPropagation();
+        setIsExpanded(true);
+        startCollapseTimer();
+      } else {
+        handleToggle();
+      }
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!window.visualViewport) return;
+
+    const handleResize = () => {
+      const vv = window.visualViewport;
+      if (!vv) return;
+      
+      const offset = window.innerHeight - vv.height;
+      setViewportOffset(offset > 0 ? offset : 0);
+    };
+
+    window.visualViewport.addEventListener('resize', handleResize);
+    window.visualViewport.addEventListener('scroll', handleResize);
+    
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('scroll', handleResize);
+    };
+  }, []);
 
   const handleAttachmentClick = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -42,6 +104,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     if (file) {
       toast.success(`Arquivo "${file.name}" anexado! Envie a mensagem para o Rover analisá-lo.`);
       setInputValue((prev) => `${prev} [Arquivo: ${file.name}]`.trim());
+      e.target.value = ''; // Reset file input value to allow selecting same file again
     }
   };
 
@@ -81,7 +144,13 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
         onClose?.();
       }
     } else {
-      setInternalIsOpen((prev) => !prev);
+      setInternalIsOpen((prev) => {
+        const next = !prev;
+        if (!next) {
+          setIsExpanded(false);
+        }
+        return next;
+      });
     }
   };
 
@@ -97,6 +166,11 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
       return;
     }
 
+    // Auto-open drawer when starting to speak so the user sees the chat history
+    if (!isWidgetOpen) {
+      handleToggle();
+    }
+
     const recognition = new SpeechRecognition();
     recognition.lang = 'pt-BR';
     recognition.interimResults = false;
@@ -104,13 +178,13 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
     recognition.onstart = () => {
       setIsListening(true);
-      toast.info("Ouvindo... Fale agora.");
     };
 
     recognition.onresult = (event: any) => {
       const speechResult = event.results[0][0].transcript;
-      setInputValue(speechResult);
-      toast.success("Mensagem capturada com sucesso!");
+      if (speechResult.trim()) {
+        handleSendMessage(speechResult);
+      }
     };
 
     recognition.onerror = (event: any) => {
@@ -194,7 +268,10 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   };
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div 
+      className="fixed z-50 flex flex-col items-end right-4 left-4 sm:left-auto sm:right-6 transition-all duration-300"
+      style={{ bottom: `calc(1.5rem + ${viewportOffset}px)` }}
+    >
       <AnimatePresence>
         {/* Floating Chat Widget Popup */}
         {isWidgetOpen && (
@@ -203,7 +280,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ duration: 0.2, ease: 'easeOut' }}
-            className="w-[360px] sm:w-[400px] h-[520px] sm:h-[580px] max-h-[70vh] bg-background border border-muted shadow-2xl rounded-2xl overflow-hidden flex flex-col mb-4 z-50"
+            className="w-[calc(100vw-32px)] sm:w-[360px] h-[520px] sm:h-[580px] max-h-[70vh] bg-background border border-muted shadow-2xl rounded-xl overflow-hidden flex flex-col mb-4 z-50"
           >
             {/* Widget Header */}
             <div className="bg-gradient-to-br from-violet-600/10 via-purple-500/5 to-orange-500/5 dark:from-violet-950/20 dark:via-purple-950/10 dark:to-orange-950/10 border-b border-muted/50 p-4 flex items-center justify-between">
@@ -323,7 +400,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                           )}
                         </div>
                         <div
-                          className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
+                          className={`p-3 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
                             ? 'bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/10 rounded-tr-none'
                             : 'bg-muted/60 dark:bg-muted/30 border border-muted/50 rounded-tl-none text-foreground'
                             }`}
@@ -338,7 +415,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                         <div className="h-7 w-7 rounded-full bg-muted border border-muted/80 flex items-center justify-center shrink-0 overflow-hidden">
                           <img src="/logo.png" className="h-full w-full object-contain rounded-full" />
                         </div>
-                        <div className="p-3 bg-muted/60 border border-muted/50 rounded-2xl rounded-tl-none flex items-center gap-1.5 h-9">
+                        <div className="p-3 bg-muted/60 border border-muted/50 rounded-xl rounded-tl-none flex items-center gap-1.5 h-9">
                           <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
                           <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
                           <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -394,12 +471,15 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
       {/* Floating Capsule (Acts as Trigger when closed, and as Input when open) */}
       <div
-        className={`h-14 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 shadow-xl rounded-full p-2 pl-3 pr-2 flex items-center gap-2 transition-all duration-300 relative before:absolute before:-inset-0.5 before:bg-gradient-to-r before:from-violet-500/20 before:via-purple-500/20 before:to-orange-500/20 before:rounded-full before:blur-md before:opacity-75 before:-z-10 ${
-          isWidgetOpen ? 'w-[360px] sm:w-[400px]' : 'cursor-pointer hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]'
-        }`}
-        onClick={() => {
-          if (!isWidgetOpen) handleToggle();
-        }}
+        onMouseEnter={expandCapsule}
+        onMouseLeave={startCollapseTimer}
+        onClick={handleCapsuleClick}
+        className={`h-14 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 shadow-xl rounded-full p-2 flex items-center transition-all duration-300 relative before:absolute before:-inset-0.5 before:bg-gradient-to-r before:from-violet-500/20 before:via-purple-500/20 before:to-orange-500/20 before:rounded-full before:blur-md before:opacity-75 before:-z-10 ${isWidgetOpen
+          ? 'w-[calc(100vw-32px)] sm:w-[360px] pl-3 pr-2 gap-2'
+          : (isExpanded || isListening)
+            ? 'w-[calc(100vw-32px)] sm:w-[360px] pl-3 pr-2 gap-2 cursor-pointer shadow-2xl scale-[1.02]'
+            : 'w-14 justify-center cursor-pointer hover:shadow-2xl hover:scale-[1.05]'
+          }`}
       >
         {isWidgetOpen ? (
           <>
@@ -428,19 +508,29 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                 disabled={isLoading}
                 autoFocus
               />
-              {inputValue.trim() === '' ? (
+              {isListening ? (
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
                     startListening();
                   }}
-                  className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 ${
-                    isListening ? 'animate-pulse' : ''
-                  }`}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-red-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+                >
+                  <Square className="w-3.5 h-3.5 fill-white" />
+                  STOP
+                </button>
+              ) : inputValue.trim() === '' ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startListening();
+                  }}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
                 >
                   <AudioLines className="w-3.5 h-3.5" />
-                  {isListening ? 'Ouvindo...' : 'Falar'}
+                  Falar
                 </button>
               ) : (
                 <button
@@ -456,27 +546,65 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
           </>
         ) : (
           <>
+            {/* Radar Pulse Effect */}
+            {!isExpanded && !isListening && (
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-500 to-indigo-500 opacity-30 blur-sm animate-ping -z-10" />
+            )}
+
             {/* Capsule Closed Trigger */}
-            <img
+            <motion.img
               src="/logo.png"
               alt="Rover Mascot"
               className="w-10 h-10 rounded-full object-contain shrink-0 border border-violet-100/50"
+              animate={(!isExpanded && !isListening) ? {
+                rotate: [0, -8, 8, -8, 8, 0],
+                scale: [1, 1.05, 1.05, 1.05, 1.05, 1],
+              } : {}}
+              transition={(!isExpanded && !isListening) ? {
+                duration: 1.2,
+                repeat: Infinity,
+                repeatDelay: 5,
+                ease: "easeInOut",
+              } : {}}
             />
-            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium mr-2 select-none">
-              Pergunte ao Rover
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                startListening();
-              }}
-              className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 ${
-                isListening ? 'animate-pulse' : ''
-              }`}
-            >
-              <AudioLines className="w-3.5 h-3.5" />
-              {isListening ? 'Ouvindo...' : 'Falar'}
-            </button>
+            <AnimatePresence>
+              {(isExpanded || isListening) && (
+                <motion.div
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="flex items-center justify-between overflow-hidden flex-grow pl-1"
+                >
+                  <span className="text-gray-500 dark:text-gray-400 text-sm font-medium select-none whitespace-nowrap">
+                    Pergunte ao Rover
+                  </span>
+                  {isListening ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startListening();
+                      }}
+                      className="flex items-center gap-1.5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-red-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 animate-pulse"
+                    >
+                      <Square className="w-3.5 h-3.5 fill-white" />
+                      STOP
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startListening();
+                      }}
+                      className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                    >
+                      <AudioLines className="w-3.5 h-3.5" />
+                      Falar
+                    </button>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </>
         )}
       </div>

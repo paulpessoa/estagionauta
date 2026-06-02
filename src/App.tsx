@@ -39,7 +39,7 @@ function AppLayout() {
         </Suspense>
       </main>
       <Footer />
-      <ReviewModal />
+      {/* <ReviewModal /> */}
       <CookieConsent />
 
       {/* Floating Rover Widget - Only visible for authenticated users */}
