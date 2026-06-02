@@ -162,7 +162,7 @@ export default function Creditos() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Coluna 1 & 2: Comprar Créditos */}
+          {/* Coluna 1 & 2: Créditos */}
           <div className="lg:col-span-2 space-y-6">
             <Card className="pt-6">
               <CardContent>
@@ -195,7 +195,7 @@ export default function Creditos() {
 
                         <div>
                           <Separator className="my-4" />
-                          
+
                           {pkg.price > 0 ? (
                             <div className="mb-4">
                               <div className="text-xs line-through text-muted-foreground font-medium">

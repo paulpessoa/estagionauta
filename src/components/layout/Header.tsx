@@ -98,13 +98,7 @@ const NavLinks = ({
         ) : (
           !(isAdmin || isModerator) && (
             <>
-              <Link
-                to="/recompensas"
-                className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
-                onClick={onLinkClick}
-              >
-                <Coins className="h-4 w-4 text-violet-600 animate-pulse" /> Recompensas
-              </Link>
+
               <Link
                 to="/convide-amigos"
                 className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
@@ -379,20 +373,11 @@ export function Header() {
                   <div className="flex flex-col space-y-4 pt-4 border-t">
                     {/* Ícones de créditos */}
 
-                    {!(isAdmin || isModerator) && (
-                      <Link
-                        to="/creditos"
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="flex items-center space-x-2 hover:bg-muted/50 p-2 rounded-lg transition-colors w-full"
-                      >
-                        <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                        <span className="text-sm text-foreground">
-                          Meus Créditos
-                        </span>
-                      </Link>
-                    )}
-
-                    <div className="flex items-center space-x-3">
+                    <Link
+                      to="/perfil"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center space-x-3 hover:opacity-85 transition-opacity"
+                    >
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           src={
@@ -426,7 +411,7 @@ export function Header() {
                           </Badge>
                         )}
                       </div>
-                    </div>
+                    </Link>
 
                     <div className="flex flex-col space-y-2">
                       <Button variant="ghost" asChild className="justify-start">
@@ -438,6 +423,7 @@ export function Header() {
                           Dashboard
                         </Link>
                       </Button>
+
 
                       {/* Se for usuário comum, mostramos Minhas Análises e as ferramentas estudantis */}
                       {!(isAdmin || isModerator) && (
@@ -451,19 +437,7 @@ export function Header() {
                               Minhas Análises
                             </Link>
                           </Button>
-                          <Button
-                            variant="ghost"
-                            asChild
-                            className="justify-start"
-                          >
-                            <Link
-                              to="/simulador-entrevistas"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <BarChart3 className="mr-2 h-4 w-4" />
-                              Simulador de Entrevistas
-                            </Link>
-                          </Button>
+
                           <Button
                             variant="ghost"
                             asChild
@@ -522,19 +496,26 @@ export function Header() {
                             onClick={() => setMobileMenuOpen(false)}
                           >
                             <CreditCard className="mr-2 h-4 w-4" />
-                            Comprar Créditos
+                            Créditos
                           </Link>
                         </Button>
                       )}
-                      <Button variant="ghost" asChild className="justify-start">
-                        <Link
-                          to="/perfil"
-                          onClick={() => setMobileMenuOpen(false)}
+                      {!(isAdmin || isModerator) && (
+                        <Button
+                          variant="ghost"
+                          asChild
+                          className="justify-start"
                         >
-                          <User className="mr-2 h-4 w-4" />
-                          Meu Perfil
-                        </Link>
-                      </Button>
+                          <Link
+                            to="/recompensas"
+                            onClick={() => setMobileMenuOpen(false)}
+                          >
+                            <Coins className="mr-2 h-4 w-4 text-violet-600 animate-pulse" />
+                            Recompensas
+                          </Link>
+                        </Button>
+                      )}
+                      <DropdownMenuSeparator />
                       <Button variant="ghost" asChild className="justify-start">
                         <Link
                           to="/configuracoes"
@@ -586,28 +567,34 @@ export function Header() {
           {user && profile ? (
             <div className="hidden md:flex items-center space-x-2">
 
+              <Link to="/perfil" className="hover:opacity-85 transition-opacity">
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={
+                      user?.user_metadata?.picture ||
+                      user?.identities?.[0]?.identity_data?.picture ||
+                      user?.identities?.[1]?.identity_data?.picture ||
+                      profile?.avatar_url ||
+                      undefined
+                    }
+                    alt={profile.full_name ?? "Imagem do usuário"}
+                  />
+                  <AvatarFallback>
+                    {profile.full_name?.charAt(0)?.toUpperCase() ||
+                      profile.email.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+              </Link>
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="ghost"
-                    className="relative h-8 w-8 rounded-full"
+                    size="icon"
+                    className="h-8 w-8 p-0 hover:bg-muted rounded-full"
                   >
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={
-                          user?.user_metadata?.picture ||
-                          user?.identities?.[0]?.identity_data?.picture ||
-                          user?.identities?.[1]?.identity_data?.picture ||
-                          profile?.avatar_url ||
-                          undefined
-                        }
-                        alt={profile.full_name ?? "Imagem do usuário"}
-                      />
-                      <AvatarFallback>
-                        {profile.full_name?.charAt(0)?.toUpperCase() ||
-                          profile.email.charAt(0).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
+                    <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                    <span className="sr-only">Menu do usuário</span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -640,7 +627,7 @@ export function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-
+                  <DropdownMenuSeparator />
                   {/* Se for usuário comum, mostramos Minhas Análises e Créditos simplificados */}
                   {!(isAdmin || isModerator) && (
                     <>
@@ -650,25 +637,12 @@ export function Header() {
                           Minhas Análises
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/creditos">
-                          <Star className="mr-2 h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          Meus Créditos
-                        </Link>
-                      </DropdownMenuItem>
                     </>
                   )}
 
                   {/* Se for usuário comum, mostramos as ferramentas estudantis */}
                   {!(isAdmin || isModerator) && (
                     <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/simulador-entrevistas">
-                          <BarChart3 className="mr-2 h-4 w-4" />
-                          Simulador de Entrevistas
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/gerador-curriculos">
                           <FileText className="mr-2 h-4 w-4" />
@@ -702,18 +676,19 @@ export function Header() {
                     <DropdownMenuItem asChild>
                       <Link to="/precos">
                         <CreditCard className="mr-2 h-4 w-4" />
-                        Comprar Créditos
+                        Créditos
                       </Link>
                     </DropdownMenuItem>
                   )}
-
+                  {!(isAdmin || isModerator) && (
+                    <DropdownMenuItem asChild>
+                      <Link to="/recompensas">
+                        <Coins className="mr-2 h-4 w-4 text-violet-600 animate-pulse" />
+                        Recompensas
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to="/perfil">
-                      <User className="mr-2 h-4 w-4" />
-                      Meu Perfil
-                    </Link>
-                  </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to="/configuracoes">
                       <Settings className="mr-2 h-4 w-4" />

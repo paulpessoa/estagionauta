@@ -34,6 +34,7 @@ const TermosDeUso = lazy(() => import("./pages/TermosDeUso"))
 const Status = lazy(() => import("./pages/Status"))
 const ReferralRedirect = lazy(() => import("./pages/ReferralRedirect"))
 const Recompensas = lazy(() => import("./pages/Recompensas"))
+const Feedback = lazy(() => import("./pages/Feedback"))
 
 // Componentes protegidos
 const ProtectedDashboard = () =>
@@ -117,6 +118,7 @@ export const routes = [
   { path: "/admin/usuarios", component: ProtectedAdmin },
   { path: "/admin/history", component: ProtectedAdmin },
   { path: "/admin/logs", component: ProtectedAdmin },
+  { path: "/admin/importador", component: ProtectedAdmin },
 
   { path: "/cadastro-agencia", component: CadastroAgencia },
 
@@ -151,5 +153,6 @@ export const routes = [
   { path: "/status", component: Status },
   { path: "/r/:referralCode", component: ReferralRedirect },
   { path: "/curriculo/:slug", component: Curriculo },
+  { path: "/feedback", component: Feedback },
   { path: "*", component: NotFound }
 ]

@@ -29,6 +29,7 @@ interface Analysis {
   status: string
   created_at: string
   analysis_data: Record<string, unknown>
+  file_url?: string
 }
 
 export default function MinhasAnalises() {
@@ -204,6 +205,16 @@ export default function MinhasAnalises() {
                     {analysis.status === 'failed' && (
                       <Button size="sm" variant="outline" className="flex-1">
                         Tentar Novamente
+                      </Button>
+                    )}
+                    {analysis.file_url && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => window.open(analysis.file_url, '_blank')}
+                        title="Baixar Currículo Original"
+                      >
+                        <Download className="w-4 h-4" />
                       </Button>
                     )}
                     <Button 

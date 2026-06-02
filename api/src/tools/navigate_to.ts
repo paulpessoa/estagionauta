@@ -29,7 +29,7 @@ export async function runNavigateTo(userId: string, args: { page: string }) {
     analise_curriculo: { path: '/analise-curriculo', label: 'Análise de Currículo por IA' },
     calculadora: { path: '/calculadora', label: 'Calculadora de Recesso' },
     indicar_amigos: { path: '/convide-amigos', label: 'Indicar Amigos / Recompensas' },
-    precos: { path: '/precos', label: 'Comprar Créditos / Preços' }
+    precos: { path: '/precos', label: 'Créditos / Preços' }
   };
 
   const matched = pagesMap[page];

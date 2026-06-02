@@ -45,7 +45,7 @@ export function redactPII(text: string): string {
   const cpfRegex = /\b\d{3}\.?\d{3}\.?\d{3}-?\d{2}\b/g;
   // Redigir número de cartão de crédito (ex: 4111-2222-3333-4444 ou 16 dígitos)
   const cardRegex = /\b\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s]?\d{4}\b/g;
-  
+
   return text
     .replace(cpfRegex, '[CPF REDIGIDO]')
     .replace(cardRegex, '[CARTÃO REDIGIDO]');
@@ -100,7 +100,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
     // 1.5. Prompt Injection Filter
     if (detectPromptInjection(message)) {
       await logAbuse(user.id, ipAddress, 'prompt_injection', `Mensagem suspeita bloqueada: "${message.substring(0, 200)}"`);
-      return c.json({ 
+      return c.json({
         error: 'Mensagem bloqueada por questões de segurança (detecção de comportamento ou comando suspeito).',
         reason: 'prompt_injection'
       }, 400);
@@ -112,7 +112,7 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
         const modRes = await openaiClient.moderations.create({ input: message });
         if (modRes.results[0]?.flagged) {
           await logAbuse(user.id, ipAddress, 'content_moderation', `Mensagem ofensiva bloqueada: "${message.substring(0, 200)}"`);
-          return c.json({ 
+          return c.json({
             error: 'Sua mensagem viola as nossas diretrizes de comunidade. Por favor, seja respeitoso(a).',
             reason: 'content_moderation'
           }, 400);
@@ -176,7 +176,7 @@ Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo 
 6. Análise de Currículo por IA: A página "Análise de Currículo" (caminho: '/analise-curriculo') serve para enviar um currículo e obter uma nota e feedback estruturado da IA (custa 3 créditos por análise).
 7. Calculadora de Recesso: A página "Calculadora de Recesso" (caminho: '/calculadora') calcula o período e valor proporcional de recesso garantido pela lei.
 8. Indicar Amigos: A página "Indicar Amigos" (caminho: '/convide-amigos') permite ao usuário convidar amigos para ganhar créditos.
-9. Preços / Comprar Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
+9. Preços / Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
 
 REGRA DE NAVEGAÇÃO DIRETA (REDIRECT):
 Se o usuário pedir explicitamente para ir, navegar, abrir, ou acessar alguma página do site (ex: "me leva pro simulador", "ir para perfil"), chame a ferramenta 'navigate_to' informando a página de destino correspondente.

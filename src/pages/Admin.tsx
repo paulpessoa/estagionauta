@@ -23,7 +23,8 @@ import {
   LayoutDashboard,
   MessageSquare,
   Star,
-  Trash2
+  Trash2,
+  Download
 } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
 import { useNavigate, useLocation } from 'react-router-dom'
@@ -31,6 +32,7 @@ import { toast } from 'sonner'
 import { apiClient } from '@/lib/apiClient'
 import ModeracaoAgencias from './admin/ModeracaoAgencias'
 import EmailLogs from './EmailLogs'
+import ImportadorUsuarios from './admin/ImportadorUsuarios'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function AdminPage() {
@@ -43,12 +45,14 @@ export default function AdminPage() {
   if (pathname === '/admin/usuarios') activeTab = 'users'
   else if (pathname === '/admin/history') activeTab = 'submissions'
   else if (pathname === '/admin/logs') activeTab = 'settings'
+  else if (pathname === '/admin/importador') activeTab = 'importer'
 
   const setActiveTab = (tab: string) => {
     if (tab === 'overview') navigate('/admin')
     else if (tab === 'users') navigate('/admin/usuarios')
     else if (tab === 'submissions') navigate('/admin/history')
     else if (tab === 'settings') navigate('/admin/logs')
+    else if (tab === 'importer') navigate('/admin/importador')
   }
 
   const [stats, setStats] = useState({
@@ -534,6 +538,12 @@ export default function AdminPage() {
             </div>
           </div>
         )
+      case 'importer':
+        return (
+          <div className="space-y-6">
+            <ImportadorUsuarios />
+          </div>
+        )
     }
   }
 
@@ -562,6 +572,12 @@ export default function AdminPage() {
               <SidebarItem 
                 icon={<Settings className="h-5 w-5" />} label="Logs de Sistema" 
                 active={activeTab === 'settings'} onClick={() => setActiveTab('settings')} 
+              />
+            )}
+            {profile?.role === 'admin' && (
+              <SidebarItem 
+                icon={<Download className="h-5 w-5" />} label="Importador" 
+                active={activeTab === 'importer'} onClick={() => setActiveTab('importer')} 
               />
             )}
           </nav>

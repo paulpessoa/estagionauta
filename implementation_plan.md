@@ -590,3 +590,97 @@ Este plano corrige o problema de listagem de agências quando o total de página
   - Validar que o botão "Responder" some em seus próprios comentários.
   - Validar que é impossível responder a uma resposta de comentário.
 
+
+---
+
+# Ajuste de Validade dos Créditos para 2 Meses e Reset Geral para 10 Créditos
+
+Este plano altera a validade de créditos (adquiridos ou bônus) de 6 meses para 2 meses e define o saldo de todos os usuários para exatamente 10 créditos.
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Sobre o Reset de Créditos (Duas Opções de Abordagem)**:
+> 
+> * **Opção A (Recomendada - Começo Limpo)**: Excluir todo o histórico da tabela `credit_transactions` e inserir um único registro de bônus de 10 créditos para cada perfil existente. Isso é ideal para a fase Beta pois evita inconsistências matemáticas com transações passadas.
+> * **Opção B (Preservar Histórico)**: Calcular o saldo atual de cada usuário e inserir uma transação de ajuste (adição de bônus ou consumo de créditos) para que o saldo atual resulte em exatamente 10.
+> 
+> *Aguardamos sua resposta sobre qual opção prefere.* (Opção A é recomendada)
+
+## Proposed Changes
+
+### Database Migrations
+
+#### [NEW] [20260531200000_update_expiry_to_two_months.sql](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/supabase/migrations/20260531200000_update_expiry_to_two_months.sql)
+- Redefinir a função `add_credits(user_uuid, amount, description, stripe_payment_intent_id)` para utilizar `INTERVAL '2 months'` em vez de `INTERVAL '6 months'`.
+- Executar query para atualizar transações de compra existentes:
+  ```sql
+  UPDATE public.credit_transactions SET expires_at = created_at + INTERVAL '2 months' WHERE type = 'purchase';
+  ```
+- Executar reset de créditos com base na opção selecionada (A ou B).
+
+### Backend (Rover API)
+
+#### [MODIFY] [rover.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/rover.routes.ts)
+- Atualizar a instrução do prompt do Rover que detalha a validade dos créditos de "6 meses" para "2 meses".
+
+### Frontend (UI)
+
+#### [MODIFY] [Precos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Precos.tsx)
+- Substituir textos que informam "6 meses" por "2 meses".
+
+#### [MODIFY] [Creditos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Creditos.tsx)
+- Substituir a validade dos créditos avulsos para "2 meses".
+
+#### [MODIFY] [ConvideAmigos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/ConvideAmigos.tsx)
+- Substituir a validade dos créditos de indicação para "2 meses".
+
+## Verification Plan
+
+### Automated Verification
+- Rodar `npm run build` na raiz do projeto e na pasta `api/` para atestar a compilação correta.
+- Executar os testes unitários da API (`npm run test` no backend).
+
+### Manual Verification
+- Acessar as páginas `/precos`, `/creditos` e `/convide-amigos` e validar visualmente as mensagens sobre o prazo de 2 meses.
+- Testar o prompt do Rover perguntando sobre a validade dos créditos e checar se ele responde 2 meses.
+
+
+---
+
+# Importador de Usuários Externos (Jotform)
+
+Substituir a integração anterior do Supabase pela integração direta com a API do Jotform. O administrador poderá selecionar um formulário ativo do Jotform, carregar todas as submissões, extrair dados do currículo e contatos dos estudantes, e analisar a importação comparando com a base local.
+
+## Proposed Changes
+
+### Backend Endpoints
+
+#### [MODIFY] [env.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/config/env.ts)
+- Adicionar `JOTFORM_API_KEY` (string opcional) ao schema de validação.
+
+#### [MODIFY] [admin.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/admin.routes.ts)
+- **`GET /api/admin/jotform/forms`**: Busca a lista de todos os formulários ativos do usuário no Jotform.
+- **`GET /api/admin/jotform/submissions/:formId`**: Busca as submissões de um formulário específico no Jotform, varre as respostas (`answers`) dinamicamente para extrair Nome, E-mail, Telefone e links de arquivos (Currículos), e retorna uma lista limpa de contatos.
+
+### Frontend Views
+
+#### [MODIFY] [ImportadorUsuarios.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/admin/ImportadorUsuarios.tsx)
+- Modificar o fluxo de conexão:
+  - Campo para entrada opcional da Chave API do Jotform (usando a do backend como padrão).
+  - Seletor de Formulário (combobox que lista os formulários ativos recuperados do Jotform).
+  - Tabela com filtros locais de pesquisa, status local (se o e-mail já existe no banco local do Estagionauta) e link direto para download do currículo enviado no Jotform.
+  - Painel de cópia de e-mails em lote ou exportação em formato JSON.
+
+## Verification Plan
+
+### Automated Verification
+- Rodar `npm run build` na raiz do projeto e na pasta `api/` para verificar erros de build.
+
+### Manual Verification
+- Acessar `/admin/importador` como Administrador, inserir a chave de API do Jotform (ou usar a do `.env`), escolher o formulário desejado e validar que a listagem de candidatos e currículos carrega perfeitamente.
+
+
+
+
+

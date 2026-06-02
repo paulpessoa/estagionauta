@@ -22,6 +22,11 @@ const envSchema = z.object({
   STRIPE_PRICE_ASTRONAUTA_AVULSO: z.string().min(1),
   STRIPE_PRICE_COSMONAUTA_AVULSO: z.string().min(1),
   STRIPE_PRICE_COMANDANTE_AVULSO: z.string().min(1).optional(),
+  MENVO_NEXT_PUBLIC_SUPABASE_URL: z.string().url().optional(),
+  MENVO_NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
+  MENVO_SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
+  MENVO_SUPABASE_ACCESS_TOKEN: z.string().optional(),
+  MENVO_JOTFORM_API_KEY: z.string().optional(),
 });
 
 const parseEnv = () => {
