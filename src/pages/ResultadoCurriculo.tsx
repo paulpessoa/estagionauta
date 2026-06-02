@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { JobFitAnalysis } from '@/components/analysis/JobFitAnalysis'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
-import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2, Trash2 } from 'lucide-react'
+import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2, Trash2, Edit2, Check, X } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useCredits } from '@/hooks/useCredits'
@@ -75,6 +75,11 @@ export default function ResultadoCurriculo() {
   const [emailSubject, setEmailSubject] = useState('')
   const [emailMessage, setEmailMessage] = useState('')
 
+  // Estado para edição de título
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [editingTitle, setEditingTitle] = useState('')
+  const [savingTitle, setSavingTitle] = useState(false)
+
   // Dados da análise passados via state
   const analysisData = location.state?.analysis
   const creditsConsumed = location.state?.creditsConsumed
@@ -83,6 +88,7 @@ export default function ResultadoCurriculo() {
   useEffect(() => {
     if (analysis) {
       setEmailSubject(`Análise de Currículo - ${analysis.name}`)
+      setEditingTitle(analysis.name)
       setEmailMessage(`Olá,
 
 Gostaria de compartilhar com você o resultado da análise do meu currículo no Estagionauta.
@@ -202,6 +208,46 @@ ${analysis.name}`)
     }
   })
 
+  const handleSaveTitle = async () => {
+    if (!editingTitle.trim() || !analysis) {
+      toast({
+        title: "Erro",
+        description: "O título não pode estar vazio.",
+        variant: "destructive",
+      })
+      return
+    }
+
+    setSavingTitle(true)
+    try {
+      const { error } = await supabase
+        .from('curriculum_analysis')
+        .update({ name: editingTitle.trim() })
+        .eq('id', analysis.id)
+
+      if (error) throw error
+
+      setAnalysis({
+        ...analysis,
+        name: editingTitle.trim()
+      })
+      setIsEditingTitle(false)
+      toast({
+        title: "Sucesso",
+        description: "Título atualizado com sucesso!",
+      })
+    } catch (error: any) {
+      console.error('Error saving title:', error)
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar título. Tente novamente.",
+        variant: "destructive",
+      })
+    } finally {
+      setSavingTitle(false)
+    }
+  }
+
   const handleDelete = () => {
     if (window.confirm('Tem certeza que deseja excluir permanentemente esta análise?')) {
       deleteMutation.mutate()
@@ -218,9 +264,8 @@ ${analysis.name}`)
         scale: 2,
         useCORS: true,
         allowTaint: true,
-        backgroundColor: '#030712', // Cor escura correspondente ao tema dark do Estagionauta
+        backgroundColor: '#030712',
         onclone: (clonedDoc) => {
-          // Esconder botões e elementos interativos no PDF gerado
           const actionButtons = clonedDoc.querySelector('#action-buttons')
           if (actionButtons) (actionButtons as HTMLElement).style.display = 'none'
           
@@ -405,7 +450,7 @@ ${analysis.name}`)
   return (
      <div className="flex flex-col min-h-screen">
       <div ref={analysisRef} className="max-w-4xl mx-auto p-4 space-y-6">
-        {/* Header com botão voltar para mobile */}
+        {/* Header com botão voltar e edição de título */}
         <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-center md:space-y-0">
           <div className="flex items-center space-x-3">
             {isMobile && (
@@ -420,9 +465,49 @@ ${analysis.name}`)
               </Button>
             )}
             <div className="min-w-0 flex-1">
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white truncate">
-                Análise de {analysis.name}
-              </h1>
+              {isEditingTitle ? (
+                <div className="flex items-center gap-2 mb-2">
+                  <Input
+                    value={editingTitle}
+                    onChange={(e) => setEditingTitle(e.target.value)}
+                    className="text-lg md:text-2xl font-bold"
+                    disabled={savingTitle}
+                  />
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleSaveTitle}
+                    disabled={savingTitle}
+                  >
+                    {savingTitle ? <Loader2 className="h-3 w-3 animate-spin" /> : <Check className="h-3 w-3" />}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => {
+                      setIsEditingTitle(false)
+                      setEditingTitle(analysis.name)
+                    }}
+                    disabled={savingTitle}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white truncate">
+                    Análise de {analysis.name}
+                  </h1>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => setIsEditingTitle(true)}
+                    className="flex-shrink-0"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               <p className="text-gray-600 dark:text-gray-300 mt-1 text-sm md:text-base">
                 {analysis.course} • {analysis.university}
               </p>
@@ -881,5 +966,5 @@ ${analysis.name}`)
         </DialogContent>
       </Dialog>
     </div>
-  )
+   )
 }
