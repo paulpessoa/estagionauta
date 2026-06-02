@@ -512,7 +512,7 @@ export default function AdminPage() {
                           </td>
                           <td className="px-6 py-4 text-right">
                              {sub.status === 'completed' && (
-                               <Button variant="outline" size="sm" onClick={() => navigate(`/resultado-curriculo/${sub.id}`)}>
+                               <Button variant="outline" size="sm" onClick={() => navigate(`/analise/${sub.id}`)}>
                                  Ver Detalhes
                                </Button>
                              )}

@@ -81,7 +81,7 @@ const NavLinks = ({
           Agências
         </Link>
         <Link
-          to="/analise-curriculo"
+          to="/analises/new"
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
         >
@@ -464,7 +464,7 @@ export function Header() {
 
                           <Button variant="ghost" asChild className="justify-start">
                             <Link
-                              to="/minhas-analises"
+                              to="/analises"
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               <FileText className="mr-2 h-4 w-4" />
@@ -665,7 +665,7 @@ export function Header() {
                   {!(isAdmin || isModerator) && (
                     <>
                       <DropdownMenuItem asChild>
-                        <Link to="/minhas-analises">
+                        <Link to="/analises">
                           <FileText className="mr-2 h-4 w-4" />
                           Análises de Currículos
                         </Link>

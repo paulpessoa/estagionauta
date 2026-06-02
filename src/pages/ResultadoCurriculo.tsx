@@ -94,7 +94,7 @@ export default function ResultadoCurriculo() {
 Gostaria de compartilhar com você o resultado da análise do meu currículo no Estagionauta.
 
 Você pode visualizar a análise completa no seguinte link:
-${window.location.origin}/analise-curriculo/resultado/${analysis.id}
+${window.location.origin}/analise/${analysis.id}
 
 Atenciosamente,
 ${analysis.name}`)
@@ -197,7 +197,7 @@ ${analysis.name}`)
         description: "Análise excluída permanentemente.",
       })
       queryClient.invalidateQueries({ queryKey: ['user-analyses'] })
-      navigate('/minhas-analises')
+      navigate('/analises')
     },
     onError: () => {
       toast({
@@ -358,7 +358,7 @@ ${analysis.name}`)
           linkedin_url: null,
           curriculo_slug: analysis.id,
         },
-        curriculumUrl: window.location.origin + `/analise-curriculo/resultado/${analysis.id}`
+        curriculumUrl: window.location.origin + `/analise/${analysis.id}`
       })
 
       toast({

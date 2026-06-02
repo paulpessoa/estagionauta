@@ -148,7 +148,7 @@ export default function AnalyseCurriculoPage() {
       await refresh()
 
       // Redirecionar para resultado
-      navigate(`/resultado-curriculo/${data.analysisId}`, {
+      navigate(`/analise/${data.analysisId}`, {
         state: {
           analysis: data.analysis,
           score: data.analysis.scoreGeral,

@@ -113,7 +113,7 @@ export default function Recompensas() {
       case 'complete_profile':
         return '/perfil'
       case 'first_analysis':
-        return '/analise-curriculo'
+        return '/analises/new'
       case 'first_interview':
         return '/simulador-entrevistas'
       case 'invite_friend':

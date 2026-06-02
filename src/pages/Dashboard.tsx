@@ -98,7 +98,7 @@ export default function Dashboard() {
                 title: `Análise de Currículo: ${item.name}`,
                 date: new Date(item.created_at),
                 status: item.status,
-                href: '/analise-curriculo'
+                href: `/analise/${item.id}`
             }))
         },
         enabled: !!user?.id
@@ -195,7 +195,7 @@ export default function Dashboard() {
             title: 'Analisar Currículo',
             description: 'Envie seu currículo e receba feedback detalhado com IA.',
             icon: FileText,
-            href: '/analise-curriculo',
+            href: '/analises/new',
             color: 'bg-blue-500',
             quantity: analysisCount,
             label: 'feitas'

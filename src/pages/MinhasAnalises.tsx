@@ -80,7 +80,7 @@ export default function MinhasAnalises() {
   }
 
   const handleViewAnalysis = (id: string) => {
-    navigate(`/resultado-curriculo/${id}`)
+    navigate(`/analise/${id}`)
   }
 
   const deleteMutation = useMutation({
@@ -126,7 +126,7 @@ export default function MinhasAnalises() {
             </p>
           </div>
           <Button asChild>
-            <Link to="/analise-curriculo">
+            <Link to="/analises/new">
               <FileText className="w-4 h-4 mr-2" />
               Nova Análise
             </Link>
@@ -245,7 +245,7 @@ export default function MinhasAnalises() {
               </p>
               {!searchTerm && (
                 <Button asChild size="lg">
-                  <Link to="/analise-curriculo">
+                  <Link to="/analises/new">
                     <FileText className="w-5 h-5 mr-2" />
                     Analisar Primeiro Currículo
                   </Link>

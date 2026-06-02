@@ -8,8 +8,8 @@ export const navigateToDefinition = {
       properties: {
         page: {
           type: 'string',
-          enum: ['perfil', 'configuracoes', 'candidaturas', 'simulador', 'gerador_curriculo', 'analise_curriculo', 'calculadora', 'indicar_amigos', 'precos'],
-          description: 'A página de destino: "perfil" (Meu Perfil), "configuracoes" (Configurações da Conta), "candidaturas" (Kanban de Candidaturas), "simulador" (Simulador de Entrevistas), "gerador_curriculo" (Gerador de Currículos), "analise_curriculo" (Análise de Currículo por IA), "calculadora" (Calculadora de Recesso), "indicar_amigos" (Indicar Amigos/Convide amigos), "precos" (Gestão de Créditos / Comprar).'
+          enum: ['perfil', 'configuracoes', 'candidaturas', 'simulador', 'gerador_curriculo', 'analise_curriculo', 'analises', 'calculadora', 'indicar_amigos', 'precos'],
+          description: 'A página de destino: "perfil" (Meu Perfil), "configuracoes" (Configurações da Conta), "candidaturas" (Kanban de Candidaturas), "simulador" (Simulador de Entrevistas), "gerador_curriculo" (Gerador de Currículos), "analise_curriculo" (Nova Análise de Currículo por IA), "analises" (Minhas Análises de Currículo/Histórico), "calculadora" (Calculadora de Recesso), "indicar_amigos" (Indicar Amigos/Convide amigos), "precos" (Gestão de Créditos / Comprar).'
         }
       },
       required: ['page']
@@ -26,7 +26,8 @@ export async function runNavigateTo(userId: string, args: { page: string }) {
     candidaturas: { path: '/candidaturas', label: 'Kanban de Candidaturas' },
     simulador: { path: '/simulador-entrevistas', label: 'Simulador de Entrevistas' },
     gerador_curriculo: { path: '/gerador-curriculos', label: 'Gerador de Currículos' },
-    analise_curriculo: { path: '/analise-curriculo', label: 'Análise de Currículo por IA' },
+    analise_curriculo: { path: '/analises/new', label: 'Nova Análise de Currículo por IA' },
+    analises: { path: '/analises', label: 'Minhas Análises de Currículo' },
     calculadora: { path: '/calculadora', label: 'Calculadora de Recesso' },
     indicar_amigos: { path: '/convide-amigos', label: 'Indicar Amigos / Recompensas' },
     precos: { path: '/precos', label: 'Créditos / Preços' }

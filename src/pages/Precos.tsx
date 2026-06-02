@@ -349,7 +349,7 @@ export default function Precos() {
               <Button 
                 size="lg" 
                 className="bg-white text-blue-600 hover:bg-gray-100 w-full sm:w-auto"
-                onClick={() => window.location.href = '/analise-curriculo'}
+                onClick={() => window.location.href = '/analises/new'}
               >
                 Analisar Currículo
               </Button>
@@ -357,7 +357,7 @@ export default function Precos() {
                 size="lg" 
                 variant="outline"
                 className="bg-transparent border-white text-white hover:bg-white/10 w-full sm:w-auto"
-                onClick={() => window.location.href = '/resultado-curriculo-exemplo'}
+                onClick={() => window.location.href = '/analise/exemplo'}
               >
                 Ver Exemplo de Análise
               </Button>

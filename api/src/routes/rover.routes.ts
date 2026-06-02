@@ -173,10 +173,11 @@ Sempre que instruir o usuário sobre onde preencher, visualizar ou acessar algo 
 3. Candidaturas (Kanban): A página "Candidaturas" (caminho: '/candidaturas') serve para organizar as vagas e processos seletivos do usuário.
 4. Simulador de Entrevistas: A página "Simulador de Entrevistas" (caminho: '/simulador-entrevistas') é onde o usuário treina com um entrevistador de IA por áudio ou chat (custa 1 crédito por nova simulação).
 5. Gerador de Currículos: A página "Gerador de Currículos" (caminho: '/gerador-curriculos') serve para criar e exportar currículos profissionais.
-6. Análise de Currículo por IA: A página "Análise de Currículo" (caminho: '/analise-curriculo') serve para enviar um currículo e obter uma nota e feedback estruturado da IA (custa 3 créditos por análise).
+6. Nova Análise de Currículo por IA: A página "Nova Análise de Currículo" (caminho: '/analises/new') serve para enviar um currículo e obter uma nota e feedback estruturado da IA (custa 3 créditos por análise).
 7. Calculadora de Recesso: A página "Calculadora de Recesso" (caminho: '/calculadora') calcula o período e valor proporcional de recesso garantido pela lei.
 8. Indicar Amigos: A página "Indicar Amigos" (caminho: '/convide-amigos') permite ao usuário convidar amigos para ganhar créditos.
 9. Preços / Créditos: A página "Gestão de Créditos" (caminho: '/precos') é onde o usuário adquire novos créditos na Stripe.
+10. Minhas Análises de Currículo: A página "Minhas Análises" (caminho: '/analises') lista o histórico de todas as análises de currículo enviadas anteriormente pelo usuário.
 
 REGRA DE NAVEGAÇÃO DIRETA (REDIRECT):
 Se o usuário pedir explicitamente para ir, navegar, abrir, ou acessar alguma página do site (ex: "me leva pro simulador", "ir para perfil"), chame a ferramenta 'navigate_to' informando a página de destino correspondente.

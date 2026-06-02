@@ -77,7 +77,7 @@ export default function HomePage() {
               className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
               asChild
             >
-              <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
+              <Link to="/analises/new" onClick={handleAuthGatedClick}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>
@@ -87,7 +87,7 @@ export default function HomePage() {
               className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70"
               asChild
             >
-              <Link to="/resultado-curriculo-exemplo">
+              <Link to="/analise/exemplo">
                 <ScanText className="mr-2 h-5 w-5" />
                 Exemplo Currículo Revisado IA
               </Link>
@@ -188,7 +188,7 @@ export default function HomePage() {
                   className="w-full bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white font-bold shadow-lg hover:from-pink-600 hover:to-blue-600"
                   asChild
                 >
-                  <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
+                  <Link to="/analises/new" onClick={handleAuthGatedClick}>
                     Analisar Currículo com IA
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -562,7 +562,7 @@ export default function HomePage() {
               className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
               asChild
             >
-              <Link to="/analise-curriculo" onClick={handleAuthGatedClick}>
+              <Link to="/analises/new" onClick={handleAuthGatedClick}>
                 <FileScan className="mr-2 h-5 w-5" />
                 Analisar Currículo com IA
               </Link>
@@ -572,7 +572,7 @@ export default function HomePage() {
               className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70"
               asChild
             >
-              <Link to="/resultado-curriculo-exemplo">
+              <Link to="/analise/exemplo">
                 <ScanText className="mr-2 h-5 w-5" />
                 Exemplo Currículo Revisado IA
               </Link>

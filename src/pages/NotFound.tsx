@@ -51,7 +51,7 @@ export default function NotFound() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Button variant="outline" asChild className="h-auto p-4">
                   <Link
-                    to="/analise-curriculo"
+                    to="/analises/new"
                     className="flex flex-col items-center space-y-2"
                   >
                     <div className="h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">

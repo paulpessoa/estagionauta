@@ -117,7 +117,7 @@ export default function Sucesso() {
           <div className="space-y-3">
             <Button
               className="w-full"
-              onClick={() => navigate('/analise-curriculo')}
+              onClick={() => navigate('/analises/new')}
             >
               Analisar currículo
             </Button>

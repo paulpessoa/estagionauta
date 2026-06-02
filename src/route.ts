@@ -1,6 +1,7 @@
 import { lazy } from "react"
 import { ProtectedRoute } from "./components/ProtectedRoute"
 import React from "react"
+import { Navigate, useParams } from "react-router-dom"
 
 const HomePage = lazy(() => import("./pages/Index"))
 const Admin = lazy(() => import("./pages/Admin"))
@@ -106,6 +107,14 @@ const ProtectedSucesso = () =>
 const ProtectedRecompensas = () =>
   React.createElement(ProtectedRoute, null, React.createElement(Recompensas))
 
+const RedirectToAnalises = () => React.createElement(Navigate, { to: "/analises", replace: true })
+const RedirectToNewAnalise = () => React.createElement(Navigate, { to: "/analises/new", replace: true })
+const RedirectToResultado = () => {
+  const { id } = useParams<{ id: string }>()
+  return React.createElement(Navigate, { to: `/analise/${id}`, replace: true })
+}
+const RedirectToExemplo = () => React.createElement(Navigate, { to: "/analise/exemplo", replace: true })
+
 export const routes = [
   { path: "/", component: HomePage },
   { path: "/dashboard", component: ProtectedDashboard },
@@ -122,9 +131,9 @@ export const routes = [
 
   { path: "/cadastro-agencia", component: CadastroAgencia },
 
-  { path: "/analise-curriculo", component: ProtectedAnaliseCurriculo },
-  { path: "/analise-curriculo/sucesso", component: ProtectedSucesso },
-  { path: "/minhas-analises", component: ProtectedMinhasAnalises },
+  { path: "/analises/new", component: ProtectedAnaliseCurriculo },
+  { path: "/analises/sucesso", component: ProtectedSucesso },
+  { path: "/analises", component: ProtectedMinhasAnalises },
   { path: "/email-logs", component: ProtectedEmailLogs },
   { path: "/agencias", component: Agencias },
   { path: "/calculadora", component: CalculadoraRecesso },
@@ -140,11 +149,16 @@ export const routes = [
   { path: "/configuracoes", component: ProtectedConfiguracoes },
   { path: "/perfil", component: ProtectedPerfil },
   { path: "/creditos", component: ProtectedCreditos },
-  { path: "/resultado-curriculo/:id", component: ProtectedResultadoCurriculo },
+  { path: "/analise/:id", component: ProtectedResultadoCurriculo },
   {
-    path: "/resultado-curriculo-exemplo",
+    path: "/analise/exemplo",
     component: ResultadoCurriculoExemplo
   },
+  // Redirecionamentos para retrocompatibilidade
+  { path: "/minhas-analises", component: RedirectToAnalises },
+  { path: "/analise-curriculo", component: RedirectToNewAnalise },
+  { path: "/resultado-curriculo/:id", component: RedirectToResultado },
+  { path: "/resultado-curriculo-exemplo", component: RedirectToExemplo },
   { path: "/sucesso", component: ProtectedSucesso },
   { path: "/convide-amigos", component: ConvideAmigos },
   { path: "/recompensas", component: ProtectedRecompensas },
