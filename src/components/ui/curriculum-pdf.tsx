@@ -94,8 +94,8 @@ export function CurriculumPDF({ profile, trigger }: CurriculumPDFProps) {
       pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
       heightLeft -= pageHeight
 
-      // Adicionar páginas adicionais se necessário
-      while (heightLeft >= 0) {
+      // Adicionar páginas adicionais se necessário (com margem mínima)
+      while (heightLeft >= 10) {
         position = heightLeft - imgHeight
         pdf.addPage()
         pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
@@ -139,171 +139,118 @@ export function CurriculumPDF({ profile, trigger }: CurriculumPDFProps) {
         {generating ? 'Gerando PDF...' : 'Download PDF'}
       </Button>
 
-      {/* Elemento oculto para gerar PDF */}
+      {/* Elemento oculto para gerar PDF - CORRIGIDO: sem altura fixa */}
       <div 
         ref={pdfRef}
-        className="fixed -left-[9999px] top-0 w-[800px] bg-white p-8"
+        className="fixed -left-[9999px] top-0 w-[800px] bg-white p-6"
         style={{ fontFamily: 'Arial, sans-serif' }}
       >
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Currículo de {profile.full_name}
+        <div className="text-center mb-6 pb-4 border-b border-gray-200">
+          <h1 className="text-3xl font-bold text-gray-900 mb-1">
+            {profile.full_name}
           </h1>
-          <p className="text-gray-600">
-            Gerado via Estagionauta
+          <p className="text-gray-600 text-sm">
+            Currículo Profissional
           </p>
         </div>
 
         {/* Informações Pessoais */}
-        <Card className="mb-6">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <User className="h-5 w-5" />
-              Informações Pessoais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-start gap-6">
-              <Avatar className="h-24 w-24">
-                <AvatarImage src={profile.avatar_url || undefined} />
-                <AvatarFallback className="text-lg">
-                  {profile.full_name ? getInitials(profile.full_name) : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 space-y-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    {profile.full_name}
-                  </h2>
-                  <p className="text-gray-600">
-                    {profile.bio || 'Sem biografia disponível'}
-                  </p>
-                </div>
-                
-                <div className="grid grid-cols-1 gap-3">
-                  {profile.email && (
-                    <div className="flex items-center gap-2">
-                      <Mail className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">
-                        {profile.email}
-                      </span>
-                    </div>
-                  )}
-                  {profile.phone && (
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-gray-600">
-                        {profile.phone}
-                      </span>
-                    </div>
-                  )}
-                  {profile.linkedin_url && (
-                    <div className="flex items-center gap-2">
-                      <Linkedin className="h-4 w-4 text-gray-500" />
-                      <span className="text-sm text-blue-600">
-                        {profile.linkedin_url}
-                      </span>
-                    </div>
-                  )}
-                </div>
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Mail className="h-4 w-4" />
+            Contato
+          </h2>
+          <div className="grid grid-cols-1 gap-2 text-sm">
+            {profile.email && (
+              <div className="flex items-start gap-2">
+                <span className="text-gray-500 font-medium">E-mail:</span>
+                <a href={`mailto:${profile.email}`} className="text-blue-600 hover:underline">
+                  {profile.email}
+                </a>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            )}
+            {profile.phone && (
+              <div className="flex items-start gap-2">
+                <span className="text-gray-500 font-medium">Telefone:</span>
+                <span className="text-gray-700">{profile.phone}</span>
+              </div>
+            )}
+            {profile.linkedin_url && (
+              <div className="flex items-start gap-2">
+                <span className="text-gray-500 font-medium">LinkedIn:</span>
+                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">
+                  {profile.linkedin_url}
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Resumo Profissional / Bio */}
+        {profile.bio && (
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-2">Resumo Profissional</h2>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              {profile.bio.trim()}
+            </p>
+          </div>
+        )}
 
         {/* Informações Acadêmicas */}
         {(profile.course || profile.university || profile.period) && (
-          <Card className="mb-6">
-            <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-lg">
-                <GraduationCap className="h-5 w-5" />
-                Formação Acadêmica
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {profile.course && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Curso</span>
-                    <p className="text-gray-900">{profile.course}</p>
-                  </div>
-                )}
-                {profile.university && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Universidade</span>
-                    <p className="text-gray-900">{profile.university}</p>
-                  </div>
-                )}
-                {profile.period && (
-                  <div>
-                    <span className="text-sm font-medium text-gray-500">Período</span>
-                    <p className="text-gray-900">{getPeriodText(profile.period)}</p>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div className="mb-6">
+            <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+              <GraduationCap className="h-4 w-4" />
+              Formação Acadêmica
+            </h2>
+            <div className="space-y-2 text-sm">
+              {profile.course && (
+                <div>
+                  <span className="font-medium text-gray-700">{profile.course}</span>
+                </div>
+              )}
+              {profile.university && (
+                <div>
+                  <span className="text-gray-600">{profile.university}</span>
+                </div>
+              )}
+              {profile.period && (
+                <div>
+                  <span className="text-gray-600">Período: {getPeriodText(profile.period)}</span>
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Status da Conta */}
-        <Card className="mb-6">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Building2 className="h-5 w-5" />
-              Status da Conta
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Badge variant={profile.subscription_status === 'premium' ? 'default' : 'secondary'}>
+        <div className="mb-6">
+          <h2 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2">
+            <Building2 className="h-4 w-4" />
+            Status da Conta
+          </h2>
+          <div className="flex items-center gap-4 text-sm">
+            <div>
+              <span className="font-medium text-gray-700">
                 {profile.subscription_status === 'premium' ? 'Premium' : 'Gratuito'}
-              </Badge>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-500">Créditos:</span>
-                <Badge variant="outline">{profile.credits}</Badge>
-              </div>
+              </span>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Informações Adicionais */}
-        <Card className="mb-6">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Calendar className="h-5 w-5" />
-              Informações Adicionais
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {profile.credits !== undefined && (
               <div>
-                <span className="text-gray-500">Membro desde:</span>
-                <p className="text-gray-900">
-                  {new Date(profile.created_at).toLocaleDateString('pt-BR')}
-                </p>
+                <span className="text-gray-600">Créditos: {profile.credits}</span>
               </div>
-              <div>
-                <span className="text-gray-500">Última atualização:</span>
-                <p className="text-gray-900">
-                  {new Date(profile.updated_at).toLocaleDateString('pt-BR')}
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+            )}
+          </div>
+        </div>
 
         {/* Footer */}
-        <div className="text-center py-8">
-          <Separator className="mb-4" />
-          <p className="text-sm text-gray-500">
-            Currículo gerado via{' '}
-            <span className="text-blue-600 font-medium">
-              Estagionauta
-            </span>
+        <div className="text-center pt-6 mt-6 border-t border-gray-200">
+          <p className="text-xs text-gray-500">
+            Currículo gerado via Estagionauta • {new Date().toLocaleDateString('pt-BR')}
           </p>
         </div>
       </div>
     </>
   )
-} 
+}
