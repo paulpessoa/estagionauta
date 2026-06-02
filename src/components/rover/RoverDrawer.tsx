@@ -193,9 +193,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
             <div className="bg-gradient-to-br from-violet-600/10 via-purple-500/5 to-orange-500/5 dark:from-violet-950/20 dark:via-purple-950/10 dark:to-orange-950/10 border-b border-muted/50 p-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <img
-                  src="/rover_avatar.png"
+                  src="/logo.png"
                   alt="Rover"
-                  className="w-8 h-8 rounded-full border border-violet-200/50 object-cover"
+                  className="w-8 h-8 rounded-full border border-violet-200/50 object-contain"
                 />
                 <div>
                   <h3 className="font-bold text-sm leading-none flex items-center gap-1.5 text-foreground">
@@ -281,9 +281,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                     {/* Cute Peeking Mascot at bottom */}
                     <div className="relative flex justify-center w-full overflow-hidden mt-auto -mb-4">
                       <img
-                        src="/rover_avatar.png"
+                        src="/logo.png"
                         alt="Mascot Peeking"
-                        className="w-20 h-20 object-cover translate-y-6 opacity-90 transition-transform duration-300 hover:translate-y-3"
+                        className="w-20 h-20 object-contain translate-y-6 opacity-90 transition-transform duration-300 hover:translate-y-3"
                       />
                     </div>
                   </div>
@@ -303,7 +303,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                           {msg.role === 'user' ? (
                             <User className="h-3.5 w-3.5" />
                           ) : (
-                            <img src="/rover_avatar.png" className="h-full w-full object-cover rounded-full" />
+                            <img src="/logo.png" className="h-full w-full object-contain rounded-full" />
                           )}
                         </div>
                         <div
@@ -320,7 +320,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                     {isLoading && (
                       <div className="flex gap-2.5 max-w-[80%] mr-auto">
                         <div className="h-7 w-7 rounded-full bg-muted border border-muted/80 flex items-center justify-center shrink-0 overflow-hidden">
-                          <img src="/rover_avatar.png" className="h-full w-full object-cover rounded-full" />
+                          <img src="/logo.png" className="h-full w-full object-contain rounded-full" />
                         </div>
                         <div className="p-3 bg-muted/60 border border-muted/50 rounded-2xl rounded-tl-none flex items-center gap-1.5 h-9">
                           <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -448,9 +448,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
           <>
             {/* Capsule Closed Trigger */}
             <img
-              src="/rover_avatar.png"
+              src="/logo.png"
               alt="Rover Mascot"
-              className="w-10 h-10 rounded-full object-cover shrink-0 border border-violet-100/50"
+              className="w-10 h-10 rounded-full object-contain shrink-0 border border-violet-100/50"
             />
             <span className="text-gray-500 dark:text-gray-400 text-sm font-medium mr-2 select-none">
               Pergunte ao Rover
