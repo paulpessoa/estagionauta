@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Star, MessageSquareCode, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
-import { apiClient } from '@/services/api'
+import { apiClient } from '@/lib/apiClient'
 
 export default function Feedback() {
   const [searchParams] = useSearchParams()
@@ -87,27 +87,29 @@ export default function Feedback() {
       toast.success('Feedback enviado com sucesso!')
     } catch (err: any) {
       console.error('Error submitting feedback:', err)
-      toast.error('Erro ao enviar o feedback. Tente novamente.')
+      toast.error('Erro ao enviar feedback. Tente novamente.')
     } finally {
       setLoading(false)
     }
   }
 
+  const handleDone = () => {
+    navigate('/')
+  }
+
   if (submitted) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4">
-        <Card className="w-full max-w-md border-indigo-100 dark:border-indigo-950/40 shadow-xl backdrop-blur-sm bg-white/80 dark:bg-gray-900/80 animate-fade-in">
-          <CardContent className="pt-8 pb-8 text-center space-y-6">
-            <div className="mx-auto w-16 h-16 bg-green-50 dark:bg-green-950/30 text-green-600 dark:text-green-400 rounded-full flex items-center justify-center animate-bounce">
-              <CheckCircle2 size={36} />
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md border-2 border-green-500 shadow-lg">
+          <CardContent className="text-center p-8">
+            <div className="mb-6 flex justify-center">
+              <CheckCircle2 className="h-16 w-16 text-green-500" />
             </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Feedback Recebido!</h2>
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Obrigado pela sua opinião! Suas respostas nos ajudam a melhorar cada vez mais.
-              </p>
-            </div>
-            <Button onClick={() => navigate('/')} className="w-full bg-indigo-600 hover:bg-indigo-700">
+            <h2 className="text-2xl font-bold mb-2 text-green-700">Obrigado!</h2>
+            <p className="text-gray-600 mb-6">
+              Seu feedback é muito importante para nós e nos ajuda a melhorar constantemente.
+            </p>
+            <Button onClick={handleDone} className="w-full">
               Voltar ao Início
             </Button>
           </CardContent>
@@ -117,88 +119,120 @@ export default function Feedback() {
   }
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 px-4 py-12">
-      <Card className="w-full max-w-lg border-indigo-100 dark:border-indigo-950/40 shadow-xl backdrop-blur-sm bg-white/80 dark:bg-gray-900/80">
-        <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto w-12 h-12 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-2">
-            <MessageSquareCode size={24} />
-          </div>
-          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            Sua opinião importa pra gente
-          </CardTitle>
-          <CardDescription className="text-gray-500 dark:text-gray-400">
-            {source === 'jotform' 
-              ? 'O que achou desta iniciativa? Sua avaliação nos ajuda a melhorar.'
-              : 'Diga-nos o que achou da plataforma e em que podemos melhorar.'}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="flex flex-col items-center space-y-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Sua nota:</span>
-              <div className="flex space-x-2">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star
-                    key={star}
-                    size={36}
-                    className={`cursor-pointer transition-all duration-150 hover:scale-110 ${
-                      (hoverRating || rating) >= star
-                        ? 'text-yellow-400 fill-yellow-400 scale-105'
-                        : 'text-gray-300 dark:text-gray-600'
-                    }`}
-                    onClick={() => setRating(star)}
-                    onMouseEnter={() => setHoverRating(star)}
-                    onMouseLeave={() => setHoverRating(0)}
-                  />
-                ))}
-              </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4">
+      <div className="max-w-2xl mx-auto">
+        <Card className="shadow-lg">
+          <CardHeader className="text-center pb-6">
+            <div className="mb-4 flex justify-center">
+              <MessageSquareCode className="h-12 w-12 text-blue-600" />
             </div>
+            <CardTitle className="text-3xl font-bold">Nos Dê Seu Feedback</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Queremos ouvir sua opinião! Ajude-nos a melhorar o Estagionauta.
+            </CardDescription>
+          </CardHeader>
 
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Seu E-mail
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="nome@exemplo.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-white/50 dark:bg-gray-800/50"
-              />
-            </div>
-
-            {(showCommentField || source !== 'jotform') && (
-              <div className="space-y-2">
-                <label htmlFor="comment" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  {source === 'jotform' ? 'Deixe um comentário (Opcional)' : 'Comentário ou Sugestão (Opcional)'}
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Email Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  E-mail *
                 </label>
-                <Textarea
-                  id="comment"
-                  placeholder={
-                    source === 'jotform'
-                      ? 'Conte-nos o que achou desta iniciativa, o que te motivou, ou sugestões...'
-                      : 'Fale pra gente o que você achou dos recursos, o que mais gostou ou o que está faltando...'
-                  }
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  rows={4}
-                  className="bg-white/50 dark:bg-gray-800/50 resize-none"
+                <Input
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="w-full"
                 />
               </div>
-            )}
 
-            <Button 
-              type="submit" 
-              disabled={loading} 
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow-md transition-all hover:shadow-lg"
-            >
-              {loading ? 'Enviando...' : 'Enviar Avaliação'}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+              {/* Rating Stars */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  Como você avalia o Estagionauta? *
+                </label>
+                <div className="flex gap-3 justify-center py-4">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => {
+                        setRating(star)
+                        if (star <= 3) {
+                          setShowCommentField(true)
+                        }
+                      }}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                      disabled={loading}
+                      className="transition-transform hover:scale-110 disabled:cursor-not-allowed"
+                    >
+                      <Star
+                        size={40}
+                        className={`${
+                          star <= (hoverRating || rating)
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300'
+                        } transition-colors`}
+                      />
+                    </button>
+                  ))}
+                </div>
+                <div className="text-center text-sm text-gray-600">
+                  {rating > 0 ? (
+                    <span>
+                      {rating === 1 && '😢 Muito Ruim'}
+                      {rating === 2 && '😞 Ruim'}
+                      {rating === 3 && '😐 Normal'}
+                      {rating === 4 && '😊 Bom'}
+                      {rating === 5 && '😍 Excelente'}
+                    </span>
+                  ) : (
+                    <span>Clique para avaliar</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Comment Field - Only show for low ratings or explicit request */}
+              {showCommentField && (
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Comentários (opcional)
+                  </label>
+                  <Textarea
+                    placeholder="Conte-nos como podemos melhorar..."
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    disabled={loading}
+                    rows={4}
+                    className="w-full resize-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-2">
+                    Seus comentários nos ajudam muito a identificar áreas de melhoria.
+                  </p>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button
+                type="submit"
+                disabled={loading || rating === 0}
+                className="w-full py-6 text-lg font-semibold"
+              >
+                {loading ? 'Enviando...' : 'Enviar Feedback'}
+              </Button>
+
+              <p className="text-xs text-gray-500 text-center">
+                Seus dados serão usados apenas para melhorar nossos serviços.
+              </p>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
