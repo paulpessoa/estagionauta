@@ -45,7 +45,7 @@ app.get('/stats', authMiddleware, async (c) => {
 
     const referralUrl = `${env.CLIENT_URL}/r/${referralCode}`;
 
-    // 2. Get invites list and count
+    // 2. Get invites list from referral_invites
     const { data: invites, error: invitesErr } = await supabaseAdmin
       .from('referral_invites')
       .select('id, name, email, status, created_at, updated_at')
@@ -57,9 +57,43 @@ app.get('/stats', authMiddleware, async (c) => {
       return c.json({ error: 'Erro ao buscar convites' }, 500);
     }
 
-    const totalInvited = invites?.length || 0;
-    const registeredCount = invites?.filter(i => i.status === 'registered' || i.status === 'active').length || 0;
-    const activeCount = invites?.filter(i => i.status === 'active').length || 0;
+    // 2.5 Fetch all users in user_profiles referred by this user (to cover direct registrations)
+    const { data: referredProfiles, error: profilesErr } = await supabaseAdmin
+      .from('user_profiles')
+      .select('id, full_name, email, created_at, updated_at, total_credits_used')
+      .eq('referred_by', user.id);
+
+    if (profilesErr) {
+      console.error('Error fetching referred profiles:', profilesErr);
+    }
+
+    const mergedInvites = [...(invites || [])];
+
+    if (referredProfiles) {
+      for (const profile of referredProfiles) {
+        const alreadyListed = mergedInvites.some(
+          i => i.email.toLowerCase() === profile.email.toLowerCase()
+        );
+
+        if (!alreadyListed) {
+          mergedInvites.push({
+            id: profile.id,
+            name: profile.full_name || 'Amigo Indicado',
+            email: profile.email,
+            status: profile.total_credits_used > 0 ? 'active' : 'registered',
+            created_at: profile.created_at,
+            updated_at: profile.updated_at
+          });
+        }
+      }
+    }
+
+    // Sort by created_at descending
+    mergedInvites.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+    const totalInvited = mergedInvites.length;
+    const registeredCount = mergedInvites.filter(i => i.status === 'registered' || i.status === 'active').length;
+    const activeCount = mergedInvites.filter(i => i.status === 'active').length;
 
     // 3. Fetch user credit transactions to count total earned credits
     const { data: transactions, error: txErr } = await supabaseAdmin
@@ -85,7 +119,7 @@ app.get('/stats', authMiddleware, async (c) => {
       registeredCount,
       activeCount,
       totalEarnedCredits,
-      invitees: invites || []
+      invitees: mergedInvites
     });
 
   } catch (err) {

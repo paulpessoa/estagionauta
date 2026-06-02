@@ -20,6 +20,7 @@ export const inviteFriendDefinition = {
 export async function runInviteFriend(userId: string, args: { email: string; name: string }) {
   try {
     const { email, name } = args;
+    const cleanName = name && name.trim() ? name.trim() : email.split('@')[0];
 
     // 1. Validar e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,7 +39,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
     if (existingInvite) {
       return { 
         success: false,
-        message: `Você já convidou ${name} (${email}) anteriormente. Status atual: ${existingInvite.status}.` 
+        message: `Você já convidou ${cleanName} (${email}) anteriormente. Status atual: ${existingInvite.status}.` 
       };
     }
 
@@ -63,7 +64,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
       .insert({
         referrer_id: userId,
         email: email.toLowerCase(),
-        name,
+        name: cleanName,
         status: 'pending'
       });
 
@@ -99,7 +100,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
                 <h2>🚀 Convite Especial!</h2>
               </div>
               <div class="content">
-                <p>Olá, <strong>${name}</strong>!</p>
+                <p>Olá, <strong>${cleanName}</strong>!</p>
                 <p>Seu amigo <strong>${referrerName}</strong> está usando o <strong>Estagionauta</strong> para conseguir as melhores vagas de estágio e treinar para processos seletivos.</p>
                 <p>Ele te convidou para fazer parte da comunidade! Ao se cadastrar, você ganha <strong>5 créditos gratuitos</strong> para simular entrevistas com IA e analisar o seu currículo.</p>
                 <div style="text-align: center;">
@@ -116,7 +117,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
         `;
 
         const textContent = `
-Olá, ${name}!
+Olá, ${cleanName}!
 
 Seu amigo ${referrerName} está usando o Estagionauta para acelerar a carreira dele e conseguir as melhores vagas de estágio.
 Ele te convidou para fazer parte! Ao se cadastrar, você ganha 5 créditos gratuitos de boas-vindas para simular entrevistas com IA e analisar o seu currículo.
@@ -143,7 +144,7 @@ Equipe Estagionauta
             to: [
               {
                 email: email,
-                name: name,
+                name: cleanName,
               },
             ],
             subject: `${referrerName} te convidou para o Estagionauta! 🚀`,
@@ -181,11 +182,11 @@ Equipe Estagionauta
     return {
       success: true,
       emailSent,
-      name,
+      name: cleanName,
       email,
       referralUrl,
       message: emailSent 
-        ? `Convite enviado por e-mail com sucesso para ${name} (${email})!`
+        ? `Convite enviado por e-mail com sucesso para ${cleanName} (${email})!`
         : `Convite cadastrado no banco, mas não foi possível disparar o e-mail (${emailError}). Compartilhe o link manualmente com seu amigo: ${referralUrl}`
     };
   } catch (err: any) {

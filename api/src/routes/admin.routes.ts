@@ -562,6 +562,7 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
       let resumeUrl = '';
       let course = '';
       let university = '';
+      let degree = '';
       let linkedinUrl = '';
       let githubUrl = '';
       let portfolioUrl = '';
@@ -638,6 +639,11 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
             university = val.trim();
           }
         }
+        else if (fieldName.includes('nivelacademico') || fieldName.includes('nível acadêmico') || fieldText.includes('nível acadêmico') || fieldText.includes('nivel academico') || fieldName.includes('nivel') || fieldText.includes('nível') || fieldName.includes('grau')) {
+          if (typeof val === 'string') {
+            degree = val.trim();
+          }
+        }
         else if (fieldName.includes('linkedin') || fieldText.includes('linkedin')) {
           if (typeof val === 'string') {
             linkedinUrl = val.trim();
@@ -680,6 +686,7 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
         full_name: name || 'Candidato Jotform',
         course: course,
         university: university,
+        degree: degree || null,
         linkedin_url: linkedinUrl || null,
         github_url: githubUrl || null,
         portfolio_url: portfolioUrl || null,
@@ -711,6 +718,7 @@ const importJotformSchema = z.object({
     resume_url: z.string().optional().nullable(),
     course: z.string().optional().nullable(),
     university: z.string().optional().nullable(),
+    degree: z.string().optional().nullable(),
     linkedin_url: z.string().optional().nullable(),
     github_url: z.string().optional().nullable(),
     portfolio_url: z.string().optional().nullable(),
@@ -783,6 +791,16 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
           city_state: user.city_state || null,
           is_currently_interning: user.is_currently_interning || false,
           bio: user.bio || null,
+          education: (user.university || user.course) ? [
+            {
+              institution: user.university || '',
+              degree: user.degree || 'Graduação',
+              fieldOfStudy: user.course || '',
+              startDate: '',
+              endDate: '',
+              current: true
+            }
+          ] : [],
           credits: 10,
           raw_import_data: user.profile_data || null
         })

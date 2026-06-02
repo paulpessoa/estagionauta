@@ -39,6 +39,7 @@ interface ExternalUser {
   avatar_url?: string
   course?: string
   university?: string
+  degree?: string | null
   linkedin_url?: string
   github_url?: string
   portfolio_url?: string
@@ -233,6 +234,7 @@ export default function ImportadorUsuarios() {
           resume_url: user.resume_url || '',
           course: user.course || '',
           university: user.university || '',
+          degree: user.degree || '',
           linkedin_url: user.linkedin_url || '',
           github_url: user.github_url || '',
           portfolio_url: user.portfolio_url || '',
@@ -291,6 +293,7 @@ export default function ImportadorUsuarios() {
           resume_url: u.resume_url || '',
           course: u.course || '',
           university: u.university || '',
+          degree: u.degree || '',
           linkedin_url: u.linkedin_url || '',
           github_url: u.github_url || '',
           portfolio_url: u.portfolio_url || '',
