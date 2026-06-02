@@ -77,14 +77,14 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     const handleResize = () => {
       const vv = window.visualViewport;
       if (!vv) return;
-      
+
       const offset = window.innerHeight - vv.height;
       setViewportOffset(offset > 0 ? offset : 0);
     };
 
     window.visualViewport.addEventListener('resize', handleResize);
     window.visualViewport.addEventListener('scroll', handleResize);
-    
+
     return () => {
       window.visualViewport?.removeEventListener('resize', handleResize);
       window.visualViewport?.removeEventListener('scroll', handleResize);
@@ -268,7 +268,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   };
 
   return (
-    <div 
+    <div
       className="fixed z-50 flex flex-col items-end right-4 left-4 sm:left-auto sm:right-6 transition-all duration-300"
       style={{ bottom: `calc(1.5rem + ${viewportOffset}px)` }}
     >

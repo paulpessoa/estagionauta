@@ -142,7 +142,6 @@ export default function Creditos() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl font-bold flex items-center gap-2">
-              <Coins className="h-8 w-8 text-yellow-500 fill-yellow-500" />
               Gestão de Créditos
             </h1>
             <p className="text-muted-foreground mt-1">

@@ -35,6 +35,13 @@ export interface Profile {
   linkedin_url: string | null
   is_currently_interning?: boolean
   curriculo_slug?: string | null
+  city_state?: string | null
+  portfolio_url?: string | null
+  github_url?: string | null
+  experiences?: any[] | null
+  education?: any[] | null
+  skills?: string[] | null
+  languages?: string[] | null
   notification_settings?: NotificationSettings
   privacy_settings?: PrivacySettings
   appearance_settings?: AppearanceSettings

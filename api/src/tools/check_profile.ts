@@ -33,6 +33,13 @@ export async function runCheckProfile(userId: string) {
       university: 'Universidade/Faculdade',
       period: 'Período',
       curriculo_slug: 'Link do Currículo Público',
+      city_state: 'Cidade/Estado',
+      portfolio_url: 'Link do Portfólio/Website',
+      github_url: 'Link do GitHub',
+      experiences: 'Experiências Profissionais',
+      education: 'Histórico Acadêmico',
+      skills: 'Competências',
+      languages: 'Idiomas'
     };
 
     const filled: string[] = [];
@@ -42,7 +49,16 @@ export async function runCheckProfile(userId: string) {
     for (const [key, label] of Object.entries(fieldsToCheck)) {
       const val = profile[key];
       values[key] = val;
-      if (val && String(val).trim() !== '') {
+      
+      const isFilled = val !== undefined && val !== null && (
+        (Array.isArray(val) && val.length > 0) ||
+        (typeof val === 'object' && Object.keys(val).length > 0 && !(val instanceof Date)) ||
+        (typeof val === 'string' && val.trim() !== '') ||
+        (typeof val === 'number') ||
+        (typeof val === 'boolean')
+      );
+
+      if (isFilled) {
         filled.push(label);
       } else {
         missing.push(label);

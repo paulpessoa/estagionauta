@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useAuth } from "@/hooks/useAuth"
 import {
   Card,
   CardContent,
@@ -49,6 +50,9 @@ import html2canvas from "html2canvas"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function GeradorCurriculos() {
+  const { profile } = useAuth()
+  const hasPrefilled = useRef(false)
+
   const [currentView, setCurrentView] = useState<"history" | "form" | "view">(
     "history"
   )
@@ -100,6 +104,70 @@ export default function GeradorCurriculos() {
     loadHistory()
     loadCredits()
   }, [])
+
+  useEffect(() => {
+    if (profile && !hasPrefilled.current) {
+      hasPrefilled.current = true
+
+      const experiencesMapped = (profile.experiences && profile.experiences.length > 0)
+        ? profile.experiences.map((exp: any) => ({
+            company: exp.company || "",
+            position: exp.position || "",
+            startDate: exp.startDate || "",
+            endDate: exp.endDate || "",
+            current: !!exp.current,
+            description: exp.description || ""
+          }))
+        : [
+            {
+              company: "",
+              position: "",
+              startDate: "",
+              endDate: "",
+              current: false,
+              description: ""
+            }
+          ];
+
+      const educationMapped = (profile.education && profile.education.length > 0)
+        ? profile.education.map((edu: any) => ({
+            institution: edu.institution || "",
+            degree: edu.degree || "",
+            fieldOfStudy: edu.fieldOfStudy || "",
+            startDate: edu.startDate || "",
+            endDate: edu.endDate || "",
+            current: !!edu.current
+          }))
+        : (profile.course || profile.university)
+          ? [
+              {
+                institution: profile.university || "",
+                degree: "",
+                fieldOfStudy: profile.course || "",
+                startDate: "",
+                endDate: "",
+                current: false
+              }
+            ]
+          : [];
+
+      setFormData((prev) => ({
+        ...prev,
+        fullName: profile.full_name || "",
+        email: profile.email || "",
+        phone: profile.phone || "",
+        location: profile.city_state || "",
+        website: profile.portfolio_url || "",
+        linkedin: profile.linkedin_url || "",
+        github: profile.github_url || "",
+        summary: profile.bio || "",
+        experiences: experiencesMapped,
+        education: educationMapped,
+        skills: profile.skills || [],
+        languages: profile.languages || []
+      }))
+    }
+  }, [profile])
 
   const loadHistory = async () => {
     setLoading(true)

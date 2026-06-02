@@ -39,6 +39,12 @@ interface ExternalUser {
   avatar_url?: string
   course?: string
   university?: string
+  linkedin_url?: string
+  github_url?: string
+  portfolio_url?: string
+  city_state?: string
+  is_currently_interning?: boolean
+  bio?: string
   created_at: string
   has_resume: boolean
   resume_url: string
@@ -227,6 +233,12 @@ export default function ImportadorUsuarios() {
           resume_url: user.resume_url || '',
           course: user.course || '',
           university: user.university || '',
+          linkedin_url: user.linkedin_url || '',
+          github_url: user.github_url || '',
+          portfolio_url: user.portfolio_url || '',
+          city_state: user.city_state || '',
+          is_currently_interning: user.is_currently_interning || false,
+          bio: user.bio || '',
           profile_data: user.profile_data || null
         }]
       }
@@ -279,6 +291,12 @@ export default function ImportadorUsuarios() {
           resume_url: u.resume_url || '',
           course: u.course || '',
           university: u.university || '',
+          linkedin_url: u.linkedin_url || '',
+          github_url: u.github_url || '',
+          portfolio_url: u.portfolio_url || '',
+          city_state: u.city_state || '',
+          is_currently_interning: u.is_currently_interning || false,
+          bio: u.bio || '',
           profile_data: u.profile_data || null
         }))
       }

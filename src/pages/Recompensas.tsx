@@ -6,14 +6,14 @@ import { Progress } from '@/components/ui/progress'
 import { apiClient } from '@/lib/apiClient'
 import { useAuth } from '@/hooks/useAuth'
 import { Link } from 'react-router-dom'
-import { 
-  Gift, 
-  CheckCircle2, 
-  Coins, 
-  ArrowRight, 
-  User, 
-  FileText, 
-  Users, 
+import {
+  Gift,
+  CheckCircle2,
+  Coins,
+  ArrowRight,
+  User,
+  FileText,
+  Users,
   Sparkles,
   Loader2,
   Lock,
@@ -74,7 +74,7 @@ export default function Recompensas() {
         toast.success(result.message || `Recompensa de ${taskName} resgatada!`, {
           icon: <Sparkles className="h-5 w-5 text-yellow-500 fill-yellow-500 animate-bounce" />
         })
-        
+
         // Refresh tasks and credit balance context
         fetchTasks()
         // We trigger a window reload event to tell the Header/Credits hooks to update balance
@@ -148,7 +148,7 @@ export default function Recompensas() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50/40 via-background to-violet-50/40 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        
+
         {/* Header */}
         <div className="text-center mb-10">
           <div className="inline-flex items-center gap-1.5 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 px-3.5 py-1 rounded-full text-xs font-bold border border-indigo-100 dark:border-indigo-900/30 mb-4 shadow-sm">
@@ -169,10 +169,10 @@ export default function Recompensas() {
           </div>
           <CardContent className="p-6 md:p-8">
             <div className="grid md:grid-cols-3 gap-6 items-center">
-              
+
               <div className="md:col-span-2 space-y-4">
                 <div className="flex justify-between items-center text-sm">
-                  <span className="font-semibold text-muted-foreground">Progresso Geral das Missões</span>
+                  <span className="font-semibold text-muted-foreground">Progresso</span>
                   <span className="font-bold text-violet-600 dark:text-violet-400">
                     {completedTasks} de {totalTasks} concluídas ({Math.round(progressPercent)}%)
                   </span>
@@ -209,28 +209,26 @@ export default function Recompensas() {
               const redirectPath = getTaskRedirectPath(task.key)
               const redirectLabel = getTaskRedirectLabel(task.key)
               const taskIcon = getTaskIcon(task.key)
-              
+
               return (
-                <Card 
-                  key={task.key} 
-                  className={`hover:shadow-md transition-all duration-300 border bg-card/40 backdrop-blur-sm overflow-hidden flex flex-col justify-between group ${
-                    task.claimed 
-                      ? 'opacity-80 border-border/40' 
-                      : task.completed 
-                        ? 'border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/[0.02]' 
-                        : 'border-border/80'
-                  }`}
+                <Card
+                  key={task.key}
+                  className={`hover:shadow-md transition-all duration-300 border bg-card/40 backdrop-blur-sm overflow-hidden flex flex-col justify-between group ${task.claimed
+                    ? 'opacity-80 border-border/40'
+                    : task.completed
+                      ? 'border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/[0.02]'
+                      : 'border-border/80'
+                    }`}
                 >
                   <CardHeader className="pb-3 flex flex-row items-start justify-between gap-4">
                     <div className="space-y-1.5 flex-1">
                       <div className="flex items-center gap-2">
-                        <div className={`p-2 rounded-lg border ${
-                          task.claimed 
-                            ? 'bg-muted border-border/30' 
-                            : task.completed 
-                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' 
-                              : 'bg-violet-600/5 border-violet-100 dark:border-violet-950/20'
-                        }`}>
+                        <div className={`p-2 rounded-lg border ${task.claimed
+                          ? 'bg-muted border-border/30'
+                          : task.completed
+                            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+                            : 'bg-violet-600/5 border-violet-100 dark:border-violet-950/20'
+                          }`}>
                           {taskIcon}
                         </div>
                         <CardTitle className="text-base font-bold tracking-tight text-foreground">{task.name}</CardTitle>
@@ -254,13 +252,13 @@ export default function Recompensas() {
                       )}
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent className="pt-2 pb-5 border-t border-border/30 bg-muted/10 dark:bg-muted/5 flex items-center justify-between gap-3">
                     <span className="text-xs text-muted-foreground font-medium">
-                      {task.claimed 
-                        ? 'Créditos creditados no saldo' 
-                        : task.completed 
-                          ? 'Clique no botão para resgatar!' 
+                      {task.claimed
+                        ? 'Créditos creditados no saldo'
+                        : task.completed
+                          ? 'Clique no botão para resgatar!'
                           : 'Requisito pendente'
                       }
                     </span>
@@ -271,7 +269,7 @@ export default function Recompensas() {
                         Resgatado
                       </Button>
                     ) : task.completed ? (
-                      <Button 
+                      <Button
                         size="sm"
                         disabled={claimingKey === task.key}
                         onClick={() => handleClaimReward(task.key, task.name)}

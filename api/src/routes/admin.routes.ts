@@ -562,6 +562,12 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
       let resumeUrl = '';
       let course = '';
       let university = '';
+      let linkedinUrl = '';
+      let githubUrl = '';
+      let portfolioUrl = '';
+      let cityState = '';
+      let isCurrentlyInterning = false;
+      let bio = '';
 
       for (const key in answers) {
         const field = answers[key];
@@ -569,6 +575,7 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
 
         const fieldName = (field.name || '').toLowerCase();
         const fieldType = (field.type || '').toLowerCase();
+        const fieldText = (field.text || '').toLowerCase();
         const val = field.answer;
 
         if (fieldType === 'control_email' || fieldName === 'email' || fieldName.includes('email')) {
@@ -582,7 +589,14 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
           } else if (typeof val === 'string') {
             name = val.trim();
           }
-        } else if (fieldName.includes('nome') || fieldName.includes('name') || fieldName.includes('completo')) {
+        }
+        // Check course first to avoid matching generic "nome"
+        else if (fieldName.includes('curso') || fieldName.includes('nomedo') || fieldName.includes('cursoe') || fieldText.includes('curso')) {
+          if (typeof val === 'string') {
+            course = val.trim();
+          }
+        }
+        else if (fieldName.includes('nome') || fieldName.includes('name') || fieldName.includes('completo')) {
           if (!name) {
             if (typeof val === 'string') {
               name = val.trim();
@@ -601,7 +615,7 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
           } else if (typeof val === 'string') {
             phone = val.trim();
           }
-        } else if (fieldName.includes('telefone') || fieldName.includes('phone') || fieldName.includes('celular')) {
+        } else if (fieldName.includes('telefone') || fieldName.includes('phone') || fieldName.includes('celular') || fieldText.includes('telefone') || fieldText.includes('celular')) {
           if (!phone) {
             if (typeof val === 'string') {
               phone = val.trim();
@@ -612,21 +626,49 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
             }
           }
         }
-        else if (fieldType === 'control_fileupload' || fieldName.includes('curriculo') || fieldName.includes('currículo') || fieldName.includes('resume') || fieldName.includes('upload')) {
+        else if (fieldType === 'control_fileupload' || fieldName.includes('curriculo') || fieldName.includes('currículo') || fieldName.includes('resume') || fieldName.includes('upload') || fieldText.includes('currículo') || fieldText.includes('curriculo') || fieldText.includes('resume')) {
           if (Array.isArray(val) && val.length > 0) {
             resumeUrl = val[0];
           } else if (typeof val === 'string') {
             resumeUrl = val;
           }
         }
-        else if (fieldName.includes('curso') || fieldName.includes('nomedo') || fieldName.includes('cursoe')) {
-          if (typeof val === 'string') {
-            course = val.trim();
-          }
-        }
-        else if (fieldName.includes('instituicao') || fieldName.includes('instituição') || fieldName.includes('universidade') || fieldName.includes('faculdade')) {
+        else if (fieldName.includes('instituicao') || fieldName.includes('instituição') || fieldName.includes('universidade') || fieldName.includes('faculdade') || fieldText.includes('instituição') || fieldText.includes('universidade') || fieldText.includes('faculdade') || fieldText.includes('escola')) {
           if (typeof val === 'string') {
             university = val.trim();
+          }
+        }
+        else if (fieldName.includes('linkedin') || fieldText.includes('linkedin')) {
+          if (typeof val === 'string') {
+            linkedinUrl = val.trim();
+          }
+        }
+        else if (fieldName.includes('github') || fieldText.includes('github')) {
+          if (typeof val === 'string') {
+            githubUrl = val.trim();
+          }
+        }
+        else if (fieldName.includes('portfolio') || fieldText.includes('portfolio') || fieldName.includes('website') || fieldText.includes('website') || fieldName.includes('site') || fieldText.includes('site')) {
+          if (typeof val === 'string') {
+            portfolioUrl = val.trim();
+          }
+        }
+        else if (fieldName.includes('cidade') || fieldText.includes('cidade') || fieldName.includes('reside') || fieldText.includes('reside') || fieldName.includes('estado') || fieldText.includes('estado')) {
+          if (typeof val === 'string') {
+            cityState = val.trim();
+          }
+        }
+        else if (fieldName.includes('estagiando') || fieldText.includes('estagiando') || fieldText.includes('estagiário') || fieldText.includes('estagiario') || fieldName.includes('estagiario') || fieldText.includes('estágio') || fieldText.includes('estagio') || fieldText.includes('já é estagiário')) {
+          if (typeof val === 'string') {
+            const v = val.toLowerCase().trim();
+            isCurrentlyInterning = v === 'sim' || v === 'yes' || v === 's' || v.startsWith('si') || v.includes('estagio') || v.includes('estágio');
+          } else if (typeof val === 'boolean') {
+            isCurrentlyInterning = val;
+          }
+        }
+        else if (fieldName.includes('brevemente') || fieldText.includes('brevemente') || fieldName.includes('sobre voce') || fieldText.includes('sobre você') || fieldName.includes('apresentacao') || fieldText.includes('apresentação') || fieldName.includes('resumo') || fieldText.includes('resumo') || fieldName.includes('fala') || fieldText.includes('fale')) {
+          if (typeof val === 'string') {
+            bio = val.trim();
           }
         }
       }
@@ -638,6 +680,12 @@ app.get('/jotform/submissions/:formId', authMiddleware, adminMiddleware, async (
         full_name: name || 'Candidato Jotform',
         course: course,
         university: university,
+        linkedin_url: linkedinUrl || null,
+        github_url: githubUrl || null,
+        portfolio_url: portfolioUrl || null,
+        city_state: cityState || null,
+        is_currently_interning: isCurrentlyInterning,
+        bio: bio || null,
         created_at: sub.created_at,
         has_resume: !!resumeUrl,
         resume_url: resumeUrl,
@@ -659,11 +707,17 @@ const importJotformSchema = z.object({
   users: z.array(z.object({
     email: z.string().email(),
     full_name: z.string(),
-    phone: z.string().optional(),
-    resume_url: z.string().optional(),
-    course: z.string().optional(),
-    university: z.string().optional(),
-    profile_data: z.any().optional()
+    phone: z.string().optional().nullable(),
+    resume_url: z.string().optional().nullable(),
+    course: z.string().optional().nullable(),
+    university: z.string().optional().nullable(),
+    linkedin_url: z.string().optional().nullable(),
+    github_url: z.string().optional().nullable(),
+    portfolio_url: z.string().optional().nullable(),
+    city_state: z.string().optional().nullable(),
+    is_currently_interning: z.boolean().optional().nullable(),
+    bio: z.string().optional().nullable(),
+    profile_data: z.any().optional().nullable()
   }))
 });
 
@@ -723,6 +777,12 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
           phone: user.phone || '',
           course: user.course || '',
           university: user.university || '',
+          linkedin_url: user.linkedin_url || null,
+          github_url: user.github_url || null,
+          portfolio_url: user.portfolio_url || null,
+          city_state: user.city_state || null,
+          is_currently_interning: user.is_currently_interning || false,
+          bio: user.bio || null,
           credits: 10,
           raw_import_data: user.profile_data || null
         })
@@ -854,7 +914,11 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
             </p>
             
             <p style="margin: 0 0 16px 0; color: #374151; font-size: 15px; line-height: 1.6;">
-              Você se inscreveu no nosso grupo no @estagiorecife e agora tem acesso a uma plataforma completa pra acelerar sua carreira. Desenvolvi o Estagionauta pra ajudar centenas de estudantes como você a se destacar no mercado de estágio.
+              Estou entrando em contato pois você se inscreveu anteriormente para fazer parte do nosso grupo de WhatsApp no perfil <strong>instagram.com/estagiorecife</strong>. Devido à correria do dia a dia, por um tempo não consegui dar a atenção e o retorno que todos vocês mereciam. Como este é um trabalho voluntário que realizo com muito carinho, peço desculpas pela demora.
+            </p>
+            
+            <p style="margin: 0 0 16px 0; color: #374151; font-size: 15px; line-height: 1.6;">
+              Pensando em como ajudar você e centenas de outros estudantes de forma automatizada e eficiente com os desafios da busca por estágio, eu desenvolvi o <strong>Estagionauta</strong>. Esta é uma plataforma completa com ferramentas gratuitas e premium para acelerar sua carreira.
             </p>
 
             <p style="margin: 0 0 20px 0; color: #374151; font-size: 15px; line-height: 1.6;">
@@ -958,7 +1022,7 @@ app.post('/jotform/import', authMiddleware, adminMiddleware, zValidator('json', 
             </p>
           </div>
         </div>`,
-        textContent: `Vem pro Estagionauta!\n\nOlá ${user.full_name},\n\nVocê se inscreveu no @estagiorecife e agora tem 10 créditos grátis para começar a usar a plataforma.\n\nAcesse agora: ${inviteLink}\n\nAqui você encontra:\n- Análise inteligente de currículo\n- Gerador de currículos\n- Simulador de entrevistas com IA\n- Rover, seu copiloto de carreira\n\nProfissional formado? Seja mentor no Menvo: https://menvo.com.br\n\nDúvidas?\nE-mail: contato@estagionauta.com.br\nWhatsApp: +55 81 99509-7377\n\nAbração,\nPaul Pessoa`,
+        textContent: `Vem pro Estagionauta!\n\nOlá ${user.full_name},\n\nEstou entrando em contato pois você se inscreveu anteriormente para fazer parte do nosso grupo de WhatsApp no perfil instagram.com/estagiorecife. Devido à correria do dia a dia, por um tempo não consegui dar a atenção e o retorno que todos vocês mereciam. Como este é um trabalho voluntário que realizo com muito carinho, peço desculpas pela demora.\n\nPensando em como ajudar você e centenas de outros estudantes de forma automatizada e eficiente com os desafios da busca por estágio, eu desenvolvi o Estagionauta. Esta é uma plataforma completa com ferramentas gratuitas e premium para acelerar sua carreira.\n\nComo você já demonstrou interesse em evoluir profissionalmente no EstagiRecife, adicionei 10 créditos gratuitos na sua conta como presente de boas-vindas para você testar todos os recursos imediatamente.\n\nAtive sua conta e resgate seus créditos aqui: ${inviteLink}\n\nAqui você encontra:\n- Análise inteligente de currículo\n- Gerador de currículos\n- Simulador de entrevistas com IA\n- Rover, seu copiloto de carreira\n\nProfissional formado? Seja mentor no Menvo: https://menvo.com.br\n\nDúvidas?\nE-mail: contato@estagionauta.com.br\nWhatsApp: +55 81 99509-7377\n\nAbração,\nPaul Pessoa`,
       };
 
       const emailResponse = await fetch('https://api.brevo.com/v3/smtp/email', {
