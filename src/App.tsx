@@ -21,11 +21,6 @@ import { BrainCircuit } from 'lucide-react';
 
 function AppLayout() {
   const { user } = useAuth();
-  const [isRoverOpen, setIsRoverOpen] = useState(false);
-
-  const handleRoverClick = () => {
-    setIsRoverOpen((prev) => !prev);
-  };
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -47,23 +42,8 @@ function AppLayout() {
       <ReviewModal />
       <CookieConsent />
 
-      {/* Floating Rover Button - Only visible for authenticated users */}
-      {user && (
-        <>
-          <button
-            onClick={handleRoverClick}
-            className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white flex items-center justify-center transition-all hover:scale-105 active:scale-95 group shadow-lg"
-            title="Rover - Assistente Inteligente"
-            style={{
-              animation: 'pulse-shadow 2s infinite'
-            }}
-          >
-            <BrainCircuit className="h-6 w-6 group-hover:rotate-12 transition-transform" />
-          </button>
-
-          <RoverDrawer isOpen={isRoverOpen} onClose={() => setIsRoverOpen(false)} />
-        </>
-      )}
+      {/* Floating Rover Widget - Only visible for authenticated users */}
+      {user && <RoverDrawer />}
 
 
       {/* Custom keyframe animation for shadow pulsing */}

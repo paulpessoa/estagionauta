@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AlertTriangle } from 'lucide-react';
+import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { apiClient } from '@/lib/apiClient';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -14,22 +13,27 @@ interface Message {
 }
 
 interface RoverDrawerProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const isWidgetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
 
   useEffect(() => {
-    if (isOpen) {
+    if (isWidgetOpen) {
       loadHistory();
     }
-  }, [isOpen]);
+  }, [isWidgetOpen]);
 
   useEffect(() => {
     scrollToBottom();
@@ -53,6 +57,58 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleToggle = () => {
+    if (isOpen !== undefined) {
+      if (isWidgetOpen) {
+        onClose?.();
+      }
+    } else {
+      setInternalIsOpen((prev) => !prev);
+    }
+  };
+
+  const startListening = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.error("Reconhecimento de voz não suportado neste navegador.");
+      return;
+    }
+
+    if (isListening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'pt-BR';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onstart = () => {
+      setIsListening(true);
+      toast.info("Ouvindo... Fale agora.");
+    };
+
+    recognition.onresult = (event: any) => {
+      const speechResult = event.results[0][0].transcript;
+      setInputValue(speechResult);
+      toast.success("Mensagem capturada com sucesso!");
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error", event.error);
+      setIsListening(false);
+      toast.error("Erro ao reconhecer voz. Tente novamente.");
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
   };
 
   const handleSendMessage = async (textToSend: string) => {
@@ -122,33 +178,28 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   };
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <>
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+      <AnimatePresence>
+        {/* Floating Chat Widget Popup */}
+        {isWidgetOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.4 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black z-40"
-          />
-
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 h-screen w-full sm:w-[480px] bg-background/90 backdrop-blur-lg border-l border-muted z-50 shadow-2xl flex flex-col"
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 30, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="w-[360px] sm:w-[400px] h-[520px] sm:h-[580px] max-h-[70vh] bg-background border border-muted shadow-2xl rounded-[28px] overflow-hidden flex flex-col mb-4 z-50"
           >
-            {/* Header */}
-            <div className="p-4 border-b border-muted/80 flex items-center justify-between bg-muted/20">
+            {/* Widget Header */}
+            <div className="bg-gradient-to-br from-violet-600/10 via-purple-500/5 to-orange-500/5 dark:from-violet-950/20 dark:via-purple-950/10 dark:to-orange-950/10 border-b border-muted/50 p-4 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-violet-500/20">
-                  <BrainCircuit className="h-5 w-5" />
-                </div>
+                <img
+                  src="/rover_avatar.png"
+                  alt="Rover"
+                  className="w-8 h-8 rounded-full border border-violet-200/50 object-cover"
+                />
                 <div>
                   <h3 className="font-bold text-sm leading-none flex items-center gap-1.5 text-foreground">
-                    Rover
+                    Rover AI
                     <span className="text-[10px] bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 font-bold px-1.5 py-0.5 rounded-full">BETA</span>
                   </h3>
                   <p className="text-[10px] text-muted-foreground mt-0.5">Assistente Inteligente do Estagionauta</p>
@@ -168,7 +219,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   </Button>
                 )}
                 <Button
-                  onClick={onClose}
+                  onClick={handleToggle}
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-muted-foreground hover:bg-muted rounded-full"
@@ -178,56 +229,62 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
               </div>
             </div>
 
-            {/* Chat Body */}
+            {/* Widget Body */}
             <div className="flex-grow overflow-hidden relative flex flex-col bg-background/50">
               <ScrollArea className="flex-grow p-4">
                 {historyLoading ? (
-                  <div className="flex flex-col items-center justify-center h-48 text-muted-foreground text-xs gap-2">
+                  <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-xs gap-2 py-20">
                     <Loader2 className="h-5 w-5 animate-spin text-primary" />
                     <span>Carregando histórico...</span>
                   </div>
                 ) : messages.length === 0 ? (
-                  <div className="py-6 flex flex-col gap-6 text-center max-w-sm mx-auto">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="h-12 w-12 rounded-full bg-violet-50 dark:bg-violet-950/40 flex items-center justify-center text-violet-600 dark:text-violet-400">
-                        <BrainCircuit className="h-7 w-7" />
-                      </div>
-                      <h4 className="font-bold text-md text-foreground">Olá, Estagionauta! 🚀</h4>
-                      <p className="text-xs text-muted-foreground leading-relaxed">
-                        Sou o Rover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo. O que deseja fazer hoje?
+                  <div className="flex flex-col gap-6 text-center max-w-sm mx-auto h-full min-h-[400px] justify-between">
+                    <div className="flex flex-col items-center gap-2 mt-6">
+                      <h4 className="font-bold text-md text-foreground">Olá! Como posso ajudar? 🚀</h4>
+                      <p className="text-xs text-muted-foreground leading-relaxed px-4">
+                        Sou o Rover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo.
                       </p>
                     </div>
 
-                    <div className="flex flex-col gap-2.5 text-left bg-muted/40 p-4 rounded-xl border border-muted/50">
-                      <span className="text-[11px] font-bold text-muted-foreground uppercase tracking-wide">Ações Rápidas</span>
+                    <div className="flex flex-col gap-2 text-left bg-muted/40 p-4 rounded-xl border border-muted/50 my-2">
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide px-1">Ações Rápidas</span>
                       <button
                         onClick={() => handleQuickAction('profile')}
-                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between"
+                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
                         <span>📋 Verificar integridade do perfil</span>
-                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('resume')}
-                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between"
+                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
                         <span>📊 Analisar meu currículo (Custo: 3 ⭐)</span>
-                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('recess')}
-                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between"
+                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
                         <span>📅 Calcular recesso de estágio</span>
-                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('credits')}
-                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between"
+                        className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
                         <span>💰 Consultar saldo de créditos</span>
-                        <Sparkles className="h-3.5 w-3.5 text-violet-500" />
+                        <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
+                    </div>
+
+                    {/* Cute Peeking Mascot at bottom */}
+                    <div className="relative flex justify-center w-full overflow-hidden mt-auto -mb-4">
+                      <img
+                        src="/rover_avatar.png"
+                        alt="Mascot Peeking"
+                        className="w-20 h-20 object-cover translate-y-6 opacity-90 transition-transform duration-300 hover:translate-y-3"
+                      />
                     </div>
                   </div>
                 ) : (
@@ -235,16 +292,19 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                     {messages.map((msg, index) => (
                       <div
                         key={index}
-                        className={`flex gap-3 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
-                          }`}
+                        className={`flex gap-2.5 max-w-[85%] ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'}`}
                       >
                         <div
-                          className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold ${msg.role === 'user'
+                          className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold overflow-hidden ${msg.role === 'user'
                             ? 'bg-violet-600 text-white'
                             : 'bg-muted border border-muted/80 text-muted-foreground'
                             }`}
                         >
-                          {msg.role === 'user' ? <User className="h-3.5 w-3.5" /> : <BrainCircuit className="h-3.5 w-3.5" />}
+                          {msg.role === 'user' ? (
+                            <User className="h-3.5 w-3.5" />
+                          ) : (
+                            <img src="/rover_avatar.png" className="h-full w-full object-cover rounded-full" />
+                          )}
                         </div>
                         <div
                           className={`p-3 rounded-2xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
@@ -258,9 +318,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                     ))}
 
                     {isLoading && (
-                      <div className="flex gap-3 max-w-[80%] mr-auto">
-                        <div className="h-7 w-7 rounded-full bg-muted border border-muted/80 flex items-center justify-center text-muted-foreground shrink-0">
-                          <BrainCircuit className="h-3.5 w-3.5 animate-pulse" />
+                      <div className="flex gap-2.5 max-w-[80%] mr-auto">
+                        <div className="h-7 w-7 rounded-full bg-muted border border-muted/80 flex items-center justify-center shrink-0 overflow-hidden">
+                          <img src="/rover_avatar.png" className="h-full w-full object-cover rounded-full" />
                         </div>
                         <div className="p-3 bg-muted/60 border border-muted/50 rounded-2xl rounded-tl-none flex items-center gap-1.5 h-9">
                           <div className="w-1.5 h-1.5 bg-violet-600 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
@@ -277,12 +337,12 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
             {/* Quick buttons bar above input */}
             {messages.length > 0 && !isLoading && (
-              <div className="px-4 py-2 border-t border-muted/40 overflow-x-auto flex gap-2 whitespace-nowrap bg-background/50 scrollbar-none">
+              <div className="px-4 py-2 border-t border-muted/40 overflow-x-auto flex gap-2 whitespace-nowrap bg-background/50 scrollbar-none shrink-0">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickAction('profile')}
-                  className="text-[11px] h-7 bg-muted/30 hover:bg-muted border-muted/60"
+                  className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
                   📋 Verificar Perfil
                 </Button>
@@ -290,7 +350,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickAction('resume')}
-                  className="text-[11px] h-7 bg-muted/30 hover:bg-muted border-muted/60"
+                  className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
                   📊 Analisar Currículo
                 </Button>
@@ -298,7 +358,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickAction('recess')}
-                  className="text-[11px] h-7 bg-muted/30 hover:bg-muted border-muted/60"
+                  className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
                   📅 Calcular Recesso
                 </Button>
@@ -306,42 +366,110 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   variant="outline"
                   size="sm"
                   onClick={() => handleQuickAction('credits')}
-                  className="text-[11px] h-7 bg-muted/30 hover:bg-muted border-muted/60"
+                  className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
                   💰 Consultar Saldo
                 </Button>
               </div>
             )}
-
-            {/* Chat Footer Input */}
-            <div className="p-4 border-t border-muted/80 bg-muted/20">
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage(inputValue);
-                }}
-                className="flex items-center gap-2"
-              >
-                <Input
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  placeholder="Converse com o Rover..."
-                  className="flex-grow bg-background/80 focus-visible:ring-violet-600"
-                  disabled={isLoading}
-                />
-                <Button
-                  type="submit"
-                  size="icon"
-                  className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shrink-0"
-                  disabled={!inputValue.trim() || isLoading}
-                >
-                  <Send className="h-4 w-4" />
-                </Button>
-              </form>
-            </div>
           </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+
+      {/* Floating Capsule (Acts as Trigger when closed, and as Input when open) */}
+      <div
+        className={`h-14 bg-white dark:bg-gray-900 border border-gray-150 dark:border-gray-800 shadow-xl rounded-full p-2 pl-3 pr-2 flex items-center gap-2 transition-all duration-300 relative before:absolute before:-inset-0.5 before:bg-gradient-to-r before:from-violet-500/20 before:via-purple-500/20 before:to-orange-500/20 before:rounded-full before:blur-md before:opacity-75 before:-z-10 ${
+          isWidgetOpen ? 'w-[360px] sm:w-[400px]' : 'cursor-pointer hover:shadow-2xl hover:scale-[1.02] active:scale-[0.98]'
+        }`}
+        onClick={() => {
+          if (!isWidgetOpen) handleToggle();
+        }}
+      >
+        {isWidgetOpen ? (
+          <>
+            {/* Circular trash/clear button on the left of input */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (messages.length > 0) {
+                  handleClearChat();
+                } else {
+                  toast.info("Nenhuma conversa para apagar.");
+                }
+              }}
+              title="Limpar Conversa"
+              className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-destructive shrink-0 transition-colors"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage(inputValue);
+              }}
+              className="flex-grow flex items-center gap-2 h-full"
+            >
+              <input
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Pergunte ao Rover..."
+                className="bg-transparent border-0 outline-none ring-0 focus:ring-0 text-sm flex-grow px-1 text-gray-900 dark:text-gray-100 disabled:opacity-50"
+                disabled={isLoading}
+                autoFocus
+              />
+              {inputValue.trim() === '' ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startListening();
+                  }}
+                  className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 ${
+                    isListening ? 'animate-pulse' : ''
+                  }`}
+                >
+                  <AudioLines className="w-3.5 h-3.5" />
+                  {isListening ? 'Ouvindo...' : 'Falar'}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  disabled={isLoading}
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  Enviar
+                </button>
+              )}
+            </form>
+          </>
+        ) : (
+          <>
+            {/* Capsule Closed Trigger */}
+            <img
+              src="/rover_avatar.png"
+              alt="Rover Mascot"
+              className="w-10 h-10 rounded-full object-cover shrink-0 border border-violet-100/50"
+            />
+            <span className="text-gray-500 dark:text-gray-400 text-sm font-medium mr-2 select-none">
+              Pergunte ao Rover
+            </span>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                startListening();
+              }}
+              className={`flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-violet-600 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-blue-500/20 transition-all hover:scale-105 active:scale-95 shrink-0 ${
+                isListening ? 'animate-pulse' : ''
+              }`}
+            >
+              <AudioLines className="w-3.5 h-3.5" />
+              {isListening ? 'Ouvindo...' : 'Falar'}
+            </button>
+          </>
+        )}
+      </div>
+    </div>
   );
 }
