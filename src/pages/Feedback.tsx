@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Star, MessageSquareCode, CheckCircle2 } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { toast } from 'sonner'
+import { apiClient } from '@/services/api'
 
 export default function Feedback() {
   const [searchParams] = useSearchParams()
@@ -17,10 +18,14 @@ export default function Feedback() {
   const [email, setEmail] = useState('')
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [source, setSource] = useState<string>('general')
+  const [showCommentField, setShowCommentField] = useState(false)
 
   useEffect(() => {
     const ratingParam = searchParams.get('rating')
     const emailParam = searchParams.get('email')
+    const sourceParam = searchParams.get('source')
+    const showCommentParam = searchParams.get('show_comment')
 
     if (ratingParam) {
       const parsedRating = parseInt(ratingParam, 10)
@@ -32,12 +37,20 @@ export default function Feedback() {
     if (emailParam) {
       setEmail(emailParam)
     }
+
+    if (sourceParam) {
+      setSource(sourceParam)
+    }
+
+    if (showCommentParam === 'true') {
+      setShowCommentField(true)
+    }
   }, [searchParams])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (rating === 0) {
-      toast.error('Por favor, escolha uma quantidade de estrelas.')
+      toast.error('Por favor, escolha uma nota.')
       return
     }
     if (!email) {
@@ -47,11 +60,26 @@ export default function Feedback() {
 
     setLoading(true)
     try {
-      const { error } = await supabase.from('feedbacks').insert({
-        rating,
-        comment: comment.trim() || null,
-        email: email.trim(),
-      })
+      let error = null;
+
+      // Use specialized endpoint for Jotform source
+      if (source === 'jotform') {
+        const response = await apiClient.post('/feedback-jotform', {
+          email: email.trim(),
+          rating,
+          comment: comment.trim() || null,
+          source,
+        })
+        error = response.error || null;
+      } else {
+        // Use default Supabase method for other sources
+        const result = await supabase.from('feedbacks').insert({
+          rating,
+          comment: comment.trim() || null,
+          email: email.trim(),
+        })
+        error = result.error;
+      }
 
       if (error) throw error
 
@@ -76,11 +104,11 @@ export default function Feedback() {
             <div className="space-y-2">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Feedback Recebido!</h2>
               <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Agradecemos imensamente pela sua opinião. Suas respostas nos ajudam a tornar o Estagionauta cada vez melhor.
+                Obrigado pela sua opinião! Suas respostas nos ajudam a melhorar cada vez mais.
               </p>
             </div>
             <Button onClick={() => navigate('/')} className="w-full bg-indigo-600 hover:bg-indigo-700">
-              Ir para o Início
+              Voltar ao Início
             </Button>
           </CardContent>
         </Card>
@@ -95,9 +123,13 @@ export default function Feedback() {
           <div className="mx-auto w-12 h-12 bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center mb-2">
             <MessageSquareCode size={24} />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">Sua opinião é fundamental</CardTitle>
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            Sua opinião importa pra gente
+          </CardTitle>
           <CardDescription className="text-gray-500 dark:text-gray-400">
-            Diga-nos o que achou da plataforma e em que podemos melhorar.
+            {source === 'jotform' 
+              ? 'O que achou desta iniciativa? Sua avaliação nos ajuda a melhorar.'
+              : 'Diga-nos o que achou da plataforma e em que podemos melhorar.'}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -137,21 +169,31 @@ export default function Feedback() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="comment" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Comentário ou Sugestão (Opcional)
-              </label>
-              <Textarea
-                id="comment"
-                placeholder="Fale pra gente o que você achou dos recursos, o que mais gostou ou o que está faltando..."
-                value={comment}
-                onChange={(e) => setComment(e.target.value)}
-                rows={5}
-                className="bg-white/50 dark:bg-gray-800/50 resize-none"
-              />
-            </div>
+            {(showCommentField || source !== 'jotform') && (
+              <div className="space-y-2">
+                <label htmlFor="comment" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {source === 'jotform' ? 'Deixe um comentário (Opcional)' : 'Comentário ou Sugestão (Opcional)'}
+                </label>
+                <Textarea
+                  id="comment"
+                  placeholder={
+                    source === 'jotform'
+                      ? 'Conte-nos o que achou desta iniciativa, o que te motivou, ou sugestões...'
+                      : 'Fale pra gente o que você achou dos recursos, o que mais gostou ou o que está faltando...'
+                  }
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
+                  rows={4}
+                  className="bg-white/50 dark:bg-gray-800/50 resize-none"
+                />
+              </div>
+            )}
 
-            <Button type="submit" disabled={loading} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow-md transition-all hover:shadow-lg">
+            <Button 
+              type="submit" 
+              disabled={loading} 
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg shadow-md transition-all hover:shadow-lg"
+            >
               {loading ? 'Enviando...' : 'Enviar Avaliação'}
             </Button>
           </form>
