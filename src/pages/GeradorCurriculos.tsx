@@ -46,7 +46,10 @@ import {
   PlusCircle,
   User,
   Edit,
-  Printer
+  Printer,
+  Bold,
+  Italic,
+  List
 } from "lucide-react"
 import { toast } from "sonner"
 import jsPDF from "jspdf"
@@ -75,6 +78,23 @@ export default function GeradorCurriculos() {
   const [template, setTemplate] = useState<"modern" | "minimalist">("minimalist")
   const [isEditingText, setIsEditingText] = useState(false)
   const [editContent, setEditContent] = useState("")
+  const [previewHtml, setPreviewHtml] = useState("")
+  const editorRef = useRef<HTMLDivElement>(null)
+
+  const executeCommand = (command: string, value: string = "") => {
+    document.execCommand(command, false, value);
+    if (editorRef.current) {
+      setPreviewHtml(editorRef.current.innerHTML);
+    }
+  };
+
+  useEffect(() => {
+    if (isEditingText && editorRef.current && selectedResume) {
+      const initialHtml = parseMarkdownToHtml(selectedResume.content);
+      editorRef.current.innerHTML = initialHtml;
+      setPreviewHtml(initialHtml);
+    }
+  }, [isEditingText, selectedResume]);
 
   // Form State
   const [formData, setFormData] = useState<ResumeProfileData>({
@@ -456,12 +476,14 @@ export default function GeradorCurriculos() {
   }
 
   const handleSaveEditText = async () => {
-    if (!selectedResume) return;
+    if (!selectedResume || !editorRef.current) return;
     setLoading(true);
     try {
+      const htmlContent = editorRef.current.innerHTML;
+      const markdownContent = parseHtmlToMarkdown(htmlContent);
       const updated = await apiClient.put<GeneratedResume>(
         `/api/generator/${selectedResume.id}`,
-        { content: editContent }
+        { content: markdownContent }
       );
       setSelectedResume(updated);
       setIsEditingText(false);
@@ -685,6 +707,63 @@ export default function GeradorCurriculos() {
 
     return headerHtml + processedLines.join("\n")
   }
+
+  const parseHtmlToMarkdown = (html: string): string => {
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    
+    const walk = (node: Node): string => {
+      if (node.nodeType === Node.TEXT_NODE) {
+        return node.nodeValue || "";
+      }
+      if (node.nodeType !== Node.ELEMENT_NODE) {
+        return "";
+      }
+      const el = node as HTMLElement;
+      const tagName = el.tagName.toLowerCase();
+      
+      let childrenContent = "";
+      for (let i = 0; i < el.childNodes.length; i++) {
+        childrenContent += walk(el.childNodes[i]);
+      }
+      
+      switch (tagName) {
+        case "h1":
+          return `# ${childrenContent.trim()}\n\n`;
+        case "h2":
+          return `## ${childrenContent.trim()}\n\n`;
+        case "h3":
+          return `### ${childrenContent.trim()}\n\n`;
+        case "strong":
+        case "b":
+          return `**${childrenContent}**`;
+        case "em":
+        case "i":
+          return `*${childrenContent}*`;
+        case "li":
+          return `* ${childrenContent.trim()}\n`;
+        case "ul":
+          return `\n${childrenContent}\n`;
+        case "p":
+          return `${childrenContent.trim()}\n\n`;
+        case "br":
+          return "\n";
+        case "div":
+          return `${childrenContent}\n`;
+        default:
+          return childrenContent;
+      }
+    };
+    
+    let markdown = walk(doc.body);
+    
+    markdown = markdown
+      .replace(/\n{3,}/g, "\n\n")
+      .replace(/\*\* \*\*/g, "")
+      .replace(/\* \*/g, "")
+      .trim();
+      
+    return markdown;
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -1738,19 +1817,86 @@ export default function GeradorCurriculos() {
 
                       {/* Dual Pane Layout */}
                       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                        {/* Left: Text Area */}
-                        <Card className="border shadow-sm flex flex-col h-[700px]">
+                        {/* Left: WYSIWYG Visual Editor */}
+                        <Card className="border shadow-sm flex flex-col h-[700px] overflow-hidden">
                           <CardHeader className="pb-3 border-b">
                             <CardTitle className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                              Editor Markdown
+                              Editor Visual (WYSIWYG)
                             </CardTitle>
                           </CardHeader>
-                          <CardContent className="p-3 flex-1 flex flex-col overflow-hidden">
-                            <textarea
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              className="font-mono text-xs md:text-sm p-4 bg-gray-50 dark:bg-gray-950 border rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full flex-1 resize-none h-full leading-relaxed text-gray-800 dark:text-gray-200"
-                              placeholder="Digite o conteúdo do seu currículo em markdown..."
+                          {/* Formatting Toolbar */}
+                          <div className="flex flex-wrap items-center gap-1 p-2 bg-gray-50 dark:bg-gray-900 border-b">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('bold')}
+                              className="h-8 w-8 p-0"
+                              title="Negrito (Ctrl+B)"
+                            >
+                              <Bold className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('italic')}
+                              className="h-8 w-8 p-0"
+                              title="Itálico (Ctrl+I)"
+                            >
+                              <Italic className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('insertUnorderedList')}
+                              className="h-8 w-8 p-0"
+                              title="Lista com Marcadores"
+                            >
+                              <List className="h-4 w-4" />
+                            </Button>
+                            <div className="w-[1px] h-6 bg-gray-200 dark:bg-gray-800 mx-1" />
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('formatBlock', 'h2')}
+                              className="h-8 px-2 text-xs font-semibold"
+                              title="Título da Seção (H2)"
+                            >
+                              Título 1
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('formatBlock', 'h3')}
+                              className="h-8 px-2 text-xs font-semibold"
+                              title="Subtítulo (H3)"
+                            >
+                              Título 2
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => executeCommand('formatBlock', 'p')}
+                              className="h-8 px-2 text-xs font-semibold"
+                              title="Texto Normal"
+                            >
+                              Parágrafo
+                            </Button>
+                          </div>
+                          <CardContent className="p-3 flex-1 overflow-hidden bg-white dark:bg-gray-950">
+                            <div
+                              ref={editorRef}
+                              contentEditable
+                              onInput={(e) => {
+                                setPreviewHtml(e.currentTarget.innerHTML);
+                              }}
+                              className="w-full h-full p-4 overflow-y-auto outline-none focus:ring-1 focus:ring-indigo-500 text-sm text-gray-800 dark:text-gray-200 prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 leading-relaxed"
+                              style={{ minHeight: "100%" }}
                             />
                           </CardContent>
                         </Card>
@@ -1780,7 +1926,7 @@ export default function GeradorCurriculos() {
                                     : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
                                 }
                                 dangerouslySetInnerHTML={{
-                                  __html: parseMarkdownToHtml(editContent)
+                                  __html: previewHtml
                                 }}
                               />
                             </div>
