@@ -96,6 +96,10 @@ export async function generateResumeAI(data: ResumeProfileData): Promise<string>
   const jobTitleLower = (data.jobTitle || '').toLowerCase();
   const isTechRole = /desenvolv|tech|software|engenharia|frontend|backend|fullstack|mobile|devops|arquitetura|produto|engineer/i.test(jobTitleLower);
 
+  // Determinar se o candidato tem pouca experiência profissional
+  const lowExperience = !data.experiences || data.experiences.length === 0 || 
+    (data.experiences.length === 1 && data.experiences[0].description.length < 150);
+
   let prompt = `Você é um recrutador especialista no mercado de trabalho brasileiro de início de carreira e triagem automatizada por ATS (Applicant Tracking Systems). Sua tarefa é estruturar e otimizar as informações do usuário em um currículo altamente competitivo para vagas de emprego e agências de estágio (CIEE, IEL, ABRE, Super Estágios).
 
 O currículo gerado DEVE obrigatoriamente respeitar as seguintes regras estruturais para evitar eliminação automática em triagens:
@@ -119,11 +123,10 @@ O currículo gerado DEVE obrigatoriamente respeitar as seguintes regras estrutur
    - INCLUIR OBRIGATORIAMENTE a disponibilidade de horário para estágios
    - Exemplo: "Estudante de Administração com foco em gestão de projetos. Disponível para estágio de 6h diárias no período vespertino."
 
-4. **EXPERIÊNCIAS PROFISSIONAIS (Inclui Voluntariado):**
-   - Listar em ordem cronológica inversa (mais recente primeiro)
-   - Usar bullets descritivos que começam com verbos de ação (Desenvolveu, Implantou, Coordenou, etc)
-   - Manter resultados quantificados e estatísticos fornecidos pelo usuário
-   - SEM reduções ou diluições do impacto
+4. **ORDENAÇÃO INTELIGENTE DE SEÇÕES (FORMAÇÃO VS EXPERIÊNCIA):**
+   ${lowExperience 
+     ? '- Como o candidato é um estudante com pouca ou nenhuma experiência profissional, a seção de **FORMAÇÃO ACADÊMICA** DEVE obrigatoriamente vir ANTES da seção de **EXPERIÊNCIAS PROFISSIONAIS**.' 
+     : '- Como o candidato possui experiência profissional robusta, a seção de **EXPERIÊNCIAS PROFISSIONAIS** deve vir ANTES da seção de **FORMAÇÃO ACADÊMICA**.'}
 
 5. **FORMAÇÃO ACADÊMICA:**
    - Nome do Curso
@@ -132,12 +135,28 @@ O currículo gerado DEVE obrigatoriamente respeitar as seguintes regras estrutur
    - Data explícita de "Previsão de Conclusão: Mês/Ano" (MANDATÓRIO para contratos de estágio)
    - Exemplo: "Administração de Empresas • Universidade Federal de Pernambuco • Previsão de Conclusão: Dezembro de 2027"
 
-6. **COMPETÊNCIAS / HABILIDADES:**
+6. **EXPERIÊNCIAS PROFISSIONAIS (Se houver):**
+   - Listar em ordem cronológica inversa (mais recente primeiro)
+   - Usar bullets descritivos que começam com verbos de ação (Desenvolveu, Implantou, Coordenou, etc)
+   - Manter resultados quantificados e estatísticos fornecidos pelo usuário
+   - SEM reduções ou diluições do impacto
+
+7. **PROJETOS DE DESTAQUE (Se houver):**
+   - Projetos acadêmicos, pessoais ou open source que demonstram competências práticas relevantes para a vaga.
+   - Formatar no padrão: `**Nome do Projeto** | Tecnologias/Link` (se houver link)
+   - Seguido de um ou dois tópicos descrevendo o escopo e o resultado do projeto.
+
+8. **CURSOS E ATIVIDADES EXTRACURRICULARES (Se houver):**
+   - Cursos complementares (Alura, Coursera, etc.), certificações e trabalhos voluntários relevantes.
+   - Formatar no padrão: `**Nome do Curso/Atividade** • Instituição | Data de conclusão`
+   - Omitir seções vazias.
+
+9. **COMPETÊNCIAS / HABILIDADES:**
    - NÃO gere listas verticais longas
    - Agrupe as competências em categorias horizontais SEPARADAS POR " | "
    - Exemplo: "Ferramentas de Mídia: Google Ads, Meta Ads | Análise: Excel, Tableau | Soft Skills: Comunicação Assertiva, Trabalho em Equipe"
 
-7. **IDIOMAS:**
+10. **IDIOMAS:**
    - Listar idiomas e respectivos níveis de forma sucinta
    - Exemplo: "Português (Nativo) | Inglês (Intermediário)"
 
@@ -177,6 +196,23 @@ Instituição: ${edu.institution}
 Grau/Curso: ${edu.degree} em ${edu.fieldOfStudy}
 Período: ${edu.startDate} a ${edu.current ? 'Atual' : edu.endDate}
 `).join('\n') : 'Nenhuma formação informada'}
+
+PROJETOS DE DESTAQUE:
+${data.projects && data.projects.length > 0 ? data.projects.map((proj, idx) => `
+Projeto ${idx + 1}:
+Nome: ${proj.name}
+Descrição: ${proj.description}
+URL/Link: ${proj.url || 'Não informado'}
+`).join('\n') : 'Nenhum projeto informado'}
+
+ATIVIDADES EXTRACURRICULARES E CURSOS COMPLEMENTARES:
+${data.extracurriculars && data.extracurriculars.length > 0 ? data.extracurriculars.map((extra, idx) => `
+Atividade ${idx + 1}:
+Nome: ${extra.name}
+Instituição: ${extra.institution || 'Não informada'}
+Período: ${extra.startDate || ''} a ${extra.endDate || ''}
+Descrição: ${extra.description || 'Não informada'}
+`).join('\n') : 'Nenhuma atividade informada'}
 
 HABILIDADES:
 ${data.skills && data.skills.length > 0 ? data.skills.join(', ') : 'Não informado'}
@@ -221,7 +257,7 @@ ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga
     messages: [
       {
         role: 'system',
-        content: 'Você é um especialista em recrutamento e ATS. Crie currículos otimizados, profissionais e adequados ao mercado brasileiro de estágios em português brasileiro. Retorne EXCLUSIVAMENTE o conteúdo em Markdown, sem comentários ou blocos de código. Siga rigorosamente as regras de estrutura, formatação de datas em português, agrupamento horizontal de habilidades e inclusão obrigatória de previsão de conclusão e disponibilidade de horário.',
+        content: 'Você é um especialista em recrutamento e ATS. Crie currículos otimizados, profissionais e adequados ao mercado brasileiro de estágios em português brasileiro. Retorne EXCLUSIVAMENTE o conteúdo em Markdown, sem comentários ou blocos de código. Siga rigorosamente as regras de estrutura, formatação de datas em português, ordenação inteligente de seções, agrupamento horizontal de habilidades e inclusão obrigatória de previsão de conclusão e disponibilidade de horário.',
       },
       {
         role: 'user',

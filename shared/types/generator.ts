@@ -16,6 +16,20 @@ export interface ResumeEducation {
   current: boolean;
 }
 
+export interface ResumeProject {
+  name: string;
+  description: string;
+  url?: string | null;
+}
+
+export interface ResumeExtracurricular {
+  name: string;
+  institution?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  description?: string | null;
+}
+
 export interface ResumeProfileData {
   fullName: string;
   email: string;
@@ -27,6 +41,8 @@ export interface ResumeProfileData {
   summary: string;
   experiences: ResumeExperience[];
   education: ResumeEducation[];
+  projects?: ResumeProject[];
+  extracurriculars?: ResumeExtracurricular[];
   skills: string[];
   languages?: string[];
   jobTitle?: string | null;

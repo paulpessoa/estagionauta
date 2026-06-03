@@ -25,6 +25,20 @@ const resumeEducationSchema = z.object({
   current: z.boolean().default(false),
 });
 
+const resumeProjectSchema = z.object({
+  name: z.string().min(1, 'Nome do projeto é obrigatório'),
+  description: z.string().min(1, 'Descrição do projeto é obrigatória'),
+  url: z.string().optional().nullable().default(''),
+});
+
+const resumeExtracurricularSchema = z.object({
+  name: z.string().min(1, 'Nome do curso/atividade é obrigatório'),
+  institution: z.string().optional().nullable().default(''),
+  startDate: z.string().optional().nullable().default(''),
+  endDate: z.string().optional().nullable().default(''),
+  description: z.string().optional().nullable().default(''),
+});
+
 const generateResumeSchema = z.object({
   fullName: z.string().min(1, 'Nome completo é obrigatório'),
   email: z.string().email('E-mail inválido'),
@@ -36,6 +50,8 @@ const generateResumeSchema = z.object({
   summary: z.string().min(10, 'Resumo profissional deve ter pelo menos 10 caracteres'),
   experiences: z.array(resumeExperienceSchema).default([]),
   education: z.array(resumeEducationSchema).default([]),
+  projects: z.array(resumeProjectSchema).optional().default([]),
+  extracurriculars: z.array(resumeExtracurricularSchema).optional().default([]),
   skills: z.array(z.string()).min(1, 'Adicione pelo menos 1 habilidade'),
   languages: z.array(z.string()).optional().default([]),
   jobTitle: z.string().optional().nullable(),

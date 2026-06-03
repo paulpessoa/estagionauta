@@ -20,7 +20,9 @@ import {
   GeneratedResume,
   ResumeProfileData,
   ResumeExperience,
-  ResumeEducation
+  ResumeEducation,
+  ResumeProject,
+  ResumeExtracurricular
 } from "@/../shared/types/generator"
 import {
   FileText,
@@ -91,6 +93,8 @@ export default function GeradorCurriculos() {
       }
     ],
     education: [],
+    projects: [],
+    extracurriculars: [],
     skills: [],
     languages: [],
     jobTitle: "",
@@ -164,6 +168,8 @@ export default function GeradorCurriculos() {
         summary: profile.bio || "",
         experiences: experiencesMapped,
         education: educationMapped,
+        projects: [],
+        extracurriculars: [],
         skills: profile.skills || [],
         languages: profile.languages || []
       }))
@@ -286,6 +292,64 @@ export default function GeradorCurriculos() {
       const newEdus = [...prev.education]
       newEdus[index] = { ...newEdus[index], [field]: value }
       return { ...prev, education: newEdus }
+    })
+  }
+
+  const handleAddProject = () => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: [
+        ...(prev.projects || []),
+        { name: "", description: "", url: "" }
+      ]
+    }))
+  }
+
+  const handleRemoveProject = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      projects: (prev.projects || []).filter((_, i) => i !== index)
+    }))
+  }
+
+  const handleProjectChange = (
+    index: number,
+    field: keyof ResumeProject,
+    value: any
+  ) => {
+    setFormData((prev) => {
+      const newProjs = [...(prev.projects || [])]
+      newProjs[index] = { ...newProjs[index], [field]: value }
+      return { ...prev, projects: newProjs }
+    })
+  }
+
+  const handleAddExtracurricular = () => {
+    setFormData((prev) => ({
+      ...prev,
+      extracurriculars: [
+        ...(prev.extracurriculars || []),
+        { name: "", institution: "", startDate: "", endDate: "", description: "" }
+      ]
+    }))
+  }
+
+  const handleRemoveExtracurricular = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      extracurriculars: (prev.extracurriculars || []).filter((_, i) => i !== index)
+    }))
+  }
+
+  const handleExtracurricularChange = (
+    index: number,
+    field: keyof ResumeExtracurricular,
+    value: any
+  ) => {
+    setFormData((prev) => {
+      const newExtras = [...(prev.extracurriculars || [])]
+      newExtras[index] = { ...newExtras[index], [field]: value }
+      return { ...prev, extracurriculars: newExtras }
     })
   }
 
@@ -730,13 +794,20 @@ export default function GeradorCurriculos() {
                     className="w-full"
                   >
                     <div className="bg-gray-100/60 dark:bg-gray-900/60 p-2 border-b border-gray-200 dark:border-gray-800">
-                      <TabsList className="grid grid-cols-4 w-full h-auto bg-transparent gap-1">
+                      <TabsList className="grid grid-cols-5 w-full h-auto bg-transparent gap-1">
                         <TabsTrigger
                           value="personal"
                           className="py-2.5 text-xs sm:text-sm flex gap-1.5 items-center"
                         >
                           <User className="h-4 w-4 shrink-0" />{" "}
                           <span className="hidden sm:inline">Pessoais</span>
+                        </TabsTrigger>
+                        <TabsTrigger
+                          value="education"
+                          className="py-2.5 text-xs sm:text-sm flex gap-1.5 items-center"
+                        >
+                          <GraduationCap className="h-4 w-4 shrink-0" />{" "}
+                          <span className="hidden sm:inline">Formação</span>
                         </TabsTrigger>
                         <TabsTrigger
                           value="experiences"
@@ -746,11 +817,11 @@ export default function GeradorCurriculos() {
                           <span className="hidden sm:inline">Experiências</span>
                         </TabsTrigger>
                         <TabsTrigger
-                          value="education"
+                          value="projects_activities"
                           className="py-2.5 text-xs sm:text-sm flex gap-1.5 items-center"
                         >
-                          <GraduationCap className="h-4 w-4 shrink-0" />{" "}
-                          <span className="hidden sm:inline">Formação</span>
+                          <FileText className="h-4 w-4 shrink-0" />{" "}
+                          <span className="hidden sm:inline">Projetos & Cursos</span>
                         </TabsTrigger>
                         <TabsTrigger
                           value="skills"
@@ -900,7 +971,7 @@ export default function GeradorCurriculos() {
 
                         <div className="flex justify-end pt-4">
                           <Button
-                            onClick={() => setActiveTab("experiences")}
+                            onClick={() => setActiveTab("education")}
                             className="bg-indigo-600 hover:bg-indigo-700"
                           >
                             Próximo Passo
@@ -1062,12 +1133,12 @@ export default function GeradorCurriculos() {
                         <div className="flex justify-between pt-4">
                           <Button
                             variant="outline"
-                            onClick={() => setActiveTab("personal")}
+                            onClick={() => setActiveTab("education")}
                           >
                             Voltar
                           </Button>
                           <Button
-                            onClick={() => setActiveTab("education")}
+                            onClick={() => setActiveTab("projects_activities")}
                             className="bg-indigo-600 hover:bg-indigo-700"
                           >
                             Próximo Passo
@@ -1223,6 +1294,171 @@ export default function GeradorCurriculos() {
                         <div className="flex justify-between pt-4">
                           <Button
                             variant="outline"
+                            onClick={() => setActiveTab("personal")}
+                          >
+                            Voltar
+                          </Button>
+                          <Button
+                            onClick={() => setActiveTab("experiences")}
+                            className="bg-indigo-600 hover:bg-indigo-700"
+                          >
+                            Próximo Passo
+                          </Button>
+                        </div>
+                      </TabsContent>
+
+                      {/* TAB 4: PROJECTS & EXTRACURRICULAR ACTIVITIES */}
+                      <TabsContent value="projects_activities" className="space-y-6 mt-0">
+                        {/* PROJECTS SECTION */}
+                        <div className="space-y-6">
+                          <div className="flex justify-between items-center border-b pb-2 mb-4">
+                            <h3 className="text-lg font-bold">Projetos de Destaque</h3>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleAddProject}
+                              className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 flex items-center gap-1"
+                            >
+                              <Plus className="h-4 w-4" /> Adicionar Projeto
+                            </Button>
+                          </div>
+
+                          {(formData.projects || []).length === 0 ? (
+                            <div className="text-center py-8 border rounded bg-gray-50/50 dark:bg-gray-900/20 text-gray-500 text-sm">
+                              Nenhum projeto de destaque cadastrado. Adicione projetos acadêmicos, pessoais ou TCC.
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {(formData.projects || []).map((proj, index) => (
+                                <Card key={index} className="relative border p-4 bg-gray-50/30 dark:bg-gray-900/10">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleRemoveProject(index)}
+                                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 h-8 w-8 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                  >
+                                    <Trash2 className="h-4.5 w-4.5" />
+                                  </Button>
+
+                                  <div className="grid sm:grid-cols-2 gap-4 mt-2">
+                                    <div className="space-y-2">
+                                      <Label>Nome do Projeto *</Label>
+                                      <Input
+                                        value={proj.name}
+                                        onChange={(e) => handleProjectChange(index, "name", e.target.value)}
+                                        placeholder="ex: Sistema de Agendamento, App de Finanças"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Link / URL (opcional)</Label>
+                                      <Input
+                                        value={proj.url || ""}
+                                        onChange={(e) => handleProjectChange(index, "url", e.target.value)}
+                                        placeholder="ex: github.com/usuario/projeto"
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-2 mt-4">
+                                    <Label>Descrição e Tecnologias *</Label>
+                                    <Textarea
+                                      rows={2}
+                                      value={proj.description}
+                                      onChange={(e) => handleProjectChange(index, "description", e.target.value)}
+                                      placeholder="Descreva o objetivo do projeto e as ferramentas utilizadas (ex: Desenvolvido com React e Firebase para gerenciar...)"
+                                    />
+                                  </div>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* EXTRACURRICULARS SECTION */}
+                        <div className="space-y-6 pt-4 border-t">
+                          <div className="flex justify-between items-center border-b pb-2 mb-4">
+                            <h3 className="text-lg font-bold">Cursos & Atividades Extracurriculares</h3>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={handleAddExtracurricular}
+                              className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 flex items-center gap-1"
+                            >
+                              <Plus className="h-4 w-4" /> Adicionar Atividade
+                            </Button>
+                          </div>
+
+                          {(formData.extracurriculars || []).length === 0 ? (
+                            <div className="text-center py-8 border rounded bg-gray-50/50 dark:bg-gray-900/20 text-gray-500 text-sm">
+                              Nenhum curso complementar ou voluntariado cadastrado.
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              {(formData.extracurriculars || []).map((extra, index) => (
+                                <Card key={index} className="relative border p-4 bg-gray-50/30 dark:bg-gray-900/10">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => handleRemoveExtracurricular(index)}
+                                    className="absolute top-2 right-2 text-gray-400 hover:text-red-500 h-8 w-8 hover:bg-red-50 dark:hover:bg-red-950/20"
+                                  >
+                                    <Trash2 className="h-4.5 w-4.5" />
+                                  </Button>
+
+                                  <div className="grid sm:grid-cols-2 gap-4 mt-2">
+                                    <div className="space-y-2">
+                                      <Label>Nome do Curso / Atividade *</Label>
+                                      <Input
+                                        value={extra.name}
+                                        onChange={(e) => handleExtracurricularChange(index, "name", e.target.value)}
+                                        placeholder="ex: Curso de Web Design, Trabalho Voluntário de Apoio Escolar"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Instituição / Organização</Label>
+                                      <Input
+                                        value={extra.institution || ""}
+                                        onChange={(e) => handleExtracurricularChange(index, "institution", e.target.value)}
+                                        placeholder="ex: Alura, Udemy, Cruz Vermelha"
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Data de Início</Label>
+                                      <Input
+                                        type="month"
+                                        value={extra.startDate || ""}
+                                        onChange={(e) => handleExtracurricularChange(index, "startDate", e.target.value)}
+                                      />
+                                    </div>
+                                    <div className="space-y-2">
+                                      <Label>Data de Conclusão</Label>
+                                      <Input
+                                        type="month"
+                                        value={extra.endDate || ""}
+                                        onChange={(e) => handleExtracurricularChange(index, "endDate", e.target.value)}
+                                      />
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-2 mt-4">
+                                    <Label>Descrição (opcional)</Label>
+                                    <Textarea
+                                      rows={2}
+                                      value={extra.description || ""}
+                                      onChange={(e) => handleExtracurricularChange(index, "description", e.target.value)}
+                                      placeholder="Descreva brevemente o que aprendeu ou realizou nesta atividade."
+                                    />
+                                  </div>
+                                </Card>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+
+                        {/* NAV BUTTONS */}
+                        <div className="flex justify-between pt-6 border-t">
+                          <Button
+                            variant="outline"
                             onClick={() => setActiveTab("experiences")}
                           >
                             Voltar
@@ -1236,7 +1472,7 @@ export default function GeradorCurriculos() {
                         </div>
                       </TabsContent>
 
-                      {/* TAB 4: SKILLS & TARGET JOB */}
+                      {/* TAB 5: SKILLS & TARGET JOB */}
                       <TabsContent value="skills" className="space-y-6 mt-0">
                         <div>
                           <h3 className="text-lg font-bold border-b pb-2 mb-4">
@@ -1393,7 +1629,7 @@ export default function GeradorCurriculos() {
                         <div className="flex justify-between pt-6 border-t">
                           <Button
                             variant="outline"
-                            onClick={() => setActiveTab("education")}
+                            onClick={() => setActiveTab("projects_activities")}
                           >
                             Voltar
                           </Button>
