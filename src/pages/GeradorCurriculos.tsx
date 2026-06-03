@@ -68,6 +68,7 @@ export default function GeradorCurriculos() {
   const [copied, setCopied] = useState(false)
   const [userCredits, setUserCredits] = useState<number | null>(null)
   const resumeRef = useRef<HTMLDivElement>(null)
+  const [template, setTemplate] = useState<"modern" | "minimalist">("minimalist")
 
   // Form State
   const [formData, setFormData] = useState<ResumeProfileData>({
@@ -409,14 +410,20 @@ export default function GeradorCurriculos() {
       let heightLeft = imgHeight
       let position = 0
 
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
-      heightLeft -= pageHeight
-
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight
-        pdf.addPage()
+      if (template === "minimalist") {
+        // Force exactly one page for minimalist template to match single-page A4
+        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, 297)
+      } else {
+        // Multi-page export logic for other templates
         pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
         heightLeft -= pageHeight
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight
+          pdf.addPage()
+          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+          heightLeft -= pageHeight
+        }
       }
 
       const formattedName = selectedResume.title
@@ -433,51 +440,159 @@ export default function GeradorCurriculos() {
   }
 
   const parseMarkdownToHtml = (md: string) => {
-    // Basic Markdown to HTML converter
-    const html = md
-      .replace(
-        /^# (.*$)/gim,
-        '<h1 class="text-3xl font-extrabold text-gray-900 border-b pb-2 mb-4 mt-6 uppercase tracking-wide">$1</h1>'
-      )
-      .replace(
-        /^## (.*$)/gim,
-        '<h2 class="text-xl font-bold text-indigo-700 border-b border-gray-200 pb-1 mb-3 mt-6 uppercase">$1</h2>'
-      )
-      .replace(
-        /^### (.*$)/gim,
-        '<h3 class="text-lg font-bold text-gray-800 mb-2 mt-4">$1</h3>'
-      )
-      .replace(
-        /^\* (.*$)/gim,
-        '<li class="ml-5 list-disc text-gray-700 leading-relaxed mb-1">$1</li>'
-      )
-      .replace(
-        /^- (.*$)/gim,
-        '<li class="ml-5 list-disc text-gray-700 leading-relaxed mb-1">$1</li>'
-      )
-      .replace(
-        /\*\*(.*)\*\*/gim,
-        '<strong class="font-semibold text-gray-900">$1</strong>'
-      )
-      .replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
-      .replace(
-        /`(.*)`/gim,
-        '<code class="px-1.5 py-0.5 bg-gray-100 rounded text-sm font-mono text-red-600">$1</code>'
-      )
-      .split("\n")
-      .map((line) => {
-        if (!line.trim()) return '<div class="h-2"></div>'
-        if (
-          line.startsWith("<h") ||
-          line.startsWith("<li") ||
-          line.startsWith("<div")
+    if (template === "modern") {
+      const html = md
+        .replace(
+          /^# (.*$)/gim,
+          '<h1 class="text-3xl font-extrabold text-gray-900 border-b pb-2 mb-4 mt-6 uppercase tracking-wide">$1</h1>'
         )
-          return line
-        return `<p class="text-gray-700 leading-relaxed mb-2 text-justify">${line}</p>`
-      })
-      .join("\n")
+        .replace(
+          /^## (.*$)/gim,
+          '<h2 class="text-xl font-bold text-indigo-700 border-b border-gray-200 pb-1 mb-3 mt-6 uppercase">$1</h2>'
+        )
+        .replace(
+          /^### (.*$)/gim,
+          '<h3 class="text-lg font-bold text-gray-800 mb-2 mt-4">$1</h3>'
+        )
+        .replace(
+          /^\* (.*$)/gim,
+          '<li class="ml-5 list-disc text-gray-700 leading-relaxed mb-1">$1</li>'
+        )
+        .replace(
+          /^- (.*$)/gim,
+          '<li class="ml-5 list-disc text-gray-700 leading-relaxed mb-1">$1</li>'
+        )
+        .replace(
+          /\*\*(.*)\*\*/gim,
+          '<strong class="font-semibold text-gray-900">$1</strong>'
+        )
+        .replace(/\*(.*)\*/gim, '<em class="italic">$1</em>')
+        .replace(
+          /`(.*)`/gim,
+          '<code class="px-1.5 py-0.5 bg-gray-100 rounded text-sm font-mono text-red-600">$1</code>'
+        )
+        .split("\n")
+        .map((line) => {
+          if (!line.trim()) return '<div class="h-2"></div>'
+          if (
+            line.startsWith("<h") ||
+            line.startsWith("<li") ||
+            line.startsWith("<div")
+          )
+            return line
+          return `<p class="text-gray-700 leading-relaxed mb-2 text-justify">${line}</p>`
+        })
+        .join("\n")
 
-    return html
+      return html
+    }
+
+    // MINIMALIST TEMPLATE PARSER
+    const lines = md.split("\n")
+    let name = ""
+    let contactLines: string[] = []
+    let processedLines: string[] = []
+    let state: "header" | "body" = "header"
+
+    // Regex to match flex headers (experience, education)
+    const flexHeaderRegex = /^([\s\S]*?\*\*[\s\S]*?\*\*[^*]*?)\s*(?:[|•]|\s-\s)\s*([^*]*?(?:meses|ano|\d{4}|Atual|Jan|Fev|Mar|Abr|Mai|Jun|Jul|Ago|Set|Out|Nov|Dez|jan|fev|mar|abr|mai|jun|jul|ago|set|out|nov|dez|conclusão|previsão).*)$/i
+
+    const parseInline = (txt: string) => {
+      return txt
+        .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-black">$1</strong>')
+        .replace(/\*(.*?)\*/g, '<em class="italic text-gray-800">$1</em>')
+    }
+
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim()
+
+      // Skip empty lines
+      if (!line) {
+        processedLines.push('<div class="h-1"></div>')
+        continue
+      }
+
+      // Candidate Name (# header)
+      if (line.startsWith("# ")) {
+        name = line.substring(2).trim()
+        continue
+      }
+
+      // If we are in the header state, and we haven't seen a section title (##), 
+      // then any text line is part of the header (location, email, phone, links).
+      if (state === "header" && !line.startsWith("##")) {
+        contactLines.push(line)
+        continue
+      }
+
+      // Section Header (## header)
+      if (line.startsWith("## ")) {
+        state = "body"
+        const sectionTitle = line.substring(3).trim()
+        processedLines.push(
+          `<h2 class="text-[13px] font-bold uppercase tracking-wider text-black border-b border-black pb-0.5 mt-3.5 mb-2">${sectionTitle}</h2>`
+        )
+        continue
+      }
+
+      // Subheadings (### header)
+      if (line.startsWith("### ")) {
+        const subTitle = line.substring(4).trim()
+        processedLines.push(
+          `<h3 class="text-[12px] font-semibold text-gray-900 mb-0.5 mt-1.5">${parseInline(subTitle)}</h3>`
+        )
+        continue
+      }
+
+      // Flex headers for experience/education
+      const flexMatch = line.match(flexHeaderRegex)
+      if (flexMatch) {
+        const leftSide = parseInline(flexMatch[1].trim())
+        const rightSide = parseInline(flexMatch[2].trim())
+        processedLines.push(
+          `<div class="flex justify-between items-baseline mb-0.5 text-[12px]"><span class="font-semibold text-black">${leftSide}</span><span class="text-gray-600 text-[11px] shrink-0 ml-4">${rightSide}</span></div>`
+        )
+        continue
+      }
+
+      // Bullet points (* or -)
+      if (line.startsWith("* ") || line.startsWith("- ")) {
+        const bulletText = line.substring(2).trim()
+        processedLines.push(
+          `<li class="ml-4 list-disc text-gray-700 text-[11.5px] leading-relaxed mb-0.5 text-justify">${parseInline(bulletText)}</li>`
+        )
+        continue
+      }
+
+      // Regular paragraph
+      processedLines.push(
+        `<p class="text-gray-700 text-[11.5px] leading-relaxed mb-1.5 text-justify">${parseInline(line)}</p>`
+      )
+    }
+
+    // Build the header
+    let headerHtml = ""
+    if (name) {
+      headerHtml += `<div class="text-center mb-4">`
+      headerHtml += `<h1 class="text-[24px] font-extrabold text-black tracking-wide uppercase mb-0.5">${name}</h1>`
+      
+      if (contactLines.length > 0) {
+        const rawContact = contactLines.join(" • ")
+        const cleanedContact = rawContact
+          .replace(/\\•/g, "•")
+          .replace(/•+/g, "•")
+          .replace(/\|+/g, "•")
+          .split("•")
+          .map((item) => item.trim().replace(/^[-*\s]+/, ""))
+          .filter((item) => item && item !== "Não informado" && !item.toLowerCase().includes("dados de contato"))
+          .join(" • ")
+
+        headerHtml += `<div class="text-[11.5px] text-gray-600 font-normal">${cleanedContact}</div>`
+      }
+      headerHtml += `</div>`
+    }
+
+    return headerHtml + processedLines.join("\n")
   }
 
   return (
@@ -1315,7 +1430,19 @@ export default function GeradorCurriculos() {
                       {selectedResume.title}
                     </h2>
 
-                    <div className="flex gap-2 w-full sm:w-auto justify-end">
+                    <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
+                      <div className="flex items-center gap-1.5 mr-2">
+                        <span className="text-xs text-gray-500 font-medium">Modelo:</span>
+                        <select
+                          value={template}
+                          onChange={(e) => setTemplate(e.target.value as any)}
+                          className="text-xs bg-gray-50 dark:bg-gray-800 border rounded p-1 text-gray-700 dark:text-gray-200 cursor-pointer"
+                        >
+                          <option value="minimalist">ATS Minimalista (Uma Página)</option>
+                          <option value="modern">Moderno (Colorido)</option>
+                        </select>
+                      </div>
+
                       <Button
                         variant="outline"
                         size="sm"
@@ -1350,11 +1477,19 @@ export default function GeradorCurriculos() {
                   <div className="overflow-x-auto p-1 bg-gray-200 dark:bg-gray-800/50 rounded-xl border flex justify-center shadow-inner">
                     <div
                       ref={resumeRef}
-                      className="bg-white text-gray-900 p-8 sm:p-12 w-[210mm] min-h-[297mm] shadow-2xl rounded-sm print:shadow-none print:p-0 my-4"
+                      className={
+                        template === "minimalist"
+                          ? "bg-white text-black p-8 w-[210mm] h-[297mm] max-h-[297mm] overflow-hidden shadow-2xl rounded-sm print:shadow-none print:p-0 my-4 flex flex-col font-sans"
+                          : "bg-white text-gray-900 p-8 sm:p-12 w-[210mm] min-h-[297mm] shadow-2xl rounded-sm print:shadow-none print:p-0 my-4"
+                      }
                       style={{ contentVisibility: "auto" }}
                     >
                       <div
-                        className="prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
+                        className={
+                          template === "minimalist"
+                            ? "text-black"
+                            : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
+                        }
                         dangerouslySetInnerHTML={{
                           __html: parseMarkdownToHtml(selectedResume.content)
                         }}
