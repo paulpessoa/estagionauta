@@ -1969,13 +1969,12 @@ export default function GeradorCurriculos() {
                           </Button>
 
                           <Button
-                            variant="outline"
-                            size="sm"
                             onClick={() => window.print()}
-                            className="flex items-center gap-1.5 text-xs sm:text-sm border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                            size="sm"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 text-xs sm:text-sm shadow"
                           >
                             <Printer className="h-4 w-4" />
-                            Imprimir PDF (Nativo)
+                            Imprimir PDF
                           </Button>
 
                           <Button
@@ -1990,20 +1989,6 @@ export default function GeradorCurriculos() {
                               <Copy className="h-4 w-4" />
                             )}
                             Copiar Markdown
-                          </Button>
-
-                          <Button
-                            disabled={isExporting}
-                            onClick={exportPDF}
-                            size="sm"
-                            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 text-xs sm:text-sm shadow"
-                          >
-                            {isExporting ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Download className="h-4 w-4" />
-                            )}
-                            Exportar PDF
                           </Button>
                         </div>
                       </div>
