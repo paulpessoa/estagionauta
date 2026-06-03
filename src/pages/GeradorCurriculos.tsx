@@ -52,8 +52,6 @@ import {
   List
 } from "lucide-react"
 import { toast } from "sonner"
-import jsPDF from "jspdf"
-import html2canvas from "html2canvas"
 import { motion, AnimatePresence } from "framer-motion"
 
 export default function GeradorCurriculos() {
@@ -71,7 +69,6 @@ export default function GeradorCurriculos() {
   )
   const [loading, setLoading] = useState(false)
   const [generating, setGenerating] = useState(false)
-  const [isExporting, setIsExporting] = useState(false)
   const [copied, setCopied] = useState(false)
   const [userCredits, setUserCredits] = useState<number | null>(null)
   const resumeRef = useRef<HTMLDivElement>(null)
@@ -90,7 +87,7 @@ export default function GeradorCurriculos() {
 
   useEffect(() => {
     if (isEditingText && editorRef.current && selectedResume) {
-      const initialHtml = parseMarkdownToHtml(selectedResume.content);
+      const initialHtml = getResumeHtml(selectedResume.content);
       editorRef.current.innerHTML = initialHtml;
       setPreviewHtml(initialHtml);
     }
@@ -480,10 +477,9 @@ export default function GeradorCurriculos() {
     setLoading(true);
     try {
       const htmlContent = editorRef.current.innerHTML;
-      const markdownContent = parseHtmlToMarkdown(htmlContent);
       const updated = await apiClient.put<GeneratedResume>(
         `/api/generator/${selectedResume.id}`,
-        { content: markdownContent }
+        { content: htmlContent }
       );
       setSelectedResume(updated);
       setIsEditingText(false);
@@ -500,56 +496,8 @@ export default function GeradorCurriculos() {
     if (!selectedResume) return
     navigator.clipboard.writeText(selectedResume.content)
     setCopied(true)
-    toast.success("Markdown copiado para a área de transferência!")
+    toast.success("Conteúdo copiado para a área de transferência!")
     setTimeout(() => setCopied(false), 2000)
-  }
-
-  const exportPDF = async () => {
-    if (!resumeRef.current || !selectedResume) return
-    setIsExporting(true)
-    try {
-      const element = resumeRef.current
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#ffffff"
-      })
-      const imgData = canvas.toDataURL("image/jpeg", 0.85)
-      const pdf = new jsPDF("p", "mm", "a4")
-
-      const imgWidth = 210
-      const pageHeight = 295
-      const imgHeight = (canvas.height * imgWidth) / canvas.width
-      let heightLeft = imgHeight
-      let position = 0
-
-      if (template === "minimalist") {
-        // Force exactly one page for minimalist template to match single-page A4
-        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, 297)
-      } else {
-        // Multi-page export logic for other templates
-        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight)
-        heightLeft -= pageHeight
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight
-          pdf.addPage()
-          pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight)
-          heightLeft -= pageHeight
-        }
-      }
-
-      const formattedName = selectedResume.title
-        .replace(/\s+/g, "_")
-        .toLowerCase()
-      pdf.save(`${formattedName}.pdf`)
-      toast.success("PDF baixado com sucesso!")
-    } catch (err) {
-      console.error("Erro ao exportar PDF:", err)
-      toast.error("Não foi possível gerar o PDF.")
-    } finally {
-      setIsExporting(false)
-    }
   }
 
   const parseMarkdownToHtml = (md: string) => {
@@ -708,61 +656,11 @@ export default function GeradorCurriculos() {
     return headerHtml + processedLines.join("\n")
   }
 
-  const parseHtmlToMarkdown = (html: string): string => {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    
-    const walk = (node: Node): string => {
-      if (node.nodeType === Node.TEXT_NODE) {
-        return node.nodeValue || "";
-      }
-      if (node.nodeType !== Node.ELEMENT_NODE) {
-        return "";
-      }
-      const el = node as HTMLElement;
-      const tagName = el.tagName.toLowerCase();
-      
-      let childrenContent = "";
-      for (let i = 0; i < el.childNodes.length; i++) {
-        childrenContent += walk(el.childNodes[i]);
-      }
-      
-      switch (tagName) {
-        case "h1":
-          return `# ${childrenContent.trim()}\n\n`;
-        case "h2":
-          return `## ${childrenContent.trim()}\n\n`;
-        case "h3":
-          return `### ${childrenContent.trim()}\n\n`;
-        case "strong":
-        case "b":
-          return `**${childrenContent}**`;
-        case "em":
-        case "i":
-          return `*${childrenContent}*`;
-        case "li":
-          return `* ${childrenContent.trim()}\n`;
-        case "ul":
-          return `\n${childrenContent}\n`;
-        case "p":
-          return `${childrenContent.trim()}\n\n`;
-        case "br":
-          return "\n";
-        case "div":
-          return `${childrenContent}\n`;
-        default:
-          return childrenContent;
-      }
-    };
-    
-    let markdown = walk(doc.body);
-    
-    markdown = markdown
-      .replace(/\n{3,}/g, "\n\n")
-      .replace(/\*\* \*\*/g, "")
-      .replace(/\* \*/g, "")
-      .trim();
-      
-    return markdown;
+  const getResumeHtml = (content: string) => {
+    if (/<(p|h[1-6]|ul|li|strong|em|div|span|b|i)\b[^>]*>/i.test(content)) {
+      return content;
+    }
+    return parseMarkdownToHtml(content);
   };
 
   return (
@@ -2012,7 +1910,7 @@ export default function GeradorCurriculos() {
                                 : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
                             }
                             dangerouslySetInnerHTML={{
-                              __html: parseMarkdownToHtml(selectedResume.content)
+                              __html: getResumeHtml(selectedResume.content)
                             }}
                           />
                         </div>
