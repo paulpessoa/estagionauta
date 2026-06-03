@@ -258,14 +258,46 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
     const MAX_LOOPS = 5;
 
     while (loopCount < MAX_LOOPS) {
-      const response = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
-        messages: apiMessages,
-        tools: roverTools,
-        tool_choice: 'auto',
-        temperature: 0.7,
-        max_tokens: 4096,
-      });
+      let response;
+      try {
+        response = await groq.chat.completions.create({
+          model: 'llama-3.3-70b-versatile',
+          messages: apiMessages,
+          tools: roverTools,
+          tool_choice: 'auto',
+          temperature: 0.7,
+          max_tokens: 4096,
+        });
+      } catch (primaryErr: any) {
+        console.error('[Rover] Primary Groq model (llama-3.3-70b-versatile) failed, attempting fallback...', primaryErr.message);
+        
+        try {
+          response = await groq.chat.completions.create({
+            model: 'llama-3.1-8b-instant',
+            messages: apiMessages,
+            tools: roverTools,
+            tool_choice: 'auto',
+            temperature: 0.7,
+            max_tokens: 4096,
+          });
+        } catch (secondaryErr: any) {
+          console.error('[Rover] Fallback Groq model (llama-3.1-8b-instant) failed:', secondaryErr.message);
+          
+          if (openaiClient) {
+            console.log('[Rover] Attempting fallback to OpenAI gpt-4o-mini...');
+            response = await openaiClient.chat.completions.create({
+              model: 'gpt-4o-mini',
+              messages: apiMessages,
+              tools: roverTools,
+              tool_choice: 'auto',
+              temperature: 0.7,
+              max_tokens: 4096,
+            });
+          } else {
+            throw secondaryErr;
+          }
+        }
+      }
 
       const choice = response.choices[0];
       const aiMsg = choice.message;

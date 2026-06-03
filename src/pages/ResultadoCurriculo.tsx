@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge'
 import { JobFitAnalysis } from '@/components/analysis/JobFitAnalysis'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
-import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2, Trash2, Edit2, Check, X } from 'lucide-react'
+import { Download, Mail, Share2, ArrowLeft, Medal, UsersRound, Star, Send, Loader2, Trash2, Edit2, Check, X, AlertTriangle } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useCredits } from '@/hooks/useCredits'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -678,28 +679,36 @@ ${analysis.name}`)
           </CardHeader>
           <CardContent>
             <div className="h-64 md:h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <RadarChart data={radarData}>
-                  <PolarGrid />
-                  <PolarAngleAxis
-                    dataKey="habilidade"
-                    tick={{ fontSize: isMobile ? 10 : 12 }}
-                  />
-                  <PolarRadiusAxis
-                    angle={30}
-                    domain={[0, 10]}
-                    tick={{ fontSize: isMobile ? 8 : 10 }}
-                  />
-                  <Radar
-                    name="Notas"
-                    dataKey="valor"
-                    stroke="#2B4C7E"
-                    fill="#66A5AD"
-                    fillOpacity={0.3}
-                  />
-                  <Tooltip />
-                </RadarChart>
-              </ResponsiveContainer>
+              <ErrorBoundary fallback={
+                <div className="h-full flex flex-col items-center justify-center text-center p-6 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-xl bg-blue-100/10 dark:bg-blue-950/10">
+                  <AlertTriangle className="h-8 w-8 text-blue-600 dark:text-blue-400 mb-2 animate-pulse" />
+                  <p className="text-sm font-semibold text-blue-800 dark:text-blue-200">Não foi possível carregar o gráfico de radar</p>
+                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">Ocorreu um erro na renderização do componente visual.</p>
+                </div>
+              }>
+                <ResponsiveContainer width="100%" height="100%">
+                  <RadarChart data={radarData}>
+                    <PolarGrid />
+                    <PolarAngleAxis
+                      dataKey="habilidade"
+                      tick={{ fontSize: isMobile ? 10 : 12 }}
+                    />
+                    <PolarRadiusAxis
+                      angle={30}
+                      domain={[0, 10]}
+                      tick={{ fontSize: isMobile ? 8 : 10 }}
+                    />
+                    <Radar
+                      name="Notas"
+                      dataKey="valor"
+                      stroke="#2B4C7E"
+                      fill="#66A5AD"
+                      fillOpacity={0.3}
+                    />
+                    <Tooltip />
+                  </RadarChart>
+                </ResponsiveContainer>
+              </ErrorBoundary>
             </div>
           </CardContent>
         </Card>

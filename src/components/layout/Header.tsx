@@ -81,7 +81,7 @@ const NavLinks = ({
           Agências
         </Link>
         <Link
-          to="/analises/new"
+          to="/analises"
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
         >

@@ -217,7 +217,10 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
       if (data.error) {
         toast.error(data.error);
-        setMessages((prev) => prev.slice(0, -1));
+        setMessages((prev) => [
+          ...prev,
+          { role: 'assistant', content: `⚠️ ${data.error}` }
+        ]);
         return;
       }
 
@@ -227,7 +230,10 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     } catch (err: any) {
       console.error('Error sending message to rover:', err);
       toast.error(err.message || 'Erro de conexão com o assistente.');
-      setMessages((prev) => prev.slice(0, -1));
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: '⚠️ Erro de conexão com o assistente. Verifique sua conexão e tente novamente.' }
+      ]);
     } finally {
       setIsLoading(false);
     }
