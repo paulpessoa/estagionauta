@@ -510,11 +510,11 @@ export default function GeradorCurriculos() {
     try {
       const element = resumeRef.current
       const canvas = await html2canvas(element, {
-        scale: 2.5,
+        scale: 2,
         useCORS: true,
         backgroundColor: "#ffffff"
       })
-      const imgData = canvas.toDataURL("image/png")
+      const imgData = canvas.toDataURL("image/jpeg", 0.85)
       const pdf = new jsPDF("p", "mm", "a4")
 
       const imgWidth = 210
@@ -525,16 +525,16 @@ export default function GeradorCurriculos() {
 
       if (template === "minimalist") {
         // Force exactly one page for minimalist template to match single-page A4
-        pdf.addImage(imgData, "PNG", 0, 0, imgWidth, 297)
+        pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, 297)
       } else {
         // Multi-page export logic for other templates
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+        pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight)
         heightLeft -= pageHeight
 
         while (heightLeft >= 0) {
           position = heightLeft - imgHeight
           pdf.addPage()
-          pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight)
+          pdf.addImage(imgData, "JPEG", 0, position, imgWidth, imgHeight)
           heightLeft -= pageHeight
         }
       }
