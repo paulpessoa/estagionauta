@@ -73,7 +73,7 @@ estagionauta/
 ├── api/          ← Backend (Hono.js)
 ├── shared/       ← Shared types between frontend & backend
 ├── supabase/     ← Migrations & config
-└── DESIGN.md     ← Visual design system
+└── docs/         ← Documentation & design system (DESIGN.md)
 ```
 
 ## Security Rules (CRITICAL)
