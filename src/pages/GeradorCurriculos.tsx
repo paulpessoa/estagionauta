@@ -44,7 +44,9 @@ import {
   Phone,
   Link as LinkIcon,
   PlusCircle,
-  User
+  User,
+  Edit,
+  Printer
 } from "lucide-react"
 import { toast } from "sonner"
 import jsPDF from "jspdf"
@@ -71,6 +73,8 @@ export default function GeradorCurriculos() {
   const [userCredits, setUserCredits] = useState<number | null>(null)
   const resumeRef = useRef<HTMLDivElement>(null)
   const [template, setTemplate] = useState<"modern" | "minimalist">("minimalist")
+  const [isEditingText, setIsEditingText] = useState(false)
+  const [editContent, setEditContent] = useState("")
 
   // Form State
   const [formData, setFormData] = useState<ResumeProfileData>({
@@ -203,6 +207,8 @@ export default function GeradorCurriculos() {
     try {
       const data = await apiClient.get<GeneratedResume>(`/api/generator/${id}`)
       setSelectedResume(data)
+      setEditContent(data.content)
+      setIsEditingText(false)
       setCurrentView("view")
     } catch (err) {
       console.error("Erro ao carregar detalhes do currículo:", err)
@@ -432,6 +438,8 @@ export default function GeradorCurriculos() {
         formData
       )
       setSelectedResume(result)
+      setEditContent(result.content)
+      setIsEditingText(false)
       setResumes((prev) => [
         { id: result.id, title: result.title, created_at: result.createdAt },
         ...prev
@@ -446,6 +454,25 @@ export default function GeradorCurriculos() {
       setGenerating(false)
     }
   }
+
+  const handleSaveEditText = async () => {
+    if (!selectedResume) return;
+    setLoading(true);
+    try {
+      const updated = await apiClient.put<GeneratedResume>(
+        `/api/generator/${selectedResume.id}`,
+        { content: editContent }
+      );
+      setSelectedResume(updated);
+      setIsEditingText(false);
+      toast.success("Alterações salvas com sucesso!");
+    } catch (err: any) {
+      console.error("Erro ao salvar currículo:", err);
+      toast.error(err.message || "Não foi possível salvar as alterações.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCopyMarkdown = () => {
     if (!selectedResume) return
@@ -1660,78 +1687,207 @@ export default function GeradorCurriculos() {
               {/* VIEW 3: RENDERED VIEW */}
               {currentView === "view" && selectedResume && (
                 <div className="space-y-6">
-                  {/* Actions bar */}
-                  <div className="flex flex-wrap justify-between items-center bg-white dark:bg-gray-900 border p-4 rounded-xl gap-3 shadow-sm">
-                    <h2 className="font-bold text-sm sm:text-base hidden sm:inline-block max-w-xs truncate">
-                      {selectedResume.title}
-                    </h2>
+                  {isEditingText ? (
+                    <>
+                      {/* Actions bar for editing */}
+                      <div className="flex flex-wrap justify-between items-center bg-white dark:bg-gray-900 border p-4 rounded-xl gap-3 shadow-sm">
+                        <div className="flex items-center gap-2">
+                          <Edit className="h-5 w-5 text-indigo-500" />
+                          <h2 className="font-bold text-sm sm:text-base">
+                            Modo de Edição — {selectedResume.title}
+                          </h2>
+                        </div>
 
-                    <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
-                      <div className="flex items-center gap-1.5 mr-2">
-                        <span className="text-xs text-gray-500 font-medium">Modelo:</span>
-                        <select
-                          value={template}
-                          onChange={(e) => setTemplate(e.target.value as any)}
-                          className="text-xs bg-gray-50 dark:bg-gray-800 border rounded p-1 text-gray-700 dark:text-gray-200 cursor-pointer"
-                        >
-                          <option value="minimalist">ATS Minimalista (Uma Página)</option>
-                          <option value="modern">Moderno (Colorido)</option>
-                        </select>
+                        <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
+                          <div className="flex items-center gap-1.5 mr-2">
+                            <span className="text-xs text-gray-500 font-medium">Modelo:</span>
+                            <select
+                              value={template}
+                              onChange={(e) => setTemplate(e.target.value as any)}
+                              className="text-xs bg-gray-50 dark:bg-gray-800 border rounded p-1 text-gray-700 dark:text-gray-200 cursor-pointer"
+                            >
+                              <option value="minimalist">ATS Minimalista (Uma Página)</option>
+                              <option value="modern">Moderno (Colorido)</option>
+                            </select>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setIsEditingText(false)}
+                            className="flex items-center gap-1.5 text-xs sm:text-sm border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          >
+                            Cancelar
+                          </Button>
+
+                          <Button
+                            onClick={handleSaveEditText}
+                            disabled={loading}
+                            size="sm"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 text-xs sm:text-sm shadow"
+                          >
+                            {loading ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Check className="h-4 w-4" />
+                            )}
+                            Salvar Alterações
+                          </Button>
+                        </div>
                       </div>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={handleCopyMarkdown}
-                        className="flex items-center gap-1.5 text-xs sm:text-sm border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20"
-                      >
-                        {copied ? (
-                          <Check className="h-4 w-4" />
-                        ) : (
-                          <Copy className="h-4 w-4" />
-                        )}
-                        Copiar Markdown
-                      </Button>
+                      {/* Dual Pane Layout */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+                        {/* Left: Text Area */}
+                        <Card className="border shadow-sm flex flex-col h-[700px]">
+                          <CardHeader className="pb-3 border-b">
+                            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                              Editor Markdown
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-3 flex-1 flex flex-col overflow-hidden">
+                            <textarea
+                              value={editContent}
+                              onChange={(e) => setEditContent(e.target.value)}
+                              className="font-mono text-xs md:text-sm p-4 bg-gray-50 dark:bg-gray-950 border rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 w-full flex-1 resize-none h-full leading-relaxed text-gray-800 dark:text-gray-200"
+                              placeholder="Digite o conteúdo do seu currículo em markdown..."
+                            />
+                          </CardContent>
+                        </Card>
 
-                      <Button
-                        disabled={isExporting}
-                        onClick={exportPDF}
-                        size="sm"
-                        className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 text-xs sm:text-sm shadow"
-                      >
-                        {isExporting ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <Download className="h-4 w-4" />
-                        )}
-                        Exportar PDF
-                      </Button>
-                    </div>
-                  </div>
+                        {/* Right: Rendered live preview */}
+                        <Card className="border shadow-sm flex flex-col h-[700px] overflow-hidden">
+                          <CardHeader className="pb-3 border-b bg-gray-50/50 dark:bg-gray-950/20">
+                            <CardTitle className="text-sm font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                              Visualização A4
+                            </CardTitle>
+                          </CardHeader>
+                          <CardContent className="p-3 flex-1 overflow-auto bg-gray-100 dark:bg-gray-800/40 flex justify-center">
+                            <div
+                              ref={resumeRef}
+                              id="resume-print-area"
+                              className={
+                                template === "minimalist"
+                                  ? "bg-white text-black p-8 w-[210mm] h-[297mm] max-h-[297mm] overflow-hidden shadow-md rounded-sm font-sans my-4 flex flex-col"
+                                  : "bg-white text-gray-900 p-8 sm:p-12 w-[210mm] min-h-[297mm] shadow-md rounded-sm my-4"
+                              }
+                              style={{ contentVisibility: "auto" }}
+                            >
+                              <div
+                                className={
+                                  template === "minimalist"
+                                    ? "text-black"
+                                    : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
+                                }
+                                dangerouslySetInnerHTML={{
+                                  __html: parseMarkdownToHtml(editContent)
+                                }}
+                              />
+                            </div>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Actions bar */}
+                      <div className="flex flex-wrap justify-between items-center bg-white dark:bg-gray-900 border p-4 rounded-xl gap-3 shadow-sm">
+                        <h2 className="font-bold text-sm sm:text-base hidden sm:inline-block max-w-xs truncate">
+                          {selectedResume.title}
+                        </h2>
 
-                  {/* Rendered Resume sheet */}
-                  <div className="overflow-x-auto p-1 bg-gray-200 dark:bg-gray-800/50 rounded-xl border flex justify-center shadow-inner">
-                    <div
-                      ref={resumeRef}
-                      className={
-                        template === "minimalist"
-                          ? "bg-white text-black p-8 w-[210mm] h-[297mm] max-h-[297mm] overflow-hidden shadow-2xl rounded-sm print:shadow-none print:p-0 my-4 flex flex-col font-sans"
-                          : "bg-white text-gray-900 p-8 sm:p-12 w-[210mm] min-h-[297mm] shadow-2xl rounded-sm print:shadow-none print:p-0 my-4"
-                      }
-                      style={{ contentVisibility: "auto" }}
-                    >
-                      <div
-                        className={
-                          template === "minimalist"
-                            ? "text-black"
-                            : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
-                        }
-                        dangerouslySetInnerHTML={{
-                          __html: parseMarkdownToHtml(selectedResume.content)
-                        }}
-                      />
-                    </div>
-                  </div>
+                        <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end items-center">
+                          <div className="flex items-center gap-1.5 mr-2">
+                            <span className="text-xs text-gray-500 font-medium">Modelo:</span>
+                            <select
+                              value={template}
+                              onChange={(e) => setTemplate(e.target.value as any)}
+                              className="text-xs bg-gray-50 dark:bg-gray-800 border rounded p-1 text-gray-700 dark:text-gray-200 cursor-pointer"
+                            >
+                              <option value="minimalist">ATS Minimalista (Uma Página)</option>
+                              <option value="modern">Moderno (Colorido)</option>
+                            </select>
+                          </div>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setEditContent(selectedResume.content);
+                              setIsEditingText(true);
+                            }}
+                            className="flex items-center gap-1.5 text-xs sm:text-sm border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20"
+                          >
+                            <Edit className="h-4 w-4" />
+                            Editar Texto
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.print()}
+                            className="flex items-center gap-1.5 text-xs sm:text-sm border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          >
+                            <Printer className="h-4 w-4" />
+                            Imprimir PDF (Nativo)
+                          </Button>
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleCopyMarkdown}
+                            className="flex items-center gap-1.5 text-xs sm:text-sm border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-950/20"
+                          >
+                            {copied ? (
+                              <Check className="h-4 w-4" />
+                            ) : (
+                              <Copy className="h-4 w-4" />
+                            )}
+                            Copiar Markdown
+                          </Button>
+
+                          <Button
+                            disabled={isExporting}
+                            onClick={exportPDF}
+                            size="sm"
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white flex items-center gap-1.5 text-xs sm:text-sm shadow"
+                          >
+                            {isExporting ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Download className="h-4 w-4" />
+                            )}
+                            Exportar PDF
+                          </Button>
+                        </div>
+                      </div>
+
+                      {/* Rendered Resume sheet */}
+                      <div className="overflow-x-auto p-1 bg-gray-200 dark:bg-gray-800/50 rounded-xl border flex justify-center shadow-inner">
+                        <div
+                          ref={resumeRef}
+                          id="resume-print-area"
+                          className={
+                            template === "minimalist"
+                              ? "bg-white text-black p-8 w-[210mm] h-[297mm] max-h-[297mm] overflow-hidden shadow-2xl rounded-sm print:shadow-none print:p-0 my-4 flex flex-col font-sans"
+                              : "bg-white text-gray-900 p-8 sm:p-12 w-[210mm] min-h-[297mm] shadow-2xl rounded-sm print:shadow-none print:p-0 my-4"
+                          }
+                          style={{ contentVisibility: "auto" }}
+                        >
+                          <div
+                            className={
+                              template === "minimalist"
+                                ? "text-black"
+                                : "prose prose-sm max-w-none prose-headings:text-gray-900 prose-p:text-gray-700"
+                            }
+                            dangerouslySetInnerHTML={{
+                              __html: parseMarkdownToHtml(selectedResume.content)
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </motion.div>

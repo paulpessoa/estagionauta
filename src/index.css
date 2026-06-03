@@ -105,3 +105,62 @@
 body.hide-footer-inside-simulator footer {
   display: none !important;
 }
+
+@media print {
+  /* Hide structural elements and non-print items */
+  header, footer, nav, aside, button, .no-print, #action-buttons, [role="dialog"], .rover-drawer {
+    display: none !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+  }
+
+  /* Reset body and html settings for standard A4 page size */
+  html, body {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Target the resume container and make it occupy exactly a single A4 page */
+  #resume-print-area {
+    visibility: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    padding: 15mm !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    page-break-after: avoid !important;
+    page-break-before: avoid !important;
+    page-break-inside: avoid !important;
+    z-index: 9999999 !important;
+  }
+
+  /* Hide everything else */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Ensure the print container and its contents are visible */
+  #resume-print-area,
+  #resume-print-area * {
+    visibility: visible !important;
+  }
+}

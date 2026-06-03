@@ -200,6 +200,58 @@ app.post('/', authMiddleware, zValidator('json', generateResumeSchema), async (c
   }
 });
 
+// PUT /api/generator/:id - Update generated resume content/title
+app.put('/:id', authMiddleware, zValidator('json', z.object({
+  content: z.string().min(10, 'Conteúdo deve ter pelo menos 10 caracteres'),
+  title: z.string().optional(),
+})), async (c) => {
+  const user = c.get('user');
+  const id = c.req.param('id');
+  const body = c.req.valid('json');
+
+  try {
+    const { data: existingResume, error: fetchError } = await supabaseAdmin
+      .from('generated_resumes')
+      .select('id')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (fetchError || !existingResume) {
+      return c.json({ error: 'Currículo não encontrado ou não autorizado' }, 404);
+    }
+
+    const updateData: any = { content: body.content };
+    if (body.title) {
+      updateData.title = body.title;
+    }
+
+    const { data: updatedResume, error: updateError } = await supabaseAdmin
+      .from('generated_resumes')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating resume:', updateError);
+      return c.json({ error: 'Erro ao salvar alterações do currículo' }, 500);
+    }
+
+    return c.json({
+      id: updatedResume.id,
+      userId: updatedResume.user_id,
+      title: updatedResume.title,
+      profileData: updatedResume.profile_data,
+      content: updatedResume.content,
+      createdAt: updatedResume.created_at,
+    });
+  } catch (err) {
+    console.error('Generator update error:', err);
+    return c.json({ error: 'Erro interno no servidor' }, 500);
+  }
+});
+
 // DELETE /api/generator/:id - Delete generated resume
 app.delete('/:id', authMiddleware, async (c) => {
   const user = c.get('user');

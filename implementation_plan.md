@@ -680,6 +680,55 @@ Substituir a integração anterior do Supabase pela integração direta com a AP
 ### Manual Verification
 - Acessar `/admin/importador` como Administrador, inserir a chave de API do Jotform (ou usar a do `.env`), escolher o formulário desejado e validar que a listagem de candidatos e currículos carrega perfeitamente.
 
+---
+
+# 🖊️ Editor de Currículo Otimizado com Visualização Inline e Impressão Nativa
+
+## Resumo do Objetivo
+Adicionar suporte a edição manual de texto do currículo gerado por IA para que o usuário possa realizar ajustes finos em tempo real sem consumir novos créditos, utilizando um layout de coluna dupla (Edição Markdown / Preview A4), com persistência no banco de dados e impressão em PDF de alta qualidade via browser print.
+
+## Decisões Confirmadas (Alinhadas com o Usuário)
+- **Editor**: Editor de Markdown em Split Screen (lado a lado com o preview) para manter a compatibilidade direta com a estrutura de texto/markdown do banco de dados, sem o overhead de conversão do EditorJS.
+- **Score/Checklist**: Removido do escopo por recomendação do usuário para evitar inconsistências com o módulo principal de "Análise de Currículo".
+- **Impressão**: Impressão nativa do navegador (`window.print()`) utilizando estilos de mídia CSS `@media print` para ocultar os elementos de navegação e formatar o currículo em PDF vetorial/selecionável de alta definição.
+
+## Alterações Propostas
+
+### 1. Backend
+
+#### [MODIFY] [generator.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/generator.routes.ts)
+- **`PUT /api/generator/:id`**: Rota protegida por autenticação para salvar o conteúdo editado do currículo. Valida os campos `content` e `title` usando Zod e atualiza o registro na tabela `generated_resumes`.
+
+### 2. Frontend
+
+#### [MODIFY] [GeradorCurriculos.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/GeradorCurriculos.tsx)
+- Adicionar estado `isEditingText` (boolean) e `editContent` (string) para gerenciar o modo de edição de texto.
+- No modo de visualização (`currentView === "view"`), adicionar um botão **"Editar Texto"** na barra de ações.
+- Quando o modo de edição estiver ativo:
+  - Exibir layout de duas colunas:
+    - **Esquerda**: Área de texto (`textarea` estilizada com fonte mono, bordas suaves, rolagem independente) pré-preenchida com o conteúdo markdown atual do currículo.
+    - **Direita**: O preview A4 renderizando as edições em tempo real.
+  - Na barra de ações superior, exibir os botões **"Salvar"** (chama o endpoint `PUT` no backend, salva as alterações localmente e desativa a edição) e **"Cancelar"** (descarta as edições locais).
+- Adicionar um ID exclusivo ao container do currículo (`id="resume-print-area"`) para uso do CSS de impressão.
+- Substituir o botão "Exportar PDF" por duas opções (ou adicionar uma nova):
+  - **"Exportar PDF (Imagem)"**: A lógica existente com jsPDF para download imediato.
+  - **"Imprimir PDF (Nativo/Texto)"**: Chama `window.print()` abrindo o painel do navegador para salvamento em alta definição selecionável.
+
+#### [MODIFY] [index.css](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/index.css)
+- Adicionar regras `@media print` personalizadas:
+  - Ocultar `header`, `footer`, botões, modais, drawer e elementos não-currículo (`display: none !important`).
+  - Isolar e redimensionar `#resume-print-area` para ocupar exatamente as dimensões físicas da folha A4 (`210mm` x `297mm`) com margens e fundo branco puro.
+
+## Plano de Verificação
+
+### Testes Manuais
+1. Gerar ou selecionar um currículo salvo e clicar em **"Editar Texto"**.
+2. Modificar algumas linhas de texto no painel esquerdo e verificar se o preview no painel direito atualiza instantaneamente.
+3. Clicar em **"Cancelar"** e garantir que as alterações foram descartadas.
+4. Clicar em **"Editar Texto"** de novo, fazer alterações, clicar em **"Salvar"** e validar a persistência após recarregar.
+5. Clicar em **"Imprimir PDF"** e verificar se o diálogo de impressão exibe apenas a folha do currículo de forma limpa e com texto selecionável.
+
+
 
 
 

@@ -139,6 +139,17 @@
 - [x] Frontend: Integrar ação em bloco "Cadastrar & Enviar Convites" que executa a importação no backend
 - [x] Verificação: Validar build do frontend, backend e rodar testes do Vitest (46/46 specs passando)
 
+## 9. Editor de Currículo Otimizado com Visualização Inline e Impressão Nativa
+
+- [x] Backend: Adicionar rota `PUT /api/generator/:id` para atualizar o conteúdo e título do currículo
+- [x] CSS: Adicionar estilos `@media print` personalizados em `src/index.css` para ocultar elementos extras e redimensionar `#resume-print-area` para A4
+- [x] Frontend: Adicionar estado `isEditingText` e `editContent` em `src/pages/GeradorCurriculos.tsx`
+- [x] Frontend: Criar layout de coluna dupla (Editor à esquerda com textarea mono, Preview à direita) em modo de edição
+- [x] Frontend: Implementar botões de ação (Salvar via `PUT /api/generator/:id`, Cancelar) no editor
+- [x] Frontend: Adicionar botão "Imprimir PDF (Nativo)" na barra de ações utilizando `window.print()` e adicionando ID `#resume-print-area` no container
+- [x] Verificação: Garantir que o build compila e as modificações funcionam perfeitamente
+
+
 
 
 
