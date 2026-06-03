@@ -107,6 +107,11 @@ body.hide-footer-inside-simulator footer {
 }
 
 @media print {
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
   /* Hide structural elements and non-print items */
   header, footer, nav, aside, button, .no-print, #action-buttons, [role="dialog"], .rover-drawer {
     display: none !important;
