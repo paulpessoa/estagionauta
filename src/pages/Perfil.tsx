@@ -14,8 +14,11 @@ import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { supabase } from '@/integrations/supabase/client'
+import { useQueryClient } from '@tanstack/react-query'
+import { queryKeys } from '@/lib/queryKeys'
 
 export default function Perfil() {
+  const queryClient = useQueryClient()
   const { user, profile } = useAuth()
   const { toast } = useToast()
 
@@ -155,8 +158,8 @@ export default function Perfil() {
         description: "Seus dados foram salvos com sucesso.",
       })
       
-      // Forçar reload após salvar para sincronizar tudo
-      window.location.reload()
+      // Invalida o cache do perfil para recarregar reativamente os dados na tela
+      queryClient.invalidateQueries({ queryKey: queryKeys.profile.all })
     } catch (error: any) {
       console.error('Error saving profile:', error)
       toast({
@@ -201,7 +204,7 @@ export default function Perfil() {
   }
 
   const handleAvatarUpdate = () => {
-    window.location.reload()
+    queryClient.invalidateQueries({ queryKey: queryKeys.profile.all })
   }
 
   // Experiências handlers

@@ -171,4 +171,27 @@ export async function executeRoverTool(
   }
 }
 
+export const toolInvalidations: Record<string, string[]> = {
+  // Modifica Perfil
+  'update_profile': ['profile'],
+  
+  // Modifica Créditos
+  'redeem_coupon': ['credits', 'profile'],
+  'buy_credits': ['credits'],
+  'start_interview': ['credits'],
+  'analyze_resume': ['credits'],
+  'claim_task_reward': ['credits'],
+  
+  // Modifica Candidaturas
+  'add_candidatura': ['candidatures'],
+  'update_candidatura': ['candidatures'],
+  
+  // Modifica Indicações
+  'invite_friend': ['referrals'],
+  
+  // Modifica Agências
+  'submit_agency_review': ['agencies'],
+  'create_agency': ['agencies'],
+};
+
 

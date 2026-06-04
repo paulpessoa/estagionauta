@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { Profile } from '@/types/profile'
+import { queryKeys } from '@/lib/queryKeys'
 
 async function fetchProfile(userId: string): Promise<Profile | null> {
   try {
@@ -19,7 +20,7 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
 
 export function useUserProfile(userId: string | null) {
   return useQuery({
-    queryKey: ['profile', userId],
+    queryKey: userId ? queryKeys.profile.detail(userId) : queryKeys.profile.all,
     queryFn: () => (userId ? fetchProfile(userId) : Promise.resolve(null)),
     enabled: !!userId,
     staleTime: 1000 * 60 * 5, // 5 minutes cache

@@ -5,6 +5,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiClient } from '@/lib/apiClient';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQueryClient } from '@tanstack/react-query';
+import { queryKeys, type QueryDomain } from '@/lib/queryKeys';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -18,6 +20,7 @@ interface RoverDrawerProps {
 }
 
 export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
+  const queryClient = useQueryClient();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -217,7 +220,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     setIsLoading(true);
 
     try {
-      const data = await apiClient.post<{ response?: string; error?: string; reason?: string }>(
+      const data = await apiClient.post<{ response?: string; error?: string; reason?: string; invalidates?: string[] }>(
         '/api/rover/message',
         { message: textToSend }
       );
@@ -233,6 +236,15 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
 
       if (data.response) {
         setMessages((prev) => [...prev, { role: 'assistant', content: data.response! }]);
+      }
+
+      if (data.invalidates && data.invalidates.length > 0) {
+        data.invalidates.forEach((domain) => {
+          const key = domain as QueryDomain;
+          if (queryKeys[key]) {
+            queryClient.invalidateQueries({ queryKey: queryKeys[key].all });
+          }
+        });
       }
     } catch (err: any) {
       console.error('Error sending message to rover:', err);

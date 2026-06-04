@@ -4,7 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { checkAbuse, logAbuse } from '../services/abuse.service.js';
-import { roverTools, executeRoverTool } from '../tools/registry.js';
+import { roverTools, executeRoverTool, toolInvalidations } from '../tools/registry.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
 
@@ -265,6 +265,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
     let loopCount = 0;
     let finalResponseText = '';
     const MAX_LOOPS = 5;
+    const invalidatedDomains = new Set<string>();
 
     while (loopCount < MAX_LOOPS) {
       let response;
@@ -340,6 +341,10 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
           let toolResult;
           try {
             toolResult = await executeRoverTool(toolName, toolArgs, user.id);
+            const domains = toolInvalidations[toolName];
+            if (domains) {
+              domains.forEach(d => invalidatedDomains.add(d));
+            }
           } catch (toolError: any) {
             console.error(`Error running tool ${toolName}:`, toolError);
             toolResult = { error: toolError.message || 'Erro ao executar ferramenta.' };
@@ -408,7 +413,10 @@ Como posso ajudar você hoje?`;
       });
     }
 
-    return c.json({ response: finalResponseText });
+    return c.json({
+      response: finalResponseText,
+      invalidates: Array.from(invalidatedDomains),
+    });
   } catch (err: any) {
     console.error('Rover processing error:', err);
     return c.json({ error: 'Desculpe, ocorreu um erro interno ao processar sua mensagem.' }, 500);
