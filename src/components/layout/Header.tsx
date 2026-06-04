@@ -83,7 +83,14 @@ const NavLinks = ({
         >
           Candidaturas
         </Link>
-        {/* STANDBY: Indicar Amigos, Agências — rotas mantidas, menu oculto para MVP */}
+        <Link
+          to="/agencias"
+          className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
+          onClick={onLinkClick}
+        >
+          Mapa de Agências
+        </Link>
+        {/* STANDBY: Indicar Amigos — rotas mantidas, menu oculto para MVP */}
       </div>
       <AuthRequiredModal
         isOpen={showAuthModal}
@@ -417,6 +424,16 @@ export function Header() {
                               Análises de Currículo
                             </Link>
                           </Button>
+
+                          <Button variant="ghost" asChild className="justify-start">
+                            <Link
+                              to="/agencias"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <MapPin className="mr-2 h-4 w-4" />
+                              Mapa de Agências
+                            </Link>
+                          </Button>
                         </>
                       )}
 
@@ -571,6 +588,12 @@ export function Header() {
                         <Link to="/candidaturas">
                           <Kanban className="mr-2 h-4 w-4" />
                           Candidaturas
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/agencias">
+                          <MapPin className="mr-2 h-4 w-4" />
+                          Mapa de Agências
                         </Link>
                       </DropdownMenuItem>
                     </>
