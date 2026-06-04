@@ -25,6 +25,7 @@ import {
   ChevronDown,
   Shield,
   Kanban,
+  MapPin,
 } from "lucide-react"
 
 import { useState } from "react"
