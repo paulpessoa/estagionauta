@@ -323,9 +323,7 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="right" className="w-80">
               <div className="flex flex-col space-y-6 pt-6">
-                {(!user || !profile) && (
-                  <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
-                )}
+                <NavLinks mobile onLinkClick={() => setMobileMenuOpen(false)} />
 
                 {!isSupabaseAvailable && (
                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
@@ -392,51 +390,6 @@ export function Header() {
                           Dashboard
                         </Link>
                       </Button>
-
-                      {/* MVP Core: Simulador, Candidaturas, Análises */}
-                      <Button variant="ghost" asChild className="justify-start">
-                        <Link
-                          to="/simulador-entrevistas"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <Monitor className="mr-2 h-4 w-4" />
-                          Simulador
-                        </Link>
-                      </Button>
-
-                      {!(isAdmin || isModerator) && (
-                        <>
-                          <Button variant="ghost" asChild className="justify-start">
-                            <Link
-                              to="/candidaturas"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <Kanban className="mr-2 h-4 w-4" />
-                              Candidaturas
-                            </Link>
-                          </Button>
-
-                          <Button variant="ghost" asChild className="justify-start">
-                            <Link
-                              to="/analises"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <FileText className="mr-2 h-4 w-4" />
-                              Análises de Currículo
-                            </Link>
-                          </Button>
-
-                          <Button variant="ghost" asChild className="justify-start">
-                            <Link
-                              to="/agencias"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <MapPin className="mr-2 h-4 w-4" />
-                              Agências
-                            </Link>
-                          </Button>
-                        </>
-                      )}
 
                       {/* Admin panel */}
                       {(isAdmin || isModerator) && (
@@ -569,36 +522,6 @@ export function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {/* Se for usuário comum, mostramos Minhas Análises e Créditos simplificados */}
-                  {!(isAdmin || isModerator) && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/analises">
-                          <FileText className="mr-2 h-4 w-4" />
-                          Análises de Currículos
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-
-                  {/* MVP core tools */}
-                  {!(isAdmin || isModerator) && (
-                    <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/candidaturas">
-                          <Kanban className="mr-2 h-4 w-4" />
-                          Candidaturas
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to="/agencias">
-                          <MapPin className="mr-2 h-4 w-4" />
-                          Agências
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
 
                   {/* Admin panel */}
                   {(isAdmin || isModerator) && (
