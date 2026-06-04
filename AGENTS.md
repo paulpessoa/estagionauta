@@ -156,5 +156,7 @@ This section is automatically loaded into the agent's context via system rules. 
 - **Supabase CLI Repair**: Resolved remote database sync issues caused by an anomalous empty row in `schema_migrations` using `supabase migration repair --status reverted ""` followed by marking existing versions as applied and executing `supabase db push`.
 - **Git Commit Workflow**:
   - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
+- **Toast Close Button Fix**: Configured Sonner `Toaster` with `closeButton={true}` and adjusted Shadcn's `ToastClose` to be immediately visible (`opacity-100` instead of `opacity-0 group-hover:opacity-100`) so close buttons are persistently visible across all toast notifications.
+
 
 
