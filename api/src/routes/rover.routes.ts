@@ -242,6 +242,13 @@ REGRA DE AGÊNCIAS DE ESTÁGIO:
 REGRA DE CONCISÃO DE RESPOSTA (MANDATÓRIO):
 Mantenha suas respostas curtas, diretas e amigáveis. Use no máximo 3 a 4 parágrafos por mensagem, a menos que o usuário solicite explicitamente uma explicação detalhada ou análise aprofundada.
 
+DIRETRIZES DE TOM E ESTILO CONVERSACIONAL (MUITO IMPORTANTE):
+1. Fale como um ser humano prestativo, empático e amigável, e não como um robô corporativo rígido. Use um tom de conversa natural e informal adequado para estudantes universitários brasileiros (ex: "Fala aí!", "Prontinho!", "Poxa, infelizmente...").
+2. Nunca responda com listas de opções automáticas ou mensagens padronizadas de chatbot se o usuário estiver em meio a uma conversa específica sobre um assunto.
+3. Se o usuário pedir para avaliar uma agência ou fizer uma solicitação com informações incompletas (ex: "atualize em Recife PE com 5 estrelas"), responda com simpatia e clareza, explicando que você precisa do nome da agência ou identificador para realizar a avaliação, e ofereça ajuda para buscar a agência desejada.
+4. Se o usuário utilizar expressões informais, coloquiais ou gírias (como "top da bagaceira", "massa", "legal"), responda de forma leve e descontraída, mantendo o profissionalismo mas se adaptando ao vocabulário de forma simpática (ex: "CIEE Pernambuco avaliado com sucesso! Eles são top mesmo!").
+5. Quando uma ferramenta for executada com sucesso, formule uma confirmação calorosa e natural (ex: "Prontinho! Acabei de enviar sua avaliação de 5 estrelas para o CIEE Pernambuco. Agora ela vai passar pela moderação...").
+
 Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramentas adequadas de acordo com as necessidades expressas pelo usuário.`;
 
     const apiMessages: any[] = [
@@ -380,15 +387,46 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
         }
 
         if (!finalResponseText) {
-          finalResponseText = `Olá! Sou o Rover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
+          console.log('[Rover] finalResponseText is empty. Triggering toolless fallback completion...');
+          try {
+            // Fallback: Call model without tools to get a conversational reply
+            const fallbackMessages = apiMessages.filter(m => m.role !== 'system').concat([
+              {
+                role: 'system',
+                content: `Você é o Rover, assistente do Estagionauta. Responda à última mensagem do usuário de forma natural, amigável e prestativa em português (PT-BR), confirmando as ações que foram executadas ou respondendo à dúvida, com base no histórico fornecido.`
+              }
+            ]);
 
-1. **Verificar ou atualizar seu perfil** (diga "verificar meu perfil" ou me informe seus dados como curso, faculdade e período para eu atualizar);
-2. **Analisar seu currículo** com base em uma vaga (custa 3 créditos);
-3. **Calcular seu recesso proporcional** de estágio (diga "calcular recesso");
-4. **Consultar seu saldo de créditos** (diga "verificar meus créditos");
-5. **Simular entrevistas** no simulador de entrevistas.
+            let fallbackRes;
+            try {
+              fallbackRes = await groq.chat.completions.create({
+                model: 'llama-3.3-70b-versatile',
+                messages: fallbackMessages as any,
+                temperature: 0.7,
+                max_tokens: 1024,
+              });
+            } catch (groqErr) {
+              console.error('[Rover] Fallback Groq Llama 3.3 failed, trying OpenAI...', groqErr);
+              if (openaiClient) {
+                fallbackRes = await openaiClient.chat.completions.create({
+                  model: 'gpt-4o-mini',
+                  messages: fallbackMessages as any,
+                  temperature: 0.7,
+                  max_tokens: 1024,
+                });
+              } else {
+                throw groqErr;
+              }
+            }
 
-Como posso ajudar você hoje?`;
+            finalResponseText = (fallbackRes?.choices[0]?.message?.content || '').trim();
+          } catch (fallbackErr) {
+            console.error('[Rover] Fallback chat completion failed:', fallbackErr);
+          }
+        }
+
+        if (!finalResponseText) {
+          finalResponseText = "Entendi o seu pedido, mas não consegui formular uma resposta específica no momento. Como posso te ajudar?";
         }
 
         // Save assistant message

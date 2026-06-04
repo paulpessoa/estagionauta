@@ -42,9 +42,6 @@ export default function Perfil() {
     languages: [] as string[]
   })
 
-  const [slug, setSlug] = useState('')
-  const [slugStatus, setSlugStatus] = useState<'idle' | 'checking' | 'available' | 'unavailable'>('idle')
-  const [slugError, setSlugError] = useState('')
   const [skillInput, setSkillInput] = useState('')
   const [languageInput, setLanguageInput] = useState('')
 
@@ -69,7 +66,7 @@ export default function Perfil() {
         skills: profile.skills || [],
         languages: profile.languages || []
       })
-      setSlug(profile.curriculo_slug || '')
+
     }
   }, [profile])
 
@@ -88,8 +85,7 @@ export default function Perfil() {
     JSON.stringify(profileData.experiences) !== JSON.stringify(profile.experiences || []) ||
     JSON.stringify(profileData.education) !== JSON.stringify(profile.education || []) ||
     JSON.stringify(profileData.skills) !== JSON.stringify(profile.skills || []) ||
-    JSON.stringify(profileData.languages) !== JSON.stringify(profile.languages || []) ||
-    slug !== (profile.curriculo_slug || '')
+    JSON.stringify(profileData.languages) !== JSON.stringify(profile.languages || [])
   ) : false
 
   const handleSaveAll = async () => {
@@ -123,35 +119,7 @@ export default function Perfil() {
 
       if (profileError) throw profileError
 
-      // 2. Salvar slug se tiver sido alterado e for válido
-      const isSlugChanged = slug !== (profile?.curriculo_slug || '')
-      if (isSlugChanged) {
-        if (!slug) {
-          throw new Error('O identificador do currículo não pode ser vazio.')
-        }
-        
-        // Verifica se está disponível antes de atualizar
-        const { data: existingSlugUser, error: slugCheckError } = await supabase
-          .from('user_profiles')
-          .select('id')
-          .eq('curriculo_slug', slug)
-          .maybeSingle()
 
-        if (slugCheckError) throw slugCheckError
-        if (existingSlugUser && existingSlugUser.id !== user.id) {
-          throw new Error('Este identificador já está sendo utilizado por outro usuário.')
-        }
-
-        const { error: slugUpdateError } = await supabase
-          .from('user_profiles')
-          .update({ 
-            curriculo_slug: slug, 
-            updated_at: new Date().toISOString() 
-          })
-          .eq('id', user.id)
-
-        if (slugUpdateError) throw slugUpdateError
-      }
 
       toast({
         title: "Perfil atualizado",
@@ -172,36 +140,7 @@ export default function Perfil() {
     }
   }
 
-  // Função para sugerir slug
-  const suggestSlug = () => {
-    if (!profileData.full_name) return ''
-    const base = profileData.full_name.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    const now = new Date()
-    const month = String(now.getMonth() + 1).padStart(2, '0')
-    const year = now.getFullYear()
-    return `${base}-${month}${year}`
-  }
 
-  // Verifica disponibilidade do slug
-  const checkSlug = async (value: string) => {
-    setSlugStatus('checking')
-    setSlugError('')
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('id')
-      .eq('curriculo_slug', value)
-      .maybeSingle()
-    if (error) {
-      setSlugStatus('idle')
-      setSlugError('Erro ao verificar identificador')
-      return
-    }
-    if (data && (!user || data.id !== user.id)) {
-      setSlugStatus('unavailable')
-    } else {
-      setSlugStatus('available')
-    }
-  }
 
   const handleAvatarUpdate = () => {
     queryClient.invalidateQueries({ queryKey: queryKeys.profile.all })
@@ -342,44 +281,6 @@ export default function Perfil() {
                 <p className="text-xs text-muted-foreground mt-1">
                   Formatos aceitos: JPG, PNG ou WebP. Tamanho máximo: 2MB.
                 </p>
-              </div>
-
-              <Separator />
-
-              {/* URL do Currículo Público no topo */}
-              <div className="space-y-2 p-4 bg-muted/20 rounded-lg border border-border">
-                <Label htmlFor="curriculo-slug" className="font-semibold text-sm">Identificador do Currículo Público</Label>
-                <div className="flex gap-2 items-center flex-wrap sm:flex-nowrap">
-                  <span className="text-sm text-muted-foreground whitespace-nowrap">estagionauta.com.br/curriculo/</span>
-                  <Input
-                    id="curriculo-slug"
-                    value={slug}
-                    onChange={e => {
-                      setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
-                      setSlugStatus('idle')
-                    }}
-                    onBlur={e => slug && checkSlug(slug)}
-                    placeholder={suggestSlug()}
-                    className="max-w-[200px] bg-background"
-                  />
-                  {slugStatus === 'checking' && <Loader2 className="animate-spin h-5 w-5 text-violet-600" />}
-                  {slugStatus === 'available' && <CheckCircle className="h-5 w-5 text-green-600" />}
-                  {slugStatus === 'unavailable' && <XCircle className="h-5 w-5 text-red-600" />}
-                </div>
-                {slugError && <p className="text-red-600 text-xs">{slugError}</p>}
-                
-                {profile?.curriculo_slug && (
-                  <div className="text-xs text-primary mt-1 font-medium">
-                    <a
-                      href={`/curriculo/${profile.curriculo_slug}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline text-violet-600 inline-flex items-center gap-1"
-                    >
-                      Ver perfil público →
-                    </a>
-                  </div>
-                )}
               </div>
 
               <Separator />
@@ -821,7 +722,7 @@ export default function Perfil() {
           <div className="flex justify-end">
             <Button
               onClick={handleSaveAll}
-              disabled={loading || !isDirty || (slug !== '' && slugStatus === 'unavailable')}
+              disabled={loading || !isDirty}
               className="bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white font-medium shadow-md transition-all duration-200"
             >
               {loading ? 'Salvando...' : 'Salvar Alterações'}

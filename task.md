@@ -160,8 +160,14 @@
 - [x] Criar testes unitários em `api/tests/rover_agencies_tools.spec.ts`
 - [x] Executar testes automatizados do backend e validar build
 
+## FASE 3.0 — Remoção do Currículo Público & Melhorias no Rover
 
-
-
-
-
+- [x] Banco de Dados: Criar e aplicar migration SQL `20260604170000_remove_curriculo_slug.sql` to drop column, constraint/index, and update RLS select policy
+- [x] Roteador Frontend: Remover `/curriculo/:slug` e import de `Curriculo` de `src/route.ts`
+- [x] Páginas/Componentes: Deletar `src/pages/Curriculo.tsx` e `src/components/modals/ShareCurriculoModal.tsx`
+- [x] Perfil UI: Remover seção, inputs, estados e validações de `curriculo_slug` em `src/pages/Perfil.tsx`
+- [x] Rover Tool: Remover checagem de `curriculo_slug` de `api/src/tools/check_profile.ts`
+- [x] Rover API: Revitalizar prompt em `api/src/routes/rover.routes.ts` para usar tom de voz natural, humano e informal
+- [x] Rover API: Adicionar tratamento de fallback de completação sem tools para evitar reset para menu de boas-vindas
+- [x] Verificação: Deletar arquivo temporário `api/src/test_groq.ts`
+- [x] Verificação: Confirmar build completo e execução de testes automatizados com sucesso

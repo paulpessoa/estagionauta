@@ -804,9 +804,69 @@ Implementar um conjunto de ferramentas (Rover tools) que permitam ao assistente 
   3. "Avalie a agência Y com nota 4 e comentário: Adorei o atendimento rápido e as vagas de estágio ofertadas."
   4. "Cadastre a agência Teste CIEE no endereço Rua das Flores 123"
 
+---
 
+# Remoção do Currículo Público e Simplificação de Identificadores
 
+Este plano descreve a remoção completa do identificador do currículo público (`curriculo_slug`) e das páginas/modais associados a essa funcionalidade para simplificar o código, reduzir a complexidade e eliminar validações desnecessárias.
 
+## User Review Required
 
+> [!IMPORTANT]
+> - **Exclusão de Páginas e Modais**: A página de visualização do perfil público (`src/pages/Curriculo.tsx`) e o modal de compartilhamento do currículo (`src/components/modals/ShareCurriculoModal.tsx`) serão deletados por completo.
+> - **Remoção de Inputs de Perfil**: A seção e inputs relacionados a `curriculo_slug` serão removidos da página de perfil do usuário (`src/pages/Perfil.tsx`).
+> - **Acesso ao Perfil de Outros Usuários**: Com a remoção da política baseada no `curriculo_slug`, os perfis de usuários não autenticados ou de terceiros serão protegidos de visualização de forma muito mais estrita, sendo acessíveis apenas ao próprio usuário e aos moderadores/administradores da plataforma.
+> - **Preservação de Envio de Relatório de Análise por Email**: A funcionalidade de compartilhar o relatório de análise de currículo por e-mail (usando UUIDs/IDs das análises) em `ResultadoCurriculo.tsx` continuará operando normalmente. Para manter a compatibilidade com a assinatura da API `/api/email/send`, manteremos o campo `curriculo_slug` como opcional/nulo na API de e-mail e nos schemas.
+
+## Proposed Changes
+
+### Database Migration
+
+#### [NEW] [20260604170000_remove_curriculo_slug.sql](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/supabase/migrations/20260604170000_remove_curriculo_slug.sql)
+- Criar migração que remove o índice `idx_user_profiles_curriculo_slug` e a coluna `curriculo_slug` da tabela `public.user_profiles`.
+- Atualizar a política RLS `"Users can view all profiles"` da tabela `public.user_profiles` para remover a verificação `curriculo_slug IS NOT NULL`, restringindo as permissões para:
+  `auth.uid() = id OR public.is_admin_or_moderator(auth.uid())`.
+
+### Frontend Pages & Routes
+
+#### [DELETE] [Curriculo.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Curriculo.tsx)
+- Excluir o arquivo da página de visualização do currículo público.
+
+#### [DELETE] [ShareCurriculoModal.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/components/modals/ShareCurriculoModal.tsx)
+- Excluir o modal de compartilhamento do currículo público.
+
+#### [MODIFY] [route.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/route.ts)
+- Remover o import lazy de `Curriculo` (linha 30).
+- Remover a rota `{ path: "/curriculo/:slug", component: Curriculo }` (linha 163).
+
+#### [MODIFY] [Perfil.tsx](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/src/pages/Perfil.tsx)
+- Remover os estados `slug`, `slugStatus`, `slugError` e seus efeitos/funções de verificação (`checkSlug`, `suggestSlug`).
+- Remover a seção HTML/JSX de "Identificador do Currículo Público" (linhas 349-383).
+- Remover o campo `curriculo_slug` da lógica de comparação de alterações (`isDirty`) e do payload de salvamento (`supabase.update`).
+- Simplificar o botão "Salvar Alterações" removendo as validações relativas ao estado do slug.
+### Backend Services & Tools
+
+#### [MODIFY] [check_profile.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/check_profile.ts)
+- Remover a checagem de `curriculo_slug` da ferramenta do Rover que analisa o preenchimento do perfil.
+#### [MODIFY] [rover.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/rover.routes.ts)
+- Atualizar o System Prompt (`systemPrompt`) para instruir o Rover a responder com tom de conversa natural, empático e adequado para estudantes universitários brasileiros. Incluir regras explícitas para lidar com expressões informais ("top da bagaceira", "massa", etc.) e gírias de forma adaptativa.
+- Ajustar as diretrizes de execução para que, quando uma ferramenta (como `submit_agency_review`) for executada com sucesso, o Rover formule uma mensagem natural de confirmação (ex: "Prontinho! Acabei de enviar...") em vez de respostas robóticas ou templates.
+- Implementar um mecanismo de contingência conversacional: caso a chamada de completação (após loops de ferramenta) retorne conteúdo vazio (`content: null` ou `""`) e sem novas `tool_calls`, disparar uma chamada de backup para o Groq/OpenAI sem a definição de ferramentas (`tools: undefined`). Isso forçará o modelo a responder textualmente à conversa, eliminando o reset repentino para o menu/prompt de boas-vindas.
+- Caso ocorra algum erro persistente ou resposta em branco no backup, retornar uma mensagem de erro conversacional amigável: "Entendi o seu pedido, mas não consegui formular uma resposta específica no momento. Como posso te ajudar?" em vez do menu de boas-vindas padrão.
+
+## Verification Plan
+
+### Automated Tests
+- Rodar `npm run build` na raiz do projeto para atestar a correção de types e compilação do frontend.
+- Rodar `npm run build` na pasta `api/` para atestar a compilação do backend hono.
+- Executar os testes unitários e de integração do backend: `npm run test` na pasta `api/` (garantindo que todas as 53 specs do Vitest passem sem erros).
+
+### Manual Verification
+- Acessar a página de `/perfil` logado e verificar que a seção de "Identificador do Currículo Público" não é mais exibida e que a edição de perfil continua salvando os demais campos com sucesso.
+- Acessar a página `/analise/:id` e clicar em compartilhar a análise de currículo por e-mail para verificar se o envio de e-mail via Brevo continua funcionando normalmente.
+- Testar no chat do Rover com o usuário `mccartney.shalom@gmail.com` as seguintes interações:
+  1. Perguntar "Procure agências em Recife" e verificar se ele exibe a lista com tom de voz natural e amigável.
+  2. Dizer "atualize avalie o CIEE Pernambuco com 5 estrelas de que eles são top da bagaceira" e verificar se o Rover chama `submit_agency_review` com sucesso, exibe uma mensagem calorosa e natural de confirmação, e NÃO reseta para o menu de boas-vindas.
+  3. Enviar gírias de teste e verificar se ele responde de forma adaptativa e inteligente, sem recusar a interação por questões de sensibilidade de gírias.
 
 

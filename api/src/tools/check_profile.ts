@@ -32,7 +32,6 @@ export async function runCheckProfile(userId: string) {
       course: 'Curso',
       university: 'Universidade/Faculdade',
       period: 'Período',
-      curriculo_slug: 'Link do Currículo Público',
       city_state: 'Cidade/Estado',
       portfolio_url: 'Link do Portfólio/Website',
       github_url: 'Link do GitHub',

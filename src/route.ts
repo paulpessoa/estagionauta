@@ -27,7 +27,6 @@ const Dashboard = lazy(() => import("./pages/Dashboard"))
 const MinhasAnalises = lazy(() => import("./pages/MinhasAnalises"))
 const Configuracoes = lazy(() => import("./pages/Configuracoes"))
 const Perfil = lazy(() => import("./pages/Perfil"))
-const Curriculo = lazy(() => import("./pages/Curriculo"))
 const Creditos = lazy(() => import("./pages/Creditos"))
 const EmailLogs = lazy(() => import("./pages/EmailLogs"))
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"))
@@ -160,7 +159,6 @@ export const routes = [
   { path: "/termos-de-uso", component: TermosDeUso },
   { path: "/status", component: Status },
   { path: "/r/:referralCode", component: ReferralRedirect },
-  { path: "/curriculo/:slug", component: Curriculo },
   { path: "/feedback", component: Feedback },
   { path: "*", component: NotFound }
 ]
