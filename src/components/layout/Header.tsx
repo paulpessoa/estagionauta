@@ -89,7 +89,7 @@ const NavLinks = ({
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={onLinkClick}
         >
-          Mapa de Agências
+          Agências
         </Link>
         {/* STANDBY: Indicar Amigos — rotas mantidas, menu oculto para MVP */}
       </div>
@@ -432,7 +432,7 @@ export function Header() {
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               <MapPin className="mr-2 h-4 w-4" />
-                              Mapa de Agências
+                              Agências
                             </Link>
                           </Button>
                         </>
@@ -594,7 +594,7 @@ export function Header() {
                       <DropdownMenuItem asChild>
                         <Link to="/agencias">
                           <MapPin className="mr-2 h-4 w-4" />
-                          Mapa de Agências
+                          Agências
                         </Link>
                       </DropdownMenuItem>
                     </>

@@ -5,11 +5,9 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import {
   ArrowRight,
   Users,
@@ -17,16 +15,12 @@ import {
   MapPin,
   Calculator,
   Star,
-  Shield,
   Zap,
   BotMessageSquare,
   BotIcon,
   FileScan,
-  FileText,
   Youtube,
-  AlertCircle,
   ScanText,
-  ChevronRight
 } from "lucide-react"
 import { AuthRequiredModal } from "@/components/AuthRequiredModal"
 import { useAuth } from "@/hooks/useAuth"
@@ -469,123 +463,6 @@ export default function HomePage() {
                 descubra oportunidades através da nossa rede.
               </p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-900">
-        <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-navy-900 dark:text-white mb-4">
-              O que nossos estagiários dizem
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <Card className="border-l-4 border-l-pink-600 dark:bg-gray-800">
-              <CardContent className="pt-6">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-slate-600 dark:text-slate-200 mb-4">
-                  "O Estagionauta transformou minha busca por estágio. A revisão
-                  de currículo com IA me ajudou muito!"
-                </p>
-                <div className="font-semibold text-navy-900 dark:text-white">
-                  Maria Silva
-                </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Estagiária de Marketing
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-purple-600 dark:bg-gray-800">
-              <CardContent className="pt-6">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-slate-600 dark:text-slate-200 mb-4">
-                  "O simulador de entrevistas me deu muita confiança. Consegui
-                  minha vaga na primeira tentativa!"
-                </p>
-                <div className="font-semibold text-navy-900 dark:text-white">
-                  João Santos
-                </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Estagiário de TI
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="border-l-4 border-l-blue-600 dark:bg-gray-800">
-              <CardContent className="pt-6">
-                <div className="flex mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
-                    />
-                  ))}
-                </div>
-                <p className="text-slate-600 dark:text-slate-200 mb-4">
-                  "A calculadora de recesso me ajudou a entender meus direitos.
-                  Plataforma incrível!"
-                </p>
-                <div className="font-semibold text-navy-900 dark:text-white">
-                  Ana Costa
-                </div>
-                <div className="text-sm text-slate-500 dark:text-slate-400">
-                  Estagiária de RH
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white">
-            Pronto para decolar na sua carreira?
-          </h2>
-          <p className="text-xl text-blue-100 dark:text-blue-200 max-w-2xl mx-auto">
-            Junte-se a centenas de universitários que já estão usando o
-            Estagionauta para conquistar melhores oportunidades
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-blue-600 hover:bg-gray-100 font-semibold"
-              asChild
-            >
-              <Link to="/analises/new" onClick={handleAuthGatedClick}>
-                <FileScan className="mr-2 h-5 w-5" />
-                Analisar Currículo com IA
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              className="border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 font-semibold transition-colors opacity-70"
-              asChild
-            >
-              <Link to="/analise/exemplo">
-                <ScanText className="mr-2 h-5 w-5" />
-                Exemplo Currículo Revisado IA
-              </Link>
-            </Button>
           </div>
         </div>
       </section>
