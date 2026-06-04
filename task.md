@@ -149,6 +149,18 @@
 - [x] Frontend: Adicionar botão "Imprimir PDF (Nativo)" na barra de ações utilizando `window.print()` e adicionando ID `#resume-print-area` no container
 - [x] Verificação: Garantir que o build compila e as modificações funcionam perfeitamente
 
+## FASE 2.9 — Rover Agencies Interaction Tools
+
+- [x] Implementar `search_agencies` tool no backend (`api/src/tools/search_agencies.ts`)
+- [x] Implementar `get_agency_details` tool no backend (`api/src/tools/get_agency_details.ts`)
+- [x] Implementar `submit_agency_review` tool no backend (`api/src/tools/submit_agency_review.ts`)
+- [x] Implementar `create_agency` tool no backend (`api/src/tools/create_agency.ts`)
+- [x] Registrar as novas tools em `api/src/tools/registry.ts`
+- [x] Atualizar as diretrizes e instruções de agências no System Prompt em `api/src/routes/rover.routes.ts`
+- [x] Criar testes unitários em `api/tests/rover_agencies_tools.spec.ts`
+- [x] Executar testes automatizados do backend e validar build
+
+
 
 
 

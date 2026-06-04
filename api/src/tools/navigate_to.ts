@@ -8,8 +8,8 @@ export const navigateToDefinition = {
       properties: {
         page: {
           type: 'string',
-          enum: ['perfil', 'configuracoes', 'candidaturas', 'simulador', 'gerador_curriculo', 'analise_curriculo', 'analises', 'calculadora', 'indicar_amigos', 'precos'],
-          description: 'A página de destino: "perfil" (Meu Perfil), "configuracoes" (Configurações da Conta), "candidaturas" (Kanban de Candidaturas), "simulador" (Simulador de Entrevistas), "gerador_curriculo" (Gerador de Currículos), "analise_curriculo" (Nova Análise de Currículo por IA), "analises" (Minhas Análises de Currículo/Histórico), "calculadora" (Calculadora de Recesso), "indicar_amigos" (Indicar Amigos/Convide amigos), "precos" (Gestão de Créditos / Comprar).'
+          enum: ['perfil', 'configuracoes', 'candidaturas', 'simulador', 'gerador_curriculo', 'analise_curriculo', 'analises', 'calculadora', 'indicar_amigos', 'precos', 'agencias', 'cadastro_agencia'],
+          description: 'A página de destino: "perfil" (Meu Perfil), "configuracoes" (Configurações da Conta), "candidaturas" (Kanban de Candidaturas), "simulador" (Simulador de Entrevistas), "gerador_curriculo" (Gerador de Currículos), "analise_curriculo" (Nova Análise de Currículo por IA), "analises" (Minhas Análises de Currículo/Histórico), "calculadora" (Calculadora de Recesso), "indicar_amigos" (Indicar Amigos/Convide amigos), "precos" (Gestão de Créditos / Comprar), "agencias" (Mapa de Agências), "cadastro_agencia" (Cadastrar Agência).'
         }
       },
       required: ['page']
@@ -30,7 +30,9 @@ export async function runNavigateTo(userId: string, args: { page: string }) {
     analises: { path: '/analises', label: 'Minhas Análises de Currículo' },
     calculadora: { path: '/calculadora', label: 'Calculadora de Recesso' },
     indicar_amigos: { path: '/convide-amigos', label: 'Indicar Amigos / Recompensas' },
-    precos: { path: '/precos', label: 'Créditos / Preços' }
+    precos: { path: '/precos', label: 'Créditos / Preços' },
+    agencias: { path: '/agencias', label: 'Mapa de Agências de Estágio' },
+    cadastro_agencia: { path: '/cadastro-agencia', label: 'Cadastrar Agência' }
   };
 
   const matched = pagesMap[page];

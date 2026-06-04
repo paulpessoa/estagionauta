@@ -143,12 +143,12 @@ O currículo gerado DEVE obrigatoriamente respeitar as seguintes regras estrutur
 
 7. **PROJETOS DE DESTAQUE (Se houver):**
    - Projetos acadêmicos, pessoais ou open source que demonstram competências práticas relevantes para a vaga.
-   - Formatar no padrão: `**Nome do Projeto** | Tecnologias/Link` (se houver link)
+   - Formatar no padrão: \`**Nome do Projeto** | Tecnologias/Link\` (se houver link)
    - Seguido de um ou dois tópicos descrevendo o escopo e o resultado do projeto.
 
 8. **CURSOS E ATIVIDADES EXTRACURRICULARES (Se houver):**
    - Cursos complementares (Alura, Coursera, etc.), certificações e trabalhos voluntários relevantes.
-   - Formatar no padrão: `**Nome do Curso/Atividade** • Instituição | Data de conclusão`
+   - Formatar no padrão: \`**Nome do Curso/Atividade** • Instituição | Data de conclusão\`
    - Omitir seções vazias.
 
 9. **COMPETÊNCIAS / HABILIDADES:**

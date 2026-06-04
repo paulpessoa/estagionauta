@@ -728,6 +728,83 @@ Adicionar suporte a edição manual de texto do currículo gerado por IA para qu
 4. Clicar em **"Editar Texto"** de novo, fazer alterações, clicar em **"Salvar"** e validar a persistência após recarregar.
 5. Clicar em **"Imprimir PDF"** e verificar se o diálogo de impressão exibe apenas a folha do currículo de forma limpa e com texto selecionável.
 
+---
+
+# FASE 2.9 — Rover Agencies Interaction Tools
+
+## Resumo do Objetivo
+Implementar um conjunto de ferramentas (Rover tools) que permitam ao assistente de IA Rover realizar ações relacionadas a agências de integração de estágio no banco de dados. Essas ações incluem: buscar agências por estado, cidade, tipo ou nome; ver detalhes e avaliações aprovadas de uma agência; enviar avaliações (com nota 1-5 e comentário de no mínimo 20 caracteres); e sugerir/cadastrar novas agências.
+
+## Decisões Confirmadas
+- **Escopo**: Foco estrito em buscar agências, exibir avaliações/comentários aprovados, enviar avaliações (pendentes de moderação) e cadastrar novas agências.
+- **Segurança**: Uso rigoroso de `supabaseAdmin` no backend associando o `created_by` / `user_id` ao ID autenticado do usuário vindo da sessão (evitando spoofing).
+- **Validações**: Zod nos inputs das rotas/tools e checagem de tamanho mínimo de 20 caracteres para avaliações.
+
+## Alterações Propostas
+
+### 1. Backend Tools
+
+#### [NEW] [search_agencies.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/search_agencies.ts)
+- Ferramenta para buscar agências aprovadas.
+- Parâmetros:
+  - `query` (string, opcional): Busca por nome ou descrição.
+  - `state` (string, opcional): Estado de 2 letras (ex: 'PE').
+  - `city` (string, opcional): Nome da cidade (ex: 'Recife').
+  - `agencyType` (string, opcional): Tipo de agência (faculdade, consultoria, agencia_privada, orgao_publico, instituto, fundacao, outro).
+
+#### [NEW] [get_agency_details.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/get_agency_details.ts)
+- Ferramenta para recuperar detalhes e avaliações aprovadas de uma agência.
+- Parâmetros:
+  - `agencyId` (string, UUID): ID da agência.
+
+#### [NEW] [submit_agency_review.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/submit_agency_review.ts)
+- Ferramenta para enviar uma avaliação de 1 a 5 estrelas com comentário.
+- Valida se o usuário já avaliou a agência anteriormente (só permite uma avaliação por usuário/agência).
+- Parâmetros:
+  - `agencyId` (string, UUID): ID da agência.
+  - `rating` (number): De 1 a 5.
+  - `comment` (string): Comentário justificativo (mínimo 20, máximo 1000 caracteres).
+
+#### [NEW] [create_agency.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/create_agency.ts)
+- Ferramenta para sugerir/cadastrar uma nova agência (inserção em estado 'pending').
+- Parâmetros:
+  - `name` (string): Nome da agência.
+  - `description` (string): Descrição.
+  - `email` (string): E-mail.
+  - `phone` (string): Telefone.
+  - `cep` (string, opcional): CEP.
+  - `address` (string): Endereço completo.
+  - `city` (string): Cidade.
+  - `state` (string): Estado (2 letras).
+  - `agencyType` (string): Tipo de agência.
+  - `website` (string, opcional): Website.
+  - `instagram` (string, opcional): Instagram.
+  - `latitude` (number, opcional)
+  - `longitude` (number, opcional)
+
+#### [MODIFY] [registry.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/registry.ts)
+- Registrar as 4 novas tools na lista `roverTools` e no `switch/case` de `executeRoverTool`.
+
+#### [MODIFY] [rover.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/rover.routes.ts)
+- Atualizar a instrução do sistema (System Prompt) com as novas regras sobre quando chamar as ferramentas de agências.
+
+## Plano de Verificação
+
+### Testes Automatizados
+- Criar testes unitários em `api/tests/rover_agencies_tools.spec.ts` cobrindo:
+  - Execução bem-sucedida de `search_agencies` com filtros.
+  - Execução de `get_agency_details` buscando dados e avaliações.
+  - Envio de avaliação e bloqueio de avaliações duplicadas.
+  - Criação de uma nova agência no estado 'pending'.
+
+### Testes Manuais
+- Iniciar chat com o Rover no painel e testar os seguintes comandos em português:
+  1. "Busque agências em Recife"
+  2. "Quais são as avaliações da agência X?"
+  3. "Avalie a agência Y com nota 4 e comentário: Adorei o atendimento rápido e as vagas de estágio ofertadas."
+  4. "Cadastre a agência Teste CIEE no endereço Rua das Flores 123"
+
+
 
 
 

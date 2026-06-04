@@ -33,6 +33,13 @@ import { listResumesDefinition, runListResumes } from './list_resumes.js';
 import { checkAccountStatusDefinition, runCheckAccountStatus } from './check_account_status.js';
 import { navigateToDefinition, runNavigateTo } from './navigate_to.js';
 
+// Sprint 3 agency tools
+import { searchAgenciesDefinition, runSearchAgencies } from './search_agencies.js';
+import { getAgencyDetailsDefinition, runGetAgencyDetails } from './get_agency_details.js';
+import { submitAgencyReviewDefinition, runSubmitAgencyReview } from './submit_agency_review.js';
+import { createAgencyDefinition, runCreateAgency } from './create_agency.js';
+
+
 export const roverTools = [
   checkProfileDefinition,
   checkCreditsDefinition,
@@ -66,6 +73,11 @@ export const roverTools = [
   listResumesDefinition,
   checkAccountStatusDefinition,
   navigateToDefinition,
+  // Sprint 3
+  searchAgenciesDefinition,
+  getAgencyDetailsDefinition,
+  submitAgencyReviewDefinition,
+  createAgencyDefinition,
 ];
 
 export async function executeRoverTool(
@@ -145,6 +157,15 @@ export async function executeRoverTool(
       return await runCheckAccountStatus(userId);
     case 'navigate_to':
       return await runNavigateTo(userId, args);
+    // Sprint 3
+    case 'search_agencies':
+      return await runSearchAgencies(userId, args);
+    case 'get_agency_details':
+      return await runGetAgencyDetails(userId, args);
+    case 'submit_agency_review':
+      return await runSubmitAgencyReview(userId, args);
+    case 'create_agency':
+      return await runCreateAgency(userId, args);
     default:
       throw new Error(`Ferramenta desconhecida: ${name}`);
   }

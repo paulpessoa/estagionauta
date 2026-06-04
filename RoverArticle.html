@@ -1,0 +1,2010 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Estagionauta - Rover</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+    rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- CSS Custom styling -->
+  <style>
+    :root {
+      --bg-dark: #06060c;
+      --bg-panel: #0d0d18;
+      --bg-card: rgba(255, 255, 255, 0.03);
+      --bg-hover: rgba(255, 255, 255, 0.06);
+      --primary: #6366f1;
+      --primary-hover: #4f46e5;
+      --secondary: #ec4899;
+      --accent: #8b5cf6;
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --border: rgba(255, 255, 255, 0.08);
+      --font-heading: 'Space Grotesk', system-ui, sans-serif;
+      --font-body: 'Inter', system-ui, sans-serif;
+      --font-mono: 'Fira Code', monospace;
+      --radius: 12px;
+      --glow: 0 0 20px rgba(99, 102, 241, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      background-image:
+        radial-gradient(circle at 50% -20%, #1e1b4b, transparent 65%),
+        radial-gradient(circle at 10% 40%, rgba(236, 72, 153, 0.03), transparent 30%),
+        radial-gradient(circle at 90% 70%, rgba(99, 102, 241, 0.04), transparent 40%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header styling */
+    header {
+      padding: 48px 0 24px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 32px;
+      position: relative;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(236, 72, 153, 0.15));
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      color: #c7d2fe;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      font-family: var(--font-heading);
+    }
+
+    .title-gradient {
+      font-family: var(--font-heading);
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #a5b4fc 0%, #c084fc 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 600px;
+    }
+
+    /* Tabs */
+    .tabs-nav {
+      display: flex;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px;
+      margin-bottom: 40px;
+      position: sticky;
+      top: 20px;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 500;
+      padding: 12px;
+      border-radius: calc(var(--radius) - 4px);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+      background: var(--bg-hover);
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      background: var(--primary);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Tab Content panels */
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+      min-width: 0;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Article layout */
+    .article-container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    /* Actions toolbar */
+    .actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      font-family: var(--font-heading);
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-hover);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      border: none;
+      color: white;
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, var(--primary-hover), var(--accent));
+      box-shadow: 0 6px 16px rgba(99, 102, 241, 0.4);
+    }
+
+    /* LinkedIn Article styling */
+    .article-body {
+      color: #e5e7eb;
+      font-size: 1.125rem;
+      line-height: 1.8;
+    }
+
+    .article-body h1 {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 40px 0 20px 0;
+      color: white;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    .article-body h1:first-of-type {
+      margin-top: 10px;
+    }
+
+    .article-body h2 {
+      font-family: var(--font-heading);
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: #f3f4f6;
+      border-left: 4px solid var(--primary);
+      padding-left: 12px;
+    }
+
+    .article-body h3 {
+      font-family: var(--font-heading);
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 24px 0 12px 0;
+      color: #f3f4f6;
+    }
+
+    .article-body p {
+      margin-bottom: 24px;
+    }
+
+    .article-body ul {
+      margin: 0 0 24px 20px;
+    }
+
+    .article-body li {
+      margin-bottom: 8px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 40px 0;
+    }
+
+    .placeholder-card {
+      background: rgba(99, 102, 241, 0.03);
+      border: 1px dashed rgba(99, 102, 241, 0.3);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      margin: 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: #a5b4fc;
+    }
+
+    .placeholder-card i {
+      color: var(--secondary);
+    }
+
+    .placeholder-card span {
+      font-size: 0.95rem;
+      font-weight: 500;
+      font-family: var(--font-heading);
+    }
+
+    .placeholder-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    /* Diagram card wrapper */
+    .diagram-card {
+      background: rgba(255, 255, 255, 0.01);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 32px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .diagram-title {
+      font-family: var(--font-heading);
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Code blocks container */
+    .code-container {
+      position: relative;
+      margin: 28px 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .code-header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px 16px;
+      font-family: var(--font-heading);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-header span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .copy-code-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+
+    .copy-code-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    pre {
+      background: #08080f;
+      padding: 20px;
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #cbd5e1;
+      max-width: 100%;
+    }
+
+    /* Copy toast notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #10b981;
+      color: white;
+      padding: 12px 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+      font-family: var(--font-heading);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 1000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Script timeline style */
+    .timeline {
+      position: relative;
+      padding-left: 32px;
+      margin-top: 10px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 7px;
+      top: 10px;
+      bottom: 10px;
+      width: 2px;
+      background: var(--border);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 40px;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-marker {
+      position: absolute;
+      left: -32px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--bg-dark);
+      border: 3px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .timeline-item.completed .timeline-marker {
+      border-color: #10b981;
+      background: #10b981;
+    }
+
+    .timeline-item.active-step .timeline-marker {
+      border-color: var(--primary);
+      box-shadow: var(--glow);
+    }
+
+    .timeline-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .timeline-card:hover {
+      border-color: rgba(255, 255, 255, 0.15);
+      transform: translateX(4px);
+    }
+
+    .timeline-item.completed .timeline-card {
+      opacity: 0.6;
+    }
+
+    .timeline-item.active-step .timeline-card {
+      border-color: var(--primary);
+      box-shadow: var(--glow);
+      background: rgba(99, 102, 241, 0.03);
+    }
+
+    .timeline-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .time-badge {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary);
+      font-family: var(--font-heading);
+    }
+
+    .timeline-title {
+      font-family: var(--font-heading);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: white;
+    }
+
+    .cue-card {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 16px;
+      border-left: 3px solid var(--secondary);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .cue-card strong {
+      color: white;
+      font-family: var(--font-heading);
+    }
+
+    .script-text {
+      font-size: 1.1rem;
+      color: #e5e7eb;
+      line-height: 1.7;
+    }
+
+    /* Teleprompter mode styling */
+    .teleprompter-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #030307;
+      z-index: 2000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .teleprompter-header {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      background: rgba(3, 3, 7, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 10;
+    }
+
+    .teleprompter-controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .control-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: white;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .control-btn:hover {
+      background: var(--primary);
+      box-shadow: var(--glow);
+    }
+
+    .control-label {
+      font-family: var(--font-heading);
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
+    .teleprompter-viewport {
+      width: 80%;
+      max-width: 850px;
+      height: 60vh;
+      overflow-y: scroll;
+      padding: 100px 0;
+      position: relative;
+      scroll-behavior: smooth;
+      scrollbar-width: none;
+      /* Hide scrollbar for cleanly scrolling text */
+    }
+
+    .teleprompter-viewport::-webkit-scrollbar {
+      display: none;
+    }
+
+    .teleprompter-text {
+      font-size: 2.2rem;
+      font-weight: 500;
+      color: #94a3b8;
+      text-align: center;
+      line-height: 1.8;
+      padding: 0 40px;
+    }
+
+    .teleprompter-text p {
+      margin-bottom: 48px;
+    }
+
+    .teleprompter-text strong {
+      color: white;
+      font-size: 2.4rem;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 16px;
+      font-family: var(--font-heading);
+    }
+
+    .teleprompter-text .cue-instruction {
+      color: var(--secondary);
+      font-size: 1.4rem;
+      font-style: italic;
+      font-weight: 400;
+      border: 1px dashed rgba(236, 72, 153, 0.4);
+      padding: 8px 16px;
+      border-radius: 8px;
+      display: inline-block;
+      margin-bottom: 24px;
+    }
+
+    /* Highlight current section mask */
+    .teleprompter-mask-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(to bottom, #030307 20%, transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .teleprompter-mask-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 150px;
+      background: linear-gradient(to top, #030307 20%, transparent);
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .teleprompter-marker-line {
+      position: absolute;
+      top: 50%;
+      left: 5%;
+      width: 90%;
+      height: 70px;
+      transform: translateY(-50%);
+      border-top: 1px solid rgba(99, 102, 241, 0.25);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.25);
+      background: rgba(99, 102, 241, 0.02);
+      pointer-events: none;
+      z-index: 2;
+      border-radius: 8px;
+    }
+
+    /* Footer styling */
+    footer {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 60px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Sidebar info card */
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    @media (min-width: 992px) {
+      .grid-layout {
+        grid-template-columns: 3fr 1fr;
+      }
+
+      .sidebar {
+        position: sticky;
+        top: 100px;
+        height: fit-content;
+      }
+    }
+
+    main {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .sidebar-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .sidebar-title {
+      font-family: var(--font-heading);
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+    }
+
+    .sidebar-list {
+      list-style-type: none;
+    }
+
+    .sidebar-list li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .sidebar-list li i {
+      color: var(--primary);
+    }
+
+    /* Mermaid layout custom override */
+    .mermaid {
+      background: transparent !important;
+    }
+
+    .mermaid svg {
+      max-width: 100%;
+      height: auto;
+    }
+
+    /* Teleprompter play indicator */
+    .play-active {
+      background: #10b981 !important;
+      color: white !important;
+      border-color: #10b981 !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Top Header -->
+    <header>
+      <div class="badge">
+        <i data-lucide="sparkles" style="width: 14px; height: 14px;"></i>
+        <span>Estagionauta Rover MVP v1.0</span>
+      </div>
+      <h1 class="title-gradient">Estagionauta Rover MVP v1.0</h1>
+      <p>Gerenciador interativo de materiais de divulgação do Rover para o LinkedIn e produção de vídeo.</p>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('tab-article')">
+        <i data-lucide="file-text" style="width: 18px; height: 18px;"></i>
+        Artigo do LinkedIn
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-script')">
+        <i data-lucide="video" style="width: 18px; height: 18px;"></i>
+        Roteiro do Vídeo
+      </button>
+      <button class="tab-btn" onclick="switchTab('tab-architecture')">
+        <i data-lucide="git-branch" style="width: 18px; height: 18px;"></i>
+        Arquitetura & Fluxo
+      </button>
+    </nav>
+
+    <div class="grid-layout">
+
+      <!-- Main Content Columns -->
+      <main>
+
+        <!-- Tab 1: LinkedIn Article -->
+        <div id="tab-article" class="tab-content active">
+          <div class="panel">
+
+            <div class="actions-bar">
+              <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600;">Artigo LinkedIn</h2>
+              <button class="btn btn-primary" onclick="copyEntireArticle()">
+                <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                Copiar Artigo Completo
+              </button>
+            </div>
+
+            <div class="divider" style="margin-top: 10px; margin-bottom: 24px;"></div>
+
+            <article class="article-body" id="article-text-content">
+              <!-- START OF COPIABLE CONTENT -->
+              <h1>O Nascimento do Rover: Como a IA Agentic vai Engolir os Formulários Estáticos (e como as plataformas
+                de recrutamento podem evoluir)</h1>
+              <p style="color: var(--text-muted); font-size: 1rem; margin-top: -12px; margin-bottom: 28px;">
+                <strong>Por Paul Pessoa (Fundador do Estagionauta)</strong>
+              </p>
+
+              <p>A experiência de buscar vagas de emprego ou de estágio na internet virou sinônimo de burocracia. Quem
+                nunca teve que preencher dezenas de campos de formulário idênticos logo após fazer o upload do currículo
+                em PDF e ver as informações virem corrompidas?</p>
+
+              <div
+                style="background: rgba(99, 102, 241, 0.04); padding: 20px; border-radius: 8px; border: 1px solid rgba(99, 102, 241, 0.15); margin-bottom: 24px;">
+                <h4
+                  style="font-family: var(--font-heading); color: #a5b4fc; margin-bottom: 8px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="sparkles" style="width: 16px; height: 16px; color: var(--secondary);"></i> 🚀
+                  Validação do Futuro da UX (O Caso do LinkedIn Premium)
+                </h4>
+                <p style="font-size: 0.95rem; line-height: 1.5; color: #cbd5e1; margin: 0;">
+                  Recentemente, enquanto eu navegava no LinkedIn, recebi uma notificação do assistente de IA deles
+                  perguntando: <em>"Quer triplicar suas chances enviando mensagens diretas com nosso assistente?"</em>.
+                  Ao clicar em <em>"Yes, show me!"</em>, o sistema me redirecionou sozinho para a página de empregos e
+                  disparou outra pergunta de fluxo: <em>"Help me find it."</em>. Ao interagir, a aba de chat se
+                  expandiu, realizando uma navegação guiada e inteligente de telas. Percebi que eu estava construindo
+                  exatamente a mesma lógica conversacional no Estagionauta com o Rover! A maior rede profissional do
+                  mundo está validando que a navegação ativa guiada por agentes é o futuro.
+                </p>
+              </div>
+
+              <p>No Estagionauta, decidimos que os nossos usuários não deveriam passar por isso. Em vez de forçar o
+                preenchimento de campos manuais rígidos, criamos o Rover: um copiloto inteligente e autônomo incorporado
+                diretamente na interface do produto que ajuda o estudante a criar, preencher e gerenciar seu perfil
+                conversando.</p>
+
+              <div class="placeholder-card">
+                <i data-lucide="image" style="width: 32px; height: 32px;"></i>
+                <span>[ESPAÇO PARA INSERIR: GIF DO ROVER EM AÇÃO]</span>
+                <p>Sugestão: grave a tela mostrando você pedindo para o Rover atualizar sua formação e a tela do perfil
+                  atualizando no fundo em tempo real</p>
+              </div>
+
+              <h2>O Paradigma do Agente Autônomo (ReAct) vs Chatbots Tradicionais</h2>
+
+              <p>A grande maioria das integrações de Inteligência Artificial que vemos no mercado resume-se a chatbots
+                passivos, ou seja, interfaces de chat que apenas respondem perguntas baseadas em textos estáticos. Eles
+                conversam, mas não tomam nenhuma ação no sistema.</p>
+
+              <p>O Rover foi projetado sob a arquitetura de Agentes Autônomos ReAct (Reason + Action). Ele não é um mero
+                gerador de texto. Ele é integrado ao ecossistema do aplicativo por meio de um loop de chamadas de
+                funções (Tool Calling) de baixa latência utilizando a infraestrutura do Groq (modelos Llama) e OpenAI.
+              </p>
+
+              <p>Quando você conversa com o Rover no painel lateral do app, ele segue um ciclo contínuo:</p>
+              <ul style="list-style-type: decimal;">
+                <li><strong>Pensar:</strong> O agente avalia a mensagem do usuário e decide se precisa buscar ou alterar
+                  algum dado no sistema.</li>
+                <li><strong>Agir:</strong> Ele seleciona a ferramenta adequada na API do backend (como ler dados do
+                  perfil ou salvar uma nova experiência).</li>
+                <li><strong>Observar:</strong> O backend executa a função localmente, interage com o banco de dados e
+                  devolve o resultado para o modelo.</li>
+                <li><strong>Responder:</strong> O modelo analisa a resposta da execução e responde ao usuário em
+                  linguagem simples.</li>
+              </ul>
+
+              <div class="placeholder-card">
+                <i data-lucide="network" style="width: 32px; height: 32px;"></i>
+                <span>[ESPAÇO PARA INSERIR: DIAGRAMA DE FLUXO DA ARQUITETURA DO AGENTE]</span>
+                <p>Sugestão: use a imagem conceitual gerada do Rover com conexões de rede</p>
+              </div>
+
+              <h3>Fluxo de Dados e o Funcionamento do Loop</h3>
+
+              <p>O fluxo de dados segue uma linha direta entre o frontend, a API Hono.js e o modelo de linguagem.</p>
+
+              <div class="diagram-card">
+                <div class="diagram-title">
+                  <i data-lucide="git-commit" style="width: 14px; height: 14px;"></i>
+                  <span>Diagrama Mermaid: Loop de Interação</span>
+                </div>
+                <pre class="mermaid" style="background: transparent; padding: 0;">
+graph TD
+    A["Estudante - Frontend Drawer"] --> B("Hono.js API - /api/rover/message")
+    B --> C{"Modelo de Linguagem - LLM"}
+    C --> D["Decisão de Chamada de Ferramenta"]
+    D --> E["Execução de Ferramentas no Backend"]
+    E --> F[("Banco de Dados Supabase")]
+    E --> G["Lógica de Cálculo de Férias"]
+    F --> C
+    G --> C
+    C --> B
+    B --> A
+                </pre>
+              </div>
+
+              <h3>Orientação Espacial e Sitemap</h3>
+              <p>Um dos maiores desafios de agentes de IA em sistemas SaaS é a falta de contexto sobre onde o usuário
+                está navegando. Resolvemos isso injetando o mapa completo de rotas do site (como <code>/perfil</code>,
+                <code>/candidaturas</code>, <code>/gerador-curriculos</code>) diretamente no prompt de sistema do Rover.
+              </p>
+
+              <p>Isso confere ao agente a capacidade de orientar o usuário ativamente, enviando links das telas certas:
+              </p>
+              <p
+                style="background: rgba(255, 255, 255, 0.02); padding: 16px; border-radius: 8px; border-left: 3px solid var(--accent); font-style: italic;">
+                "Notei que você quer alterar sua formação. Você pode editar os dados diretamente no seu perfil clicando
+                em /perfil ou simplesmente me dizer o nome da faculdade que eu atualizo para você agora mesmo."
+              </p>
+
+              <div class="divider"></div>
+
+              <h2>Estrutura do Projeto (Monorepo)</h2>
+
+              <p>Para garantir que essa comunicação acontecesse sem latências, estruturamos o Estagionauta como um
+                monorepo simples:</p>
+
+              <div class="code-container">
+                <div class="code-header">
+                  <span><i data-lucide="folder" style="width: 14px; height: 14px;"></i>Estrutura de Diretórios</span>
+                  <button class="copy-code-btn" onclick="copyCode(this)">
+                    <i data-lucide="copy" style="width: 12px; height: 12px;"></i>Copiar
+                  </button>
+                </div>
+                <pre>estagionauta/
+├── src/          (Frontend em Vite + React + Tailwind CSS)
+├── api/          (Backend Hono.js em Node.js)
+├── shared/       (Tipagens compartilhadas entre front e back)
+└── supabase/     (Migrações SQL e configurações do banco de dados)</pre>
+              </div>
+
+              <p>Essa estrutura nos permite compartilhar tipos em TypeScript entre a API e a interface, além de
+                centralizar a geração de esquemas do banco.</p>
+
+              <div class="divider"></div>
+
+              <h2>O Rover por Dentro: A Anatomia das Ferramentas (Tooling)</h2>
+
+              <p>O Rover tem acesso a 5 ferramentas principais no backend que permitem a manipulação de estado e leitura
+                de contexto do estudante:</p>
+
+              <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li><strong>check_profile:</strong> Consulta as informações cadastradas no perfil do usuário, como nome,
+                  contatos, experiências profissionais, formação acadêmica e links.</li>
+                <li><strong>update_profile:</strong> Permite que a IA altere os dados do perfil do usuário (escrevendo
+                  informações no banco) com base no que o usuário pediu na conversa.</li>
+                <li><strong>check_credits:</strong> Verifica o saldo de créditos disponíveis do usuário para rodar
+                  simulações ou análises.</li>
+                <li><strong>calculate_recess:</strong> Executa as fórmulas matemáticas locais para calcular o período de
+                  recesso (férias) remunerado do estagiário.</li>
+                <li><strong>analyze_resume:</strong> Realiza a leitura e a análise estruturada do currículo enviado pelo
+                  usuário.</li>
+              </ul>
+
+              <h3>Como as ferramentas são declaradas para a IA</h3>
+
+              <p>No Hono.js, descrevemos as ferramentas para o modelo utilizando esquemas JSON. Abaixo está um exemplo
+                simplificado de como definimos a ferramenta de atualização de perfil no backend para que a IA saiba como
+                e quando chamá-la:</p>
+
+              <div class="code-container">
+                <div class="code-header">
+                  <span><i data-lucide="file-code"
+                      style="width: 14px; height: 14px;"></i>updateProfileDefinition.ts</span>
+                  <button class="copy-code-btn" onclick="copyCode(this)">
+                    <i data-lucide="copy" style="width: 12px; height: 12px;"></i>Copiar
+                  </button>
+                </div>
+                <pre><code class="language-typescript">// Exemplo de definição de ferramenta passada para o modelo de linguagem
+export const updateProfileDefinition = {
+  type: 'function',
+  function: {
+    name: 'update_profile',
+    description: 'Atualiza o perfil do estudante no banco de dados. Use esta ferramenta quando o usuário solicitar alterações em suas experiências, formação acadêmica, competências ou links.',
+    parameters: {
+      type: 'object',
+      properties: {
+        city_state: { type: 'string', description: 'Cidade e Estado onde reside' },
+        portfolio_url: { type: 'string', description: 'Link do portfólio' },
+        github_url: { type: 'string', description: 'Link do GitHub' },
+        bio: { type: 'string', description: 'Breve descrição profissional' },
+        education: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              institution: { type: 'string' },
+              degree: { type: 'string' },
+              fieldOfStudy: { type: 'string' },
+              startDate: { type: 'string' },
+              endDate: { type: 'string' },
+              current: { type: 'boolean' }
+            }
+          }
+        }
+      }
+    }
+  }
+};</code></pre>
+              </div>
+
+              <p>No Hono.js, a rota que recebe a mensagem processa a chamada e faz a ponte com o agente:</p>
+
+              <div class="code-container">
+                <div class="code-header">
+                  <span><i data-lucide="file-code" style="width: 14px; height: 14px;"></i>rover.routes.ts</span>
+                  <button class="copy-code-btn" onclick="copyCode(this)">
+                    <i data-lucide="copy" style="width: 12px; height: 12px;"></i>Copiar
+                  </button>
+                </div>
+                <pre><code class="language-typescript">// Rota de processamento do chat no Hono.js
+app.post('/chat', authMiddleware, async (c) => {
+  const user = c.get('user');
+  const { message } = await c.req.json();
+
+  // Executa o agente passando o ID do usuário e a mensagem digitada
+  const responseStream = await runRoverAgent(user.id, message);
+  
+  return c.json(responseStream);
+});</code></pre>
+              </div>
+
+              <div class="divider"></div>
+
+              <h2>Exemplos de Diálogos e Mutações de Estado</h2>
+
+              <p>Para entender a diferença prática entre um chatbot comum e um agente, veja dois cenários de conversas
+                reais extraídos do Rover:</p>
+
+              <h3>Diálogo 1: Atualização de Perfil</h3>
+              <ul style="list-style-type: none; margin-left: 0; margin-bottom: 24px; padding-left: 0;">
+                <li style="margin-bottom: 12px;">👤 <strong>Usuário:</strong> "Adicione que fiz um curso de extensão em
+                  Node.js de março a junho de 2025 na faculdade SENAC."</li>
+                <li
+                  style="margin-bottom: 12px; background: rgba(99, 102, 241, 0.05); padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary);">
+                  ⚙️ <strong>Rover (Internamente):</strong>
+                  <ol style="margin-left: 20px; margin-top: 6px;">
+                    <li>Analisa a frase e identifica a intenção de modificar dados acadêmicos.</li>
+                    <li>Aciona a ferramenta <code>update_profile</code> com o payload:
+                      <code
+                        style="font-family: var(--font-mono); font-size: 0.85rem; display: block; background: rgba(0,0,0,0.2); padding: 6px; margin: 4px 0; border-radius: 4px;">{ education: [{ institution: 'SENAC', degree: 'Extensão', fieldOfStudy: 'Node.js', startDate: '2025-03', endDate: '2025-06', current: false }] }</code>.
+                    </li>
+                    <li>A API do Hono executa o UPDATE no Supabase.</li>
+                    <li>O banco retorna sucesso.</li>
+                  </ol>
+                </li>
+                <li>🤖 <strong>Rover (Para o usuário):</strong> "Pronto! Já adicionei o curso de extensão em Node.js no
+                  SENAC ao seu perfil profissional. Você pode conferir a alteração atualizada lá na sua tela de perfil."
+                </li>
+              </ul>
+
+              <h3>Diálogo 2: Cálculo e Regras de Negócio</h3>
+              <ul style="list-style-type: none; margin-left: 0; margin-bottom: 24px; padding-left: 0;">
+                <li style="margin-bottom: 12px;">👤 <strong>Usuário:</strong> "Comecei meu estágio em 10/01/2025 e
+                  recebo uma bolsa de 1200 reais. Quantos dias de férias eu tenho direito hoje?"</li>
+                <li
+                  style="margin-bottom: 12px; background: rgba(99, 102, 241, 0.05); padding: 12px; border-radius: 8px; border-left: 3px solid var(--primary);">
+                  ⚙️ <strong>Rover (Internamente):</strong>
+                  <ol style="margin-left: 20px; margin-top: 6px;">
+                    <li>Identifica a necessidade de calcular recesso de estágio.</li>
+                    <li>Executa a ferramenta <code>calculate_recess</code> com os parâmetros
+                      <code>{ startDate: '2025-01-10', endDate: '2026-06-02', stipend: 1200 }</code> (utilizando a data
+                      atual como ponto de parada).
+                    </li>
+                    <li>A função calcula a diferença de meses, aplica a proporção da Lei do Estágio (30 dias para cada
+                      12 meses) e calcula o valor financeiro do recesso.</li>
+                  </ol>
+                </li>
+                <li>🤖 <strong>Rover (Para o usuário):</strong> "Como você está estagiando há aproximadamente 17 meses,
+                  você já acumulou o direito a 42 dias de recesso remunerado. Caso você tire esses dias em dinheiro, o
+                  valor proporcional a receber é de aproximadamente 1.680 reais."</li>
+              </ul>
+
+              <div class="divider"></div>
+
+              <h2>A IA além do RAG tradicional: Tool-Use Database Mutation</h2>
+
+              <p>Muitos desenvolvedores associam IA em documentos apenas ao RAG tradicional (Retrieval-Augmented
+                Generation). Mas há uma grande diferença entre o RAG comum e a arquitetura de Tool-Use que aplicamos
+                aqui:</p>
+
+              <div class="diagram-card">
+                <div class="diagram-title">
+                  <i data-lucide="git-commit" style="width: 14px; height: 14px;"></i>
+                  <span>Diagrama Mermaid: RAG vs Tool-Use</span>
+                </div>
+                <pre class="mermaid" style="background: transparent; padding: 0;">
+graph TD
+    subgraph RAG Tradicional - Somente Leitura
+        R1[Pergunta do Usuário] --> R2[Busca Vetorial em Docs]
+        R2 --> R3[Injeta Contexto no Prompt]
+        R3 --> R4[LLM gera Resposta de texto]
+    end
+    subgraph Agentic Tool-Use - Leitura e Escrita
+        A1[Comando do Usuário] --> A2[LLM decide usar Ferramenta]
+        A2 --> A3[Executa Função localmente no Banco]
+        A3 --> A4[Altera Estado / Escreve no Supabase]
+        A4 --> A5[LLM confirma Ação e Sincroniza Frontend]
+    end
+                </pre>
+              </div>
+
+              <p>No RAG tradicional, a IA apenas lê fragmentos de documentos para responder perguntas. Não há alteração
+                de estado.</p>
+              <p>No nosso modelo de Tool-Use, a IA atua como uma interface de leitura e escrita. Ela consulta
+                informações estruturadas do banco, processa a lógica e executa mutações (escreve novos dados) na base do
+                Supabase. O usuário não precisa preencher o formulário; ele dá a instrução, a IA valida as regras e
+                altera a tabela.</p>
+
+              <div class="divider"></div>
+
+              <h2>Como as Plataformas de Recrutamento Podem Evoluir (Gupy, Solides, LinkedIn)</h2>
+
+              <p>Muitas plataformas de recrutamento no mercado são criticadas por criarem funis burocráticos e frios
+                para os candidatos. Não se trata de criticar por criticar, mas de propor um novo modelo de interações.
+                Como essas ferramentas podem migrar de coletores estáticos de dados para assessores ativos de carreira?
+              </p>
+
+              <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li><strong>UX Conversacional para Candidatos:</strong> Em vez de preencher formulários rígidos, o
+                  candidato conversaria com um assistente. O assistente analisaria o PDF do currículo, preencheria as
+                  informações iniciais e tiraria dúvidas em tempo real: <em>"Identifiquei que você colocou Node.js no
+                    currículo, mas não mencionou no seu perfil. Qual framework você utilizou? Posso atualizar seu
+                    cadastro?"</em>.</li>
+                <li><strong>Buscas Semânticas para Recrutadores:</strong> Recrutadores perdem muito tempo configurando
+                  buscas rígidas de palavras-chave. Com um agente inteligente, a busca passa a ser contextual:
+                  <em>"Preciso de estagiários em Olinda com perfil voltado para backend que demonstrem boa escrita e
+                    estejam matriculados no ensino superior"</em>. O agente faz o cruzamento semântico e entrega os
+                  perfis mais aderentes.
+                </li>
+              </ul>
+
+              <div class="divider"></div>
+
+              <h2>Nossas Escolhas de Engenharia</h2>
+
+              <p>Para manter essa estrutura rodando com o menor custo e complexidade, tomamos decisões muito claras:</p>
+
+              <h3>React & Hono.js</h3>
+              <p>Optamos pelo React no frontend por sua componentização declarativa e pelo Hono.js no backend por ser
+                extremamente leve, TypeScript-first e projetado para baixa latência. Como o fluxo do agente exige
+                chamadas sequenciais entre o modelo e as funções locais, cada milissegundo economizado na API melhora
+                drasticamente a fluidez da conversa.</p>
+
+              <h3>Fetch Nativo do Node.js</h3>
+              <p>Evitamos bibliotecas pesadas como Axios. Com o Node.js 18+, a API de fetch nativa tornou-se robusta e
+                estável. Usá-la reduz as dependências do container do backend, otimizando o tempo de inicialização a
+                frio (cold start) do servidor.</p>
+
+              <h3>A Stack de Deploy: Custo Zero que Escala</h3>
+              <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li><strong>Vercel (Frontend):</strong> Hospeda o frontend estático com CDN global, cache inteligente e
+                  HTTPS automático, garantindo carregamento instantâneo para o usuário.</li>
+                <li><strong>Google Cloud Run (Backend):</strong> A API Hono.js roda dockerizada no Cloud Run. Escolhemos
+                  essa infraestrutura pela sua capacidade de <em>Scale-to-Zero</em>. Se não houver tráfego ativo, o
+                  container desliga e o custo é zero. Quando uma chamada chega, ele liga em segundos, escalando
+                  automaticamente caso o tráfego exploda. Um trade-off de leve cold start inicial para ter custo base de
+                  R$ 0.</li>
+                <li><strong>Supabase (Banco, Auth & RLS):</strong> Centraliza nosso banco de dados relacional
+                  PostgreSQL, gerenciamento de autenticação por JWT e uploads de arquivos (Storage), com políticas
+                  rigorosas de Row Level Security (RLS) para proteção nativa dos dados do estudante.</li>
+                <li><strong>Brevo (Envio de E-mail):</strong> Canal seguro de envio de e-mails transacionais (como o
+                  envio do PDF do currículo). O serviço roda estritamente no backend, protegendo as chaves de API.</li>
+                <li><strong>Registro.br (Domínio):</strong> Gerencia as conexões DNS do domínio profissional
+                  <code>estagionauta.com.br</code> com apontamento limpo e seguro para os servidores da Vercel e do
+                  Cloud Run.
+                </li>
+              </ul>
+
+              <h3>Padrão BYOK (Bring Your Own Key) e Diferenciação de LLMs</h3>
+              <p>Ao implementar as conexões de inteligência artificial, adotamos uma estratégia inteligente de
+                distribuição de modelos baseada em custo e velocidade:</p>
+              <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li><strong>Groq API (Llama 3):</strong> Utilizada no loop ReAct principal e Tool Calling. A Groq
+                  fornece velocidades incríveis de inferência (centenas de tokens por segundo), reduzindo o tempo de
+                  espera do chat para níveis imperceptíveis. Sem a velocidade da Groq, o loop de ferramentas de um
+                  agente ReAct tornaria o chat cansativo e inutilizável.</li>
+                <li><strong>OpenAI API (GPT-4 / TTS):</strong> Reservada para tarefas que exigem alto nível semântico e
+                  capacidade analítica complexa, como a análise profunda estruturada de currículos ou síntese de voz
+                  (TTS) ultra-realista para simulação de entrevistas de membros premium (enquanto membros gratuitos
+                  utilizam a síntese de voz nativa do próprio navegador).</li>
+              </ul>
+
+              <div class="divider"></div>
+
+              <h2>O Desafio Agora não é Criar, é Manter</h2>
+
+              <p>Qualquer programador consegue criar um protótipo divertido em um final de semana. O verdadeiro desafio
+                de engenharia de software é a manutenção, a estabilidade e a evolução consistente de um produto no ar.
+              </p>
+
+              <p>Construir em público nos mostra que a melhor versão do código é aquela que está rodando, servindo
+                pessoas reais e coletando feedbacks diários.</p>
+
+              <p>Estamos comprometidos com essa evolução. O Estagionauta está no ar, o Rover está ativo e respondendo
+                chamadas, e o foco agora é manter o sistema estável, seguro e escalável. Se você quiser ver o código ou
+                testar a aplicação:</p>
+
+              <ul style="margin-left: 20px; margin-bottom: 24px;">
+                <li>Acesse a Plataforma: <a href="https://estagionauta.com.br" target="_blank"
+                    style="color: var(--primary);">https://estagionauta.com.br</a></li>
+                <li>Conheça nosso Repositório: <a href="https://github.com/paulpessoa/estagionauta" target="_blank"
+                    style="color: var(--primary);">https://github.com/paulpessoa/estagionauta</a></li>
+              </ul>
+
+              <p>O que você acha desse modelo de agentes? Acredita que as interfaces de formulários estáticos estão
+                próximas do fim? Deixe suas ideias nos comentários.</p>
+              <!-- END OF COPIABLE CONTENT -->
+            </article>
+
+            <div class="divider" style="margin-top: 40px; margin-bottom: 24px;"></div>
+
+            <div class="actions-bar" style="justify-content: center;">
+              <button class="btn btn-primary" onclick="copyEntireArticle()">
+                <i data-lucide="copy" style="width: 16px; height: 16px;"></i>
+                Copiar Artigo Completo
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 2: Video Script / Interactive Script Guide -->
+        <div id="tab-script" class="tab-content">
+
+          <div class="actions-bar" style="margin-bottom: 24px;">
+            <h2 style="font-family: var(--font-heading); font-size: 1.4rem; font-weight: 600;">Roteiro de Gravação</h2>
+            <button class="btn btn-primary" onclick="toggleTeleprompter()">
+              <i data-lucide="play" style="width: 16px; height: 16px;"></i>
+              Abrir Modo Teleprompter
+            </button>
+          </div>
+
+          <div class="timeline">
+
+            <!-- Step 1 -->
+            <div class="timeline-item active-step" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">1. Introdução e Gancho do LinkedIn</span>
+                  <span class="time-badge">0:00 - 0:30</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🖥️ MONITOR 2 (Apoio):</strong> Tela cheia no teleprompter.<br>
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Webcam centralizada em tela cheia. Olhe diretamente para a
+                  lente e conte a história com naturalidade.
+                </div>
+                <p class="script-text">"Você já preencheu um PDF de currículo em um site de vagas e depois teve que
+                  preencher manualmente mais 40 campos porque o sistema importou tudo errado? Eu cansei disso e resolvi
+                  criar uma solução. E o mais louco: essa semana eu estava navegando no LinkedIn Premium e a IA deles me
+                  abordou por mensagem, me guiou até a página de vagas e expandiu o chat dinamicamente para me ajudar.
+                  Eu estava construindo exatamente a mesma lógica no Estagionauta com o Rover! A maior rede profissional
+                  do mundo está mostrando que o futuro da UX são interfaces guiadas por agentes autónomos."</p>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="timeline-item" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">2. Demonstração Prática do Rover</span>
+                  <span class="time-badge">0:30 - 0:55</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Captura de tela ativa. Mostre a tela de perfil do
+                  Estagionauta com o Rover aberto na lateral.<br>
+                  <strong>💡 AÇÃO:</strong> Digite: <em>"Rover, adicione que fiz um curso de extensão em Node.js de
+                    março a junho de 2025 no SENAC"</em>. Aponte para as caixas de texto do perfil preenchendo sozinhas
+                  no fundo.
+                </div>
+                <p class="script-text">"Este é o Rover integrado diretamente no Estagionauta. Em vez de preencher caixas
+                  manuais, o estudante apenas conversa com ele. Vejam como o agente interpreta meu comando, aciona o
+                  backend e os campos no perfil são atualizados sozinhos em tempo real. Sem que eu precise clicar em
+                  nenhum formulário estático."</p>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="timeline-item" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">3. RAG vs Tool-Use (Desenho no Excalidraw)</span>
+                  <span class="time-badge">0:55 - 1:35</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Transicione para o <strong>Excalidraw</strong>. Comece a
+                  desenhar na hora.<br>
+                  <strong>✏️ ESQUEMA PARA DESENHAR (COPIE NA TELA):</strong>
+                  <div
+                    style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.88rem; line-height: 1.5; color: #a5b4fc; margin-top: 8px; border: 1px solid rgba(99,102,241,0.2);">
+                    <strong>1. RAG (Leitura):</strong><br>
+                    [Pergunta] ➔ [Busca Vetorial] ➔ [LLM] ➔ [Resposta (Texto Estático)]<br><br>
+                    <strong>2. Tool-Use (Escrita):</strong><br>
+                    [Comando] ➔ [LLM decide Tool] ➔ [Hono API executa] ➔ [Mutação Supabase]
+                  </div>
+                </div>
+                <p class="script-text">"Para entender como isso funciona, precisamos diferenciar o RAG de leitura
+                  tradicional do Tool-Use de escrita. No RAG comum, a IA apenas lê pedaços de documentos para responder
+                  perguntas. Não há mudança no sistema. Já no modelo do Rover, aplicamos Tool-Use. O agente avalia a
+                  mensagem, decide usar ferramentas na nossa API e executa mutações de banco de dados diretamente,
+                  alterando o estado real no Supabase."</p>
+              </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="timeline-item" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">4. Fluxo de Dados (Desenho no Excalidraw)</span>
+                  <span class="time-badge">1:35 - 2:15</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Continue no Excalidraw desenhando o ciclo de vida da
+                  requisição.<br>
+                  <strong>✏️ ESQUEMA PARA DESENHAR (COPIE NA TELA):</strong>
+                  <div
+                    style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 6px; font-family: monospace; font-size: 0.88rem; line-height: 1.5; color: #a5b4fc; margin-top: 8px; border: 1px solid rgba(99,102,241,0.2);">
+                    <strong>3. Ciclo de Dados (ReAct Loop):</strong><br>
+                    [Vite Front (Estudante)] ➔ (mensagem) ➔ [API Hono.js]<br>
+                    [API Hono.js] ➔ (msg + sitemap) ➔ [LLM]<br>
+                    [LLM] ➔ (chama Tool) ➔ [API Hono.js]<br>
+                    [API Hono.js] ➔ (ação local) ➔ [Supabase DB / Cálculos]<br>
+                    [Supabase DB] ➔ (observação) ➔ [LLM]<br>
+                    [LLM] ➔ (devolve resposta) ➔ [Vite Front (atualiza tela)]
+                  </div>
+                </div>
+                <p class="script-text">"E como esse fluxo de dados se comporta na prática? O ciclo começa na interface
+                  do usuário. A mensagem é enviada para a nossa API Hono.js. Nós repassamos o sitemap do site e o
+                  contexto para o LLM. A IA decide qual ferramenta acionar. Nós executamos a ferramenta localmente no
+                  backend — seja fazendo queries no Supabase ou processando cálculos de recesso —, devolvemos a
+                  observação para o LLM e, finalmente, o agente responde ao usuário sincronizando a tela."</p>
+              </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="timeline-item" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">5. Arquitetura, Escolhas de Engenharia & Deploy</span>
+                  <span class="time-badge">2:15 - 3:00</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Mude para o <strong>VS Code</strong>. Aponte para as pastas
+                  <code>/src</code> (React + Tailwind), <code>/api</code> (Hono.js) e <code>/shared</code>.<br>
+                  <strong>🖥️ CÓDIGO/CONTEÚDO:</strong> Explique rapidamente a stack: React no front, Hono.js leve no
+                  backend, Vercel no deploy estático, Google Cloud Run com <em>scale-to-zero</em> para custo zero,
+                  Supabase no banco/RLS/Auth, Brevo nos e-mails, e o modelo BYOK (Groq com Llama 3 para velocidade
+                  absurda e OpenAI GPT-4 para análises densas).<br>
+                  <strong>💡 LINHA CHAVE:</strong> Diga que pode gravar outro vídeo aprofundando nisto.
+                </div>
+                <p class="script-text">"Toda essa engenharia foi estruturada como um monorepo. Temos o frontend em React
+                  no Vite hospedado na Vercel, a API escrita em Hono.js rodando dockerizada no Google Cloud Run com
+                  política de custo zero quando ocioso, banco/auth no Supabase e e-mails no Brevo. Usamos o padrão BYOK:
+                  Groq com Llama 3 para inferência ultra-rápida de menos de 1 segundo no loop do Rover, e OpenAI GPT-4
+                  para análises pesadas de currículos. Se vocês quiserem, posso gravar outro vídeo depois aprofundando
+                  em cada um desses detalhes técnicos, mas hoje o foco é o overview do agente."</p>
+              </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="timeline-item" onclick="selectStep(this)">
+              <div class="timeline-marker"></div>
+              <div class="timeline-card">
+                <div class="timeline-meta">
+                  <span class="timeline-title">6. Fechamento e CTA</span>
+                  <span class="time-badge">3:00 - 3:20</span>
+                </div>
+                <div class="cue-card">
+                  <strong>🎥 MONITOR 1 (Gravação):</strong> Volte para a webcam em tela cheia.<br>
+                  <strong>👋 DICA VISUAL:</strong> Olhe firme para a lente e faça a chamada para ação.
+                </div>
+                <p class="script-text">"Essa é a evolução natural do recrutamento: substituir formulários engessados por
+                  assistentes inteligentes de carreira. O Estagionauta está rodando e o código é open source. O link do
+                  artigo completo com toda a arquitetura desenhada e o repositório estão na descrição. Me conta aqui nos
+                  comentários o que você achou dos agentes ReAct. Valeu e até a próxima!"</p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Tab 3: Architecture & Flow -->
+        <div id="tab-architecture" class="tab-content">
+          <div class="panel">
+            <h2 style="font-family: var(--font-heading); font-size: 1.6rem; font-weight: 700; margin-bottom: 8px;">
+              Arquitetura Detalhada do Rover</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px;">Exposição dos diagramas conceituais da arquitetura
+              de agentes ReAct implementada.</p>
+
+            <div class="divider"></div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 12px;">1.
+              Ciclo de Interação do Agente (ReAct Loop)</h3>
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">Demonstra o loop entre o
+              frontend do usuário, o middleware Hono, o modelo de inteligência e as consultas ao banco de dados.</p>
+            <div class="diagram-card">
+              <pre class="mermaid">
+graph TD
+    A[Estudante - Frontend Drawer] --> B(Hono.js API - /api/rover/chat)
+    B --> C{Modelo de Linguagem - LLM}
+    C --> D[Decisão de Chamada de Ferramenta]
+    D --> E[Execução de Ferramentas no Backend]
+    E --> F[(Banco de Dados Supabase)]
+    E --> G[Lógica de Cálculo de Férias]
+    F --> C
+    G --> C
+    C --> B
+    B --> A
+              </pre>
+            </div>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 12px;">2.
+              RAG de Leitura vs Tool-Use de Modificação</h3>
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">Compara a limitação de busca
+              estática do RAG comum com a flexibilidade da arquitetura baseada em escrita por Tools implementada no
+              Rover.</p>
+            <div class="diagram-card">
+              <pre class="mermaid">
+graph TD
+    subgraph "RAG Tradicional - Somente Leitura"
+        R1["Pergunta do Usuário"] --> R2["Busca Vetorial em Docs"]
+        R2 --> R3["Injeta Contexto no Prompt"]
+        R3 --> R4["LLM gera Resposta de Texto"]
+    end
+    subgraph "Agentic Tool-Use - Leitura e Escrita"
+        A1["Comando do Usuário"] --> A2["LLM decide usar Ferramenta"]
+        A2 --> A3["Executa Função localmente no Banco"]
+        A3 --> A4["Altera Estado / Escreve no Supabase"]
+        A4 --> A5["LLM confirma Ação e Sincroniza Frontend"]
+    end
+              </pre>
+            </div>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 12px;">3.
+              Estrutura e Camadas do Monorepo (Frontend, Backend & Shared)</h3>
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">Demonstra como as tipagens e
+              requisições se comunicam entre as camadas do monorepo, garantindo segurança e sincronização de dados.</p>
+
+            <div class="diagram-card">
+              <div class="diagram-title">
+                <i data-lucide="git-branch" style="width: 14px; height: 14px;"></i>
+                <span>Estrutura de Relações do Monorepo</span>
+              </div>
+              <pre class="mermaid">
+graph TD
+    subgraph "Frontend (Vite + React)"
+        F1["Componentes UI / Páginas"] --> F2["Custom Hooks"]
+        F2 --> F3["apiClient.ts - Wrapper Fetch"]
+    end
+    
+    subgraph "Shared (Contratos de Tipos)"
+        S1["shared/types/plans.ts"]
+        S2["shared/types/analysis.ts"]
+        S3["shared/types/simulator.ts"]
+    end
+    
+    subgraph "Backend (Hono.js API)"
+        B1["api/src/index.ts - Entrypoint"] --> B2["api/src/app.ts"]
+        B2 --> B3["Middlewares: Auth, CORS, Limiter"]
+        B3 --> B4["Routes: /stripe, /analysis, /rover"]
+        B4 --> B5["Services: Supabase, OpenAI, Stripe"]
+    end
+
+    F3 -.->|Requisições HTTPS com JWT| B2
+    F3 -.->|Partilha e Validação de Tipos| S1
+    F3 -.->|Partilha e Validação de Tipos| S2
+    F3 -.->|Partilha e Validação de Tipos| S3
+    B4 -.->|Partilha e Validação de Tipos| S1
+    B4 -.->|Partilha e Validação de Tipos| S2
+    B4 -.->|Partilha e Validação de Tipos| S3
+              </pre>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-top: 24px;">
+              <div
+                style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4
+                  style="font-family: var(--font-heading); color: #c7d2fe; margin-bottom: 8px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="monitor" style="width: 16px; height: 16px;"></i> Frontend: UI & React Hooks
+                </h4>
+                <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+                  A interface (Vite + React) gerencia o estado da aplicação de forma declarativa. Para a comunicação com
+                  o backend, os componentes utilizam custom hooks do React Query que interagem com o
+                  <code>apiClient.ts</code>. Esse cliente centralizado é responsável por injetar dinamicamente o
+                  cabeçalho <code>Authorization: Bearer [JWT]</code> utilizando a sessão de autenticação ativa do
+                  Supabase.
+                </p>
+              </div>
+
+              <div
+                style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4
+                  style="font-family: var(--font-heading); color: #c7d2fe; margin-bottom: 8px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="server" style="width: 16px; height: 16px;"></i> Backend: Hono.js Layered Architecture
+                </h4>
+                <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+                  A API Hono.js recebe as requisições de forma estruturada: as rotas validam o payload usando Zod
+                  (garantindo consistência sintática antes do processamento). O middleware de autenticação decodifica o
+                  token JWT com o Supabase e expõe o usuário no contexto da requisição. Por fim, a camada de serviços
+                  executa lógica pesada de terceiros (como sessões de checkout no Stripe, inferência da OpenAI e
+                  persistência no PostgreSQL).
+                </p>
+              </div>
+
+              <div
+                style="background: rgba(255,255,255,0.02); padding: 20px; border-radius: 8px; border: 1px solid var(--border);">
+                <h4
+                  style="font-family: var(--font-heading); color: #c7d2fe; margin-bottom: 8px; font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+                  <i data-lucide="shuffle" style="width: 16px; height: 16px;"></i> Shared: Ponte e Contrato Estrito
+                </h4>
+                <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.5;">
+                  O diretório <code>/shared/types</code> é o coração contratual do monorepo. Todos os tipos em
+                  TypeScript (planos, status de simulação e históricos de transações) são definidos de forma
+                  centralizada e compartilhada. Se a API de backend mudar a estrutura de retorno de uma ferramenta do
+                  Rover, o frontend é impedido de compilar no build do Vite até que o contrato seja satisfeito em ambas
+                  as pontas.
+                </p>
+              </div>
+            </div>
+
+            <div class="divider" style="margin: 40px 0;"></div>
+
+            <h3 style="font-family: var(--font-heading); font-size: 1.25rem; font-weight: 600; margin-bottom: 12px;">4.
+              Fluxo de System Design (Arquitetura de Infraestrutura e Integrações)</h3>
+            <p style="margin-bottom: 20px; font-size: 0.95rem; color: var(--text-muted);">Mapeamento completo do fluxo
+              de implantação, infraestrutura de nuvem, chaves de API, banco de dados e APIs de inteligência.</p>
+
+            <div class="diagram-card">
+              <div class="diagram-title">
+                <i data-lucide="network" style="width: 14px; height: 14px;"></i>
+                <span>Fluxo de System Design</span>
+              </div>
+              <pre class="mermaid">
+graph TD
+    subgraph "Domínio e Entrada"
+        DNS["Registro.br - Domínio"] -->|Configuração DNS| Web["Navegador do Usuário"]
+    end
+
+    subgraph "Hospedagem e Servidores"
+        Web -->|Acesso e Assets| Vercel["Vercel - SPA React"]
+        Web -->|Requisições HTTP com JWT| GCR["Google Cloud Run - Hono.js API"]
+    end
+
+    subgraph "Banco de Dados e Storage"
+        GCR -->|Segurança com Service Key| Supa["Supabase - DB, Auth, Storage"]
+        Web -.->|Autenticação do Usuário| Supa
+    end
+
+    subgraph "APIs de IA e Notificações"
+        GCR -->|Envio de Convites| Brevo["Brevo API - Emails Transacionais"]
+        GCR -->|Processamento e Webhooks| Stripe["Stripe API - Checkout"]
+        GCR -->|Chat do Rover Llama| Groq["Groq API - Inferência"]
+        GCR -->|Análise e TTS Premium| OpenAI["OpenAI API - Modelos"]
+    end
+              </pre>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">
+            <i data-lucide="info" style="width: 18px; height: 18px;"></i>
+            Resumo do Artigo
+          </h3>
+          <ul class="sidebar-list">
+            <li><i data-lucide="check" style="width: 14px; height: 14px;"></i> ~1200 palavras</li>
+            <li><i data-lucide="check" style="width: 14px; height: 14px;"></i> Leitura: ~5 minutos</li>
+            <li><i data-lucide="check" style="width: 14px; height: 14px;"></i> Foco: Tecnologias e UX</li>
+            <li><i data-lucide="check" style="width: 14px; height: 14px;"></i> Arquitetura ReAct</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card">
+          <h3 class="sidebar-title">
+            <i data-lucide="video" style="width: 18px; height: 18px;"></i>
+            Status do Vídeo
+          </h3>
+          <ul class="sidebar-list">
+            <li><i data-lucide="clock" style="width: 14px; height: 14px;"></i> Duração: ~1:30</li>
+            <li><i data-lucide="monitor" style="width: 14px; height: 14px;"></i> Gravação de Tela + Cam</li>
+            <li><i data-lucide="mic" style="width: 14px; height: 14px;"></i> Tom: Técnico natural</li>
+          </ul>
+        </div>
+
+        <div class="sidebar-card"
+          style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(236, 72, 153, 0.05)); border-color: rgba(99, 102, 241, 0.2);">
+          <h3 class="sidebar-title" style="color: #c7d2fe;">
+            <i data-lucide="help-circle" style="width: 18px; height: 18px;"></i>
+            O que é o Rover?
+          </h3>
+          <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5;">
+            O Rover é um agente autônomo baseado no padrão ReAct para ler e alterar o banco de dados via chamadas de
+            API, dispensando os tradicionais formulários estáticos de preenchimento.
+          </p>
+        </div>
+
+      </aside>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>Desenvolvido para Paul Pessoa - Estagionauta &copy; 2026</p>
+    </footer>
+
+  </div>
+
+  <!-- Teleprompter Overlay -->
+  <div id="teleprompter" class="teleprompter-overlay">
+
+    <div class="teleprompter-header">
+      <h3 style="font-family: var(--font-heading); font-size: 1.2rem; color: white;">Teleprompter Modo Gravação</h3>
+
+      <div class="teleprompter-controls">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="control-btn" onclick="adjustSpeed(-1)" title="Diminuir Velocidade">
+            <i data-lucide="minus" style="width: 16px; height: 16px;"></i>
+          </button>
+          <span class="control-label">Velocidade: <span id="speed-indicator">2</span></span>
+          <button class="control-btn" onclick="adjustSpeed(1)" title="Aumentar Velocidade">
+            <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+          </button>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 8px; margin-left: 16px;">
+          <button class="control-btn" onclick="adjustFontSize(-2)" title="Diminuir Fonte">
+            <i data-lucide="type" style="width: 12px; height: 12px;"></i>
+          </button>
+          <span class="control-label">Fonte</span>
+          <button class="control-btn" onclick="adjustFontSize(2)" title="Aumentar Fonte">
+            <i data-lucide="type" style="width: 18px; height: 18px;"></i>
+          </button>
+        </div>
+
+        <button class="control-btn" id="play-pause-btn" onclick="togglePlay()" style="margin-left: 24px;"
+          title="Iniciar / Pausar">
+          <i data-lucide="play" id="play-icon" style="width: 18px; height: 18px;"></i>
+        </button>
+
+        <button class="control-btn" onclick="resetTeleprompter()" title="Reiniciar">
+          <i data-lucide="rotate-ccw" style="width: 18px; height: 18px;"></i>
+        </button>
+
+        <button class="btn" onclick="toggleTeleprompter()"
+          style="margin-left: 24px; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); color: #fca5a5;">
+          Fechar [ESC]
+        </button>
+      </div>
+    </div>
+
+    <div class="teleprompter-mask-top"></div>
+    <div class="teleprompter-marker-line"></div>
+
+    <div class="teleprompter-viewport" id="teleprompter-viewport">
+      <div class="teleprompter-text" id="teleprompter-text">
+
+        <strong>1. INTRODUÇÃO (0:00 - 0:20)</strong>
+        <span class="cue-instruction">🎥 WEBCAM FULLSCREEN (Monitor 1) — Fale direto e com impacto</span>
+        <p>"Você já preencheu um PDF de currículo em um site de vagas e depois teve que preencher manualmente mais 40
+          campos porque o sistema importou tudo errado? Eu cansei disso e resolvi criar uma solução."</p>
+
+        <div style="height: 100px;"></div>
+
+        <strong>2. DEMONSTRAÇÃO PRÁTICA (0:20 - 0:50)</strong>
+        <span class="cue-instruction">🖥️ TELA DO ESTAGIONAUTA (Monitor 1) — Abra a gaveta do Rover lateral</span>
+        <p>"Este é o Rover, um agente autônomo baseado no padrão ReAct integrado diretamente no Estagionauta. Em vez de
+          obrigar o estudante a preencher formulários estáticos, ele gerencia seu perfil conversando. Veja como o
+          backend processa o comando e os campos no perfil são atualizados sozinhos no fundo em tempo real, sem
+          preenchimento manual."</p>
+        <span class="cue-instruction">💡 Envie a mensagem: "Rover, adicione que fiz um curso de extensão em Node.js de
+          março a junho de 2025 no SENAC" e aponte para o perfil mudando no fundo</span>
+
+        <div style="height: 100px;"></div>
+
+        <strong>3. RAG VS TOOL-USE (0:55 - 1:35)</strong>
+        <span class="cue-instruction">🎨 EXCALIDRAW (Monitor 1) — Desenhe a comparação RAG vs Tool-Use</span>
+        <span class="cue-instruction"
+          style="font-family: monospace; font-size: 1.2rem; color: #a5b4fc; text-align: left; display: block; border: 1px dashed rgba(236,72,153,0.3); padding: 12px; margin-bottom: 24px;">
+          ✏️ ESQUEMA EXCALIDRAW (Copie na Tela):<br>
+          1. RAG (Leitura): [Pergunta] ➔ [Busca Vetorial] ➔ [LLM] ➔ [Resposta (Texto Estático)]<br><br>
+          2. Tool-Use (Escrita): [Comando] ➔ [LLM decide Tool] ➔ [Hono Executa] ➔ [Mutação Supabase]
+        </span>
+        <p>"Para entender como isso funciona, precisamos diferenciar o RAG de leitura tradicional do Tool-Use de
+          escrita. No RAG comum, a IA apenas lê pedaços de documentos para responder perguntas. Não há mudança no
+          sistema. Já no modelo do Rover, aplicamos Tool-Use. O agente avalia a mensagem, decide usar ferramentas na
+          nossa API e executa mutações de banco de dados diretamente, alterando o estado real no Supabase."</p>
+
+        <div style="height: 100px;"></div>
+
+        <strong>4. FLUXO DE DADOS (1:35 - 2:15)</strong>
+        <span class="cue-instruction">🎨 EXCALIDRAW (Monitor 1) — Continue desenhando o loop de dados</span>
+        <span class="cue-instruction"
+          style="font-family: monospace; font-size: 1.2rem; color: #a5b4fc; text-align: left; display: block; border: 1px dashed rgba(236,72,153,0.3); padding: 12px; margin-bottom: 24px;">
+          ✏️ ESQUEMA EXCALIDRAW (Copie na Tela):<br>
+          [Vite Front (Estudante)] ➔ (mensagem) ➔ [API Hono.js]<br>
+          [API Hono.js] ➔ (msg + sitemap) ➔ [LLM]<br>
+          [LLM] ➔ (chama Tool) ➔ [API Hono.js]<br>
+          [API Hono.js] ➔ (ação local) ➔ [Supabase DB / Cálculos]<br>
+          [Supabase DB] ➔ (observação) ➔ [LLM]<br>
+          [LLM] ➔ (devolve resposta) ➔ [Vite Front (atualiza tela)]
+        </span>
+        <p>"E como esse fluxo de dados se comporta na prática? O ciclo começa na interface do usuário. A mensagem é
+          enviada para a nossa API Hono.js. Nós repassamos o sitemap do site e o contexto para o LLM. A IA decide qual
+          ferramenta acionar. Nós executamos a ferramenta localmente no backend — seja fazendo queries no Supabase ou
+          processando cálculos de recesso —, devolvemos a observação para o LLM e, finalmente, o agente responde ao
+          usuário sincronizando a tela."</p>
+
+        <div style="height: 100px;"></div>
+
+        <strong>5. ARQUITETURA DO MONOREPO (2:10 - 2:40)</strong>
+        <span class="cue-instruction">💻 VS CODE (Monitor 1) — Aponte para as pastas /src, /api e /shared</span>
+        <span class="cue-instruction">💡 Mostre o arquivo de tipagem do shared e a validação Zod no Hono.js</span>
+        <p>"Toda essa engenharia foi estruturada como um monorepo em TypeScript de ponta a ponta. Temos o frontend em
+          React no Vite, a API escrita em Hono.js, e o coração do sistema: a pasta compartilhada `/shared`. As
+          definições e contratos de dados residem no shared e são importados de forma estrita pelo front e pelo back,
+          garantindo que qualquer alteração de contrato quebre o build imediatamente se houver dessincronização."</p>
+
+        <div style="height: 100px;"></div>
+
+        <strong>6. FECHAMENTO (2:40 - 3:00)</strong>
+        <span class="cue-instruction">🎥 WEBCAM FULLSCREEN (Monitor 1) — Olhe para a lente para o CTA</span>
+        <p>"Essa é a evolução natural do recrutamento: substituir formulários engessados por assistentes inteligentes de
+          carreira. O Estagionauta está rodando e o código é open source. O link do artigo completo com toda a
+          arquitetura desenhada e o repositório estão na descrição. Me conta aqui nos comentários o que você achou dos
+          agentes ReAct. Valeu e até a próxima!"</p>
+
+        <div style="height: 200px;"></div>
+
+      </div>
+    </div>
+
+    <div class="teleprompter-mask-bottom"></div>
+
+  </div>
+
+  <!-- Copied Toast Alert -->
+  <div class="toast" id="toast-alert">
+    <i data-lucide="check-circle" style="width: 18px; height: 18px;"></i>
+    <span id="toast-message">Artigo copiado com sucesso!</span>
+  </div>
+
+  <!-- Mermaid JS from UMD CDN (supports local file:// opening) -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.3/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'dark',
+      securityLevel: 'loose',
+      themeVariables: {
+        background: 'transparent',
+        primaryColor: '#6366f1',
+        primaryTextColor: '#fff',
+        lineColor: '#4f46e5',
+        actorBorder: '#6366f1',
+        signalColor: '#ec4899',
+        signalLineColor: '#ec4899'
+      }
+    });
+
+    // Render initial visible diagram on load
+    window.addEventListener('DOMContentLoaded', () => {
+      try {
+        mermaid.init(undefined, document.querySelectorAll('#tab-article .mermaid'));
+      } catch (err) {
+        console.error('Error rendering initial mermaid diagrams:', err);
+      }
+    });
+  </script>
+
+  <!-- Interactive Controls Script -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Tab switcher function
+    function switchTab(tabId) {
+      // Hide all tabs
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      // Deactivate all buttons
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      // Show chosen tab
+      document.getElementById(tabId).classList.add('active');
+      // Find corresponding button and activate
+      const btnIndex = tabId === 'tab-article' ? 0 : tabId === 'tab-script' ? 1 : 2;
+      document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+
+      // Lazy render mermaid for tab-architecture once it becomes visible
+      if (tabId === 'tab-architecture' && !window.architectureMermaidRendered) {
+        setTimeout(() => {
+          try {
+            mermaid.init(undefined, document.querySelectorAll('#tab-architecture .mermaid'));
+            window.architectureMermaidRendered = true;
+          } catch (err) {
+            console.error('Error rendering tab-architecture mermaid diagrams:', err);
+          }
+        }, 50);
+      }
+    }
+
+    // Copy single code snippet
+    function copyCode(btn) {
+      const codeBlock = btn.closest('.code-container').querySelector('pre');
+      // For syntax highlighted elements, we get the text content
+      const textToCopy = codeBlock.textContent;
+
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast('Código copiado com sucesso!');
+      }).catch(err => {
+        console.error('Falha ao copiar:', err);
+      });
+    }
+
+    // Copy entire LinkedIn Article text
+    function copyEntireArticle() {
+      // Get the content inside element
+      const articleEl = document.getElementById('article-text-content');
+
+      // Temporary cloning to remove placeholders from copied text
+      const clone = articleEl.cloneNode(true);
+      clone.querySelectorAll('.placeholder-card').forEach(el => el.remove());
+      clone.querySelectorAll('.diagram-card').forEach(el => el.remove());
+      clone.querySelectorAll('.divider').forEach(el => el.remove());
+
+      // Get readable text format
+      let formattedText = clone.innerText;
+
+      // Fix line break format
+      navigator.clipboard.writeText(formattedText).then(() => {
+        showToast('Artigo do LinkedIn copiado!');
+      }).catch(err => {
+        console.error('Erro ao copiar o artigo:', err);
+      });
+    }
+
+    // Toast alert presentation
+    function showToast(message) {
+      const toast = document.getElementById('toast-alert');
+      document.getElementById('toast-message').innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Video script step indicator helper
+    function selectStep(element) {
+      document.querySelectorAll('.timeline-item').forEach(item => {
+        item.classList.remove('active-step');
+      });
+      element.classList.add('active-step');
+    }
+
+    // Teleprompter Logic
+    let isTeleprompterOpen = false;
+    let isScrolling = false;
+    let scrollSpeed = 2; // Default speed level
+    let fontSize = 2.2; // Default font size in rem
+    let scrollInterval = null;
+
+    function toggleTeleprompter() {
+      const tele = document.getElementById('teleprompter');
+      isTeleprompterOpen = !isTeleprompterOpen;
+
+      if (isTeleprompterOpen) {
+        tele.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      } else {
+        stopScrolling();
+        tele.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+    }
+
+    // Listen for ESC key to close teleprompter
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isTeleprompterOpen) {
+        toggleTeleprompter();
+      }
+      if (e.key === ' ' && isTeleprompterOpen) {
+        e.preventDefault(); // Stop page scrolling
+        togglePlay();
+      }
+    });
+
+    function togglePlay() {
+      const btn = document.getElementById('play-pause-btn');
+      const icon = document.getElementById('play-icon');
+
+      isScrolling = !isScrolling;
+
+      if (isScrolling) {
+        btn.classList.add('play-active');
+        icon.setAttribute('data-lucide', 'pause');
+        startScrolling();
+      } else {
+        btn.classList.remove('play-active');
+        icon.setAttribute('data-lucide', 'play');
+        stopScrolling();
+      }
+      lucide.createIcons();
+    }
+
+    function startScrolling() {
+      stopScrolling(); // Clear existing
+      const viewport = document.getElementById('teleprompter-viewport');
+
+      // Maps speed level 1-5 to pixel steps
+      const tickRate = 25; // 40 FPS
+
+      scrollInterval = setInterval(() => {
+        // Scroll rate step calculation
+        const step = scrollSpeed * 0.5;
+        viewport.scrollTop += step;
+      }, tickRate);
+    }
+
+    function stopScrolling() {
+      if (scrollInterval) {
+        clearInterval(scrollInterval);
+        scrollInterval = null;
+      }
+    }
+
+    function resetTeleprompter() {
+      const viewport = document.getElementById('teleprompter-viewport');
+      viewport.scrollTop = 0;
+      if (isScrolling) {
+        togglePlay();
+      }
+    }
+
+    function adjustSpeed(amount) {
+      scrollSpeed = Math.max(1, Math.min(8, scrollSpeed + amount));
+      document.getElementById('speed-indicator').innerText = scrollSpeed;
+      if (isScrolling) {
+        startScrolling(); // restart with new speed
+      }
+    }
+
+    function adjustFontSize(amount) {
+      const textEl = document.getElementById('teleprompter-text');
+      fontSize = Math.max(1.2, Math.min(4.0, fontSize + (amount * 0.1)));
+      textEl.style.fontSize = fontSize + 'rem';
+
+      // also scale heading sizes correspondingly
+      textEl.querySelectorAll('strong').forEach(el => {
+        el.style.fontSize = (fontSize + 0.2) + 'rem';
+      });
+      textEl.querySelectorAll('.cue-instruction').forEach(el => {
+        el.style.fontSize = (fontSize * 0.65) + 'rem';
+      });
+    }
+  </script>
+</body>
+
+</html>
