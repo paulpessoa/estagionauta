@@ -2,8 +2,8 @@ import OpenAI from 'openai';
 import { env } from '../config/env.js';
 
 const openai = new OpenAI({
-  apiKey: env.GROQ_API_KEY,
-  baseURL: 'https://api.groq.com/openai/v1',
+  apiKey: env.GEMINI_API_KEY,
+  baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
 });
 
 import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData, SimulatorMessage, SimulatorFeedback } from '../../../shared/types/index.js';
@@ -77,7 +77,7 @@ Adicione ao JSON:
   }
 
   const response = await openai.chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'gemini-1.5-flash',
     messages: [
       {
         role: 'system',
@@ -263,7 +263,7 @@ ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga
 8. Garantir que todo o conteúdo caiba em UMA página A4`;
 
   const response = await openai.chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'gemini-1.5-flash',
     messages: [
       {
         role: 'system',
@@ -356,7 +356,7 @@ Regras cruciais:
   }
 
   const response = await openai.chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'gemini-1.5-flash',
     messages,
     temperature: 0.8,
     max_tokens: 200,
@@ -429,7 +429,7 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
 }`;
 
   const response = await openai.chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'gemini-1.5-flash',
     messages: [
       { role: 'system', content: systemPrompt },
       {
@@ -475,7 +475,7 @@ Responda em formato de texto limpo em português do Brasil de forma extremamente
 - Valor total do recesso calculado: R$ ${valorRecesso.toFixed(2)}`;
 
   const response = await openai.chat.completions.create({
-    model: 'llama-3.3-70b-versatile',
+    model: 'gemini-1.5-flash',
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }

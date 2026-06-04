@@ -869,4 +869,62 @@ Este plano descreve a remoção completa do identificador do currículo público
   2. Dizer "atualize avalie o CIEE Pernambuco com 5 estrelas de que eles são top da bagaceira" e verificar se o Rover chama `submit_agency_review` com sucesso, exibe uma mensagem calorosa e natural de confirmação, e NÃO reseta para o menu de boas-vindas.
   3. Enviar gírias de teste e verificar se ele responde de forma adaptativa e inteligente, sem recusar a interação por questões de sensibilidade de gírias.
 
+---
 
+# 🤖 Migração do Motor de IA para Google Gemini (AI Studio Free Tier)
+
+## Resumo do Objetivo
+Substituir o uso do Groq API (modelos Llama) pelo Google Gemini (modelos Gemini 1.5 Flash / Gemini 2.5 Flash via OpenAI API Compatibility do Google AI Studio) como motor principal de inteligência artificial em todo o ecossistema do backend. Manter o OpenAI `gpt-4o-mini` como fallback primário, e o Groq API como fallback secundário caso configurado e necessário.
+
+## Decisões Confirmadas
+- **Provedor Primário**: Google Gemini 1.5 Flash via Google AI Studio (`GEMINI_API_KEY`).
+- **Compatibilidade**: Uso da rota de compatibilidade OpenAI oficial do Gemini (`https://generativelanguage.googleapis.com/v1beta/openai/`) para evitar a inclusão de novas dependências npm e reuso do SDK do OpenAI.
+- **Configuração**:
+  - `GEMINI_API_KEY` passa a ser obrigatória no arquivo `api/src/config/env.ts`.
+  - `GROQ_API_KEY` passa a ser opcional, servindo como fallback secundário.
+- **Limitações/Free Tier**: Adicionar documentação e comentários explicando que a chave do Gemini opera no plano gratuito (Free Tier) do Google AI Studio.
+
+## Alterações Propostas
+
+### 1. Configuração
+
+#### [MODIFY] [env.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/config/env.ts)
+- Adicionar validação de `GEMINI_API_KEY` como obrigatória (`z.string().min(1)`).
+- Alterar `GROQ_API_KEY` para opcional (`z.string().optional()`).
+
+#### [MODIFY] [.env.example](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/.env.example)
+- Explicar o uso de `GEMINI_API_KEY` associada ao plano gratuito do Google AI Studio.
+
+### 2. Backend Routes & Services
+
+#### [MODIFY] [openai.service.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/services/openai.service.ts)
+- Inicializar o cliente `openai` apontando para o Gemini (`baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/'` e `apiKey: env.GEMINI_API_KEY`).
+- Substituir o modelo `llama-3.3-70b-versatile` por `gemini-1.5-flash` nas chamadas aos endpoints (análise de currículo, geração de currículo, simulador de entrevistas e comentário de recesso).
+- Remover menções a Groq/Llama nos comentários deste arquivo.
+
+#### [MODIFY] [analyze_candidatura.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/analyze_candidatura.ts)
+- Ajustar a função `getLlmClient` para priorizar `GEMINI_API_KEY` com o endpoint de compatibilidade e o modelo `gemini-1.5-flash`.
+
+#### [MODIFY] [rover.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/rover.routes.ts)
+- Instanciar cliente `gemini` com a chave do Gemini.
+- Manter o cliente `groq` condicionado à presença de `env.GROQ_API_KEY`.
+- Refatorar o laço de execução do Rover Chat e o laço de fallback conversacional para priorizar `gemini-1.5-flash` (Gemini), com fallback primário para `gpt-4o-mini` (OpenAI), e fallback secundário para `llama-3.3-70b-versatile` (Groq).
+
+### 3. Testes e Documentação
+
+#### [MODIFY] [referral_rewards.routes.spec.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tests/referral_rewards.routes.spec.ts)
+- Adicionar `GEMINI_API_KEY` na definição mock do arquivo de testes de integração.
+
+#### [MODIFY] [README.md](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/README.md)
+- Atualizar a documentação para remover o destaque do Groq como motor principal, inserindo instruções sobre como obter a chave gratuita no Google AI Studio.
+
+#### [MODIFY] [RoverArticle.html](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/RoverArticle.html)
+- Atualizar o artigo descritivo do Rover substituindo o foco do Groq pela infraestrutura de baixa latência do Gemini (AI Studio Free Tier).
+
+## Verification Plan
+
+### Automated Tests
+- Executar `npm run test` em `api/` para verificar se todas as 53 specs passam.
+
+### Manual Verification
+- Testar a comunicação com o Rover e a ferramenta de geração e análise de currículo para atestar que os prompts estão retornando os dados corretos no formato JSON estruturado por meio do Gemini.

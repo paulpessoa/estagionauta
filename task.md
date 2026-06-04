@@ -171,3 +171,15 @@
 - [x] Rover API: Adicionar tratamento de fallback de completação sem tools para evitar reset para menu de boas-vindas
 - [x] Verificação: Deletar arquivo temporário `api/src/test_groq.ts`
 - [x] Verificação: Confirmar build completo e execução de testes automatizados com sucesso
+
+## FASE 3.1 — Substituição de Groq por Google Gemini (AI Studio Free Tier)
+
+- [x] Backend: Validar e integrar `GEMINI_API_KEY` (obrigatória) e tornar `GROQ_API_KEY` (opcional) no parser de configurações `env.ts`
+- [x] Backend: Atualizar template `api/.env.example` com explicações do Gemini API Free Tier
+- [x] Backend Service: Adaptar `api/src/services/openai.service.ts` para usar a API Gemini e o modelo `gemini-1.5-flash`
+- [x] Backend Tool: Atualizar `api/src/tools/analyze_candidatura.ts` para usar o Gemini
+- [x] Backend Routes: Configurar o router `api/src/routes/rover.routes.ts` com o cliente `gemini`, ordenando fallbacks (Gemini -> OpenAI -> Groq)
+- [x] Backend Tests: Mockar `GEMINI_API_KEY` nos testes em `api/src/tests/referral_rewards.routes.spec.ts`
+- [x] Documentação: Atualizar referências ao Groq no `README.md` e `RoverArticle.html`
+- [/] Verificação: Rodar testes locais (`npm run test` na pasta `api/`) e validar compilação
+- [ ] Implantação: Fazer push para o Git, atualizar as envs no Google Cloud Run e Vercel, e validar a conexão

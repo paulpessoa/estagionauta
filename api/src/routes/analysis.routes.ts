@@ -283,7 +283,7 @@ app.post('/recesso-comment', authMiddleware, zValidator('json', recessoCommentSc
       return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
     }
 
-    // 3. Generate AI comment using Groq/Llama
+    // 3. Generate AI comment using Gemini
     const comment = await generateRecessoCommentAI({
       startDate,
       endDate: endDate || undefined,

@@ -3,6 +3,12 @@ import { supabaseAdmin } from '../services/supabase.service.js';
 import { env } from '../config/env.js';
 
 const getLlmClient = () => {
+  if (env.GEMINI_API_KEY) {
+    return new OpenAI({
+      apiKey: env.GEMINI_API_KEY,
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    });
+  }
   if (env.OPENAI_API_KEY) {
     return new OpenAI({
       apiKey: env.OPENAI_API_KEY,
@@ -109,7 +115,9 @@ Anotações do Usuário: ${app.notes || 'Nenhuma'}
 
     // 5. Chamar a LLM
     const client = getLlmClient();
-    const model = env.OPENAI_API_KEY ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile';
+    const model = env.GEMINI_API_KEY 
+      ? 'gemini-1.5-flash' 
+      : (env.OPENAI_API_KEY ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile');
 
     const systemPrompt = `Você é um Recrutador Sênior e Especialista em Carreira.
 Sua tarefa é analisar a compatibilidade (fit) entre o perfil do candidato (currículo e dados acadêmicos) e os requisitos da vaga de estágio/trabalho no Kanban.

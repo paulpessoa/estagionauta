@@ -13,6 +13,7 @@ vi.mock('../config/env.js', () => {
       NODE_ENV: 'test',
       SUPABASE_URL: 'https://mock.supabase.co',
       SUPABASE_SERVICE_ROLE_KEY: 'mock-service-key',
+      GEMINI_API_KEY: 'mock-gemini-key',
       GROQ_API_KEY: 'mock-groq-key',
       STRIPE_SECRET_KEY: 'mock-stripe-key',
       STRIPE_WEBHOOK_SECRET: 'mock-webhook-key',

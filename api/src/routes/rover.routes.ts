@@ -10,10 +10,15 @@ import { env } from '../config/env.js';
 
 const app = new Hono<Env>();
 
-const groq = new OpenAI({
+const gemini = new OpenAI({
+  apiKey: env.GEMINI_API_KEY,
+  baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+});
+
+const groq = env.GROQ_API_KEY ? new OpenAI({
   apiKey: env.GROQ_API_KEY,
   baseURL: 'https://api.groq.com/openai/v1',
-});
+}) : null;
 
 // Client for OpenAI Content Moderation API
 const openaiClient = env.OPENAI_API_KEY ? new OpenAI({ apiKey: env.OPENAI_API_KEY }) : null;
@@ -277,8 +282,8 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
     while (loopCount < MAX_LOOPS) {
       let response;
       try {
-        response = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
+        response = await gemini.chat.completions.create({
+          model: 'gemini-1.5-flash',
           messages: apiMessages,
           tools: roverTools,
           tool_choice: 'auto',
@@ -286,24 +291,29 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
           max_tokens: 4096,
         });
       } catch (primaryErr: any) {
-        console.error('[Rover] Primary Groq model (llama-3.3-70b-versatile) failed, attempting fallback...', primaryErr.message);
+        console.error('[Rover] Primary Gemini model (gemini-1.5-flash) failed, attempting fallback...', primaryErr.message);
         
         try {
-          response = await groq.chat.completions.create({
-            model: 'llama-3.1-8b-instant',
-            messages: apiMessages,
-            tools: roverTools,
-            tool_choice: 'auto',
-            temperature: 0.7,
-            max_tokens: 4096,
-          });
-        } catch (secondaryErr: any) {
-          console.error('[Rover] Fallback Groq model (llama-3.1-8b-instant) failed:', secondaryErr.message);
-          
           if (openaiClient) {
             console.log('[Rover] Attempting fallback to OpenAI gpt-4o-mini...');
             response = await openaiClient.chat.completions.create({
               model: 'gpt-4o-mini',
+              messages: apiMessages,
+              tools: roverTools,
+              tool_choice: 'auto',
+              temperature: 0.7,
+              max_tokens: 4096,
+            });
+          } else {
+            throw primaryErr;
+          }
+        } catch (secondaryErr: any) {
+          console.error('[Rover] Fallback OpenAI model (gpt-4o-mini) failed:', secondaryErr.message);
+          
+          if (groq) {
+            console.log('[Rover] Attempting secondary fallback to Groq llama-3.3-70b-versatile...');
+            response = await groq.chat.completions.create({
+              model: 'llama-3.3-70b-versatile',
               messages: apiMessages,
               tools: roverTools,
               tool_choice: 'auto',
@@ -399,23 +409,37 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
             let fallbackRes;
             try {
-              fallbackRes = await groq.chat.completions.create({
-                model: 'llama-3.3-70b-versatile',
+              fallbackRes = await gemini.chat.completions.create({
+                model: 'gemini-1.5-flash',
                 messages: fallbackMessages as any,
                 temperature: 0.7,
                 max_tokens: 1024,
               });
-            } catch (groqErr) {
-              console.error('[Rover] Fallback Groq Llama 3.3 failed, trying OpenAI...', groqErr);
-              if (openaiClient) {
-                fallbackRes = await openaiClient.chat.completions.create({
-                  model: 'gpt-4o-mini',
-                  messages: fallbackMessages as any,
-                  temperature: 0.7,
-                  max_tokens: 1024,
-                });
-              } else {
-                throw groqErr;
+            } catch (geminiErr: any) {
+              console.error('[Rover] Fallback Gemini failed, trying OpenAI...', geminiErr.message);
+              try {
+                if (openaiClient) {
+                  fallbackRes = await openaiClient.chat.completions.create({
+                    model: 'gpt-4o-mini',
+                    messages: fallbackMessages as any,
+                    temperature: 0.7,
+                    max_tokens: 1024,
+                  });
+                } else {
+                  throw geminiErr;
+                }
+              } catch (openAiErr: any) {
+                console.error('[Rover] Fallback OpenAI failed, trying Groq...', openAiErr.message);
+                if (groq) {
+                  fallbackRes = await groq.chat.completions.create({
+                    model: 'llama-3.3-70b-versatile',
+                    messages: fallbackMessages as any,
+                    temperature: 0.7,
+                    max_tokens: 1024,
+                  });
+                } else {
+                  throw openAiErr;
+                }
               }
             }
 

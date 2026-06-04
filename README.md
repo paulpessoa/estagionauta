@@ -24,7 +24,7 @@ graph TD
         Router[Hono Routers & Middlewares]
         AuthMid[Auth Middleware JWT Validation]
         RoverEngine[Rover Tooling Loop Engine]
-        AIService[OpenAI/Groq Service]
+        AIService[OpenAI/Gemini Service]
     end
 
     %% Database & External Services
@@ -37,7 +37,7 @@ graph TD
     subgraph External [Serviços Externos]
         Stripe[Stripe Checkout & Webhooks]
         Brevo[Brevo SMTP API]
-        Groq[Groq / OpenAI API]
+        Gemini[Gemini / OpenAI API]
     end
 
     %% Interactions
@@ -47,7 +47,7 @@ graph TD
     AuthMid -->|4. Autorização| SDB
     RoverDrawer -->|5. Chat Session| RoverEngine
     RoverEngine -->|6. Tool Calls| AIService
-    AIService -->|7. IA Models| Groq
+    AIService -->|7. IA Models| Gemini
     Router -->|8. Envio de Convites| Brevo
     Router -->|9. checkout / Webhooks| Stripe
     UI -->|10. Upload de PDF| SStorage
@@ -195,7 +195,8 @@ PORT=3001
 NODE_ENV=development
 SUPABASE_URL=https://seu-projeto.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=sua-chave-service-role-admin
-GROQ_API_KEY=sua-chave-groq-ou-openai
+GEMINI_API_KEY=sua-chave-gemini-do-google-ai-studio-free-tier
+GROQ_API_KEY=sua-chave-groq-opcional
 STRIPE_SECRET_KEY=sua-chave-privada-stripe
 STRIPE_WEBHOOK_SECRET=segredo-webhook-stripe
 BREVO_API_KEY=sua-chave-brevo-smtp

@@ -885,7 +885,7 @@
 
               <p>O Rover foi projetado sob a arquitetura de Agentes Autônomos ReAct (Reason + Action). Ele não é um mero
                 gerador de texto. Ele é integrado ao ecossistema do aplicativo por meio de um loop de chamadas de
-                funções (Tool Calling) de baixa latência utilizando a infraestrutura do Groq (modelos Llama) e OpenAI.
+                funções (Tool Calling) de baixa latência utilizando a infraestrutura do Google Gemini (AI Studio Free Tier) e OpenAI.
               </p>
 
               <p>Quando você conversa com o Rover no painel lateral do app, ele segue um ciclo contínuo:</p>
@@ -1207,10 +1207,7 @@ graph TD
               <p>Ao implementar as conexões de inteligência artificial, adotamos uma estratégia inteligente de
                 distribuição de modelos baseada em custo e velocidade:</p>
               <ul style="margin-left: 20px; margin-bottom: 24px;">
-                <li><strong>Groq API (Llama 3):</strong> Utilizada no loop ReAct principal e Tool Calling. A Groq
-                  fornece velocidades incríveis de inferência (centenas de tokens por segundo), reduzindo o tempo de
-                  espera do chat para níveis imperceptíveis. Sem a velocidade da Groq, o loop de ferramentas de um
-                  agente ReAct tornaria o chat cansativo e inutilizável.</li>
+                <li><strong>Google Gemini (Gemini 1.5/2.5 Flash):</strong> Utilizado no loop ReAct principal e Tool Calling através do plano gratuito (Free Tier) do Google AI Studio. O Gemini oferece velocidades impressionantes de inferência com grande janela de contexto, reduzindo o tempo de espera do chat para níveis mínimos, ideal para execução contínua de ferramentas do agente.</li>
                 <li><strong>OpenAI API (GPT-4 / TTS):</strong> Reservada para tarefas que exigem alto nível semântico e
                   capacidade analítica complexa, como a análise profunda estruturada de currículos ou síntese de voz
                   (TTS) ultra-realista para simulação de entrevistas de membros premium (enquanto membros gratuitos
@@ -1385,14 +1382,13 @@ graph TD
                   <code>/src</code> (React + Tailwind), <code>/api</code> (Hono.js) e <code>/shared</code>.<br>
                   <strong>🖥️ CÓDIGO/CONTEÚDO:</strong> Explique rapidamente a stack: React no front, Hono.js leve no
                   backend, Vercel no deploy estático, Google Cloud Run com <em>scale-to-zero</em> para custo zero,
-                  Supabase no banco/RLS/Auth, Brevo nos e-mails, e o modelo BYOK (Groq com Llama 3 para velocidade
-                  absurda e OpenAI GPT-4 para análises densas).<br>
+                  Supabase no banco/RLS/Auth, Brevo nos e-mails, e o modelo BYOK (Google Gemini 1.5/2.5 Flash no plano gratuito do Google AI Studio para velocidade e baixo custo, e OpenAI GPT-4 para análises densas).<br>
                   <strong>💡 LINHA CHAVE:</strong> Diga que pode gravar outro vídeo aprofundando nisto.
                 </div>
                 <p class="script-text">"Toda essa engenharia foi estruturada como um monorepo. Temos o frontend em React
                   no Vite hospedado na Vercel, a API escrita em Hono.js rodando dockerizada no Google Cloud Run com
                   política de custo zero quando ocioso, banco/auth no Supabase e e-mails no Brevo. Usamos o padrão BYOK:
-                  Groq com Llama 3 para inferência ultra-rápida de menos de 1 segundo no loop do Rover, e OpenAI GPT-4
+                  Google Gemini (Free Tier) para inferência ultra-rápida de menos de 1 segundo no loop do Rover, e OpenAI GPT-4
                   para análises pesadas de currículos. Se vocês quiserem, posso gravar outro vídeo depois aprofundando
                   em cada um desses detalhes técnicos, mas hoje o foco é o overview do agente."</p>
               </div>
@@ -1594,7 +1590,7 @@ graph TD
     subgraph "APIs de IA e Notificações"
         GCR -->|Envio de Convites| Brevo["Brevo API - Emails Transacionais"]
         GCR -->|Processamento e Webhooks| Stripe["Stripe API - Checkout"]
-        GCR -->|Chat do Rover Llama| Groq["Groq API - Inferência"]
+        GCR -->|Chat do Rover Gemini| Gemini["Gemini API - Google AI Studio"]
         GCR -->|Análise e TTS Premium| OpenAI["OpenAI API - Modelos"]
     end
               </pre>

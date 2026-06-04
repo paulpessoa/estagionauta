@@ -318,9 +318,8 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                 <div>
                   <h3 className="font-bold text-sm leading-none flex items-center gap-1.5 text-foreground">
                     Rover AI
-                    <span className="text-[10px] bg-violet-100 dark:bg-violet-950 text-violet-700 dark:text-violet-300 font-bold px-1.5 py-0.5 rounded-full">BETA</span>
                   </h3>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">Assistente Inteligente do Estagionauta</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">Agente Inteligente do Estagionauta</p>
                 </div>
               </div>
 
