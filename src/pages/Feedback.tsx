@@ -185,11 +185,11 @@ export default function Feedback() {
                 <div className="text-center text-sm text-gray-600">
                   {rating > 0 ? (
                     <span>
-                      {rating === 1 && '😢 Muito Ruim'}
-                      {rating === 2 && '😞 Ruim'}
-                      {rating === 3 && '😐 Normal'}
-                      {rating === 4 && '😊 Bom'}
-                      {rating === 5 && '😍 Excelente'}
+                      {rating === 1 && 'Muito Ruim'}
+                      {rating === 2 && 'Ruim'}
+                      {rating === 3 && 'Normal'}
+                      {rating === 4 && 'Bom'}
+                      {rating === 5 && 'Excelente'}
                     </span>
                   ) : (
                     <span>Clique para avaliar</span>

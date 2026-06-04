@@ -370,18 +370,18 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
         // Handle truncated responses
         if (finishReason === 'length' && finalResponseText) {
-          finalResponseText += '\n\n⚠️ _A resposta foi cortada por limite de tamanho. Tente perguntar de forma mais específica._';
+          finalResponseText += '\n\n_A resposta foi cortada por limite de tamanho. Tente perguntar de forma mais específica._';
           console.warn('[Rover] Response was truncated (finish_reason=length)');
         }
 
         if (!finalResponseText) {
           finalResponseText = `Olá! Sou o Rover, o seu assistente de estágio no Estagionauta. Posso te ajudar com as seguintes tarefas:
 
-1. 📋 **Verificar ou atualizar seu perfil** (diga "verificar meu perfil" ou me informe seus dados como curso, faculdade e período para eu atualizar);
-2. 📊 **Analisar seu currículo** com base em uma vaga (custa 3 créditos);
-3. 📅 **Calcular seu recesso proporcional** de estágio (diga "calcular recesso");
-4. 💰 **Consultar seu saldo de créditos** (diga "verificar meus créditos");
-5. 🤝 **Simular entrevistas** no simulador de entrevistas.
+1. **Verificar ou atualizar seu perfil** (diga "verificar meu perfil" ou me informe seus dados como curso, faculdade e período para eu atualizar);
+2. **Analisar seu currículo** com base em uma vaga (custa 3 créditos);
+3. **Calcular seu recesso proporcional** de estágio (diga "calcular recesso");
+4. **Consultar seu saldo de créditos** (diga "verificar meus créditos");
+5. **Simular entrevistas** no simulador de entrevistas.
 
 Como posso ajudar você hoje?`;
         }

@@ -98,7 +98,7 @@ function generateEmailHTML(profile: any, message: string, curriculumUrl: string,
     <body>
       <div class="container">
         <div class="header">
-          <h1>📄 Currículo Compartilhado</h1>
+          <h1>Currículo Compartilhado</h1>
           <p>Estagionauta - Plataforma de Carreira</p>
         </div>
         
@@ -117,7 +117,7 @@ function generateEmailHTML(profile: any, message: string, curriculumUrl: string,
           </div>
 
           <div class="platform-info">
-            <strong>ℹ️ Informação:</strong> Este email foi enviado pela plataforma Estagionauta em nome de ${sender.full_name || 'um usuário'}. 
+            <strong>Informação:</strong> Este email foi enviado pela plataforma Estagionauta em nome de ${sender.full_name || 'um usuário'}. 
             Uma cópia foi enviada para ${sender.email} para confirmação.
           </div>
 

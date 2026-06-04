@@ -226,7 +226,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
         toast.error(data.error);
         setMessages((prev) => [
           ...prev,
-          { role: 'assistant', content: `⚠️ ${data.error}` }
+          { role: 'assistant', content: data.error! }
         ]);
         return;
       }
@@ -239,7 +239,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
       toast.error(err.message || 'Erro de conexão com o assistente.');
       setMessages((prev) => [
         ...prev,
-        { role: 'assistant', content: '⚠️ Erro de conexão com o assistente. Verifique sua conexão e tente novamente.' }
+        { role: 'assistant', content: 'Erro de conexão com o assistente. Verifique sua conexão e tente novamente.' }
       ]);
     } finally {
       setIsLoading(false);
@@ -346,7 +346,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col gap-6 text-center max-w-sm mx-auto h-full min-h-[400px] justify-between">
                     <div className="flex flex-col items-center gap-2 mt-6">
-                      <h4 className="font-bold text-md text-foreground">Olá! Como posso ajudar? 🚀</h4>
+                      <h4 className="font-bold text-md text-foreground">Olá! Como posso ajudar?</h4>
                       <p className="text-xs text-muted-foreground leading-relaxed px-4">
                         Sou o Rover, seu assistente pessoal. Posso te ajudar a preencher seu perfil, simular entrevistas, tirar dúvidas sobre recesso, ou analisar seu currículo.
                       </p>
@@ -358,28 +358,28 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                         onClick={() => handleQuickAction('profile')}
                         className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
-                        <span>📋 Verificar integridade do perfil</span>
+                        <span>Verificar integridade do perfil</span>
                         <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('resume')}
                         className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
-                        <span>📊 Analisar meu currículo (Custo: 3 ⭐)</span>
+                        <span>Analisar meu currículo (Custo: 3 créditos)</span>
                         <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('recess')}
                         className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
-                        <span>📅 Calcular recesso de estágio</span>
+                        <span>Calcular recesso de estágio</span>
                         <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                       <button
                         onClick={() => handleQuickAction('credits')}
                         className="text-xs font-semibold text-left p-2 rounded-lg bg-card hover:bg-muted border border-muted/30 transition-colors flex items-center justify-between group"
                       >
-                        <span>💰 Consultar saldo de créditos</span>
+                        <span>Consultar saldo de créditos</span>
                         <Sparkles className="h-3.5 w-3.5 text-violet-500 group-hover:animate-pulse" />
                       </button>
                     </div>
@@ -450,7 +450,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   onClick={() => handleQuickAction('profile')}
                   className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
-                  📋 Verificar Perfil
+                  Verificar Perfil
                 </Button>
                 <Button
                   variant="outline"
@@ -458,7 +458,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   onClick={() => handleQuickAction('resume')}
                   className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
-                  📊 Analisar Currículo
+                  Analisar Currículo
                 </Button>
                 <Button
                   variant="outline"
@@ -466,7 +466,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   onClick={() => handleQuickAction('recess')}
                   className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
-                  📅 Calcular Recesso
+                  Calcular Recesso
                 </Button>
                 <Button
                   variant="outline"
@@ -474,7 +474,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                   onClick={() => handleQuickAction('credits')}
                   className="text-[10px] h-6 bg-muted/30 hover:bg-muted border-muted/60 rounded-full px-3"
                 >
-                  💰 Consultar Saldo
+                  Consultar Saldo
                 </Button>
               </div>
             )}

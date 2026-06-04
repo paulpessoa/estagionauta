@@ -113,7 +113,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
           <body>
             <div class="container">
               <div class="header">
-                <h2>🚀 Convite Especial!</h2>
+                <h2>Convite Especial!</h2>
               </div>
               <div class="content">
                 <p>Olá, <strong>${cleanName}</strong>!</p>
@@ -163,7 +163,7 @@ Equipe Estagionauta
                 name: cleanName,
               },
             ],
-            subject: `${referrerName} te convidou para o Estagionauta! 🚀`,
+            subject: `${referrerName} te convidou para o Estagionauta!`,
             htmlContent,
             textContent,
           }),
@@ -176,7 +176,7 @@ Equipe Estagionauta
           await supabaseAdmin.from('email_logs').insert({
             to_email: email,
             from_email: env.BREVO_SENDER_EMAIL,
-            subject: `${referrerName} te convidou para o Estagionauta! 🚀`,
+            subject: `${referrerName} te convidou para o Estagionauta!`,
             status: 'sent',
             provider: 'brevo',
             provider_id: result.messageId,

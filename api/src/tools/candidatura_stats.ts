@@ -50,7 +50,7 @@ export async function runCandidaturaStats(userId: string) {
       applied: 'Candidatura Enviada',
       interview: 'Fase de Entrevista',
       test: 'Fase de Testes',
-      offer: 'Proposta Recebida 🎉',
+      offer: 'Proposta Recebida',
       rejected: 'Reprovado/Recusado'
     };
 
