@@ -43,6 +43,16 @@ export default function HomePage() {
     }
   }
 
+  const handleRoverClick = (e: React.MouseEvent) => {
+    if (!user) {
+      e.preventDefault()
+      setShowAuthModal(true)
+    } else {
+      e.preventDefault()
+      window.dispatchEvent(new CustomEvent("open-rover"))
+    }
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Helmet>
@@ -364,42 +374,41 @@ export default function HomePage() {
               </CardContent>
             </Card>
 
-            {/* Gerador de Currículos */}
-            <Card className="relative overflow-hidden group hover:shadow-2xl transition-shadow border-2 border-rose-400/40">
-              <div className="absolute inset-0 bg-gradient-to-br from-rose-400/10 to-pink-400/10 group-hover:from-rose-400/20 group-hover:to-pink-400/20 transition-colors"></div>
+            {/* Rover AI */}
+            <Card className="relative overflow-hidden group hover:shadow-2xl transition-shadow border-2 border-violet-400/40">
+              <div className="absolute inset-0 bg-gradient-to-br from-violet-400/10 to-indigo-400/10 group-hover:from-violet-400/20 group-hover:to-indigo-400/20 transition-colors"></div>
               <CardHeader className="relative">
-                <div className="h-12 w-12 bg-rose-100 dark:bg-rose-900 rounded-lg flex items-center justify-center mb-4">
-                  <FileScan className="h-6 w-6 text-rose-600" />
+                <div className="h-12 w-12 bg-violet-100 dark:bg-violet-900 rounded-lg flex items-center justify-center mb-4">
+                  <BotIcon className="h-6 w-6 text-violet-600" />
                 </div>
-                <CardTitle className="text-xl text-rose-700 dark:text-rose-400">
-                  Gerador de Currículos
+                <CardTitle className="text-xl text-violet-700 dark:text-violet-400">
+                  Rover - Assistente de IA
                 </CardTitle>
                 <CardDescription className="text-slate-700 dark:text-slate-200">
-                  Adapte seu currículo automaticamente para cada vaga com
-                  modelos exclusivos
+                  Tire dúvidas sobre a Lei do Estágio, simule entrevistas e configure lembretes por chat.
                 </CardDescription>
               </CardHeader>
               <CardContent className="relative">
                 <ul className="space-y-2 text-sm text-slate-700 dark:text-slate-200 mb-6">
                   <li className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 mr-2" />
-                    Adaptação automática para cada vaga
+                    Interações por texto ou voz
                   </li>
                   <li className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 mr-2" />
-                    Modelos desenvolvidos por especialistas
+                    Lembretes e navegação integrada
                   </li>
                   <li className="flex items-center">
                     <Star className="h-4 w-4 text-yellow-400 mr-2" />
-                    Exportação em múltiplos formatos
+                    Tire dúvidas da legislação atualizada
                   </li>
                 </ul>
                 <Button
-                  className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold shadow-lg"
+                  className="w-full bg-gradient-to-r from-violet-500 to-indigo-500 hover:from-violet-600 hover:to-indigo-600 text-white font-bold shadow-lg"
                   asChild
                 >
-                  <Link to="/gerador-curriculos" onClick={handleAuthGatedClick}>
-                    Gerar Currículo
+                  <Link to="#" onClick={handleRoverClick}>
+                    Conversar com Rover
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>

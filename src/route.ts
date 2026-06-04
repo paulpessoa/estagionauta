@@ -21,7 +21,7 @@ const NotFound = lazy(() => import("./pages/NotFound"))
 const Precos = lazy(() => import("./pages/Precos"))
 const ConvideAmigos = lazy(() => import("./pages/ConvideAmigos"))
 const SimuladorEntrevistas = lazy(() => import("./pages/SimuladorEntrevistas"))
-const GeradorCurriculos = lazy(() => import("./pages/GeradorCurriculos"))
+
 const KanbanCandidaturas = lazy(() => import("./pages/KanbanCandidaturas"))
 const Dashboard = lazy(() => import("./pages/Dashboard"))
 const MinhasAnalises = lazy(() => import("./pages/MinhasAnalises"))
@@ -87,12 +87,6 @@ const ProtectedAdmin = () =>
     children: React.createElement(Admin)
   })
 
-const ProtectedGeradorCurriculos = () =>
-  React.createElement(
-    ProtectedRoute,
-    null,
-    React.createElement(GeradorCurriculos)
-  )
 
 const ProtectedSimuladorEntrevistas = () =>
   React.createElement(
@@ -137,7 +131,7 @@ export const routes = [
   { path: "/email-logs", component: ProtectedEmailLogs },
   { path: "/agencias", component: Agencias },
   { path: "/calculadora", component: CalculadoraRecesso },
-  { path: "/gerador-curriculos", component: ProtectedGeradorCurriculos },
+
   { path: "/simulador-entrevistas", component: ProtectedSimuladorEntrevistas },
   {
     path: "/simulador-entrevistas/:id",

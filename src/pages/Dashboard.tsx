@@ -173,7 +173,7 @@ export default function Dashboard() {
     const recentActivities = [
         ...recentAnalyses,
         ...recentSimulations,
-        ...recentResumes,
+        // ...recentResumes,
         ...recentApplications
     ].sort((a, b) => b.date.getTime() - a.date.getTime())
      .slice(0, 5)
@@ -210,15 +210,6 @@ export default function Dashboard() {
             label: 'realizadas'
         },
         {
-            title: 'Gerador de Currículos',
-            description: 'Crie um currículo profissional pronto para enviar.',
-            icon: Award,
-            href: '/gerador-curriculos',
-            color: 'bg-purple-500',
-            quantity: resumesCount,
-            label: 'gerados'
-        },
-        {
             title: 'Candidaturas',
             description: 'Acompanhe suas candidaturas em um quadro visual organizado.',
             icon: BarChart3,
@@ -227,6 +218,7 @@ export default function Dashboard() {
             quantity: candidaturasCount,
             label: 'cadastradas'
         },
+        /* STANDBY
         {
             title: 'Recompensas',
             description: 'Veja como ganhar mais créditos.',
@@ -243,6 +235,7 @@ export default function Dashboard() {
             quantity: referralsCount,
             label: 'indicados'
         }
+        */
     ]
 
     const getGreeting = () => {

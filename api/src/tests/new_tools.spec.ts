@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { runBuyCredits } from '../tools/buy_credits.js';
 import { runStartInterview } from '../tools/start_interview.js';
-import { runGenerateResume } from '../tools/generate_resume.js';
+import { runRedeemCoupon } from '../tools/redeem_coupon.js';
 import { runAnalyzeCandidatura } from '../tools/analyze_candidatura.js';
 import { runUpdateCandidatura } from '../tools/update_candidatura.js';
 import { runGetReferralLink } from '../tools/get_referral_link.js';
@@ -116,32 +116,36 @@ describe('Sprint 1 Rover Tools Tests', () => {
     });
   });
 
-  describe('generate_resume tool', () => {
-    it('consumes credit and returns generated resume', async () => {
-      const mockSingleProfile = vi.fn().mockResolvedValue({ 
-        data: { credits: 5, email: 'test@test.com', full_name: 'Jane Doe', course: 'Computing' }, 
+  describe('redeem_coupon tool', () => {
+    it('redeems coupon and adds credits successfully', async () => {
+      const mockSingleCoupon = vi.fn().mockResolvedValue({ 
+        data: { code: 'ESTAGIO100', credits: 10, used_count: 0, max_uses: null, expires_at: null }, 
         error: null 
       });
-      const mockEqProfile = vi.fn().mockReturnValue({ single: mockSingleProfile });
-      const mockSelectProfile = vi.fn().mockReturnValue({ eq: mockEqProfile });
+      const mockEqCoupon = vi.fn().mockReturnValue({ single: mockSingleCoupon });
+      const mockSelectCoupon = vi.fn().mockReturnValue({ eq: mockEqCoupon });
 
-      const mockLimitResume = vi.fn().mockReturnValue({ maybeSingle: vi.fn().mockResolvedValue({ data: null }) });
-      const mockOrderResume = vi.fn().mockReturnValue({ limit: mockLimitResume });
-      const mockEqResume = vi.fn().mockReturnValue({ order: mockOrderResume });
-      const mockSelectResume = vi.fn().mockReturnValue({ eq: mockEqResume });
+      const mockMaybeSingleRedemption = vi.fn().mockResolvedValue({ data: null, error: null });
+      const mockEqRedemption2 = vi.fn().mockReturnValue({ maybeSingle: mockMaybeSingleRedemption });
+      const mockEqRedemption = vi.fn().mockReturnValue({ eq: mockEqRedemption2 });
+      const mockSelectRedemption = vi.fn().mockReturnValue({ eq: mockEqRedemption });
 
-      const mockSingleSave = vi.fn().mockResolvedValue({ data: { id: 'resume-123' }, error: null });
-      const mockSelectSave = vi.fn().mockReturnValue({ single: mockSingleSave });
-      const mockInsertSave = vi.fn().mockReturnValue({ select: mockSelectSave });
+      const mockInsertRedemption = vi.fn().mockResolvedValue({ error: null });
+
+      const mockEqUpdate = vi.fn().mockResolvedValue({ error: null });
+      const mockUpdateCoupon = vi.fn().mockReturnValue({ eq: mockEqUpdate });
 
       vi.mocked(supabaseAdmin.from).mockImplementation((tableName: string) => {
-        if (tableName === 'user_profiles') {
-          return { select: mockSelectProfile } as any;
-        }
-        if (tableName === 'generated_resumes') {
+        if (tableName === 'coupons') {
           return { 
-            select: mockSelectResume,
-            insert: mockInsertSave
+            select: mockSelectCoupon,
+            update: mockUpdateCoupon
+          } as any;
+        }
+        if (tableName === 'coupon_redemptions') {
+          return { 
+            select: mockSelectRedemption,
+            insert: mockInsertRedemption
           } as any;
         }
         return {} as any;
@@ -149,11 +153,15 @@ describe('Sprint 1 Rover Tools Tests', () => {
 
       vi.mocked(supabaseAdmin.rpc).mockResolvedValue({ data: true, error: null } as any);
 
-      const result = await runGenerateResume('user-123', { jobTitle: 'Backend Dev' });
+      const result = await runRedeemCoupon('user-123', { code: 'ESTAGIO100' });
 
       expect(result.success).toBe(true);
-      expect(result.resumeId).toBe('resume-123');
-      expect(result.content).toBe('# Mocked Resume\nContent here.');
+      expect(result.creditsAdded).toBe(10);
+      expect(supabaseAdmin.rpc).toHaveBeenCalledWith('add_credits', {
+        user_uuid: 'user-123',
+        amount: 10,
+        description: 'Resgate do cupom promocional: ESTAGIO100'
+      });
     });
   });
 
@@ -221,7 +229,11 @@ describe('Sprint 1 Rover Tools Tests', () => {
       const mockSelectInvite = vi.fn().mockReturnValue({ eq: mockEqInvite });
 
       const mockSingleProfile = vi.fn().mockResolvedValue({ data: { full_name: 'John', email: 'john@test.com', referral_code: 'CODE' }, error: null });
-      const mockEqProfile = vi.fn().mockReturnValue({ single: mockSingleProfile });
+      const mockMaybeSingleProfile = vi.fn().mockResolvedValue({ data: null, error: null });
+      const mockEqProfile = vi.fn().mockReturnValue({ 
+        single: mockSingleProfile,
+        maybeSingle: mockMaybeSingleProfile
+      });
       const mockSelectProfile = vi.fn().mockReturnValue({ eq: mockEqProfile });
 
       const mockInsert = vi.fn().mockResolvedValue({ error: null });

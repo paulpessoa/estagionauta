@@ -64,12 +64,19 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   };
 
   useEffect(() => {
+    const handleOpenRover = () => {
+      if (isOpen === undefined) {
+        setInternalIsOpen(true);
+      }
+    };
+    window.addEventListener('open-rover', handleOpenRover);
     return () => {
+      window.removeEventListener('open-rover', handleOpenRover);
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
       }
     };
-  }, []);
+  }, [isOpen]);
 
   useEffect(() => {
     if (!window.visualViewport) return;

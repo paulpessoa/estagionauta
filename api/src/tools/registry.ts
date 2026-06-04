@@ -10,7 +10,7 @@ import { addCandidaturaDefinition, runAddCandidatura } from './add_candidatura.j
 // Sprint 1 new tools
 import { buyCreditsDefinition, runBuyCredits } from './buy_credits.js';
 import { startInterviewDefinition, runStartInterview } from './start_interview.js';
-import { generateResumeDefinition, runGenerateResume } from './generate_resume.js';
+import { redeemCouponDefinition, runRedeemCoupon } from './redeem_coupon.js';
 import { analyzeCandidaturaDefinition, runAnalyzeCandidatura } from './analyze_candidatura.js';
 import { updateCandidaturaDefinition, runUpdateCandidatura } from './update_candidatura.js';
 import { getReferralLinkDefinition, runGetReferralLink } from './get_referral_link.js';
@@ -52,7 +52,7 @@ export const roverTools = [
   // Sprint 1
   buyCreditsDefinition,
   startInterviewDefinition,
-  generateResumeDefinition,
+  redeemCouponDefinition,
   analyzeCandidaturaDefinition,
   updateCandidaturaDefinition,
   getReferralLinkDefinition,
@@ -116,8 +116,8 @@ export async function executeRoverTool(
       return await runBuyCredits(userId, args);
     case 'start_interview':
       return await runStartInterview(userId, args);
-    case 'generate_resume':
-      return await runGenerateResume(userId, args);
+    case 'redeem_coupon':
+      return await runRedeemCoupon(userId, args);
     case 'analyze_candidatura':
       return await runAnalyzeCandidatura(userId, args);
     case 'update_candidatura':

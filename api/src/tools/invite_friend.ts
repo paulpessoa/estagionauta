@@ -21,6 +21,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
   try {
     const { email, name } = args;
     const cleanName = name && name.trim() ? name.trim() : email.split('@')[0];
+    const cleanEmail = email.trim().toLowerCase();
 
     // 1. Validar e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,22 +29,7 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
       return { error: 'O endereço de e-mail fornecido é inválido.' };
     }
 
-    // 2. Verificar se o amigo já foi convidado por este usuário
-    const { data: existingInvite } = await supabaseAdmin
-      .from('referral_invites')
-      .select('id, status')
-      .eq('referrer_id', userId)
-      .eq('email', email.toLowerCase())
-      .maybeSingle();
-
-    if (existingInvite) {
-      return { 
-        success: false,
-        message: `Você já convidou ${cleanName} (${email}) anteriormente. Status atual: ${existingInvite.status}.` 
-      };
-    }
-
-    // 3. Buscar perfil e código de indicação do usuário
+    // 2. Buscar perfil e código de indicação do usuário para validar autoconvite
     const { data: referrer, error: refErr } = await supabaseAdmin
       .from('user_profiles')
       .select('full_name, email, referral_code')
@@ -52,6 +38,36 @@ export async function runInviteFriend(userId: string, args: { email: string; nam
 
     if (refErr || !referrer) {
       return { error: 'Não foi possível encontrar suas informações de perfil para enviar o convite.' };
+    }
+
+    if (cleanEmail === referrer.email.toLowerCase()) {
+      return { error: 'Você não pode convidar a si mesmo.' };
+    }
+
+    // 3. Verificar se o e-mail já pertence a um usuário cadastrado
+    const { data: existingUser } = await supabaseAdmin
+      .from('user_profiles')
+      .select('id')
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existingUser) {
+      return { error: 'Este e-mail já pertence a um usuário cadastrado no Estagionauta.' };
+    }
+
+    // 4. Verificar se o amigo já foi convidado por este usuário
+    const { data: existingInvite } = await supabaseAdmin
+      .from('referral_invites')
+      .select('id, status')
+      .eq('referrer_id', userId)
+      .eq('email', cleanEmail)
+      .maybeSingle();
+
+    if (existingInvite) {
+      return { 
+        success: false,
+        message: `Você já convidou ${cleanName} (${email}) anteriormente. Status atual: ${existingInvite.status}.` 
+      };
     }
 
     const referralCode = referrer.referral_code || userId.replace(/-/g, '').substring(0, 8).toUpperCase();

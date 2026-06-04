@@ -32,6 +32,16 @@ Por favor, analise especificamente a adequação do candidato para esta vaga.`;
 
   analysisPrompt += `
 
+DIRETRIZES DE VALORIZAÇÃO E INCENTIVO A EXPERIÊNCIAS DE ESTUDANTE:
+Ao analisar o currículo, caso o candidato seja estudante ou possua pouca experiência profissional formal, siga estas diretrizes:
+1. Incentive-o e oriente-o explicitamente a adicionar no currículo como "Experiências" ou "Projetos" atividades como:
+   - Projetos acadêmicos relevantes, projetos de extensão universitária ou projetos pessoais (repositórios de código, portfólios, etc.).
+   - Trabalhos de pesquisa, iniciação científica ou monitoria.
+   - Atividades voluntárias ou de liderança (liderança de grupos de jovens na igreja, atuação em ONGs, grêmios estudantis, etc.).
+   - Experiências informais de trabalho (ajudar os pais no comércio, pequenos bicos ou freelancing).
+2. Se o candidato possuir formação técnica (como cursos técnicos de nível médio/integrado) que concluiu ou está cursando além/antes da faculdade, valorize e sugira destacar isso no currículo para demonstrar perfil proativo e multidisciplinar.
+3. Nas seções "Áreas de Melhoria" e "Recomendações Específicas", dê exemplos práticos de como descrever e encaixar essas experiências informais ou de voluntariado de forma profissional (focando em responsabilidades e soft skills adquiridos).
+
 Forneça uma análise estruturada com:
 1. Pontos Fortes (mínimo 3)
 2. Áreas de Melhoria (mínimo 3)

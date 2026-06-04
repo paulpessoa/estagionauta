@@ -184,7 +184,8 @@ describe('Referral & Rewards Router Integration Tests', () => {
             single: vi.fn().mockResolvedValue({
               data: { full_name: 'Referrer User', email: 'ref@estagionauta.com.br', referral_code: 'REFCODE' },
               error: null
-            })
+            }),
+            maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null })
           } as any;
         }
         return {} as any;
