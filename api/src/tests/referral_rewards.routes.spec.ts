@@ -188,6 +188,9 @@ describe('Referral & Rewards Router Integration Tests', () => {
             maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null })
           } as any;
         }
+        if (tableName === 'email_logs') {
+          return { insert: vi.fn().mockResolvedValue({ error: null }) } as any;
+        }
         return {} as any;
       });
 

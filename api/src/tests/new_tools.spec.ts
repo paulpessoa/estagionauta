@@ -248,6 +248,9 @@ describe('Sprint 1 Rover Tools Tests', () => {
         if (tableName === 'user_profiles') {
           return { select: mockSelectProfile } as any;
         }
+        if (tableName === 'email_logs') {
+          return { insert: vi.fn().mockResolvedValue({ error: null }) } as any;
+        }
         return {} as any;
       });
 
