@@ -63,7 +63,7 @@ Before coding:
 | Payments | Stripe (Checkout + Webhooks) |
 | AI | OpenAI GPT-4 (server-side only) |
 | Email | Brevo (server-side only) |
-| Deploy | Vercel (frontend) + Railway (backend) |
+| Deploy | Vercel (frontend) + Google Cloud Run (backend) |
 
 ## Monorepo Structure
 
@@ -137,8 +137,8 @@ This section is automatically loaded into the agent's context via system rules. 
 - [x] **FASE 1: Monetização Robusta**: Validade de créditos (6 meses, FIFO), Stripe price IDs novos, Referral básico.
 - [x] **FASE 2: Rover WebAgent MVP**: Hono rover routes, registry, tools (calculadora, currículo, perfil, créditos), DRAWER frontend, logs de abusos e rate limiting.
 - [x] **FASE 2.5: Rebranding & Split Perfil/Configurações**: Renomear para Rover, separar perfil de configurações no front, injetar mapa do site no prompt.
-- [ ] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
-- [ ] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
+- [x] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
+- [x] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
 
 ### 3. Log of Learnings & Configuration
 - **Credits & Quota Checks in Antigravity**:
@@ -157,6 +157,8 @@ This section is automatically loaded into the agent's context via system rules. 
 - **Git Commit Workflow**:
   - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
 - **Toast Close Button Fix**: Configured Sonner `Toaster` with `closeButton={true}` and adjusted Shadcn's `ToastClose` to be immediately visible (`opacity-100` instead of `opacity-0 group-hover:opacity-100`) so close buttons are persistently visible across all toast notifications.
+- **CI/CD Pipeline Setup**: Configured a complete GitHub Actions CI workflow in `.github/workflows/ci.yml` that performs lint checks, type-checking, builds the frontend/backend, and executes backend integration/unit tests on push and pull requests.
+
 
 
 

@@ -85,7 +85,7 @@ graph TD
 - **React Query (TanStack)**: Gerenciamento eficiente do estado do servidor, cache automático de requisições, sincronização em segundo plano e manipulação limpa de mutations de formulários.
 
 ### Backend
-- **Hono.js (TypeScript)**: Um framework HTTP ultra-rápido, leve e modular. Perfeito para rodar em ambientes edge ou containers leves (como Cloud Run ou Railway).
+- **Hono.js (TypeScript)**: Um framework HTTP ultra-rápido, leve e modular. Perfeito para rodar em ambientes edge ou containers leves (como Cloud Run ou similar).
 - **Zod**: Validação de esquemas e dados de entrada com tipagem estática integrada, garantindo que o backend nunca processe payloads corrompidos.
 - **Vitest**: Framework de testes nativo de alta performance com suporte a ES Modules e TypeScript nativos, tornando as validações de rotas rápidas e isoladas.
 

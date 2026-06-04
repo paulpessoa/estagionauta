@@ -2,7 +2,7 @@
 
 ## Resumo Executivo
 
-Refatoração do Estagionauta de uma SPA com lógica de backend no frontend para uma arquitetura **monorepo profissional** com backend separado em **Hono.js**, deploy no **Railway** (free tier), mantendo **Supabase** como banco + auth com migração gradual. Custo mensal: **R$ 0**.
+Refatoração do Estagionauta de uma SPA com lógica de backend no frontend para uma arquitetura **monorepo profissional** com backend separado em **Hono.js**, deploy no **Google Cloud Run** (free tier), mantendo **Supabase** como banco + auth com migração gradual. Custo mensal: **R$ 0**.
 
 ---
 
@@ -12,7 +12,7 @@ Refatoração do Estagionauta de uma SPA com lógica de backend no frontend para
 |---------|---------|--------|
 | Estrutura | **Monorepo** (`/api` no mesmo repo) | Compartilha tipos TS, simplifica dev, cada pasta deploya independente |
 | Backend | **Hono.js** + TypeScript | Leve (14KB), TypeScript-first, roda em qualquer runtime, Zod built-in |
-| Hosting backend | **Railway** (free tier → $5 hobby) | 500h grátis/mês, deploy via Dockerfile, escalável |
+| Hosting backend | **Google Cloud Run** | Deploy via Dockerfile, escalável |
 | Supabase | **Manter Auth + DB**, migrar lógica gradualmente | Não quebrar o que funciona, migrar incrementalmente |
 | Análise de currículo | **Migrar Edge Function → backend**, melhorar | Já funciona, mas precisa de melhorias e centralização |
 | Gerador de currículos | **Módulo separado** no backend (preparado para extrair como microserviço) | Começa como módulo, pode virar serviço independente depois |
@@ -60,18 +60,18 @@ estagionauta/                     ← MESMO REPOSITÓRIO
 │                 (estagionauta)                       │
 │ ├──────────────────────┬──────────────────────────────┤
 │                      │                              │
-│   Vercel (auto)      │    Railway (auto)            │
+│   Vercel (auto)      │    Cloud Run (auto)          │
 │   Watches: /src      │    Watches: /api             │
 │   Build: vite build  │    Build: Dockerfile         │
 │   URL: estagionauta  │    URL: api.estagionauta     │
 │        .com.br       │         .com.br              │
-│                      │    (ou subdomain Railway)    │
+│                      │                              │
 └──────────────────────┴──────────────────────────────┘
 ```
 
 > [!TIP]
 > **Por que monorepo funciona bem aqui:**
-> - Vercel e Railway podem ser configurados para monitorar pastas específicas
+> - Vercel e Google Cloud Run podem ser configurados para monitorar pastas específicas
 > - TypeScript project references permitem compartilhar tipos entre frontend e backend
 > - Um único `git push` pode triggar deploys nos dois serviços
 > - Quando o projeto crescer, pode extrair para repos separados sem refatoração
@@ -106,7 +106,7 @@ estagionauta/                     ← MESMO REPOSITÓRIO
 └─────────────────────────────────────────────┼──────────────┘
                                               │ HTTPS
 ┌─────────────────────────────────────────────┼──────────────┐
-│                    BACKEND (Railway)         │              │
+│                BACKEND (Google Cloud Run)    │              │
 │                    Hono.js + TypeScript       │              │
 │                                              │              │
 │  ┌───────────────────────────────────────────┴───────────┐  │
@@ -391,7 +391,7 @@ CMD ["node", "dist/index.js"]
     lint:        # ESLint + TypeScript check
     test-api:    # Vitest no /api
     test-web:    # Vitest no /src
-    deploy-api:  # Railway deploy (só se /api mudou)
+    deploy-api:  # Cloud Run deploy (só se /api mudou)
     deploy-web:  # Vercel deploy (auto)
   ```
 - [ ] **Sentry** (free tier) para error monitoring
