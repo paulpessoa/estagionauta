@@ -15,34 +15,23 @@ import {
   User,
   Settings,
   LogOut,
-  BarChart3,
   FileText,
-  CreditCard,
   Menu,
   AlertCircle,
-  Building2,
-  Sun,
-  Moon,
   LogIn,
   UserPlus,
   Monitor,
-  Satellite,
   Zap,
   ChevronDown,
-  Bell,
-  Star,
-  X,
   Shield,
   Kanban,
-  Gift,
-  Coins
 } from "lucide-react"
+
 import { useState } from "react"
 import { useTheme } from "next-themes"
 import { AuthRequiredModal } from "@/components/AuthRequiredModal"
 import { MagicLinkModal } from "@/components/auth/MagicLinkModal"
 import { Separator } from "@/components/ui/separator"
-import { useCredits } from "../../hooks/useCredits"
 import { useIsMobile } from "../../hooks/use-mobile"
 
 const NavLinks = ({
@@ -74,13 +63,6 @@ const NavLinks = ({
         }
       >
         <Link
-          to="/agencias"
-          className={`transition-colors hover:text-foreground/80 text-foreground/60`}
-          onClick={onLinkClick}
-        >
-          Agências
-        </Link>
-        <Link
           to="/analises"
           className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
           onClick={handleCurriculoIAClick}
@@ -94,15 +76,14 @@ const NavLinks = ({
         >
           Simulador
         </Link>
-        {user && profile && !(isAdmin || isModerator) && (
-          <Link
-            to="/convide-amigos"
-            className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
-            onClick={onLinkClick}
-          >
-            <Gift className="h-4 w-4 text-pink-600" /> Indicar Amigos
-          </Link>
-        )}
+        <Link
+          to="/candidaturas"
+          className="transition-colors hover:text-foreground/80 text-foreground/60 flex items-center gap-1"
+          onClick={handleCurriculoIAClick}
+        >
+          Candidaturas
+        </Link>
+        {/* STANDBY: Indicar Amigos, Agências — rotas mantidas, menu oculto para MVP */}
       </div>
       <AuthRequiredModal
         isOpen={showAuthModal}
@@ -220,28 +201,12 @@ export function Header() {
     isModerator
   } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const { theme, setTheme } = useTheme()
-  const { credits } = useCredits()
   const navigate = useNavigate()
-  const isMobile = useIsMobile()
 
-  const [showAuthModal, setShowAuthModal] = useState(false)
-  const [showMagicLinkModal, setShowMagicLinkModal] = useState(false)
 
   const handleSignOut = async () => {
     await signOut()
     navigate("/")
-  }
-
-
-
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2)
   }
 
   if (isLoading) {
@@ -420,7 +385,7 @@ export function Header() {
                         </Link>
                       </Button>
 
-                      {/* Simulador de Entrevistas (visível para todos) */}
+                      {/* MVP Core: Simulador, Candidaturas, Análises */}
                       <Button variant="ghost" asChild className="justify-start">
                         <Link
                           to="/simulador-entrevistas"
@@ -431,28 +396,9 @@ export function Header() {
                         </Link>
                       </Button>
 
-                      {/* Se for usuário comum, mostramos ferramentas estudantis */}
                       {!(isAdmin || isModerator) && (
                         <>
-                          <Button
-                            variant="ghost"
-                            asChild
-                            className="justify-start"
-                          >
-                            <Link
-                              to="/gerador-curriculos"
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              <FileText className="mr-2 h-4 w-4" />
-                              Gerador de Currículos
-                            </Link>
-                          </Button>
-
-                          <Button
-                            variant="ghost"
-                            asChild
-                            className="justify-start"
-                          >
+                          <Button variant="ghost" asChild className="justify-start">
                             <Link
                               to="/candidaturas"
                               onClick={() => setMobileMenuOpen(false)}
@@ -474,18 +420,7 @@ export function Header() {
                         </>
                       )}
 
-                      {/* Agências (visível para todos) */}
-                      <Button variant="ghost" asChild className="justify-start">
-                        <Link
-                          to="/agencias"
-                          onClick={() => setMobileMenuOpen(false)}
-                        >
-                          <Building2 className="mr-2 h-4 w-4" />
-                          Agências
-                        </Link>
-                      </Button>
-
-                      {/* Se for Admin/Moderator, mostramos Painel Administrativo */}
+                      {/* Admin panel */}
                       {(isAdmin || isModerator) && (
                         <Button
                           variant="ghost"
@@ -502,52 +437,8 @@ export function Header() {
                         </Button>
                       )}
 
-                      {/* Indicação de amigos (somente estudantes) */}
-                      {!(isAdmin || isModerator) && (
-                        <Button variant="ghost" asChild className="justify-start">
-                          <Link
-                            to="/convide-amigos"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <Gift className="mr-2 h-4 w-4 text-pink-600" />
-                            Indicar Amigos
-                          </Link>
-                        </Button>
-                      )}
-
-                      {/* Comprar créditos (estudante free) */}
-                      {!(isAdmin || isModerator) && profile.subscription_status === "free" && (
-                        <Button
-                          variant="ghost"
-                          asChild
-                          className="justify-start"
-                        >
-                          <Link
-                            to="/precos"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <CreditCard className="mr-2 h-4 w-4" />
-                            Créditos
-                          </Link>
-                        </Button>
-                      )}
-
-                      {/* Recompensas (somente estudantes) */}
-                      {!(isAdmin || isModerator) && (
-                        <Button
-                          variant="ghost"
-                          asChild
-                          className="justify-start"
-                        >
-                          <Link
-                            to="/recompensas"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <Coins className="mr-2 h-4 w-4 text-violet-600 animate-pulse" />
-                            Recompensas
-                          </Link>
-                        </Button>
-                      )}
+                      {/* STANDBY: Agências, Indicar Amigos, Recompensas, Gerador de Currículos, Créditos
+                           — rotas mantidas no código, links removidos do MVP */}
                       <DropdownMenuSeparator />
                       <Button variant="ghost" asChild className="justify-start">
                         <Link
@@ -673,15 +564,9 @@ export function Header() {
                     </>
                   )}
 
-                  {/* Se for usuário comum, mostramos as ferramentas estudantis */}
+                  {/* MVP core tools */}
                   {!(isAdmin || isModerator) && (
                     <>
-                      <DropdownMenuItem asChild>
-                        <Link to="/gerador-curriculos">
-                          <FileText className="mr-2 h-4 w-4" />
-                          Gerador de Currículos
-                        </Link>
-                      </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to="/candidaturas">
                           <Kanban className="mr-2 h-4 w-4" />
@@ -691,7 +576,7 @@ export function Header() {
                     </>
                   )}
 
-                  {/* Se for Admin/Moderator, mostramos Painel Administrativo */}
+                  {/* Admin panel */}
                   {(isAdmin || isModerator) && (
                     <>
                       <DropdownMenuSeparator />
@@ -704,23 +589,8 @@ export function Header() {
                     </>
                   )}
 
-                  {/* Se for usuário comum em plano free, mostramos comprar créditos */}
-                  {!(isAdmin || isModerator) && profile.subscription_status === "free" && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/precos">
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        Créditos
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
-                  {!(isAdmin || isModerator) && (
-                    <DropdownMenuItem asChild>
-                      <Link to="/recompensas">
-                        <Coins className="mr-2 h-4 w-4 text-violet-600 animate-pulse" />
-                        Recompensas
-                      </Link>
-                    </DropdownMenuItem>
-                  )}
+                  {/* STANDBY: Gerador de Currículos, Créditos, Recompensas
+                       — rotas mantidas no código, removidas do menu MVP */}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
                     <Link to="/configuracoes">

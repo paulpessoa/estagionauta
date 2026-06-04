@@ -10,8 +10,8 @@ export const addCandidaturaDefinition = {
       properties: {
         company: { type: 'string', description: 'Nome da empresa contratante' },
         position: { type: 'string', description: 'Nome do cargo ou título da vaga (ex: "Desenvolvedor Front-end")' },
-        status: { 
-          type: 'string', 
+        status: {
+          type: 'string',
           enum: ['interested', 'applied', 'interview', 'test', 'offer', 'rejected'],
           description: 'Status do processo seletivo: "interested" (Interessado), "applied" (Candidatura enviada/aplicado), "interview" (Entrevista agendada), "test" (Realizando testes), "offer" (Proposta recebida), "rejected" (Recusado). Padrão é "interested".'
         },
