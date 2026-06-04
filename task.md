@@ -181,5 +181,5 @@
 - [x] Backend Routes: Configurar o router `api/src/routes/rover.routes.ts` com o cliente `gemini`, ordenando fallbacks (Gemini -> OpenAI -> Groq)
 - [x] Backend Tests: Mockar `GEMINI_API_KEY` nos testes em `api/src/tests/referral_rewards.routes.spec.ts`
 - [x] Documentação: Atualizar referências ao Groq no `README.md` e `RoverArticle.html`
-- [/] Verificação: Rodar testes locais (`npm run test` na pasta `api/`) e validar compilação
-- [ ] Implantação: Fazer push para o Git, atualizar as envs no Google Cloud Run e Vercel, e validar a conexão
+- [x] Verificação: Rodar testes locais (`npm run test` na pasta `api/`) e validar compilação
+- [x] Implantação: Fazer push para o Git, atualizar as envs no Google Cloud Run e Vercel, e validar a conexão
