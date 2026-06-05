@@ -32,6 +32,18 @@ jobs:
   test-backend:
     name: Backend Tests & Build
     runs-on: ubuntu-latest
+    env:
+      PORT: '3001'
+      NODE_ENV: 'test'
+      SUPABASE_URL: 'https://mock.supabase.co'
+      SUPABASE_SERVICE_ROLE_KEY: 'mock-service-role-key'
+      GEMINI_API_KEY: 'mock-gemini-key'
+      STRIPE_SECRET_KEY: 'mock-stripe-key'
+      STRIPE_WEBHOOK_SECRET: 'mock-webhook-secret'
+      STRIPE_PRICE_ASTRONAUTA_ASSINATURA: 'price_mock_1'
+      STRIPE_PRICE_COSMONAUTA_ASSINATURA: 'price_mock_2'
+      STRIPE_PRICE_ASTRONAUTA_AVULSO: 'price_mock_3'
+      STRIPE_PRICE_COSMONAUTA_AVULSO: 'price_mock_4'
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
