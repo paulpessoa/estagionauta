@@ -139,8 +139,14 @@ This section is automatically loaded into the agent's context via system rules. 
 - [x] **FASE 2.5: Rebranding & Split Perfil/Configurações**: Renomear para Rover, separar perfil de configurações no front, injetar mapa do site no prompt.
 - [x] **FASE 3: Avaliações + Recompensas**: Moderação de agências, avaliações e recompensas.
 - [x] **FASE 4: Testes & CI/CD**: Testes automatizados e estabilidade.
+- [x] **FASE 5: Bring Your Own Key (BYOK)**: Criptografia AES-256-GCM de chaves de API próprias, rotas seguras e bypass de créditos.
 
 ### 3. Log of Learnings & Configuration
+- **BYOK Security Architecture**:
+  - Encrypted keys: API keys (Gemini and OpenAI) are encrypted server-side with AES-256-GCM using a 32-byte hash derived from `BYOK_ENCRYPTION_KEY`.
+  - Write-only policy: Frontend can insert keys and check status (e.g. `hasGeminiKey`), but decrypted key credentials never leave server memory.
+  - Credit Bypass: When custom keys are active, credit requirements and RPC balances checks/consumption are bypassed for CV analysis, resume generator, and simulator.
+  - Custom TTS: Enables OpenAI TTS-1 audio simulation directly using the user's custom OpenAI key without a platform premium membership.
 - **Credits & Quota Checks in Antigravity**:
   - In the IDE: Check model credits via **Settings (gear icon) → Models** (where "AI Credit Overages" settings reside).
   - In the IDE UI: Look at the status bar at the bottom.
@@ -158,6 +164,7 @@ This section is automatically loaded into the agent's context via system rules. 
   - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
 - **Toast Close Button Fix**: Configured Sonner `Toaster` with `closeButton={true}` and adjusted Shadcn's `ToastClose` to be immediately visible (`opacity-100` instead of `opacity-0 group-hover:opacity-100`) so close buttons are persistently visible across all toast notifications.
 - **CI/CD Pipeline Setup**: Configured a complete GitHub Actions CI workflow in `.github/workflows/ci.yml` that performs lint checks, type-checking, builds the frontend/backend, and executes backend integration/unit tests on push and pull requests.
+
 
 
 

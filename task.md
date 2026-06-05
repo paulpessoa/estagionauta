@@ -183,3 +183,17 @@
 - [x] Documentação: Atualizar referências ao Groq no `README.md` e `RoverArticle.html`
 - [x] Verificação: Rodar testes locais (`npm run test` na pasta `api/`) e validar compilação
 - [x] Implantação: Fazer push para o Git, atualizar as envs no Google Cloud Run e Vercel, e validar a conexão
+
+## FASE 5 — Bring Your Own Key (BYOK)
+
+- [x] Backend: Criar `crypto.service.ts` com criptografia AES-256-GCM para chaves de API do usuário
+- [x] Backend: Implementar endpoints de gerenciamento de chaves (`GET /api/user/keys/status`, `POST /api/user/keys`, `DELETE /api/user/keys/:provider`)
+- [x] Backend: Adaptar chamadas de IA em `openai.service.ts` para resolver dinamicamente chaves do usuário
+- [x] Backend: Integrar bypass de créditos e consumo na análise de currículos, gerador de currículos e simulador de entrevistas
+- [x] Backend: Permitir uso de chaves do usuário no Rover e bypass de limites/abuse limits
+- [x] Backend: Suportar custom OpenAI key para geração de áudio TTS sem premium requerido
+- [x] Frontend: Implementar aba segura de chaves (BYOK Card) em `/configuracoes` com explicações de privacidade
+- [x] Frontend: Adaptar Simulador de Entrevistas para refletir gratuidade da simulação e liberar TTS com chave própria
+- [x] Testes: Criar suíte de testes `byok.spec.ts` cobrindo todas as rotas, criptografia e bypass de créditos (completada com 100% de sucesso)
+- [x] Implantação: Fazer commit e push para o repositório principal do Git
+
