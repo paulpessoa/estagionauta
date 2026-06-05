@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxo de Segurança BYOK — Estagionauta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #0b0f19;
+      --card-bg: rgba(17, 24, 39, 0.7);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #8b5cf6;
+      --secondary: #6366f1;
+      --accent: #f97316;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2.5rem 1rem;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(249, 115, 22, 0.06) 0%, transparent 45%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #a78bfa 0%, #818cf8 50%, #ff8934 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      margin-bottom: 2rem;
+    }
+
+    /* Customizing Mermaid diagram styles in DOM */
+    .mermaid {
+      background: rgba(15, 23, 42, 0.5) !important;
+      border-radius: 12px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      overflow-x: auto;
+    }
+
+    .info-section {
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+    }
+
+    .info-section h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+      color: #fff;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-cols: 1fr;
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .info-grid {
+        grid-template-cols: 1fr 1fr;
+      }
+    }
+
+    .info-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .info-box h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .info-box p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: auto;
+      color: rgba(255, 255, 255, 0.2);
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Fluxo de Segurança BYOK</h1>
+      <p class="subtitle">Arquitetura de criptografia reversível no servidor e blindagem de API Keys no banco de dados do Estagionauta.</p>
+    </header>
+
+    <div class="card">
+      <!-- Mermaid Diagram rendered by Javascript -->
+      <pre class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Usuário
+    participant Front as Frontend (Vite)
+    participant Back as Backend Hono (Cloud Run)
+    participant DB as Supabase Database
+    participant AI as Google Gemini / OpenAI API
+
+    Note over Usuário,Front: Registro da Chave
+    Usuário->>Front: Insere API Key
+    Front->>Back: POST /api/user/keys (Payload em HTTPS)
+    Note over Back: Criptografa chave com AES-256-GCM<br/>usando BYOK_ENCRYPTION_KEY
+    Back->>DB: Salva ciphertext + IV no perfil do usuário
+    DB-->>Back: Sucesso
+    Back-->>Front: Confirmação de salvamento (sem retornar a chave)
+
+    Note over Usuário,Front: Execução de Pergunta/Simulação
+    Usuário->>Front: Executa simulação ou mensagem do Rover
+    Front->>Back: POST /api/simulator/start
+    Back->>DB: Carrega perfil do usuário
+    DB-->>Back: Retorna dados + chaves criptografadas
+    alt Chave própria existe
+        Note over Back: Descriptografa chave em memória
+        Back->>AI: Chamada de API com a chave do Usuário
+        Note over Back: Consumo de Crédito = 0
+    else Sem chave própria
+        Back->>AI: Chamada de API com a chave do Estagionauta
+        Note over Back: Consome 1 crédito local (consume_credits)
+    end
+    AI-->>Back: Resposta da IA
+    Back-->>Front: Resposta formatada
+      </pre>
+
+      <div class="info-section">
+        <h2>Pontos-Chave de Segurança</h2>
+        <div class="info-grid">
+          <div class="info-box">
+            <h3>🔑 Blindagem Unidirecional</h3>
+            <p>Depois de salva no banco, a chave de API torna-se <strong>estritamente irrecuperável</strong> para o cliente. O frontend só recebe confirmações booleanas (ex: <code>hasGeminiKey: true</code>). Sem rotas de leitura, um ataque XSS no navegador nunca conseguirá roubar a chave.</p>
+          </div>
+          <div class="info-box">
+            <h3>🔒 Criptografia AES-256-GCM</h3>
+            <p>O backend Hono encripta a API Key antes de persistir no banco. Mesmo que o Supabase seja comprometido, as chaves permanecem seguras, pois a chave mestra (<code>BYOK_ENCRYPTION_KEY</code>) existe apenas no ambiente isolado do Cloud Run.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Estagionauta © 2026 — Segurança da Informação
+    </footer>
+  </div>
+
+  <!-- Load Mermaid ESM module asynchronously -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#0f172a',
+        primaryColor: '#1e293b',
+        primaryTextColor: '#f3f4f6',
+        lineColor: '#475569',
+        actorBorder: '#334155',
+        actorBkg: '#1e293b',
+        actorTextColor: '#f3f4f6',
+        noteBkgColor: '#1e1b4b',
+        noteBorderColor: '#312e81',
+        noteTextColor: '#e0e7ff',
+        sequenceNumberColor: '#ff8934'
+      }
+    });
+  </script>
+</body>
+</html>

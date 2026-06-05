@@ -175,6 +175,10 @@ export default function PrivacyPolicy() {
                   <h5 className="font-semibold mb-1">Backup Seguro</h5>
                   <p>Backups regulares e seguros de todos os dados</p>
                 </div>
+                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg md:col-span-2">
+                  <h5 className="font-semibold mb-1 text-violet-600 dark:text-violet-400">Criptografia de Chaves de API (BYOK)</h5>
+                  <p>Caso decida configurar suas próprias chaves de API (Google Gemini ou OpenAI), elas são salvas no banco de dados com criptografia militar AES-256-GCM e chave mestra isolada no servidor. As chaves tornam-se write-only (somente escrita): nunca são retornadas ao navegador do usuário e nunca são compartilhadas.</p>
+                </div>
               </div>
             </CardContent>
           </Card>

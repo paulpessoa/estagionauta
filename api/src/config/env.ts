@@ -28,6 +28,7 @@ const envSchema = z.object({
   MENVO_SUPABASE_SERVICE_ROLE_KEY: z.string().optional(),
   MENVO_SUPABASE_ACCESS_TOKEN: z.string().optional(),
   MENVO_JOTFORM_API_KEY: z.string().optional(),
+  BYOK_ENCRYPTION_KEY: z.string().default('e87e6fa50b69dc0ff46eaed3e75ca5fb495242b5da2946043eba523a837aa381'),
 });
 
 const parseEnv = () => {

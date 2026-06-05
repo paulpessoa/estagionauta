@@ -104,6 +104,9 @@ export default function TermosDeUso() {
               <p>
                 <strong>Retenção e Exclusão:</strong> Os dados são mantidos pelo tempo necessário para a prestação do serviço ou até que você decida excluí-los. O usuário tem total liberdade de atualizar, modificar ou excluir definitivamente seus dados de perfil e histórico diretamente através do painel de Configurações, ou solicitando a exclusão/portabilidade formalmente por e-mail para <span className="font-semibold">contato@estagionauta.com.br</span>, com prazo de atendimento de até 15 dias úteis.
               </p>
+              <p>
+                <strong>Uso de Chaves Próprias (BYOK):</strong> Ao configurar chaves de API próprias para consumo dos serviços de IA, o usuário declara ser o proprietário e responsável pelo faturamento e limites de cota de sua respectiva conta no Google AI Studio ou OpenAI. O Estagionauta armazena essas chaves de forma criptografada (AES-256-GCM) e as utiliza estritamente para processar as requisições do próprio usuário logado, sem direito de visualização após o salvamento.
+              </p>
             </CardContent>
           </Card>
 
