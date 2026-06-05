@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
-import { logger } from 'hono/logger';
+import { structuredLogger } from './middleware/structuredLogger.middleware.js';
+import { rateLimiter } from './middleware/rateLimit.middleware.js';
 import stripeRoutes from './routes/stripe.routes.js';
 import creditsRoutes from './routes/credits.routes.js';
 import analysisRoutes from './routes/analysis.routes.js';
@@ -16,7 +17,16 @@ import rewardsRoutes from './routes/rewards.routes.js';
 
 const app = new Hono();
 
-app.use('*', logger());
+// Define rate limit rules
+const rateLimitRules = {
+  '/api/email/send': { windowMs: 10 * 60 * 1000, max: 5 }, // 5 emails per 10 mins
+  '/api/analysis/analyze': { windowMs: 10 * 60 * 1000, max: 5 }, // 5 analyses per 10 mins
+  '/api/simulator/start': { windowMs: 10 * 60 * 1000, max: 5 }, // 5 simulations per 10 mins
+  default: { windowMs: 60 * 1000, max: 100 }, // default 100 req/min
+};
+
+app.use('*', structuredLogger());
+app.use('/api/*', rateLimiter(rateLimitRules));
 
 
 // Configure CORS
