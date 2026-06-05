@@ -46,7 +46,7 @@ async function createChatCompletion(
     return client.chat.completions.create({ ...params, model });
   }
 
-  const useGeminiFirst = !!(env.GEMINI_API_KEY && env.GEMINI_API_KEY.startsWith('AIzaSy'));
+  const useGeminiFirst = !!(env.GEMINI_API_KEY && (env.GEMINI_API_KEY.startsWith('AIzaSy') || env.GEMINI_API_KEY.startsWith('AQ.')));
 
   if (useGeminiFirst) {
     try {
