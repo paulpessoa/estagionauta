@@ -37,6 +37,38 @@ function getClientAndModel(options?: AIOptions) {
   };
 }
 
+async function createChatCompletion(
+  params: any,
+  options?: AIOptions
+): Promise<any> {
+  if (options?.apiKey) {
+    const { client, model } = getClientAndModel(options);
+    return client.chat.completions.create({ ...params, model });
+  }
+
+  const useGeminiFirst = !!(env.GEMINI_API_KEY && env.GEMINI_API_KEY.startsWith('AIzaSy'));
+
+  if (useGeminiFirst) {
+    try {
+      const { client, model } = getClientAndModel();
+      return await client.chat.completions.create({ ...params, model });
+    } catch (error) {
+      console.warn('Default Gemini API call failed, attempting fallback to platform OpenAI:', error);
+      if (env.OPENAI_API_KEY) {
+        const fallbackClient = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+        return await fallbackClient.chat.completions.create({ ...params, model: 'gpt-4o-mini' });
+      }
+      throw error;
+    }
+  } else if (env.OPENAI_API_KEY) {
+    const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+    return await client.chat.completions.create({ ...params, model: 'gpt-4o-mini' });
+  } else {
+    const { client, model } = getClientAndModel();
+    return await client.chat.completions.create({ ...params, model });
+  }
+}
+
 
 export async function analyzeResumeAI(input: AnalysisInput, options?: AIOptions): Promise<AnalysisOutput> {
   const { resumeText, jobDescription, currentSituation, mentorshipQuestions } = input;
@@ -104,9 +136,7 @@ Adicione ao JSON:
 "planoDesenvolvimento": ["ação 1", "ação 2", "ação 3"]`;
   }
 
-  const { client, model } = getClientAndModel(options);
-  const response = await client.chat.completions.create({
-    model,
+  const response = await createChatCompletion({
     messages: [
       {
         role: 'system',
@@ -120,7 +150,7 @@ Adicione ao JSON:
     temperature: 0.7,
     max_tokens: 2000,
     response_format: { type: 'json_object' },
-  });
+  }, options);
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
@@ -291,9 +321,7 @@ ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga
 7. Aplicar .trim() em strings finais para eliminar quebras de linha residuais
 8. Garantir que todo o conteúdo caiba em UMA página A4`;
 
-  const { client, model } = getClientAndModel(options);
-  const response = await client.chat.completions.create({
-    model,
+  const response = await createChatCompletion({
     messages: [
       {
         role: 'system',
@@ -306,7 +334,7 @@ ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga
     ],
     temperature: 0.7,
     max_tokens: 3000,
-  });
+  }, options);
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
@@ -386,13 +414,11 @@ Regras cruciais:
     });
   }
 
-  const { client, model } = getClientAndModel(options);
-  const response = await client.chat.completions.create({
-    model,
+  const response = await createChatCompletion({
     messages,
     temperature: 0.8,
     max_tokens: 200,
-  });
+  }, options);
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
@@ -461,9 +487,7 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
   "tips": "Dica executiva estruturada recomendando ferramentas de aprendizado, refinamento da retórica profissional e leituras úteis."
 }`;
 
-  const { client, model } = getClientAndModel(options);
-  const response = await client.chat.completions.create({
-    model,
+  const response = await createChatCompletion({
     messages: [
       { role: 'system', content: systemPrompt },
       {
@@ -474,7 +498,7 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
     temperature: 0.6,
     max_tokens: 1500,
     response_format: { type: 'json_object' }
-  });
+  }, options);
 
   const content = response.choices[0]?.message?.content;
   if (!content) {
@@ -508,16 +532,14 @@ Responda em formato de texto limpo em português do Brasil de forma extremamente
 - Dias de recesso calculados: ${diasRecesso} dias
 - Valor total do recesso calculado: R$ ${valorRecesso.toFixed(2)}`;
 
-  const { client, model } = getClientAndModel(options);
-  const response = await client.chat.completions.create({
-    model,
+  const response = await createChatCompletion({
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }
     ],
     temperature: 0.7,
     max_tokens: 600,
-  });
+  }, options);
 
   const contentResponse = response.choices[0]?.message?.content;
   if (!contentResponse) {
