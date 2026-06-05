@@ -200,9 +200,8 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
       },
     ];
 
-    // Count how many times the candidate has answered
     const candidateAnswersCount = updatedMessages.filter(m => m.role === 'candidate').length;
-    const MAX_ANSWERS = 5; // Limite de 5 perguntas conforme requisitos da plataforma
+    const MAX_ANSWERS = 20; // Limite máximo de 20 perguntas, a partir de 5 o usuário pode encerrar quando desejar
 
     let nextStatus = 'started';
     let feedback = null;

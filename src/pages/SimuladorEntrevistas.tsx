@@ -102,6 +102,9 @@ export default function SimuladorEntrevistas() {
   const [inputMode, setInputMode] = useState<"voice" | "text">("voice")
   const recognitionRef = useRef<any>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
+  const accumulatedTranscriptRef = useRef("")
+  const currentTranscriptRef = useRef("")
+  const shouldBeListeningRef = useRef(false)
 
   useEffect(() => {
     // Initialize Speech Recognition
@@ -119,45 +122,58 @@ export default function SimuladorEntrevistas() {
           const transcript = Array.from(event.results)
             .map((result: any) => result[0].transcript)
             .join("")
-          setAnswerInput(transcript)
+          const currentText = accumulatedTranscriptRef.current + transcript
+          setAnswerInput(currentText)
+          currentTranscriptRef.current = currentText
         }
 
         recognitionRef.current.onerror = (event: any) => {
           console.error("Speech recognition error", event.error)
-          setIsListening(false)
           if (event.error === 'not-allowed') {
             toast.error("Acesso ao microfone negado. Por favor, ative a permissão de microfone nas configurações do seu navegador.")
+            setIsListening(false)
+            shouldBeListeningRef.current = false
           } else if (event.error === 'network') {
-            toast.error("Erro de rede no reconhecimento de voz. Certifique-se de estar conectado à internet.")
+            toast.error("Erro de rede no reconhecimento de voz. Certifique-se de estar conectado à internet ou tente utilizar o teclado caso seu navegador/bloqueador de anúncios impeça a conexão com os servidores de voz do Google.")
+            setIsListening(false)
+            shouldBeListeningRef.current = false
           } else {
-            toast.error(`Erro ao reconhecer voz: ${event.error}`)
+            // Outros erros (como aborter ou de áudio) não param necessariamente o estado se for temporário
+            console.warn(`Erro no reconhecimento de voz (não crítico): ${event.error}`)
           }
         }
 
         recognitionRef.current.onend = () => {
-          setIsListening(false)
+          if (shouldBeListeningRef.current) {
+            try {
+              // Salva o texto acumulado até o momento para não apagar ao resetar a sessão do browser
+              accumulatedTranscriptRef.current = currentTranscriptRef.current
+              recognitionRef.current.start()
+            } catch (err) {
+              console.warn("Erro ao reiniciar SpeechRecognition automaticamente:", err)
+            }
+          } else {
+            setIsListening(false)
+          }
         }
       }
     }
   }, [])
 
-  const prevIsListening = useRef(isListening)
-  useEffect(() => {
-    if (prevIsListening.current === true && isListening === false) {
-      if (inputMode === "voice" && answerInput.trim()) {
-        handleSendAnswer(undefined, answerInput)
-      }
-    }
-    prevIsListening.current = isListening
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isListening, inputMode, answerInput])
-
   const toggleListening = (e?: React.MouseEvent) => {
     e?.preventDefault()
     if (isListening) {
+      shouldBeListeningRef.current = false
       recognitionRef.current?.stop()
       setIsListening(false)
+      if (currentTranscriptRef.current.trim()) {
+        handleSendAnswer(undefined, currentTranscriptRef.current)
+      }
     } else {
+      shouldBeListeningRef.current = true
+      accumulatedTranscriptRef.current = ""
+      currentTranscriptRef.current = ""
+      setAnswerInput("")
       if (recognitionRef.current) {
         // Stop speech synthesis and our custom audio if it's talking so we can listen clearly
         window.speechSynthesis?.cancel()
@@ -165,12 +181,11 @@ export default function SimuladorEntrevistas() {
           audioRef.current.pause()
           setIsPlayingAudio(false)
         }
-        setAnswerInput("")
         try {
           recognitionRef.current.start()
           setIsListening(true)
-        } catch (e) {
-          console.error("Erro ao iniciar gravação", e)
+        } catch (err) {
+          console.error("Erro ao iniciar gravação", err)
         }
       } else {
         toast.error("Reconhecimento de voz não suportado neste navegador.")
@@ -1265,23 +1280,7 @@ export default function SimuladorEntrevistas() {
                 </div>
               </div>
 
-              {subscriptionStatus !== "premium" && isAudioEnabled && (
-                <div className="bg-amber-500/10 border-b border-amber-500/20 px-6 py-2 flex items-center justify-between gap-4 text-xs text-amber-700 dark:text-amber-400">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="h-3.5 w-3.5 text-amber-500 shrink-0" />
-                    <span>
-                      O algoritmo de voz gratuito é mais lento e limitado pelo seu navegador. <strong>Pague para ter uma melhor experiência</strong> com voz ultra-realista e nos ajude a manter a plataforma no ar.
-                    </span>
-                  </div>
-                  <Button
-                    variant="link"
-                    className="p-0 h-auto text-xs text-amber-700 dark:text-amber-400 hover:text-amber-800 font-bold underline shrink-0"
-                    onClick={() => navigate("/precos")}
-                  >
-                    Ver Planos
-                  </Button>
-                </div>
-              )}
+
 
               {/* Chat Messages Body or Immersive Voice Call */}
               {inputMode === "text" ? (
@@ -1425,6 +1424,14 @@ export default function SimuladorEntrevistas() {
                        <p className="text-sm text-muted-foreground mt-2">
                          {actionLoading ? "Aguarde a IA formular a próxima pergunta" : isFetchingAudio ? "Carregando a voz do entrevistador" : isPlayingAudio ? "Ouça a pergunta com atenção" : isListening ? "Pode falar, estou captando seu áudio..." : "Toque no microfone abaixo para responder"}
                        </p>
+                       {answerInput && (
+                          <div className="mt-6 p-4 bg-muted/40 border border-muted/60 rounded-2xl max-w-sm mx-auto">
+                            <p className="text-[10px] font-bold uppercase tracking-wider text-left mb-1 text-violet-600 dark:text-violet-400">Transcrição em tempo real:</p>
+                            <p className="text-sm text-foreground italic leading-relaxed text-left">
+                              "{answerInput}"
+                            </p>
+                          </div>
+                        )}
                      </div>
                    </div>
                    
@@ -1518,7 +1525,12 @@ export default function SimuladorEntrevistas() {
                           variant="ghost"
                           size="sm"
                           className="rounded-full text-muted-foreground flex items-center gap-1.5 px-3 py-1.5 hover:bg-muted"
-                          onClick={() => setInputMode("text")}
+                          onClick={() => {
+                            shouldBeListeningRef.current = false
+                            recognitionRef.current?.stop()
+                            setIsListening(false)
+                            setInputMode("text")
+                          }}
                           title="Responder por Texto"
                         >
                           <Keyboard className="h-4 w-4" />

@@ -32,6 +32,9 @@ const getClientIp = (headers: Headers): string => {
 
 export const rateLimiter = (rules: Record<string, RateLimitRule>): MiddlewareHandler => {
   return async (c, next) => {
+    if (process.env.NODE_ENV === 'test' || process.env.NODE_ENV === 'development') {
+      return await next();
+    }
     const now = Date.now();
     const remoteIp = getClientIp(c.req.raw.headers);
     const path = c.req.path;

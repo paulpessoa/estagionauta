@@ -197,3 +197,11 @@
 - [x] Testes: Criar suíte de testes `byok.spec.ts` cobrindo todas as rotas, criptografia e bypass de créditos (completada com 100% de sucesso)
 - [x] Implantação: Fazer commit e push para o repositório principal do Git
 
+## FASE 6 — E2E Voice Tests & Continuous Listening UX
+
+- [x] Frontend: Corrigir UX de voz no Simulador de Entrevistas (`SimuladorEntrevistas.tsx`) mantendo a escuta ativa mesmo após silêncios do navegador, interrompendo e enviando apenas sob clique explícito do usuário.
+- [x] Frontend: Adicionar visualização em tempo real da transcrição de voz no Simulador de Entrevistas.
+- [x] Frontend: Corrigir UX de voz no Rover Drawer (`RoverDrawer.tsx`) para manter a escuta contínua e interromper/enviar apenas no clique de STOP.
+- [x] Backend: Adicionar bypass de rate limits para os ambientes de `test` e `development` no middleware de rate limiting (`rateLimit.middleware.ts`) para evitar HTTP 429 durante execuções automáticas de testes E2E.
+- [x] Testes E2E: Criar e validar a especificação Playwright `tests/voice-rover.spec.ts` contendo simulações completas da Speech API do navegador e validação fim-a-fim do Rover e do Simulador de Entrevistas com 100% de sucesso.
+- [x] Implantação: Realizar commit e push de todas as alterações testadas e aprovadas para o repositório principal do Git.

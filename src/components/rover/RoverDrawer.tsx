@@ -32,6 +32,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const accumulatedTranscriptRef = useRef('');
+  const currentTranscriptRef = useRef('');
+  const shouldBeListeningRef = useRef(false);
 
   const isWidgetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
 
@@ -172,7 +175,12 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     }
 
     if (isListening) {
+      shouldBeListeningRef.current = false;
       recognitionRef.current?.stop();
+      setIsListening(false);
+      if (currentTranscriptRef.current.trim()) {
+        handleSendMessage(currentTranscriptRef.current);
+      }
       return;
     }
 
@@ -181,9 +189,15 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
       handleToggle();
     }
 
+    shouldBeListeningRef.current = true;
+    accumulatedTranscriptRef.current = '';
+    currentTranscriptRef.current = '';
+    setInputValue('');
+
     const recognition = new SpeechRecognition();
     recognition.lang = 'pt-BR';
-    recognition.interimResults = false;
+    recognition.continuous = true;
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
@@ -191,27 +205,40 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     };
 
     recognition.onresult = (event: any) => {
-      const speechResult = event.results[0][0].transcript;
-      if (speechResult.trim()) {
-        handleSendMessage(speechResult);
-      }
+      const transcript = Array.from(event.results)
+        .map((result: any) => result[0].transcript)
+        .join("");
+      const currentText = accumulatedTranscriptRef.current + transcript;
+      setInputValue(currentText);
+      currentTranscriptRef.current = currentText;
     };
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error", event.error);
-      setIsListening(false);
-      
       if (event.error === 'not-allowed') {
         toast.error("Acesso ao microfone negado. Por favor, ative a permissão de microfone nas configurações do seu navegador.");
+        setIsListening(false);
+        shouldBeListeningRef.current = false;
       } else if (event.error === 'network') {
-        toast.error("Erro de rede no reconhecimento de voz. Certifique-se de estar conectado à internet.");
+        toast.error("Erro de rede no reconhecimento de voz. Certifique-se de estar conectado à internet ou tente utilizar o teclado caso seu navegador/bloqueador de anúncios impeça a conexão com os servidores de voz do Google.");
+        setIsListening(false);
+        shouldBeListeningRef.current = false;
       } else {
-        toast.error(`Erro ao reconhecer voz: ${event.error}`);
+        console.warn(`Erro no reconhecimento de voz (não crítico): ${event.error}`);
       }
     };
 
     recognition.onend = () => {
-      setIsListening(false);
+      if (shouldBeListeningRef.current) {
+        try {
+          accumulatedTranscriptRef.current = currentTranscriptRef.current;
+          recognition.start();
+        } catch (err) {
+          console.warn("Erro ao reiniciar SpeechRecognition automaticamente:", err);
+        }
+      } else {
+        setIsListening(false);
+      }
     };
 
     recognitionRef.current = recognition;
