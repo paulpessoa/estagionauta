@@ -86,6 +86,8 @@ export default function SimuladorEntrevistas() {
   const [selectedApplicationId, setSelectedApplicationId] = useState<string>("")
   const [agencySearchText, setAgencySearchText] = useState("")
   const [showAgencySuggestions, setShowAgencySuggestions] = useState(false)
+  const [hasOpenaiKey, setHasOpenaiKey] = useState(false)
+  const [hasGeminiKey, setHasGeminiKey] = useState(false)
 
   // Chat input
   const [answerInput, setAnswerInput] = useState("")
@@ -192,8 +194,8 @@ export default function SimuladorEntrevistas() {
     window.speechSynthesis?.cancel()
     setIsFetchingAudio(true)
 
-    // Free fallback: use browser speechSynthesis if not premium
-    if (subscriptionStatus !== 'premium') {
+    // Free fallback: use browser speechSynthesis if not premium and no custom OpenAI key
+    if (subscriptionStatus !== 'premium' && !hasOpenaiKey) {
       if ("speechSynthesis" in window) {
         const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = "pt-BR";
@@ -295,9 +297,20 @@ export default function SimuladorEntrevistas() {
     }
   }, [])
 
+  const loadKeysStatus = async () => {
+    try {
+      const data = await apiClient.get<{ hasGeminiKey: boolean; hasOpenaiKey: boolean }>("/api/user/keys/status")
+      setHasOpenaiKey(data.hasOpenaiKey)
+      setHasGeminiKey(data.hasGeminiKey)
+    } catch (err) {
+      console.error("Erro ao buscar status de chaves:", err)
+    }
+  }
+
   useEffect(() => {
     loadHistory()
     loadCredits()
+    loadKeysStatus()
     fetchAgenciesAndApplications()
   }, [])
 
@@ -457,7 +470,9 @@ export default function SimuladorEntrevistas() {
       return
     }
 
-    if (userCredits !== null && userCredits <= 0) {
+    const hasCustomKey = hasOpenaiKey || hasGeminiKey;
+
+    if (!hasCustomKey && userCredits !== null && userCredits <= 0) {
       toast.error("Créditos insuficientes para iniciar uma nova simulação.")
       return
     }
@@ -477,8 +492,12 @@ export default function SimuladorEntrevistas() {
       setSimulations((prev) => [data.simulation, ...prev])
       setSelectedSimulation(data.simulation)
       setCurrentView("chat")
-      setUserCredits((prev) => (prev !== null ? prev - 1 : null))
-      toast.success("Simulação iniciada! 1 crédito consumido.")
+      if (!hasCustomKey) {
+        setUserCredits((prev) => (prev !== null ? prev - 1 : null))
+        toast.success("Simulação iniciada! 1 crédito consumido.")
+      } else {
+        toast.success("Simulação iniciada usando sua própria chave de API (sem consumo de créditos!).")
+      }
 
       // Update URL to match new simulation
       navigate(`/simulador-entrevistas/${data.simulation.id}`)
@@ -1140,10 +1159,17 @@ export default function SimuladorEntrevistas() {
                   </CardContent>
 
                   <CardFooter className="border-t border-muted/50 bg-muted/10 px-6 py-4 flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground flex items-center gap-1">
-                      <Coins className="h-3.5 w-3.5 text-violet-500" />
-                      Custo: 1 crédito
-                    </span>
+                    {hasOpenaiKey || hasGeminiKey ? (
+                      <span className="text-xs text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-medium">
+                        <Sparkles className="h-3.5 w-3.5 text-emerald-500" />
+                        Custo: Grátis (Chave Própria)
+                      </span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Coins className="h-3.5 w-3.5 text-violet-500" />
+                        Custo: 1 crédito
+                      </span>
+                    )}
                     <Button
                       type="submit"
                       disabled={actionLoading}

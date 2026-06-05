@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { generateResumeAI } from '../services/openai.service.js';
+import { getUserDecryptedKeys } from '../services/crypto.service.js';
 
 const app = new Hono<Env>();
 
@@ -119,6 +120,10 @@ app.post('/', authMiddleware, zValidator('json', generateResumeSchema), async (c
   const body = c.req.valid('json');
 
   try {
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const hasGeminiKey = !!keys.geminiKey;
+
     // 1. Check user credits balance
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
@@ -131,35 +136,40 @@ app.post('/', authMiddleware, zValidator('json', generateResumeSchema), async (c
       return c.json({ error: 'Erro ao verificar créditos do usuário' }, 500);
     }
 
-    if (profile.credits < 1) {
-      return c.json(
-        {
-          error: 'Créditos insuficientes',
-          requiredCredits: 1,
-          availableCredits: profile.credits,
-          message: 'Você precisa de pelo menos 1 crédito para gerar um currículo.',
-        },
-        402
-      );
-    }
-
-    // 2. Consume credit
-    const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
-      'consume_credits',
-      {
-        user_uuid: user.id,
-        amount: 1,
-        description: `Geração de currículo: ${body.jobTitle || 'Profissional'}`,
+    let creditsUsed = 1;
+    if (!hasGeminiKey) {
+      if (profile.credits < 1) {
+        return c.json(
+          {
+            error: 'Créditos insuficientes',
+            requiredCredits: 1,
+            availableCredits: profile.credits,
+            message: 'Você precisa de pelo menos 1 crédito para gerar um currículo.',
+          },
+          402
+        );
       }
-    );
 
-    if (consumeError || !consumeResult) {
-      console.error('Credits consumption error:', consumeError);
-      return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      // 2. Consume credit
+      const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
+        'consume_credits',
+        {
+          user_uuid: user.id,
+          amount: 1,
+          description: `Geração de currículo: ${body.jobTitle || 'Profissional'}`,
+        }
+      );
+
+      if (consumeError || !consumeResult) {
+        console.error('Credits consumption error:', consumeError);
+        return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      }
+    } else {
+      creditsUsed = 0;
     }
 
     // 3. Call OpenAI service to generate
-    const content = await generateResumeAI(body);
+    const content = await generateResumeAI(body, hasGeminiKey ? { apiKey: keys.geminiKey, provider: 'gemini' } : undefined);
     const title = body.jobTitle ? `Currículo - ${body.jobTitle}` : `Currículo - ${body.fullName}`;
 
     // 4. Save to database
@@ -191,7 +201,7 @@ app.post('/', authMiddleware, zValidator('json', generateResumeSchema), async (c
       profileData: resumeData.profile_data,
       content: resumeData.content,
       createdAt: resumeData.created_at,
-      remainingCredits: profile.credits - 1,
+      remainingCredits: hasGeminiKey ? profile.credits : profile.credits - 1,
     }, 201);
 
   } catch (err) {

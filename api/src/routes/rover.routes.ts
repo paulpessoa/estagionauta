@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { checkAbuse, logAbuse } from '../services/abuse.service.js';
+import { getUserDecryptedKeys } from '../services/crypto.service.js';
 import { roverTools, executeRoverTool, toolInvalidations } from '../tools/registry.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
@@ -88,18 +89,24 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
   const ipAddress = c.req.header('x-forwarded-for') || c.req.header('x-real-ip') || '127.0.0.1';
 
   try {
-    // 1. Check rate limits & abuse
-    const abuseCheck = await checkAbuse(user.id, ipAddress);
-    if (!abuseCheck.allowed) {
-      let message = 'Muitas mensagens em pouco tempo. Por favor, aguarde um momento.';
-      if (abuseCheck.reason === 'rate_limit_hourly') {
-        message = 'Limite de mensagens por hora atingido (máximo 30). Tente novamente mais tarde.';
-      } else if (abuseCheck.reason === 'rate_limit_daily') {
-        message = 'Limite de mensagens diárias atingido (máximo 100). Volte amanhã!';
-      } else if (abuseCheck.reason === 'spam_cooldown') {
-        message = `Você enviou mensagens muito rápido. Bloqueado por spam. Restam ${abuseCheck.cooldownRemaining} segundos.`;
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const hasCustomKey = !!(keys.geminiKey || keys.openaiKey);
+
+    // 1. Check rate limits & abuse (only if no custom key is configured)
+    if (!hasCustomKey) {
+      const abuseCheck = await checkAbuse(user.id, ipAddress);
+      if (!abuseCheck.allowed) {
+        let message = 'Muitas mensagens em pouco tempo. Por favor, aguarde um momento.';
+        if (abuseCheck.reason === 'rate_limit_hourly') {
+          message = 'Limite de mensagens por hora atingido (máximo 30). Tente novamente mais tarde.';
+        } else if (abuseCheck.reason === 'rate_limit_daily') {
+          message = 'Limite de mensagens diárias atingido (máximo 100). Volte amanhã!';
+        } else if (abuseCheck.reason === 'spam_cooldown') {
+          message = `Você enviou mensagens muito rápido. Bloqueado por spam. Restam ${abuseCheck.cooldownRemaining} segundos.`;
+        }
+        return c.json({ error: message, reason: abuseCheck.reason, cooldownRemaining: abuseCheck.cooldownRemaining }, 429);
       }
-      return c.json({ error: message, reason: abuseCheck.reason, cooldownRemaining: abuseCheck.cooldownRemaining }, 429);
     }
 
     // 1.5. Prompt Injection Filter
@@ -279,51 +286,55 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
     const MAX_LOOPS = 5;
     const invalidatedDomains = new Set<string>();
 
+    // 3.5. Build list of clients to try (custom keys first, then system keys)
+    const userGemini = keys.geminiKey ? new OpenAI({
+      apiKey: keys.geminiKey,
+      baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+    }) : null;
+
+    const userOpenai = keys.openaiKey ? new OpenAI({
+      apiKey: keys.openaiKey,
+    }) : null;
+
+    const clientsToTry: { client: OpenAI; model: string; name: string }[] = [];
+    if (userGemini) {
+      clientsToTry.push({ client: userGemini, model: 'gemini-1.5-flash', name: 'User Gemini' });
+    }
+    if (userOpenai) {
+      clientsToTry.push({ client: userOpenai, model: 'gpt-4o-mini', name: 'User OpenAI' });
+    }
+    clientsToTry.push({ client: gemini, model: 'gemini-1.5-flash', name: 'System Gemini' });
+    if (openaiClient) {
+      clientsToTry.push({ client: openaiClient, model: 'gpt-4o-mini', name: 'System OpenAI' });
+    }
+    if (groq) {
+      clientsToTry.push({ client: groq, model: 'llama-3.3-70b-versatile', name: 'System Groq' });
+    }
+
     while (loopCount < MAX_LOOPS) {
       let response;
-      try {
-        response = await gemini.chat.completions.create({
-          model: 'gemini-1.5-flash',
-          messages: apiMessages,
-          tools: roverTools,
-          tool_choice: 'auto',
-          temperature: 0.7,
-          max_tokens: 4096,
-        });
-      } catch (primaryErr: any) {
-        console.error('[Rover] Primary Gemini model (gemini-1.5-flash) failed, attempting fallback...', primaryErr.message);
-        
+      let errorMessages: string[] = [];
+
+      for (const t of clientsToTry) {
         try {
-          if (openaiClient) {
-            console.log('[Rover] Attempting fallback to OpenAI gpt-4o-mini...');
-            response = await openaiClient.chat.completions.create({
-              model: 'gpt-4o-mini',
-              messages: apiMessages,
-              tools: roverTools,
-              tool_choice: 'auto',
-              temperature: 0.7,
-              max_tokens: 4096,
-            });
-          } else {
-            throw primaryErr;
-          }
-        } catch (secondaryErr: any) {
-          console.error('[Rover] Fallback OpenAI model (gpt-4o-mini) failed:', secondaryErr.message);
-          
-          if (groq) {
-            console.log('[Rover] Attempting secondary fallback to Groq llama-3.3-70b-versatile...');
-            response = await groq.chat.completions.create({
-              model: 'llama-3.3-70b-versatile',
-              messages: apiMessages,
-              tools: roverTools,
-              tool_choice: 'auto',
-              temperature: 0.7,
-              max_tokens: 4096,
-            });
-          } else {
-            throw secondaryErr;
-          }
+          response = await t.client.chat.completions.create({
+            model: t.model,
+            messages: apiMessages,
+            tools: roverTools,
+            tool_choice: 'auto',
+            temperature: 0.7,
+            max_tokens: 4096,
+          });
+          console.log(`[Rover] Response obtained using client: ${t.name}`);
+          break;
+        } catch (err: any) {
+          console.warn(`[Rover] Client ${t.name} failed:`, err.message);
+          errorMessages.push(`${t.name}: ${err.message}`);
         }
+      }
+
+      if (!response) {
+        throw new Error(`Todos os modelos falharam. Detalhes: ${errorMessages.join(', ')}`);
       }
 
       const choice = response.choices[0];
@@ -408,38 +419,17 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
             ]);
 
             let fallbackRes;
-            try {
-              fallbackRes = await gemini.chat.completions.create({
-                model: 'gemini-1.5-flash',
-                messages: fallbackMessages as any,
-                temperature: 0.7,
-                max_tokens: 1024,
-              });
-            } catch (geminiErr: any) {
-              console.error('[Rover] Fallback Gemini failed, trying OpenAI...', geminiErr.message);
+            for (const t of clientsToTry) {
               try {
-                if (openaiClient) {
-                  fallbackRes = await openaiClient.chat.completions.create({
-                    model: 'gpt-4o-mini',
-                    messages: fallbackMessages as any,
-                    temperature: 0.7,
-                    max_tokens: 1024,
-                  });
-                } else {
-                  throw geminiErr;
-                }
-              } catch (openAiErr: any) {
-                console.error('[Rover] Fallback OpenAI failed, trying Groq...', openAiErr.message);
-                if (groq) {
-                  fallbackRes = await groq.chat.completions.create({
-                    model: 'llama-3.3-70b-versatile',
-                    messages: fallbackMessages as any,
-                    temperature: 0.7,
-                    max_tokens: 1024,
-                  });
-                } else {
-                  throw openAiErr;
-                }
+                fallbackRes = await t.client.chat.completions.create({
+                  model: t.model,
+                  messages: fallbackMessages as any,
+                  temperature: 0.7,
+                  max_tokens: 1024,
+                });
+                break;
+              } catch (err: any) {
+                console.warn(`[Rover] Toolless fallback client ${t.name} failed:`, err.message);
               }
             }
 

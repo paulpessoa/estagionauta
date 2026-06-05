@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { generateNextInterviewQuestionAI, generateInterviewFeedbackAI } from '../services/openai.service.js';
+import { getUserDecryptedKeys } from '../services/crypto.service.js';
 import type { SimulatorMessage, InterviewSimulation } from '../../../shared/types/index.js';
 import OpenAI from 'openai';
 import { env } from '../config/env.js';
@@ -82,19 +83,30 @@ app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), as
   const { job_title, job_description, interviewer_type, company_name, agency_id } = c.req.valid('json');
 
   try {
-    // 1. Consume 1 credit
-    const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
-      'consume_credits',
-      {
-        user_uuid: user.id,
-        amount: 1,
-        description: 'Simulação de entrevista',
-      }
-    );
+    // 0. Fetch user's decrypted keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const hasCustomKey = !!(keys.openaiKey || keys.geminiKey);
+    const aiOptions = keys.openaiKey 
+      ? { apiKey: keys.openaiKey, provider: 'openai' as const } 
+      : keys.geminiKey 
+        ? { apiKey: keys.geminiKey, provider: 'gemini' as const } 
+        : undefined;
 
-    if (consumeError || !consumeResult) {
-      console.error('Credits consumption error:', consumeError);
-      return c.json({ error: 'Créditos insuficientes para iniciar a simulação' }, 402);
+    // 1. Consume 1 credit if no custom key
+    if (!hasCustomKey) {
+      const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
+        'consume_credits',
+        {
+          user_uuid: user.id,
+          amount: 1,
+          description: 'Simulação de entrevista',
+        }
+      );
+
+      if (consumeError || !consumeResult) {
+        console.error('Credits consumption error:', consumeError);
+        return c.json({ error: 'Créditos insuficientes para iniciar a simulação' }, 402);
+      }
     }
 
     // Fetch user profile to feed the AI interviewer
@@ -111,7 +123,8 @@ app.post('/start', authMiddleware, zValidator('json', startSimulationSchema), as
       interviewer_type,
       [], // Empty message history
       profile || null,
-      company_name || null
+      company_name || null,
+      aiOptions
     );
 
     const initialMessages: SimulatorMessage[] = [
@@ -201,6 +214,14 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
       .eq('id', user.id)
       .single();
 
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const aiOptions = keys.openaiKey 
+      ? { apiKey: keys.openaiKey, provider: 'openai' as const } 
+      : keys.geminiKey 
+        ? { apiKey: keys.geminiKey, provider: 'gemini' as const } 
+        : undefined;
+
     if (candidateAnswersCount >= MAX_ANSWERS) {
       // 3a. Interview is finished, generate feedback report
       nextStatus = 'completed';
@@ -211,7 +232,8 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
           sim.interviewer_type,
           updatedMessages,
           profile || null,
-          sim.company_name
+          sim.company_name,
+          aiOptions
         );
       } catch (feedbackErr) {
         console.error('Error generating AI feedback:', feedbackErr);
@@ -232,7 +254,8 @@ app.post('/:id/answer', authMiddleware, zValidator('json', answerSchema), async 
           sim.interviewer_type,
           updatedMessages,
           profile || null,
-          sim.company_name
+          sim.company_name,
+          aiOptions
         );
         updatedMessages.push({
           role: 'interviewer',
@@ -305,6 +328,14 @@ app.post('/:id/end', authMiddleware, async (c) => {
       .eq('id', user.id)
       .single();
 
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const aiOptions = keys.openaiKey 
+      ? { apiKey: keys.openaiKey, provider: 'openai' as const } 
+      : keys.geminiKey 
+        ? { apiKey: keys.geminiKey, provider: 'gemini' as const } 
+        : undefined;
+
     // Generate feedback report
     let feedback = null;
     try {
@@ -314,7 +345,8 @@ app.post('/:id/end', authMiddleware, async (c) => {
         sim.interviewer_type,
         sim.messages,
         profile || null,
-        sim.company_name
+        sim.company_name,
+        aiOptions
       );
     } catch (feedbackErr) {
       console.error('Error generating AI feedback:', feedbackErr);
@@ -380,19 +412,27 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
   const user = c.get('user');
   const { text, voice } = c.req.valid('json');
 
-  // Check subscription status
-  const { data: profile, error: profileErr } = await supabaseAdmin
-    .from('user_profiles')
-    .select('subscription_status')
-    .eq('id', user.id)
-    .single();
+  // Check custom keys first
+  const keys = await getUserDecryptedKeys(user.id);
+  let openaiApiKey = keys.openaiKey;
 
-  if (profileErr || !profile) {
-    return c.json({ error: 'Erro ao verificar perfil' }, 500);
-  }
+  if (!openaiApiKey) {
+    // If no custom OpenAI key, check subscription status and use server key
+    const { data: profile, error: profileErr } = await supabaseAdmin
+      .from('user_profiles')
+      .select('subscription_status')
+      .eq('id', user.id)
+      .single();
 
-  if (profile.subscription_status !== 'premium') {
-    return c.json({ error: 'OpenAI TTS is only available for premium users' }, 403);
+    if (profileErr || !profile) {
+      return c.json({ error: 'Erro ao verificar perfil' }, 500);
+    }
+
+    if (profile.subscription_status !== 'premium') {
+      return c.json({ error: 'OpenAI TTS is only available for premium users' }, 403);
+    }
+
+    openaiApiKey = env.OPENAI_API_KEY;
   }
 
   const VALID_VOICES = ['alloy', 'echo', 'fable', 'onyx', 'nova', 'shimmer'];
@@ -419,13 +459,17 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
       c.header('X-Cache', 'HIT');
       return c.body(arrayBuffer);
     }
-  } catch {
+  } catch (err) {
     // Cache miss or bucket error – proceed to generate
   }
 
   try {
     // 2. Generate audio via OpenAI
-    const mp3 = await openai.audio.speech.create({
+    if (!openaiApiKey) {
+      return c.json({ error: 'Chave de API do OpenAI não configurada no servidor' }, 500);
+    }
+    const ttsOpenai = new OpenAI({ apiKey: openaiApiKey });
+    const mp3 = await ttsOpenai.audio.speech.create({
       model: 'tts-1',
       voice: selectedVoice as any,
       input: text,

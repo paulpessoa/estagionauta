@@ -9,8 +9,36 @@ const openai = new OpenAI({
 import type { AnalysisRequest as AnalysisInput, AnalysisOutput, ResumeProfileData, SimulatorMessage, SimulatorFeedback } from '../../../shared/types/index.js';
 export type { AnalysisInput, AnalysisOutput };
 
+export interface AIOptions {
+  apiKey?: string;
+  provider?: 'gemini' | 'openai';
+}
 
-export async function analyzeResumeAI(input: AnalysisInput): Promise<AnalysisOutput> {
+function getClientAndModel(options?: AIOptions) {
+  if (options?.apiKey) {
+    if (options.provider === 'openai') {
+      return {
+        client: new OpenAI({ apiKey: options.apiKey }),
+        model: 'gpt-4o-mini'
+      };
+    } else {
+      return {
+        client: new OpenAI({
+          apiKey: options.apiKey,
+          baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/',
+        }),
+        model: 'gemini-1.5-flash'
+      };
+    }
+  }
+  return {
+    client: openai,
+    model: 'gemini-1.5-flash'
+  };
+}
+
+
+export async function analyzeResumeAI(input: AnalysisInput, options?: AIOptions): Promise<AnalysisOutput> {
   const { resumeText, jobDescription, currentSituation, mentorshipQuestions } = input;
 
   let analysisPrompt = `Analise o seguinte currículo e forneça uma avaliação detalhada em português brasileiro:
@@ -76,8 +104,9 @@ Adicione ao JSON:
 "planoDesenvolvimento": ["ação 1", "ação 2", "ação 3"]`;
   }
 
-  const response = await openai.chat.completions.create({
-    model: 'gemini-1.5-flash',
+  const { client, model } = getClientAndModel(options);
+  const response = await client.chat.completions.create({
+    model,
     messages: [
       {
         role: 'system',
@@ -101,7 +130,7 @@ Adicione ao JSON:
   return JSON.parse(content) as AnalysisOutput;
 }
 
-export async function generateResumeAI(data: ResumeProfileData): Promise<string> {
+export async function generateResumeAI(data: ResumeProfileData, options?: AIOptions): Promise<string> {
   // Determinar se é vaga de tech/engenharia/produto para decidir sobre GitHub
   const jobTitleLower = (data.jobTitle || '').toLowerCase();
   const isTechRole = /desenvolv|tech|software|engenharia|frontend|backend|fullstack|mobile|devops|arquitetura|produto|engineer/i.test(jobTitleLower);
@@ -262,8 +291,9 @@ ATENÇÃO CRÍTICA: Adapte e otimize o currículo especificamente para essa vaga
 7. Aplicar .trim() em strings finais para eliminar quebras de linha residuais
 8. Garantir que todo o conteúdo caiba em UMA página A4`;
 
-  const response = await openai.chat.completions.create({
-    model: 'gemini-1.5-flash',
+  const { client, model } = getClientAndModel(options);
+  const response = await client.chat.completions.create({
+    model,
     messages: [
       {
         role: 'system',
@@ -296,7 +326,8 @@ export async function generateNextInterviewQuestionAI(
   interviewerType: string,
   messageHistory: SimulatorMessage[],
   candidateProfile?: any,
-  companyName?: string | null
+  companyName?: string | null,
+  options?: AIOptions
 ): Promise<string> {
   const interviewerTones: Record<string, string> = {
     tech: 'Você é um entrevistador puramente técnico, focado em hard skills, arquitetura de sistemas, conceitos fundamentais e resolução de problemas práticos. Faça perguntas diretas e desafiadoras.',
@@ -355,8 +386,9 @@ Regras cruciais:
     });
   }
 
-  const response = await openai.chat.completions.create({
-    model: 'gemini-1.5-flash',
+  const { client, model } = getClientAndModel(options);
+  const response = await client.chat.completions.create({
+    model,
     messages,
     temperature: 0.8,
     max_tokens: 200,
@@ -385,7 +417,8 @@ export async function generateInterviewFeedbackAI(
   interviewerType: string,
   messageHistory: SimulatorMessage[],
   candidateProfile?: any,
-  companyName?: string | null
+  companyName?: string | null,
+  options?: AIOptions
 ): Promise<SimulatorFeedback> {
   let profileInfo = '';
   if (candidateProfile) {
@@ -428,8 +461,9 @@ A sua resposta deve ser EXCLUSIVAMENTE um objeto JSON válido no seguinte format
   "tips": "Dica executiva estruturada recomendando ferramentas de aprendizado, refinamento da retórica profissional e leituras úteis."
 }`;
 
-  const response = await openai.chat.completions.create({
-    model: 'gemini-1.5-flash',
+  const { client, model } = getClientAndModel(options);
+  const response = await client.chat.completions.create({
+    model,
     messages: [
       { role: 'system', content: systemPrompt },
       {
@@ -458,7 +492,7 @@ export async function generateRecessoCommentAI(data: {
   diasSemana: string;
   diasRecesso: number;
   valorRecesso: number;
-}): Promise<string> {
+}, options?: AIOptions): Promise<string> {
   const { startDate, endDate, salario, horasDiarias, diasSemana, diasRecesso, valorRecesso } = data;
 
   const systemPrompt = `Você é um especialista em legislação trabalhista de estágio brasileira (Lei nº 11.788/2008). 
@@ -474,8 +508,9 @@ Responda em formato de texto limpo em português do Brasil de forma extremamente
 - Dias de recesso calculados: ${diasRecesso} dias
 - Valor total do recesso calculado: R$ ${valorRecesso.toFixed(2)}`;
 
-  const response = await openai.chat.completions.create({
-    model: 'gemini-1.5-flash',
+  const { client, model } = getClientAndModel(options);
+  const response = await client.chat.completions.create({
+    model,
     messages: [
       { role: 'system', content: systemPrompt },
       { role: 'user', content: userPrompt }

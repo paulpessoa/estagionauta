@@ -4,6 +4,7 @@ import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
 import { analyzeResumeAI, type AnalysisOutput, generateRecessoCommentAI } from '../services/openai.service.js';
+import { getUserDecryptedKeys } from '../services/crypto.service.js';
 
 const app = new Hono<Env>();
 
@@ -59,6 +60,10 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
   const { resumeText, jobDescription, currentSituation, mentorshipQuestions } = c.req.valid('json');
 
   try {
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const hasGeminiKey = !!keys.geminiKey;
+
     // 1. Check user credits balance
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
@@ -71,31 +76,36 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
       return c.json({ error: 'Erro ao verificar créditos do usuário' }, 500);
     }
 
-    if (profile.credits < 3) {
-      return c.json(
-        {
-          error: 'Créditos insuficientes',
-          requiredCredits: 3,
-          availableCredits: profile.credits,
-          message: 'Você precisa de 3 créditos para realizar uma análise de currículo.',
-        },
-        402
-      );
-    }
-
-    // 2. Consume credits using atomic RPC
-    const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
-      'consume_credits',
-      {
-        user_uuid: user.id,
-        amount: 3,
-        description: 'Análise de currículo com IA',
+    let creditsUsed = 3;
+    if (!hasGeminiKey) {
+      if (profile.credits < 3) {
+        return c.json(
+          {
+            error: 'Créditos insuficientes',
+            requiredCredits: 3,
+            availableCredits: profile.credits,
+            message: 'Você precisa de 3 créditos para realizar uma análise de currículo.',
+          },
+          402
+        );
       }
-    );
 
-    if (consumeError || !consumeResult) {
-      console.error('Credits consumption error:', consumeError);
-      return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      // 2. Consume credits using atomic RPC
+      const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
+        'consume_credits',
+        {
+          user_uuid: user.id,
+          amount: 3,
+          description: 'Análise de currículo com IA',
+        }
+      );
+
+      if (consumeError || !consumeResult) {
+        console.error('Credits consumption error:', consumeError);
+        return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      }
+    } else {
+      creditsUsed = 0;
     }
 
     // 3. Request analysis from OpenAI or use fallback
@@ -108,7 +118,7 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
         jobDescription,
         currentSituation,
         mentorshipQuestions,
-      });
+      }, hasGeminiKey ? { apiKey: keys.geminiKey, provider: 'gemini' } : undefined);
     } catch (aiErr) {
       console.error('OpenAI call failed, using fallback generator:', aiErr);
       analysisResult = generateFallbackAnalysis(resumeText, currentSituation);
@@ -132,14 +142,13 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
         analysis_data: analysisResult,
         status: 'completed',
         used_fallback: usedFallback,
-        credits_used: 3,
+        credits_used: creditsUsed,
       })
       .select('id')
       .single();
 
     if (saveError) {
       console.error('Error saving curriculum analysis:', saveError);
-      // Even if saving to history fails, return the analysis to the user as they paid credits
     }
 
     return c.json({
@@ -147,8 +156,8 @@ app.post('/analyze', authMiddleware, zValidator('json', analyzeSchema), async (c
       analysisId: insertData?.id,
       analysis: analysisResult,
       usedFallback,
-      creditsUsed: 3,
-      remainingCredits: profile.credits - 3,
+      creditsUsed,
+      remainingCredits: hasGeminiKey ? profile.credits : profile.credits - 3,
     });
   } catch (err) {
     console.error('Analysis error:', err);
@@ -244,6 +253,10 @@ app.post('/recesso-comment', authMiddleware, zValidator('json', recessoCommentSc
   const { startDate, endDate, salario, horasDiarias, diasSemana, diasRecesso, valorRecesso } = c.req.valid('json');
 
   try {
+    // 0. Fetch custom keys
+    const keys = await getUserDecryptedKeys(user.id);
+    const hasGeminiKey = !!keys.geminiKey;
+
     // 1. Check user credits balance
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profiles')
@@ -256,31 +269,36 @@ app.post('/recesso-comment', authMiddleware, zValidator('json', recessoCommentSc
       return c.json({ error: 'Erro ao verificar créditos do usuário' }, 500);
     }
 
-    if (profile.credits < 1) {
-      return c.json(
-        {
-          error: 'Créditos insuficientes',
-          requiredCredits: 1,
-          availableCredits: profile.credits,
-          message: 'Você precisa de pelo menos 1 crédito para gerar o comentário da IA.',
-        },
-        402
-      );
-    }
-
-    // 2. Consume 1 credit
-    const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
-      'consume_credits',
-      {
-        user_uuid: user.id,
-        amount: 1,
-        description: 'Comentário da IA na calculadora de recesso',
+    let creditsUsed = 1;
+    if (!hasGeminiKey) {
+      if (profile.credits < 1) {
+        return c.json(
+          {
+            error: 'Créditos insuficientes',
+            requiredCredits: 1,
+            availableCredits: profile.credits,
+            message: 'Você precisa de pelo menos 1 crédito para gerar o comentário da IA.',
+          },
+          402
+        );
       }
-    );
 
-    if (consumeError || !consumeResult) {
-      console.error('Credits consumption error for recess comment:', consumeError);
-      return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      // 2. Consume 1 credit
+      const { data: consumeResult, error: consumeError } = await supabaseAdmin.rpc(
+        'consume_credits',
+        {
+          user_uuid: user.id,
+          amount: 1,
+          description: 'Comentário da IA na calculadora de recesso',
+        }
+      );
+
+      if (consumeError || !consumeResult) {
+        console.error('Credits consumption error for recess comment:', consumeError);
+        return c.json({ error: 'Erro ao processar cobrança de créditos' }, 500);
+      }
+    } else {
+      creditsUsed = 0;
     }
 
     // 3. Generate AI comment using Gemini
@@ -292,13 +310,13 @@ app.post('/recesso-comment', authMiddleware, zValidator('json', recessoCommentSc
       diasSemana,
       diasRecesso,
       valorRecesso,
-    });
+    }, hasGeminiKey ? { apiKey: keys.geminiKey, provider: 'gemini' } : undefined);
 
     return c.json({
       success: true,
       comment,
-      creditsUsed: 1,
-      remainingCredits: profile.credits - 1,
+      creditsUsed,
+      remainingCredits: hasGeminiKey ? profile.credits : profile.credits - 1,
     });
   } catch (err: any) {
     console.error('Recesso comment error:', err);
