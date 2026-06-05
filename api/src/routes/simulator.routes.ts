@@ -416,21 +416,6 @@ app.post('/tts', authMiddleware, zValidator('json', z.object({
   let openaiApiKey = keys.openaiKey;
 
   if (!openaiApiKey) {
-    // If no custom OpenAI key, check subscription status and use server key
-    const { data: profile, error: profileErr } = await supabaseAdmin
-      .from('user_profiles')
-      .select('subscription_status')
-      .eq('id', user.id)
-      .single();
-
-    if (profileErr || !profile) {
-      return c.json({ error: 'Erro ao verificar perfil' }, 500);
-    }
-
-    if (profile.subscription_status !== 'premium') {
-      return c.json({ error: 'OpenAI TTS is only available for premium users' }, 403);
-    }
-
     openaiApiKey = env.OPENAI_API_KEY;
   }
 

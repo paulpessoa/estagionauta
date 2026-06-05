@@ -206,38 +206,7 @@ export default function SimuladorEntrevistas() {
       return
     }
 
-    window.speechSynthesis?.cancel()
     setIsFetchingAudio(true)
-
-    // Free fallback: use browser speechSynthesis if not premium and no custom OpenAI key
-    if (subscriptionStatus !== 'premium' && !hasOpenaiKey) {
-      if ("speechSynthesis" in window) {
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "pt-BR";
-        
-        const voices = window.speechSynthesis.getVoices();
-        const ptVoice = voices.find(v => v.lang.startsWith("pt"));
-        if (ptVoice) {
-          utterance.voice = ptVoice;
-        }
-
-        utterance.onstart = () => setIsPlayingAudio(true);
-        utterance.onend = () => setIsPlayingAudio(false);
-        utterance.onerror = (event: any) => {
-          console.error("SpeechSynthesis error", event.error);
-          setIsPlayingAudio(false);
-          if (event.error === 'not-allowed') {
-            toast.error("O navegador bloqueou a fala automática. Clique na tela para permitir áudio.");
-          }
-        };
-
-        window.speechSynthesis.speak(utterance);
-      } else {
-        toast.error("Voz não suportada neste navegador.");
-      }
-      setIsFetchingAudio(false);
-      return;
-    }
 
     try {
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
@@ -272,43 +241,19 @@ export default function SimuladorEntrevistas() {
         })
       }
     } catch (err: any) {
-      console.error('Erro ao gerar áudio por API, usando fallback nativo:', err)
-      // Robust Fallback: use browser speechSynthesis
-      if ("speechSynthesis" in window) {
-        try {
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = "pt-BR";
-          const voices = window.speechSynthesis.getVoices();
-          const ptVoice = voices.find(v => v.lang.startsWith("pt"));
-          if (ptVoice) {
-            utterance.voice = ptVoice;
-          }
-          utterance.onstart = () => setIsPlayingAudio(true);
-          utterance.onend = () => setIsPlayingAudio(false);
-          utterance.onerror = (event: any) => {
-            console.error("SpeechSynthesis error", event.error);
-            setIsPlayingAudio(false);
-            if (event.error === 'not-allowed') {
-              toast.error("O navegador bloqueou a fala automática. Clique na tela para permitir áudio.");
-            }
-          };
-          window.speechSynthesis.speak(utterance);
-        } catch (synthErr) {
-          console.error('Erro na síntese de voz nativa:', synthErr)
-          toast.error('Erro ao gerar voz do entrevistador.')
-        }
-      } else {
-        toast.error('Erro ao gerar voz do entrevistador.')
-      }
+      console.error('Erro ao gerar áudio por API:', err)
+      toast.error('Erro ao gerar voz do entrevistador.')
     } finally {
       setIsFetchingAudio(false)
     }
   }
 
   useEffect(() => {
-    // Load voices on mount so they are available
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.getVoices()
+    // Cleanup audio on unmount
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause()
+      }
     }
   }, [])
 
