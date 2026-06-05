@@ -200,7 +200,14 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error", event.error);
       setIsListening(false);
-      toast.error("Erro ao reconhecer voz. Tente novamente.");
+      
+      if (event.error === 'not-allowed') {
+        toast.error("Acesso ao microfone negado. Por favor, ative a permissão de microfone nas configurações do seu navegador.");
+      } else if (event.error === 'network') {
+        toast.error("Erro de rede no reconhecimento de voz. Certifique-se de estar conectado à internet.");
+      } else {
+        toast.error(`Erro ao reconhecer voz: ${event.error}`);
+      }
     };
 
     recognition.onend = () => {
