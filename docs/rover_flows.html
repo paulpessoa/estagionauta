@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fluxos de Funcionamento do Rover — Estagionauta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #080b11;
+      --card-bg: rgba(13, 18, 30, 0.75);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --primary: #8b5cf6;
+      --secondary: #6366f1;
+      --accent: #f97316;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 3rem 1.5rem;
+      background-image: 
+        radial-gradient(circle at 5% 10%, rgba(139, 92, 246, 0.1) 0%, transparent 35%),
+        radial-gradient(circle at 95% 90%, rgba(249, 115, 22, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 60%);
+      background-attachment: fixed;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .logo-container img {
+      width: 48px;
+      height: 48px;
+      object-fit: contain;
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #c084fc 0%, #818cf8 50%, #fb923c 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    .tabs-nav {
+      display: flex;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-bottom: 2.5rem;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.4rem;
+      border-radius: 9999px;
+      border: 1px solid var(--border-color);
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      flex: 1;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: #fff;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.4s ease forwards;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      margin-bottom: 2rem;
+    }
+
+    .card-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .card-desc {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .diagram-container {
+      position: relative;
+      background: rgba(10, 15, 26, 0.6);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      cursor: zoom-in;
+      transition: border-color 0.2s ease;
+    }
+
+    .diagram-container:hover {
+      border-color: rgba(139, 92, 246, 0.3);
+    }
+
+    .zoom-hint {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(139, 92, 246, 0.2);
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      color: #c084fc;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .tech-details {
+      border-top: 1px solid var(--border-color);
+      padding-top: 2rem;
+    }
+
+    .tech-details h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      color: #fff;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tech-grid {
+      display: grid;
+      grid-template-cols: 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 768px) {
+      .tech-grid {
+        grid-template-cols: 1fr 1fr;
+      }
+    }
+
+    .tech-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 1.25rem;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+
+    .tech-box:hover {
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateY(-2px);
+    }
+
+    .tech-box h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .tech-box ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .tech-box li {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: var(--text-main);
+      margin-bottom: 0.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .tech-box li span.file-path {
+      font-family: monospace;
+      color: #a78bfa;
+      font-size: 0.85rem;
+    }
+
+    .tech-box li span.desc {
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* Fullscreen zoom modal styles */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 6, 10, 0.96);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 94vw;
+      height: 85vh;
+      background: #0d121f;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 4rem 2rem 2rem 2rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: auto;
+      box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.1rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      z-index: 1010;
+    }
+
+    .close-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      transform: scale(1.05);
+    }
+
+    .modal-actions {
+      position: absolute;
+      top: 1.25rem;
+      left: 1.25rem;
+      display: flex;
+      gap: 0.5rem;
+      z-index: 1010;
+    }
+
+    .modal-actions button {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: #d8b4fe;
+      padding: 0.5rem 1rem;
+      border-radius: 12px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .modal-actions button:hover {
+      background: rgba(139, 92, 246, 0.3);
+      border-color: rgba(139, 92, 246, 0.5);
+      color: #fff;
+    }
+
+    .zoom-content {
+      transform-origin: center center;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .zoom-content svg {
+      width: 100% !important;
+      height: auto !important;
+      max-width: 100% !important;
+    }
+
+    .zoom-content pre {
+      background: transparent !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100%;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      .container {
+        max-width: 100% !important;
+      }
+      .tabs-nav, .zoom-hint, .close-btn, .modal-actions, footer {
+        display: none !important;
+      }
+      .tab-content {
+        display: block !important;
+        page-break-after: always;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      .card {
+        background: #fff !important;
+        color: #000 !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin-bottom: 0 !important;
+        page-break-inside: avoid;
+      }
+      .card-title {
+        color: #000 !important;
+      }
+      .diagram-container {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+      }
+      .tech-box {
+        background: #fff !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+      }
+      .tech-box h4 {
+        color: #6366f1 !important;
+      }
+      .tech-box li span.file-path {
+        color: #333 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <img src="https://estagionauta.com.br/logo.png" alt="Estagionauta Logo" onerror="this.src='/logo.png'">
+        <h1>Fluxos do Chat Rover</h1>
+      </div>
+      <p class="subtitle">Guia técnico interativo com as jornadas de busca de agências, edição de perfil por voz e candidatura com lembretes automatizados no Estagionauta.</p>
+    </header>
+
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab(0)">🔍 1. Agências de Recife</button>
+      <button class="tab-btn" onclick="switchTab(1)">🎙️ 2. Edição por Voz</button>
+      <button class="tab-btn" onclick="switchTab(2)">📄 3. Candidatura & Lembrete</button>
+    </div>
+
+    <!-- TAB 1: Recife Agencies -->
+    <div id="tab-0" class="tab-content active">
+      <div class="card">
+        <h2 class="card-title">1. Listar Agências em Recife (Apenas Nomes)</h2>
+        <p class="card-desc">Quando o usuário solicita a listagem de agências aprovadas em Recife, o Rover utiliza a ferramenta de busca de banco de dados e retorna estritamente a informação requisitada formatada pelo LLM.</p>
+        
+        <div class="diagram-container" onclick="openZoom(0)">
+          <div class="zoom-hint">🔍 Ampliar</div>
+          <pre class="mermaid" id="mermaid-0">
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Frontend (RoverDrawer.tsx)
+    participant BE as Backend (rover.routes.ts)
+    participant LLM as Gemini 1.5 Flash
+    participant DB as Supabase (agencies)
+
+    U->>FE: Digita "me mostre 5 agências em Recife, apenas os nomes"
+    FE->>BE: POST /api/rover/message { message: "..." }
+    BE->>DB: Insere mensagem do usuário em "rover_messages"
+    BE->>LLM: Envia Prompt do Sistema + Histórico de Mensagens
+    Note over LLM: Identifica a intenção de buscar agências
+    LLM-->>BE: Solicita chamada da ferramenta "search_agencies" com args { city: "Recife" }
+    BE->>BE: Chama executeRoverTool('search_agencies', { city: 'Recife' })
+    BE->>DB: SELECT em "agencies" WHERE city ILIKE '%Recife%' AND status = 'approved'
+    DB-->>BE: Retorna lista de agências de Recife
+    BE->>DB: Salva resposta da ferramenta em "rover_messages"
+    BE->>LLM: Re-envia histórico contendo o resultado da ferramenta
+    Note over LLM: Formata a resposta final contendo apenas os nomes conforme instrução do usuário
+    LLM-->>BE: Retorna texto da resposta final
+    BE->>DB: Salva resposta do assistente em "rover_messages"
+    BE-->>FE: HTTP 200 { response: "Aqui estão as agências..." }
+    FE->>U: Renderiza os nomes das agências na tela
+          </pre>
+        </div>
+
+        <div class="tech-details">
+          <h3>📂 Componentes e Ficheiros Envolvidos</h3>
+          <div class="tech-grid">
+            <div class="tech-box">
+              <h4>🖥️ Frontend</h4>
+              <ul>
+                <li>
+                  <span class="file-path">src/components/rover/RoverDrawer.tsx</span>
+                  <span class="desc">Gerencia o Drawer e dispara o envio do texto para a rota de mensagens.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>⚙️ Backend</h4>
+              <ul>
+                <li>
+                  <span class="file-path">api/src/routes/rover.routes.ts</span>
+                  <span class="desc">Processa a chamada da API, moderando, redigindo PII e orquestrando o loop do LLM.</span>
+                </li>
+                <li>
+                  <span class="file-path">api/src/tools/search_agencies.ts</span>
+                  <span class="desc">Define <code>search_agencies</code> e a função <code>runSearchAgencies</code> que consulta o banco.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🗄️ Banco de Dados</h4>
+              <ul>
+                <li>
+                  <span class="file-path">Tabela: agencies</span>
+                  <span class="desc">Filtra por <code>city ILIKE '%Recife%'</code> e status da agência homologada (<code>approved</code>).</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🧠 IA / Modelo</h4>
+              <ul>
+                <li>
+                  <span class="file-path">Modelo: gemini-1.5-flash</span>
+                  <span class="desc">Executa a chamada principal, mapeia os parâmetros da ferramenta e sintetiza a saída textual contendo apenas os nomes.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 2: Voice Edit -->
+    <div id="tab-1" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">2. Alterar Informação do Perfil via Áudio</h2>
+        <p class="card-desc">O usuário aciona o microfone no chat Rover, dita a alteração e o assistente executa o update em banco de dados, sinalizando à UI para invalidar o cache de dados e atualizar a visualização em tempo real.</p>
+        
+        <div class="diagram-container" onclick="openZoom(1)">
+          <div class="zoom-hint">🔍 Ampliar</div>
+          <pre class="mermaid" id="mermaid-1">
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Frontend (RoverDrawer.tsx)
+    participant browser as Web Speech API (Browser)
+    participant BE as Backend (rover.routes.ts)
+    participant LLM as Gemini 1.5 Flash
+    participant DB as Supabase (user_profiles)
+
+    U->>FE: Clica no botão "Falar"
+    FE->>browser: Inicializa SpeechRecognition (lang: pt-BR)
+    U->>FE: Fala: "mude meu linkedin para..."
+    browser-->>FE: Retorna texto transcrito em tempo real
+    U->>FE: Clica em "STOP" ou para de falar
+    FE->>BE: POST /api/rover/message { message: "mude meu linkedin para..." }
+    BE->>LLM: Envia histórico + mensagem transcrita
+    Note over LLM: Reconhece a intenção de editar dados cadastrais
+    LLM-->>BE: Solicita ferramenta "update_profile" com args { linkedin_url: "..." }
+    BE->>BE: Chama executeRoverTool('update_profile', { linkedin_url: '...' })
+    BE->>DB: UPDATE "user_profiles" SET linkedin_url = '...' WHERE id = userId
+    DB-->>BE: Confirmação de update
+    BE->>LLM: Envia resultado da ferramenta { success: true }
+    LLM-->>BE: Retorna texto de confirmação final: "Prontinho! Atualizei seu LinkedIn..."
+    BE-->>FE: HTTP 200 { response: "...", invalidates: ["profile"] }
+    Note over FE: Identifica "invalidates: ['profile']"
+    FE->>FE: queryClient.invalidateQueries(['profile'])
+    Note over FE: Atualiza dados de perfil na tela em tempo real sem F5!
+    FE->>U: Exibe mensagem de sucesso e atualiza a UI
+          </pre>
+        </div>
+
+        <div class="tech-details">
+          <h3>📂 Componentes e Ficheiros Envolvidos</h3>
+          <div class="tech-grid">
+            <div class="tech-box">
+              <h4>🖥️ Frontend</h4>
+              <ul>
+                <li>
+                  <span class="file-path">src/components/rover/RoverDrawer.tsx</span>
+                  <span class="desc">Usa <code>SpeechRecognition</code> (ou <code>webkitSpeechRecognition</code>) para transcrever a voz em texto localmente no navegador do usuário.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>⚙️ Backend</h4>
+              <ul>
+                <li>
+                  <span class="file-path">api/src/tools/update_profile.ts</span>
+                  <span class="desc">Define os parâmetros aceitos do perfil e executa <code>runUpdateProfile</code> salvando o novo valor de LinkedIn.</span>
+                </li>
+                <li>
+                  <span class="file-path">api/src/tools/registry.ts</span>
+                  <span class="desc">Mapeia <code>'update_profile': ['profile']</code> em <code>toolInvalidations</code>.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🗄️ Banco de Dados</h4>
+              <ul>
+                <li>
+                  <span class="file-path">Tabela: user_profiles</span>
+                  <span class="desc">Atualiza a coluna <code>linkedin_url</code> associada ao ID do usuário autenticado.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🔄 Sincronização</h4>
+              <ul>
+                <li>
+                  <span class="file-path">React Query (Query Keys)</span>
+                  <span class="desc">O frontend recebe <code>invalidates: ['profile']</code> e invalida o cache, recarregando automaticamente os componentes da página de Perfil.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Candidacy & Reminders -->
+    <div id="tab-2" class="tab-content">
+      <div class="card">
+        <h2 class="card-title">3. Cadastro de Candidatura por Documento & Sugestão de Lembretes</h2>
+        <p class="card-desc">Ao submeter o documento da vaga, o Rover lê os dados por IA, realiza o cadastro no Kanban de processos seletivos e automaticamente sugere ou cria lembretes de prazos no calendário do usuário.</p>
+        
+        <div class="diagram-container" onclick="openZoom(2)">
+          <div class="zoom-hint">🔍 Ampliar</div>
+          <pre class="mermaid" id="mermaid-2">
+sequenceDiagram
+    autonumber
+    actor U as Usuário
+    participant FE as Frontend (RoverDrawer.tsx)
+    participant BE as Backend (rover.routes.ts)
+    participant LLM as Gemini 1.5 Flash
+    participant DB as Supabase (kanban & reminders)
+
+    U->>FE: Anexa documento (ex: "vaga_google.pdf") e digita "me cadastra nessa vaga"
+    Note over FE: O texto de envio fica: "[Arquivo: vaga_google.pdf] me cadastra nessa vaga"
+    FE->>BE: POST /api/rover/message { message: "..." }
+    BE->>LLM: Envia Prompt do Sistema + Texto do Documento
+    Note over LLM: Lê os detalhes da vaga (Google, Software Engineer, enviar teste até dia 25/06)
+    LLM-->>BE: Solicita ferramenta "add_candidatura" com args { company: "Google", position: "Software Engineer", ... }
+    BE->>BE: Executa runAddCandidatura
+    BE->>DB: INSERT INTO "kanban_applications"
+    DB-->>BE: Retorna ID da candidatura inserida (Ex: "candidatura_uuid_123")
+    BE->>LLM: Retorna o ID criado
+    Note over LLM: Percebe que há um teste técnico agendado para dia 25/06 no documento
+    LLM-->>BE: Solicita ferramenta "create_reminder" com args { title: "Enviar teste Google", reminderAt: "2026-06-25T14:00:00Z", candidatureId: "candidatura_uuid_123" }
+    BE->>BE: Executa runCreateReminder
+    BE->>DB: INSERT INTO "user_reminders" (title, reminder_at, candidature_id, status: 'pending')
+    DB-->>BE: Confirmação de gravação do lembrete
+    BE->>LLM: Retorna sucesso do lembrete
+    LLM-->>BE: Retorna texto consolidado: "Vaga cadastrada e lembrete agendado!"
+    BE-->>FE: HTTP 200 { response: "...", invalidates: ["candidatures"] }
+    FE->>FE: queryClient.invalidateQueries(['candidatures'])
+    FE->>U: Exibe a resposta final e atualiza visualmente o Kanban do usuário
+          </pre>
+        </div>
+
+        <div class="tech-details">
+          <h3>📂 Componentes e Ficheiros Envolvidos</h3>
+          <div class="tech-grid">
+            <div class="tech-box">
+              <h4>🖥️ Frontend</h4>
+              <ul>
+                <li>
+                  <span class="file-path">src/components/rover/RoverDrawer.tsx</span>
+                  <span class="desc">Botão de anexo (Paperclip) que insere a tag de identificação do arquivo no corpo da mensagem.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>⚙️ Backend & Ferramentas</h4>
+              <ul>
+                <li>
+                  <span class="file-path">api/src/tools/add_candidatura.ts</span>
+                  <span class="desc">Registra a vaga no Kanban do usuário com campos como <code>company</code>, <code>position</code> e <code>status</code>.</span>
+                </li>
+                <li>
+                  <span class="file-path">api/src/tools/create_reminder.ts</span>
+                  <span class="desc">Cria agendamento de notificação ligada à candidatura, prevenindo prazos perdidos.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🗄️ Banco de Dados</h4>
+              <ul>
+                <li>
+                  <span class="file-path">Tabela: kanban_applications</span>
+                  <span class="desc">Armazena os detalhes estruturados extraídos pela IA do arquivo.</span>
+                </li>
+                <li>
+                  <span class="file-path">Tabela: user_reminders</span>
+                  <span class="desc">Salva o prazo (data limite e título do lembrete).</span>
+                </li>
+              </ul>
+            </div>
+            <div class="tech-box">
+              <h4>🧠 Inteligência Artificial</h4>
+              <ul>
+                <li>
+                  <span class="file-path">Modelo: gemini-1.5-flash</span>
+                  <span class="desc">Interpreta o documento enviado, identifica a data futura de teste técnico e decide autonomamente chamar sequencialmente as ferramentas de criação de vaga e criação de lembrete.</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Estagionauta © 2026 — Arquitetura de Integração Rover AI
+    </footer>
+  </div>
+
+  <!-- Zoom Modal -->
+  <div id="zoom-modal" class="modal">
+    <div class="modal-actions">
+      <button onclick="zoom(0.1)">➕ Zoom In</button>
+      <button onclick="zoom(-0.1)">➖ Zoom Out</button>
+      <button onclick="resetZoom()">🔄 Reset</button>
+    </div>
+    <button class="close-btn" onclick="closeZoom()">✕</button>
+    <div class="modal-content">
+      <div id="zoom-target" class="zoom-content"></div>
+    </div>
+  </div>
+
+  <!-- Load Mermaid ESM module asynchronously -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      themeVariables: {
+        background: '#0f172a',
+        primaryColor: '#1e293b',
+        primaryTextColor: '#f3f4f6',
+        lineColor: '#475569',
+        actorBorder: '#334155',
+        actorBkg: '#1e293b',
+        actorTextColor: '#f3f4f6',
+        noteBkgColor: '#1e1b4b',
+        noteBorderColor: '#312e81',
+        noteTextColor: '#e0e7ff',
+        sequenceNumberColor: '#ff8934'
+      }
+    });
+  </script>
+
+  <script>
+    // Tab switching logic
+    function switchTab(index) {
+      document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+        if (idx === index) btn.classList.add('active');
+        else btn.classList.remove('active');
+      });
+      document.querySelectorAll('.tab-content').forEach((content, idx) => {
+        if (idx === index) content.classList.add('active');
+        else content.classList.remove('active');
+      });
+    }
+
+    // Zoom modal logic
+    let currentScale = 1.0;
+    const modal = document.getElementById('zoom-modal');
+    const zoomTarget = document.getElementById('zoom-target');
+
+    function openZoom(tabIndex) {
+      const container = document.querySelector(`#tab-${tabIndex} .diagram-container`);
+      // Mermaid replaces the pre with the SVG, or puts the SVG inside. Let's find it.
+      const svg = container.querySelector('svg');
+      
+      if (svg) {
+        // Clone the SVG element
+        const clonedSvg = svg.cloneNode(true);
+        // Clear previous and insert cloned SVG
+        zoomTarget.innerHTML = '';
+        zoomTarget.appendChild(clonedSvg);
+        
+        // Remove manual height/width attributes and inline styles that limit the scale
+        clonedSvg.removeAttribute('style');
+        clonedSvg.setAttribute('width', '100%');
+        clonedSvg.setAttribute('height', 'auto');
+        clonedSvg.style.maxWidth = '100%';
+        clonedSvg.style.maxHeight = '100%';
+      } else {
+        // Fallback to pre-rendering if not rendered yet
+        const originalPre = document.getElementById(`mermaid-${tabIndex}`);
+        if (originalPre) {
+          zoomTarget.innerHTML = originalPre.outerHTML;
+        }
+      }
+
+      modal.classList.add('active');
+      resetZoom();
+    }
+
+    function closeZoom() {
+      modal.classList.remove('active');
+    }
+
+    function zoom(amount) {
+      currentScale += amount;
+      if (currentScale < 0.4) currentScale = 0.4;
+      if (currentScale > 5.0) currentScale = 5.0;
+      zoomTarget.style.transform = `scale(${currentScale})`;
+    }
+
+    function resetZoom() {
+      currentScale = 1.0;
+      zoomTarget.style.transform = 'scale(1)';
+    }
+
+    // Close modal on background click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeZoom();
+      }
+    });
+  </script>
+</body>
+</html>
