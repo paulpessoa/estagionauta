@@ -1,6 +1,9 @@
 import { Hono } from 'hono';
+import { z } from 'zod';
+import { zValidator } from '@hono/zod-validator';
 import { authMiddleware, type Env } from '../middleware/auth.middleware.js';
 import { supabaseAdmin } from '../services/supabase.service.js';
+import { runRedeemCoupon } from '../tools/redeem_coupon.js';
 
 const app = new Hono<Env>();
 
@@ -52,6 +55,23 @@ app.get('/transactions', authMiddleware, async (c) => {
   } catch (err) {
     console.error('Transactions history error:', err);
     return c.json({ error: 'Erro interno do servidor' }, 500);
+  }
+});
+
+// POST /api/credits/redeem - Redeem a coupon code
+app.post('/redeem', authMiddleware, zValidator('json', z.object({ code: z.string().min(1) })), async (c) => {
+  const user = c.get('user');
+  const { code } = c.req.valid('json');
+
+  try {
+    const result = await runRedeemCoupon(user.id, { code });
+    if (result.error) {
+      return c.json({ error: result.error }, 400);
+    }
+    return c.json(result);
+  } catch (err: any) {
+    console.error('Redeem coupon error:', err);
+    return c.json({ error: 'Erro interno ao resgatar cupom' }, 500);
   }
 });
 
