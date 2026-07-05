@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useToast } from '@/hooks/use-toast'
 import { useAuth } from '@/hooks/useAuth'
-import { Lock, Trash2, Key } from 'lucide-react'
+import { Lock, Trash2, Key, Bot, Copy, Check } from 'lucide-react'
 import { supabase } from '@/integrations/supabase/client'
 import { apiClient } from '@/lib/apiClient'
 import {
@@ -43,6 +43,11 @@ export default function Configuracoes() {
   const [keyError, setKeyError] = useState('')
   const [keySuccess, setKeySuccess] = useState('')
 
+  // MCP States
+  const [sessionToken, setSessionToken] = useState('')
+  const [copiedToken, setCopiedToken] = useState(false)
+  const [copiedUrl, setCopiedUrl] = useState(false)
+
   const loadKeyStatus = async () => {
     try {
       setStatusLoading(true)
@@ -56,9 +61,43 @@ export default function Configuracoes() {
     }
   }
 
+  const loadSessionToken = async () => {
+    try {
+      const { data } = await supabase.auth.getSession()
+      if (data.session) {
+        setSessionToken(data.session.access_token)
+      }
+    } catch (err) {
+      console.error('Error loading session token:', err)
+    }
+  }
+
   useEffect(() => {
     loadKeyStatus()
+    loadSessionToken()
   }, [])
+
+  const handleCopyToken = () => {
+    if (sessionToken) {
+      navigator.clipboard.writeText(sessionToken)
+      setCopiedToken(true)
+      setTimeout(() => setCopiedToken(false), 2000)
+      toast({
+        title: "Token copiado!",
+        description: "Cole este token na sua ferramenta de IA para se autenticar no MCP.",
+      })
+    }
+  }
+
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText("https://estagionauta-mcp.paulmspessoa.workers.dev/mcp")
+    setCopiedUrl(true)
+    setTimeout(() => setCopiedUrl(false), 2000)
+    toast({
+      title: "URL copiada!",
+      description: "URL do servidor MCP copiada para a área de transferência.",
+    })
+  }
 
   const handleSaveKeys = async () => {
     setKeyError('')
@@ -351,6 +390,63 @@ export default function Configuracoes() {
                   )}
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Integração de IA (MCP) */}
+          <Card>
+            <CardHeader className="py-4">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Bot className="h-5 w-5 text-violet-600" />
+                Vincular Assistente de IA (MCP)
+              </CardTitle>
+              <CardDescription>
+                Conecte o Estagionauta diretamente ao Claude, Cursor ou Gemini utilizando o Model Context Protocol (MCP) remoto.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground uppercase font-bold tracking-wider">URL de Conexão (SSE)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      readOnly
+                      value="https://estagionauta-mcp.paulmspessoa.workers.dev/mcp"
+                      className="bg-background font-mono text-xs text-sky-600 dark:text-sky-400 select-all"
+                    />
+                    <Button variant="outline" size="icon" onClick={handleCopyUrl} className="shrink-0">
+                      {copiedUrl ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Seu Token de Acesso Temporário (JWT)</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      readOnly
+                      type="password"
+                      value={sessionToken}
+                      className="bg-background font-mono text-xs select-all"
+                    />
+                    <Button variant="outline" size="icon" onClick={handleCopyToken} className="shrink-0" disabled={!sessionToken}>
+                      {copiedToken ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Este token expira periodicamente por segurança. Copie e passe-o para a sua IA quando ela solicitar autenticação.
+                  </p>
+                </div>
+              </div>
+
+              <div className="text-xs text-muted-foreground space-y-1">
+                <span className="font-semibold text-foreground">Como configurar no Claude Desktop:</span>
+                <ol className="list-decimal list-inside space-y-1 mt-1 pl-1">
+                  <li>Abra o arquivo de configurações do Claude Desktop.</li>
+                  <li>Adicione a URL de conexão do Estagionauta na seção <code className="bg-slate-100 dark:bg-slate-900 px-1 py-0.5 rounded font-mono">mcpServers</code>.</li>
+                  <li>Ao conversar com o Claude, forneça o seu Token de Acesso para sincronizar seu Kanban e saldo de créditos.</li>
+                </ol>
+              </div>
             </CardContent>
           </Card>
 
