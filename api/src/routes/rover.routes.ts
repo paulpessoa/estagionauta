@@ -252,7 +252,7 @@ REGRA DE AGÊNCIAS DE ESTÁGIO:
 4. Se o usuário quiser sugerir ou cadastrar uma nova agência de estágio na plataforma (ex: "cadastra a agência CIEE PE"), use a ferramenta 'create_agency' informando os dados necessários.
 
 REGRA DE RENDERIZAÇÃO DE CARDS RICOS (OBRIGATÓRIO):
-Ao listar dados de agências, candidaturas, lembretes, tarefas ou saldos obtidos pelas ferramentas, adicione, além do seu texto explicativo, a tag personalizada correspondente para renderização de cards ricos no frontend.
+Ao listar ou retornar dados de agências, candidaturas, lembretes, tarefas ou saldos obtidos pelas ferramentas, sempre retorne APENAS os cards correspondentes (via tags <rover-card />). Não duplique e não liste as informações em formato textual de Markdown ou parágrafos (ex: não crie listas textuais detalhadas sob hipótese alguma). Apenas retorne em outro formato (como listas de texto em Markdown) se o usuário pedir explicitamente para listar em formato de texto. Caso contrário, o comportamento padrão deve ser exibir única e exclusivamente o card rico. Forneça apenas uma frase curta de introdução amigável (ex: "Aqui estão as agências que encontrei em Recife:") e insira a tag do card logo abaixo.
 Sempre gere a tag exatamente como <rover-card type="..." data="..." /> em uma linha própria. O atributo data deve ser uma string JSON válida, compacta e em linha única (sem quebras de linha), utilizando aspas simples externas para a propriedade data e aspas duplas internas para as propriedades do JSON (ex: data='{"key": "value"}').
 
 Tags e esquemas suportados (gere apenas os dados que forem obtidos das ferramentas, NUNCA invente dados fictícios):

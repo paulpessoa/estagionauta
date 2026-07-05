@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys, type QueryDomain } from '@/lib/queryKeys';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -21,6 +22,7 @@ interface RoverDrawerProps {
 
 export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const queryClient = useQueryClient();
+  const { profile, user } = useAuth();
   const [internalIsOpen, setInternalIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
@@ -741,12 +743,20 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                       >
                         <div
                           className={`h-7 w-7 rounded-full flex items-center justify-center shrink-0 text-[10px] font-bold overflow-hidden ${msg.role === 'user'
-                            ? 'bg-violet-600 text-white'
+                            ? (profile?.avatar_url || user?.user_metadata?.avatar_url ? '' : 'bg-violet-600 text-white')
                             : 'bg-muted border border-muted/80 text-muted-foreground'
                             }`}
                         >
                           {msg.role === 'user' ? (
-                            <User className="h-3.5 w-3.5" />
+                            (profile?.avatar_url || user?.user_metadata?.avatar_url) ? (
+                              <img 
+                                src={profile?.avatar_url || user?.user_metadata?.avatar_url || undefined} 
+                                className="h-full w-full object-cover rounded-full" 
+                                alt="User Photo" 
+                              />
+                            ) : (
+                              <User className="h-3.5 w-3.5" />
+                            )
                           ) : (
                             <img src="/logo.png" className="h-full w-full object-contain rounded-full" />
                           )}
@@ -868,10 +878,10 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                     e.stopPropagation();
                     handleInterrupt();
                   }}
-                  className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                  className="flex items-center gap-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-full px-3 py-1.5 text-xs font-bold shadow-md shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  Interromper
+                  <X className="w-3 h-3" />
+                  Parar
                 </button>
               ) : isListening ? (
                 <button
