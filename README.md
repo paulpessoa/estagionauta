@@ -153,6 +153,11 @@ Focada em apoiar estudantes em início de carreira que possuem pouco ou nenhum h
 - Sistema de cupons integrado: os cupons (ex: `ESTAGIO100` creditando 10 créditos, `BOASVINDAS` creditando 5 créditos) podem ser validados e ativados diretamente por mensagem no Rover ou no painel de créditos.
 - Validação automática de convites de indicação contra autoconvites e e-mails já registrados no banco de dados.
 
+### 6. Integração Nativa com Assistentes de IA (MCP)
+- O Estagionauta disponibiliza um servidor oficial de **Model Context Protocol (MCP)** em [github.com/paulpessoa/estagionauta-mcp](https://github.com/paulpessoa/estagionauta-mcp).
+- Permite que o estudante conecte sua conta do Estagionauta diretamente ao **Claude Desktop**, **Cursor** ou **Gemini**.
+- **Autenticação:** O usuário copia o seu Token de Acesso temporário (JWT) na aba de *Configurações da Conta* do site e passa para a IA. Isso possibilita consultas ao seu Kanban de candidaturas, saldo de créditos e resgate de cupons diretamente de dentro da janela do chat do seu editor ou assistente!
+
 ---
 
 ## 🔒 Políticas de Segurança Rígidas
