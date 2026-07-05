@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines, Paperclip, Square } from 'lucide-react';
+import { BrainCircuit, X, Send, Trash2, Loader2, Sparkles, User, AudioLines, Paperclip, Square, Globe, Phone, ArrowUpRight, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { apiClient } from '@/lib/apiClient';
@@ -35,6 +35,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
   const accumulatedTranscriptRef = useRef('');
   const currentTranscriptRef = useRef('');
   const shouldBeListeningRef = useRef(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const isWidgetOpen = isOpen !== undefined ? isOpen : internalIsOpen;
 
@@ -147,6 +148,276 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     }
   };
 
+  const renderRichCard = (type: string, data: any, index: number) => {
+    switch (type) {
+      case 'agency':
+        return (
+          <div key={index} className="bg-card text-card-foreground border border-muted/70 rounded-xl p-4 shadow-sm flex flex-col gap-3 hover:border-violet-300 dark:hover:border-violet-900 transition-colors w-full">
+            <div className="flex justify-between items-start gap-2">
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">{data.name}</h4>
+                <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500"></span>
+                  {data.city} - {data.state}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 mt-1">
+              {data.website && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.open(data.website, '_blank')}
+                  className="text-[10px] h-7 bg-muted/20 hover:bg-muted text-foreground flex items-center gap-1 flex-1"
+                >
+                  <Globe className="w-3 h-3" />
+                  Acessar Website
+                </Button>
+              )}
+              {data.phone && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.open(`tel:${data.phone.replace(/\D/g, '')}`)}
+                  className="text-[10px] h-7 bg-muted/20 hover:bg-muted text-foreground flex items-center gap-1"
+                >
+                  <Phone className="w-3 h-3" />
+                  Ligar
+                </Button>
+              )}
+            </div>
+          </div>
+        );
+
+      case 'candidatura':
+        const statusColors: Record<string, string> = {
+          interested: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+          applied: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+          test: 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+          group_dynamics: 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900/30 dark:text-indigo-400',
+          interview: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
+          cultural_fit: 'bg-cyan-100 text-cyan-800 dark:bg-cyan-900/30 dark:text-cyan-400',
+          resource: 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-400',
+          offer: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 font-semibold border border-green-300 dark:border-green-800',
+          hired: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400 font-bold border border-emerald-300 dark:border-emerald-800',
+          rejected: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+        };
+        const statusLabels: Record<string, string> = {
+          interested: 'Interessado',
+          applied: 'Candidatado',
+          test: 'Teste Técnico',
+          group_dynamics: 'Dinâmica de Grupo',
+          interview: 'Entrevista',
+          cultural_fit: 'Fit Cultural',
+          resource: 'Recurso',
+          offer: 'Proposta Recebida 🎉',
+          hired: 'Contratado 🚀',
+          rejected: 'Recusado',
+        };
+        return (
+          <div key={index} className="bg-card text-card-foreground border border-muted/70 rounded-xl p-4 shadow-sm flex flex-col gap-2 hover:border-violet-300 dark:hover:border-violet-900 transition-colors w-full">
+            <div className="flex justify-between items-start gap-2">
+              <div>
+                <h4 className="font-semibold text-sm text-foreground">{data.position}</h4>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{data.company}</p>
+              </div>
+              <span className={`text-[9px] px-2 py-0.5 rounded-full ${statusColors[data.status] || 'bg-muted text-muted-foreground'} shrink-0`}>
+                {statusLabels[data.status] || data.status}
+              </span>
+            </div>
+
+            <div className="mt-1 flex flex-col gap-1">
+              <div className="flex justify-between text-[9px] text-muted-foreground">
+                <span>Progresso do Processo</span>
+                <span>{data.progress}%</span>
+              </div>
+              <div className="w-full bg-muted dark:bg-muted/50 rounded-full h-1.5 overflow-hidden">
+                <div 
+                  className={`h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-500`}
+                  style={{ width: `${data.progress}%` }}
+                ></div>
+              </div>
+            </div>
+
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                handleToggle();
+                window.location.href = '/candidaturas';
+              }}
+              className="text-[10px] h-7 bg-muted/20 hover:bg-muted text-foreground flex items-center justify-center gap-1 mt-2"
+            >
+              <ArrowUpRight className="w-3 h-3" />
+              Ver no Kanban
+            </Button>
+          </div>
+        );
+
+      case 'reminder':
+        return (
+          <div key={index} className="bg-card text-card-foreground border border-muted/70 rounded-xl p-4 shadow-sm flex flex-col gap-2 hover:border-violet-300 dark:hover:border-violet-900 transition-colors w-full">
+            <div className="flex items-start gap-2.5">
+              <div className="mt-0.5">
+                <CheckCircle className={`w-4 h-4 ${data.completed ? 'text-green-500 fill-green-100 dark:fill-green-900/20' : 'text-muted-foreground'}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className={`font-medium text-xs text-foreground leading-snug ${data.completed ? 'line-through text-muted-foreground' : ''}`}>{data.title}</h4>
+                {data.description && (
+                  <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{data.description}</p>
+                )}
+                <p className="text-[9px] text-violet-600 dark:text-violet-400 font-semibold mt-1">
+                  📅 {new Date(data.date).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                </p>
+              </div>
+            </div>
+            
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => {
+                handleToggle();
+                window.location.href = '/candidaturas';
+              }}
+              className="text-[10px] h-7 bg-muted/20 hover:bg-muted text-foreground flex items-center justify-center gap-1 mt-1"
+            >
+              Gerenciar Lembretes
+            </Button>
+          </div>
+        );
+
+      case 'task':
+        return (
+          <div key={index} className="bg-card text-card-foreground border border-muted/70 rounded-xl p-4 shadow-sm flex flex-col gap-2.5 hover:border-violet-300 dark:hover:border-violet-900 transition-colors w-full">
+            <div className="flex justify-between items-start gap-2">
+              <div className="flex-1">
+                <h4 className="font-semibold text-sm text-foreground">{data.title}</h4>
+                <p className="text-[10px] text-muted-foreground mt-0.5 leading-normal">{data.description}</p>
+              </div>
+              <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300 shrink-0`}>
+                +{data.reward} créditos
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center gap-2 mt-1">
+              <span className={`text-[9px] ${data.completed ? 'text-green-600 dark:text-green-400 font-semibold' : 'text-muted-foreground'}`}>
+                {data.completed ? (data.claimed ? 'Recompensa resgatada' : 'Pendente de resgate') : 'Em andamento'}
+              </span>
+              
+              <Button 
+                variant={data.completed && !data.claimed ? 'default' : 'outline'}
+                size="sm" 
+                onClick={async () => {
+                  if (data.completed && !data.claimed) {
+                    try {
+                      await apiClient.post(`/api/rover/tasks/${data.key}/claim`);
+                      toast.success(`Parabéns! Você resgatou +${data.reward} créditos!`);
+                      loadHistory();
+                    } catch (e) {
+                      toast.error('Erro ao resgatar recompensa.');
+                    }
+                  } else {
+                    handleToggle();
+                    window.location.href = '/convide-amigos';
+                  }
+                }}
+                disabled={data.claimed}
+                className={`text-[10px] h-7 px-3 ${data.completed && !data.claimed ? 'bg-violet-600 hover:bg-violet-700 text-white' : 'bg-muted/20 hover:bg-muted text-foreground'}`}
+              >
+                {data.completed ? (data.claimed ? 'Concluído' : 'Resgatar') : 'Ir para Missão'}
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'credits':
+        return (
+          <div key={index} className="bg-card text-card-foreground border border-muted/70 rounded-xl p-4 shadow-sm flex flex-col gap-3 hover:border-violet-300 dark:hover:border-violet-900 transition-colors w-full">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-violet-100 dark:bg-violet-950 flex items-center justify-center text-violet-600 dark:text-violet-400 shrink-0">
+                <Sparkles className="w-4 h-4 fill-violet-400 dark:fill-violet-800" />
+              </div>
+              <div className="flex-1">
+                <span className="text-[10px] text-muted-foreground block">Seu saldo atual de créditos</span>
+                <span className="text-lg font-bold text-foreground leading-none">{data.balance} créditos</span>
+              </div>
+            </div>
+
+            <Button 
+              variant="default"
+              size="sm" 
+              onClick={() => {
+                handleToggle();
+                window.location.href = '/precos';
+              }}
+              className="text-[10px] h-7 bg-violet-600 hover:bg-violet-700 text-white flex items-center justify-center gap-1 w-full"
+            >
+              Comprar Mais Créditos
+            </Button>
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  const renderMessageContent = (content: string) => {
+    if (!content) return null;
+
+    // Regex to split content by `<rover-card type="..." data="..." />` tags
+    const regex = /<rover-card\s+type="([^"]+)"\s+data='([^']+)'\s*\/>/g;
+    const parts = [];
+    let lastIndex = 0;
+    let match;
+
+    // Reset regex index
+    regex.lastIndex = 0;
+
+    while ((match = regex.exec(content)) !== null) {
+      const textBefore = content.substring(lastIndex, match.index);
+      if (textBefore.trim()) {
+        parts.push({ type: 'text', content: textBefore });
+      }
+
+      const cardType = match[1];
+      const cardDataRaw = match[2];
+      try {
+        const cardData = JSON.parse(cardDataRaw);
+        parts.push({ type: 'card', cardType, data: cardData });
+      } catch (err) {
+        console.error('Failed to parse card data:', err, cardDataRaw);
+        parts.push({ type: 'text', content: match[0] }); // Render raw tag if parse fails
+      }
+
+      lastIndex = regex.lastIndex;
+    }
+
+    const textAfter = content.substring(lastIndex);
+    if (textAfter.trim()) {
+      parts.push({ type: 'text', content: textAfter });
+    }
+
+    if (parts.length === 0) {
+      return <div className="whitespace-pre-wrap bg-muted/60 dark:bg-muted/30 border border-muted/50 p-3 rounded-xl rounded-tl-none leading-relaxed text-foreground">{content}</div>;
+    }
+
+    return parts.map((part, index) => {
+      if (part.type === 'text') {
+        return (
+          <div key={index} className="whitespace-pre-wrap bg-muted/60 dark:bg-muted/30 border border-muted/50 p-3 rounded-xl rounded-tl-none text-foreground leading-relaxed">
+            {part.content.trim()}
+          </div>
+        );
+      }
+
+      // Render custom cards
+      const { cardType, data } = part;
+      return renderRichCard(cardType, data, index);
+    });
+  };
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -245,6 +516,20 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     recognition.start();
   };
 
+  const handleInterrupt = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+      setIsLoading(false);
+      toast.info("Geração do Rover interrompida.");
+      // Add a small hint message to the chat indicating it was interrupted
+      setMessages((prev) => [
+        ...prev,
+        { role: 'assistant', content: 'Geração interrompida pelo usuário.' }
+      ]);
+    }
+  };
+
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || isLoading) return;
 
@@ -253,10 +538,14 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
     setInputValue('');
     setIsLoading(true);
 
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const data = await apiClient.post<{ response?: string; error?: string; reason?: string; invalidates?: string[] }>(
         '/api/rover/message',
-        { message: textToSend }
+        { message: textToSend },
+        { signal: controller.signal }
       );
 
       if (data.error) {
@@ -281,6 +570,10 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
         });
       }
     } catch (err: any) {
+      if (err.name === 'AbortError') {
+        // Request was aborted by user, ignore default error display
+        return;
+      }
       console.error('Error sending message to rover:', err);
       toast.error(err.message || 'Erro de conexão com o assistente.');
       setMessages((prev) => [
@@ -289,6 +582,7 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
       ]);
     } finally {
       setIsLoading(false);
+      abortControllerRef.current = null;
     }
   };
 
@@ -458,12 +752,12 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                           )}
                         </div>
                         <div
-                          className={`p-3 rounded-xl text-xs leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
-                            ? 'bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/10 rounded-tr-none'
-                            : 'bg-muted/60 dark:bg-muted/30 border border-muted/50 rounded-tl-none text-foreground'
+                          className={`text-xs leading-relaxed ${msg.role === 'user'
+                            ? 'p-3 rounded-xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-500/10 rounded-tr-none whitespace-pre-wrap'
+                            : 'bg-transparent border-0 text-foreground flex flex-col gap-2 rounded-tl-none p-0 w-full'
                             }`}
                         >
-                          {msg.content}
+                          {msg.role === 'user' ? msg.content : renderMessageContent(msg.content)}
                         </div>
                       </div>
                     ))}
@@ -545,8 +839,9 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
             <button
               type="button"
               onClick={handleAttachmentClick}
+              disabled={isLoading}
               title="Anexar Arquivo"
-              className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-primary shrink-0 transition-colors"
+              className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-800 flex items-center justify-center hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-500 hover:text-primary shrink-0 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               <Paperclip className="w-4 h-4" />
             </button>
@@ -566,7 +861,19 @@ export default function RoverDrawer({ isOpen, onClose }: RoverDrawerProps) {
                 disabled={isLoading}
                 autoFocus
               />
-              {isListening ? (
+              {isLoading ? (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleInterrupt();
+                  }}
+                  className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white rounded-full px-4 py-2 text-xs font-bold shadow-md shadow-orange-500/20 transition-all hover:scale-105 active:scale-95 shrink-0"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  Interromper
+                </button>
+              ) : isListening ? (
                 <button
                   type="button"
                   onClick={(e) => {
