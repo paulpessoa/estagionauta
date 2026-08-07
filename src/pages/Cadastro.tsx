@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Checkbox } from '@/components/ui/checkbox'
 import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { Mail, Lock, User, ArrowRight } from 'lucide-react'
@@ -16,6 +17,7 @@ export default function Cadastro() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const [acceptedTerms, setAcceptedTerms] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
@@ -35,6 +37,12 @@ export default function Cadastro() {
     e.preventDefault()
     setLoading(true)
     setError('')
+
+    if (!acceptedTerms) {
+      setError('Você deve aceitar os Termos de Uso e a Política de Privacidade para criar uma conta.')
+      setLoading(false)
+      return
+    }
 
     if (password !== confirmPassword) {
       setError('As senhas não coincidem')
@@ -225,6 +233,33 @@ export default function Cadastro() {
                 />
               </div>
             </div>
+
+            <div className="flex items-start space-x-2 py-2">
+              <Checkbox 
+                id="terms" 
+                checked={acceptedTerms}
+                onCheckedChange={(checked) => setAcceptedTerms(checked as boolean)}
+              />
+              <div className="grid gap-1.5 leading-none">
+                <label
+                  htmlFor="terms"
+                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                >
+                  Aceitar termos e condições
+                </label>
+                <p className="text-sm text-muted-foreground">
+                  Eu concordo com os{' '}
+                  <Link to="/termos-de-uso" className="text-primary hover:underline" target="_blank">
+                    Termos de Uso
+                  </Link>{' '}
+                  e a{' '}
+                  <Link to="/privacy-policy" className="text-primary hover:underline" target="_blank">
+                    Política de Privacidade
+                  </Link>.
+                </p>
+              </div>
+            </div>
+
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Criando conta..." : "Criar conta"}
               <ArrowRight className="ml-2 h-4 w-4" />
