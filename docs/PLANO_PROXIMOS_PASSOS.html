@@ -37,8 +37,8 @@ ul{padding-left:20px}li{margin:3px 0}
 <div class="grid">
   <div class="card kpi"><b>✅ build</b><span>Front (Vite), API (tsc) e MCP compilam</span></div>
   <div class="card kpi"><b>58/58</b><span>testes da API passando (com env de CI)</span></div>
-  <div class="card kpi"><b>27</b><span>erros de TypeScript no front (o CI não checa)</span></div>
-  <div class="card kpi"><b>0</b><span>testes no repo MCP; nenhum CI em PR</span></div>
+  <div class="card kpi"><b>0</b><span>erros de TypeScript (era 27; agora checado no CI)</span></div>
+  <div class="card kpi"><b>8/8</b><span>testes no MCP, com CI em PR</span></div>
 </div>
 
 <h2>1. O que já foi corrigido nesta sessão</h2>
@@ -53,20 +53,21 @@ ul{padding-left:20px}li{margin:3px 0}
 
 <h2>2. Backlog técnico priorizado</h2>
 <div class="tw"><table>
-<tr><th>Prio</th><th>Tarefa</th><th>Como fazer (resumo)</th><th>Esforço</th></tr>
-<tr><td><span class="tag p0">P0</span></td><td>Conferir <code>BYOK_ENCRYPTION_KEY</code> no Cloud Run</td><td>Se estiver sem a variável, as chaves dos usuários estão cifradas com uma chave pública. Criar segredo novo e <b>re-cifrar</b> as chaves existentes (script: decrypt com a antiga → encrypt com a nova) antes de trocar.</td><td>1–2h</td></tr>
+<tr><th>Status</th><th>Tarefa</th><th>Como fazer (resumo)</th><th>Esforço</th></tr>
+<tr><td><span class="tag p0">P0</span></td><td>Conferir <code>BYOK_ENCRYPTION_KEY</code> no Cloud Run</td><td>Script pronto: <code>api/scripts/rotate_byok_key.cjs</code> (simula por padrão; <code>--apply</code> grava). Se estiver sem a variável, as chaves dos usuários estão cifradas com uma chave pública. Criar segredo novo e <b>re-cifrar</b> as chaves existentes (script: decrypt com a antiga → encrypt com a nova) antes de trocar.</td><td>1–2h</td></tr>
 <tr><td><span class="tag p0">P0</span></td><td>Rotacionar chave do Google Maps</td><td>Google Cloud Console → nova chave restrita por HTTP referrer (<code>estagionauta.com.br/*</code>) → atualizar Vercel → revogar a antiga.</td><td>20min</td></tr>
-<tr><td><span class="tag p0">P0</span></td><td>MCP: não pedir o JWT como argumento da tool</td><td>Hoje o usuário cola o token no chat (fica no histórico do LLM e expira em ~1h). Migrar para OAuth (<code>@cloudflare/workers-oauth-provider</code>) ou ler o <code>Authorization</code> header da conexão.</td><td>1–2 dias</td></tr>
-<tr><td><span class="tag p1">P1</span></td><td>Regenerar tipos do Supabase</td><td><code>npx supabase gen types typescript --project-id &lt;id&gt; &gt; src/integrations/supabase/types.ts</code>. Resolve ~22 dos 27 erros (tabelas <code>kanban_applications</code>, <code>interview_simulations</code>, <code>generated_resumes</code> faltando).</td><td>1h</td></tr>
-<tr><td><span class="tag p1">P1</span></td><td>Typecheck no CI</td><td>Depois do item acima: script <code>"typecheck": "tsc -p tsconfig.app.json --noEmit"</code> e step no <code>ci.yml</code>. O <code>vite build</code> não checa tipos — por isso os bugs acima passaram.</td><td>30min</td></tr>
-<tr><td><span class="tag p1">P1</span></td><td>CI no repo MCP para PRs</td><td>Hoje só existe deploy em push na main. Adicionar job <code>npm run build</code> em <code>pull_request</code> + 1 teste por tool (vitest com <code>fetch</code> mockado).</td><td>2h</td></tr>
-<tr><td><span class="tag p1">P1</span></td><td>Analytics de funil</td><td>Eventos: cadastro → 1ª análise de currículo → 1ª simulação → volta na semana 2. Clarity já está instalado; adicionar eventos custom (<code>clarity("event", ...)</code>) e cupom por canal (seção 3).</td><td>3h</td></tr>
-<tr><td><span class="tag p2">P2</span></td><td>Limpar código morto</td><td><code>components/agency/GoogleMap.tsx</code> e <code>AgencyFilters.tsx</code> não são importados (o último referencia <code>popularAreas</code> inexistente).</td><td>15min</td></tr>
+<tr><td><span class="tag p0">P0</span></td><td>MCP: login OAuth <br><small>(parcial: já aceita token pelo header/env)</small></td><td>O token não precisa mais ir no chat, mas ainda é copiado à mão (fica no histórico do LLM e expira em ~1h). Migrar para OAuth (<code>@cloudflare/workers-oauth-provider</code>) ou ler o <code>Authorization</code> header da conexão.</td><td>1–2 dias</td></tr>
+<tr><td><span class="tag done">feito</span></td><td>Regenerar tipos do Supabase</td><td><code>npx supabase gen types typescript --project-id &lt;id&gt; &gt; src/integrations/supabase/types.ts</code>. Resolve ~22 dos 27 erros (tabelas <code>kanban_applications</code>, <code>interview_simulations</code>, <code>generated_resumes</code> faltando).</td><td>1h</td></tr>
+<tr><td><span class="tag done">feito</span></td><td>Typecheck no CI</td><td>Depois do item acima: script <code>"typecheck": "tsc -p tsconfig.app.json --noEmit"</code> e step no <code>ci.yml</code>. O <code>vite build</code> não checa tipos — por isso os bugs acima passaram.</td><td>30min</td></tr>
+<tr><td><span class="tag done">feito</span></td><td>CI no repo MCP para PRs</td><td>Hoje só existe deploy em push na main. Adicionar job <code>npm run build</code> em <code>pull_request</code> + 1 teste por tool (vitest com <code>fetch</code> mockado).</td><td>2h</td></tr>
+<tr><td><span class="tag done">feito</span></td><td>Analytics de funil + links de campanha</td><td>Eventos: cadastro → 1ª análise de currículo → 1ª simulação → volta na semana 2. Clarity já está instalado; adicionar eventos custom (<code>clarity("event", ...)</code>) e cupom por canal (seção 3).</td><td>3h</td></tr>
+<tr><td><span class="tag done">feito</span></td><td>Limpar código morto</td><td><code>components/agency/GoogleMap.tsx</code> e <code>AgencyFilters.tsx</code> não são importados (o último referencia <code>popularAreas</code> inexistente).</td><td>15min</td></tr>
 <tr><td><span class="tag p2">P2</span></td><td>30 warnings de <code>exhaustive-deps</code></td><td>Envolver fetchers em <code>useCallback</code> ou migrar para React Query (já instalado).</td><td>3h</td></tr>
 <tr><td><span class="tag p2">P2</span></td><td>Bundle <code>vendor</code> de 1,1 MB</td><td>Separar mais chunks em <code>vite.config.ts</code> (<code>manualChunks</code>) e lazy-load de jsPDF/html2canvas só quando gerar PDF.</td><td>2h</td></tr>
 <tr><td><span class="tag p2">P2</span></td><td>Organizar docs</td><td>Mover <code>task.md</code>/<code>implementation_plan.md</code> para <code>docs/</code>; unificar os 4 READMEs de e-mail num só.</td><td>1h</td></tr>
 </table></div>
 
+<div class="note" style="margin-top:12px"><b>Antes do próximo deploy do banco:</b> rode <code>supabase db push --include-all</code>. A migration <code>20260524235900_sync_schema_drift.sql</code> tem data anterior às já aplicadas (por isso o <code>--include-all</code>). Ela é idempotente: em produção só cria o que faltar (colunas <code>status</code>/<code>source</code> em <code>feedbacks</code>, se ainda não existirem).</div>
 <h3>Como rodar localmente (qualquer IDE)</h3>
 <div class="note">
 <b>Front:</b> <code>npm ci && npm run dev</code> (porta 5173, precisa de <code>.env</code> a partir do <code>.env.example</code>)<br>
@@ -86,7 +87,7 @@ ul{padding-left:20px}li{margin:3px 0}
   <div class="step">Simulador / Kanban</div><span class="arrow">→</span>
   <div class="step">Convida amigo (indicação já existe)</div>
 </div>
-<p class="sub" style="margin-top:8px">Dica: crie <b>um cupom por canal</b> (ex.: <code>UFPE30</code>, <code>CESAR30</code>, <code>PORTO30</code>) na tabela <code>coupons</code>. Assim você sabe de onde vem cada usuário sem ferramenta extra.</p>
+<p class="sub" style="margin-top:8px">Pronto: links, cupons e mensagens em <code>docs/DIVULGACAO_RECIFE.md</code>. Ideia original: <b>um cupom por canal</b> (ex.: <code>UFPE30</code>, <code>CESAR30</code>, <code>PORTO30</code>) na tabela <code>coupons</code>. Assim você sabe de onde vem cada usuário sem ferramenta extra.</p>
 
 <h3>Canais na Região Metropolitana</h3>
 <div class="tw"><table>
