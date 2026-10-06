@@ -11,7 +11,7 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
       .eq('id', userId)
       .single()
     if (error) throw error
-    return data as Profile
+    return data as unknown as Profile
   } catch (error) {
     console.error('Error fetching profile:', error)
     return null

@@ -47,7 +47,7 @@ export function EmailStatusNotification({ emailId, onClose }: EmailStatusNotific
         return
       }
 
-      setEmailLog(data)
+      setEmailLog(data as EmailLog)
       
       // Se o email ainda está pendente, continuar polling
       if (data.status === 'pending') {

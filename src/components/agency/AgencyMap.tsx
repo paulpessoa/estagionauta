@@ -48,7 +48,7 @@ export function AgencyMap({ agencies, userLocation, mapCenter }: AgencyMapProps)
     }
 
     if (hasCoords) {
-      map.fitBounds(bounds)
+      map.fitBounds(bounds as unknown as google.maps.LatLngBounds)
       // Limit zoom level if there's only one marker to prevent extreme closeups
       const totalPoints = agencies.length + (userLocation ? 1 : 0)
       if (totalPoints <= 1) {

@@ -47,7 +47,7 @@ export function AddReminderModal({ isOpen, onClose, onAddReminder }: AddReminder
     onAddReminder({
       title: formData.title,
       description: formData.description,
-      date: formData.date,
+      date: formData.date.toISOString(),
       type: formData.type
     })
 

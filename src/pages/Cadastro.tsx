@@ -11,6 +11,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useToast } from '@/hooks/use-toast'
 import { Mail, Lock, User, ArrowRight } from 'lucide-react'
 import { useAuth } from '@/hooks/useAuth'
+import { trackEvent } from '@/lib/campaign'
 
 export default function Cadastro() {
   const [fullName, setFullName] = useState('')
@@ -72,6 +73,7 @@ export default function Cadastro() {
       if (error) {
         setError(error.message)
       } else {
+        trackEvent('cadastro_concluido')
         navigate('/login?registered=true')
       }
     } catch (error) {

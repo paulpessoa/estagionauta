@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import { captureCampaign } from './lib/campaign'
 
 // Global error handler for dynamic import chunk errors
 if (typeof window !== 'undefined') {
@@ -21,6 +22,8 @@ if (typeof window !== 'undefined') {
     }
   });
 }
+
+captureCampaign();
 
 createRoot(document.getElementById("root")!).render(<App />);
 

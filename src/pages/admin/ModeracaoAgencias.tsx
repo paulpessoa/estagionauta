@@ -608,17 +608,12 @@ function FeedbackCard({ feedback }: { feedback: any }) {
 
     setIsSending(true)
     try {
-      const response = await apiClient('/admin/reply-email', {
-        method: 'POST',
-        body: JSON.stringify({
-          feedbackId: feedback.id,
-          toEmail: feedback.email,
-          subject: 'Resposta ao seu feedback - Estagionauta',
-          message: replyMessage,
-        })
+      await apiClient.post('/api/admin/reply-email', {
+        feedbackId: feedback.id,
+        toEmail: feedback.email,
+        subject: 'Resposta ao seu feedback - Estagionauta',
+        message: replyMessage,
       })
-
-      if (response.error) throw new Error(response.error)
 
       toast.success('Resposta enviada com sucesso!')
       setStatus('replied')

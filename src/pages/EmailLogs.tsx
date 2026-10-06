@@ -59,11 +59,6 @@ export default function EmailLogs() {
         .select('*')
         .order('created_at', { ascending: false })
 
-      // Filtrar por usuário (apenas logs do usuário atual)
-      if (user) {
-        query = query.eq('profile_id', user.id)
-      }
-
       // Filtro por status
       if (statusFilter !== 'all') {
         query = query.eq('status', statusFilter)
@@ -93,12 +88,11 @@ export default function EmailLogs() {
       if (searchTerm) {
         filteredData = filteredData.filter(log => 
           log.to_email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          log.curriculum_slug?.toLowerCase().includes(searchTerm.toLowerCase())
+          log.subject.toLowerCase().includes(searchTerm.toLowerCase())
         )
       }
 
-      setLogs(filteredData)
+      setLogs(filteredData as EmailLog[])
     } catch (error) {
       console.error('Error loading email logs:', error)
     } finally {

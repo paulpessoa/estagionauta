@@ -66,7 +66,7 @@ const packages = [
 
 export default function Creditos() {
   const { user } = useAuth()
-  const { credits, refreshCredits } = useCredits()
+  const { credits } = useCredits()
   const { toast } = useToast()
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loadingTransactions, setLoadingTransactions] = useState(true)

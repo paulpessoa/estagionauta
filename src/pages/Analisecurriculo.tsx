@@ -17,6 +17,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Star, AlertTriangle, CreditCard } from "lucide-react"
 import { apiClient } from "@/lib/apiClient"
+import { trackEvent } from '@/lib/campaign'
 
 interface ResumeFormData {
   // Basic info
@@ -143,6 +144,7 @@ export default function AnalyseCurriculoPage() {
       })
 
       console.log("Analysis completed successfully:", data)
+      trackEvent('analise_curriculo_concluida')
 
       // Atualizar créditos na interface
       await refresh()

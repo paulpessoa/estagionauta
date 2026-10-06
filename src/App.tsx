@@ -13,6 +13,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
 import RoverDrawer from './components/rover/RoverDrawer';
+import { useCampaign } from './lib/campaign';
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ import { BrainCircuit } from 'lucide-react';
 
 function AppLayout() {
   const { user } = useAuth();
+  useCampaign(user?.id);
 
   return (
     <div className="flex flex-col min-h-screen">
