@@ -54,6 +54,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { supabase } from "@/integrations/supabase/client"
 import type { Agency } from "@/types/agency"
 import type { JobApplication } from "@/types/kanban"
+import { trackEvent } from '@/lib/campaign'
 
 export default function SimuladorEntrevistas() {
   const [currentView, setCurrentView] = useState<
@@ -449,6 +450,7 @@ export default function SimuladorEntrevistas() {
           agency_id: agencyId || undefined
         }
       )
+      trackEvent('simulacao_iniciada')
       setSimulations((prev) => [data.simulation, ...prev])
       setSelectedSimulation(data.simulation)
       setCurrentView("chat")
