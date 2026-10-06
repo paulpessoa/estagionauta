@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano Estagionauta</title>
+<style>
+:root{--bg:#f7f8fb;--card:#fff;--fg:#1a1d26;--muted:#5b6275;--line:#e3e6ee;--accent:#4f46e5;--ok:#0f9d58;--warn:#d97706;--bad:#dc2626}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1118;--card:#161a24;--fg:#e8eaf0;--muted:#9aa1b4;--line:#262b38;--accent:#818cf8;--ok:#34d399;--warn:#fbbf24;--bad:#f87171}}
+:root[data-theme="dark"]{--bg:#0e1118;--card:#161a24;--fg:#e8eaf0;--muted:#9aa1b4;--line:#262b38;--accent:#818cf8;--ok:#34d399;--warn:#fbbf24;--bad:#f87171}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+main{max-width:980px;margin:0 auto;padding:32px 16px 64px}
+h1{font-size:28px;margin:0 0 4px}h2{font-size:20px;margin:40px 0 12px;padding-top:8px;border-top:1px solid var(--line)}h3{font-size:16px;margin:20px 0 8px}
+.sub{color:var(--muted);margin:0 0 24px}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi b{display:block;font-size:24px}.kpi span{color:var(--muted);font-size:13px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+.tw{overflow-x:auto}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 8px;border-radius:99px;border:1px solid currentColor}
+.p0{color:var(--bad)}.p1{color:var(--warn)}.p2{color:var(--muted)}.done{color:var(--ok)}
+code{background:var(--line);padding:1px 5px;border-radius:4px;font-size:13px}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.step{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:8px;padding:8px 12px;font-size:14px}
+.arrow{color:var(--muted)}
+ul{padding-left:20px}li{margin:3px 0}
+.note{border-left:4px solid var(--accent);background:var(--card);padding:10px 14px;border-radius:8px;font-size:14px}
+</style>
+</head>
+<body><main>
+<h1>Estagionauta — Plano de próximos passos</h1>
+<p class="sub">Diagnóstico técnico dos repos <code>estagionauta</code> + <code>estagionauta-mcp</code> e estratégia para colocar os primeiros testadores na Região Metropolitana do Recife. Out/2026.</p>
+
+<div class="grid">
+  <div class="card kpi"><b>✅ build</b><span>Front (Vite), API (tsc) e MCP compilam</span></div>
+  <div class="card kpi"><b>58/58</b><span>testes da API passando (com env de CI)</span></div>
+  <div class="card kpi"><b>27</b><span>erros de TypeScript no front (o CI não checa)</span></div>
+  <div class="card kpi"><b>0</b><span>testes no repo MCP; nenhum CI em PR</span></div>
+</div>
+
+<h2>1. O que já foi corrigido nesta sessão</h2>
+<div class="tw"><table>
+<tr><th>Item</th><th>Por que importava</th></tr>
+<tr><td><span class="tag done">feito</span> Responder feedback no Admin</td><td><code>apiClient(...)</code> era chamado como função → <b>TypeError</b>; rota sem <code>/api</code>. Botão nunca funcionou.</td></tr>
+<tr><td><span class="tag done">feito</span> Feedback via Jotform</td><td>POST em <code>/feedback-jotform</code> (rota inexistente; a real é <code>/api/admin/feedback-jotform</code>).</td></tr>
+<tr><td><span class="tag done">feito</span> Mapa de agências</td><td><code>filteredAgencies</code> usado antes de declarado.</td></tr>
+<tr><td><span class="tag done">feito</span> Chave Google Maps fixa no código</td><td>Agora usa <code>VITE_GOOGLE_MAPS_API_KEY</code>. <b>Ainda precisa rotacionar a chave</b> (está no histórico do git).</td></tr>
+<tr><td><span class="tag done">feito</span> Aviso de chave BYOK padrão em produção</td><td>Log de alerta se a API subir em produção usando a chave pública do <code>.env.example</code>.</td></tr>
+</table></div>
+
+<h2>2. Backlog técnico priorizado</h2>
+<div class="tw"><table>
+<tr><th>Prio</th><th>Tarefa</th><th>Como fazer (resumo)</th><th>Esforço</th></tr>
+<tr><td><span class="tag p0">P0</span></td><td>Conferir <code>BYOK_ENCRYPTION_KEY</code> no Cloud Run</td><td>Se estiver sem a variável, as chaves dos usuários estão cifradas com uma chave pública. Criar segredo novo e <b>re-cifrar</b> as chaves existentes (script: decrypt com a antiga → encrypt com a nova) antes de trocar.</td><td>1–2h</td></tr>
+<tr><td><span class="tag p0">P0</span></td><td>Rotacionar chave do Google Maps</td><td>Google Cloud Console → nova chave restrita por HTTP referrer (<code>estagionauta.com.br/*</code>) → atualizar Vercel → revogar a antiga.</td><td>20min</td></tr>
+<tr><td><span class="tag p0">P0</span></td><td>MCP: não pedir o JWT como argumento da tool</td><td>Hoje o usuário cola o token no chat (fica no histórico do LLM e expira em ~1h). Migrar para OAuth (<code>@cloudflare/workers-oauth-provider</code>) ou ler o <code>Authorization</code> header da conexão.</td><td>1–2 dias</td></tr>
+<tr><td><span class="tag p1">P1</span></td><td>Regenerar tipos do Supabase</td><td><code>npx supabase gen types typescript --project-id &lt;id&gt; &gt; src/integrations/supabase/types.ts</code>. Resolve ~22 dos 27 erros (tabelas <code>kanban_applications</code>, <code>interview_simulations</code>, <code>generated_resumes</code> faltando).</td><td>1h</td></tr>
+<tr><td><span class="tag p1">P1</span></td><td>Typecheck no CI</td><td>Depois do item acima: script <code>"typecheck": "tsc -p tsconfig.app.json --noEmit"</code> e step no <code>ci.yml</code>. O <code>vite build</code> não checa tipos — por isso os bugs acima passaram.</td><td>30min</td></tr>
+<tr><td><span class="tag p1">P1</span></td><td>CI no repo MCP para PRs</td><td>Hoje só existe deploy em push na main. Adicionar job <code>npm run build</code> em <code>pull_request</code> + 1 teste por tool (vitest com <code>fetch</code> mockado).</td><td>2h</td></tr>
+<tr><td><span class="tag p1">P1</span></td><td>Analytics de funil</td><td>Eventos: cadastro → 1ª análise de currículo → 1ª simulação → volta na semana 2. Clarity já está instalado; adicionar eventos custom (<code>clarity("event", ...)</code>) e cupom por canal (seção 3).</td><td>3h</td></tr>
+<tr><td><span class="tag p2">P2</span></td><td>Limpar código morto</td><td><code>components/agency/GoogleMap.tsx</code> e <code>AgencyFilters.tsx</code> não são importados (o último referencia <code>popularAreas</code> inexistente).</td><td>15min</td></tr>
+<tr><td><span class="tag p2">P2</span></td><td>30 warnings de <code>exhaustive-deps</code></td><td>Envolver fetchers em <code>useCallback</code> ou migrar para React Query (já instalado).</td><td>3h</td></tr>
+<tr><td><span class="tag p2">P2</span></td><td>Bundle <code>vendor</code> de 1,1 MB</td><td>Separar mais chunks em <code>vite.config.ts</code> (<code>manualChunks</code>) e lazy-load de jsPDF/html2canvas só quando gerar PDF.</td><td>2h</td></tr>
+<tr><td><span class="tag p2">P2</span></td><td>Organizar docs</td><td>Mover <code>task.md</code>/<code>implementation_plan.md</code> para <code>docs/</code>; unificar os 4 READMEs de e-mail num só.</td><td>1h</td></tr>
+</table></div>
+
+<h3>Como rodar localmente (qualquer IDE)</h3>
+<div class="note">
+<b>Front:</b> <code>npm ci && npm run dev</code> (porta 5173, precisa de <code>.env</code> a partir do <code>.env.example</code>)<br>
+<b>API:</b> <code>cd api && npm ci && npm run dev</code> · testes: <code>npm test</code> (exige as variáveis do <code>api/.env.example</code>)<br>
+<b>MCP:</b> <code>npm ci --legacy-peer-deps && npm run build && npm run inspector</code><br>
+<b>Checar tipos do front:</b> <code>npx tsc -p tsconfig.app.json --noEmit</code>
+</div>
+
+<h2>3. Estratégia: primeiros testadores na RMR</h2>
+<p><b>Objetivo das próximas 6 semanas:</b> 100 estudantes cadastrados, 40 que fazem a 1ª análise de currículo, 15 entrevistas de feedback. Outubro/novembro é ótimo momento: fim de semestre, gente buscando estágio para 2027.1.</p>
+
+<h3>Funil</h3>
+<div class="flow">
+  <div class="step">Canal (cupom próprio)</div><span class="arrow">→</span>
+  <div class="step">Cadastro + créditos grátis</div><span class="arrow">→</span>
+  <div class="step">1ª análise de currículo (momento "uau")</div><span class="arrow">→</span>
+  <div class="step">Simulador / Kanban</div><span class="arrow">→</span>
+  <div class="step">Convida amigo (indicação já existe)</div>
+</div>
+<p class="sub" style="margin-top:8px">Dica: crie <b>um cupom por canal</b> (ex.: <code>UFPE30</code>, <code>CESAR30</code>, <code>PORTO30</code>) na tabela <code>coupons</code>. Assim você sabe de onde vem cada usuário sem ferramenta extra.</p>
+
+<h3>Canais na Região Metropolitana</h3>
+<div class="tw"><table>
+<tr><th>Canal</th><th>Onde</th><th>Ação concreta</th></tr>
+<tr><td>Universidades e centros acadêmicos</td><td>UFPE, UFRPE, UPE, UNICAP, IFPE (Recife, Jaboatão, Olinda/Paulista), UNINASSAU, Unibra, FBV/Wyden, CESAR School, Senac</td><td>Mensagem para DAs/CAs e empresas juniores oferecendo <b>oficina gratuita de 40 min</b> "Currículo de estágio que passa no filtro" usando o Estagionauta ao vivo.</td></tr>
+<tr><td>Coordenações de estágio</td><td>Setores de estágio das mesmas instituições</td><td>Oferecer a <b>Calculadora de Recesso</b> como ferramenta gratuita para divulgarem aos estagiários (resolve dúvida jurídica real, sem cadastro).</td></tr>
+<tr><td>Ecossistema tech</td><td>Porto Digital, CESAR, Manguezal/eventos de comunidades (GDG Recife, Front-end PE)</td><td>Pitch de 5 min em meetups; pedir espaço na newsletter do Porto Digital para estudantes.</td></tr>
+<tr><td>Grupos de vagas</td><td>Grupos de WhatsApp/Telegram "Vagas de estágio Recife", LinkedIn</td><td>Em vez de spam: post útil semanal ("3 erros no currículo que vi esta semana") com link do cupom.</td></tr>
+<tr><td>Agências integradoras locais</td><td>CIEE-PE, IEL-PE, Nube, agências da RMR já cadastradas no site</td><td>Convite para "reivindicar" o perfil da agência e responder avaliações → elas divulgam para os próprios candidatos.</td></tr>
+<tr><td>Conteúdo curto</td><td>Instagram/TikTok</td><td>Série "Antes e depois do currículo" com casos reais (com permissão) e "seu recesso está certo?".</td></tr>
+</table></div>
+
+<h3>Cronograma sugerido</h3>
+<div class="tw"><table>
+<tr><th>Semana</th><th>Foco</th><th>Entregável</th></tr>
+<tr><td>1</td><td>Preparar</td><td>P0 de segurança resolvidos · cupons por canal · formulário de feedback de 3 perguntas · lista de 20 contatos (CAs, coordenações, ligas)</td></tr>
+<tr><td>2</td><td>Beta fechado</td><td>20 amigos/conhecidos testando; corrigir o que travar no fluxo cadastro → análise</td></tr>
+<tr><td>3–4</td><td>Oficinas</td><td>2–3 oficinas em universidades (meta: 30 cadastros por oficina) · posts semanais</td></tr>
+<tr><td>5</td><td>Parcerias</td><td>Calculadora divulgada por 1 coordenação de estágio · 3 agências reivindicando perfil</td></tr>
+<tr><td>6</td><td>Aprender</td><td>15 conversas de 15 min com usuários · revisar funil por cupom · decidir próximo trimestre</td></tr>
+</table></div>
+
+<h3>Métricas para acompanhar (semanal)</h3>
+<ul>
+<li><b>Cadastros por cupom</b> — qual canal funciona.</li>
+<li><b>Ativação</b> — % que faz a 1ª análise em 24h (meta ≥ 40%).</li>
+<li><b>Retenção semana 2</b> — volta para simulador/Kanban.</li>
+<li><b>Indicações</b> — convites enviados por usuário ativo.</li>
+<li><b>Frase de ouro</b> — anote o que os usuários dizem com as próprias palavras; vira texto da landing.</li>
+</ul>
+</main></body></html>
