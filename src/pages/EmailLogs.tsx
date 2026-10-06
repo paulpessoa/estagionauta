@@ -98,7 +98,7 @@ export default function EmailLogs() {
         )
       }
 
-      setLogs(filteredData)
+      setLogs(filteredData as EmailLog[])
     } catch (error) {
       console.error('Error loading email logs:', error)
     } finally {

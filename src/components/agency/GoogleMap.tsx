@@ -88,7 +88,7 @@ export function GoogleMap({ agencies, userLocation, onAgencyClick, className = '
 
   useEffect(() => {
     const loader = new Loader({
-      apiKey: "AIzaSyB8eWLPHMvNEzlCWpKGVAAmGaKYlRTWIzE", // Replace with your actual API key
+      apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
       version: 'weekly',
       libraries: ['places']
     })

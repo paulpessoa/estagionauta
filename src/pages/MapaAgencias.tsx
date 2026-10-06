@@ -108,12 +108,6 @@ export default function MapaAgencias() {
   const [userLocation, setUserLocation] = useState<{ lat: number, lng: number } | null>(null)
   const [activeMarker, setActiveMarker] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (activeMarker && !filteredAgencies.some(a => a.id === activeMarker)) {
-      setActiveMarker(null)
-    }
-  }, [filteredAgencies, activeMarker])
-
   const { isLoaded, loadError } = useJsApiLoader({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
   });
@@ -194,6 +188,12 @@ export default function MapaAgencias() {
     return filtered.sort((a, b) => a.name.localeCompare(b.name));
 
   }, [agenciesWithDistance, debouncedSearchTerm, debouncedAddressSearch, filters, sortBy, userLocation])
+
+  useEffect(() => {
+    if (activeMarker && !filteredAgencies.some(a => a.id === activeMarker)) {
+      setActiveMarker(null)
+    }
+  }, [filteredAgencies, activeMarker])
 
   const clearFilters = () => setFilters({ state: '', city: '', type: '' })
   const handleFilterChange = (filterType: keyof typeof filters, value: string) => setFilters(prev => ({ ...prev, [filterType]: value }))

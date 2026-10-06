@@ -64,13 +64,13 @@ export default function Feedback() {
 
       // Use specialized endpoint for Jotform source
       if (source === 'jotform') {
-        const response = await apiClient.post('/feedback-jotform', {
+        // apiClient throws on non-2xx responses
+        await apiClient.post('/api/admin/feedback-jotform', {
           email: email.trim(),
           rating,
           comment: comment.trim() || null,
           source,
         })
-        error = response.error || null;
       } else {
         // Use default Supabase method for other sources
         const result = await supabase.from('feedbacks').insert({
