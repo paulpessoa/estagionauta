@@ -9,6 +9,55 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_audit_logs: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string
+          id: string
+          ip_address: string | null
+          new_value: string | null
+          previous_value: string | null
+          target_user_id: string | null
+        }
+        ComputedFields: never
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_value?: string | null
+          previous_value?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          ip_address?: string | null
+          new_value?: string | null
+          previous_value?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_logs_admin_id_fkey"
+            columns: ["admin_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "admin_audit_logs_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agencies: {
         Row: {
           address: string | null
@@ -38,6 +87,7 @@ export type Database = {
           verified_by: string | null
           website: string | null
         }
+        ComputedFields: never
         Insert: {
           address?: string | null
           agency_type?: string | null
@@ -121,11 +171,10 @@ export type Database = {
           is_reported: boolean | null
           likes_count: number | null
           parent_id: string | null
-          status: string | null
-          moderation_reason: string | null
           updated_at: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           agency_id: string
           content: string
@@ -135,8 +184,6 @@ export type Database = {
           is_reported?: boolean | null
           likes_count?: number | null
           parent_id?: string | null
-          status?: string | null
-          moderation_reason?: string | null
           updated_at?: string
           user_id: string
         }
@@ -149,8 +196,6 @@ export type Database = {
           is_reported?: boolean | null
           likes_count?: number | null
           parent_id?: string | null
-          status?: string | null
-          moderation_reason?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -183,6 +228,7 @@ export type Database = {
           resolved_by: string | null
           status: string | null
         }
+        ComputedFields: never
         Insert: {
           agency_id: string
           created_at?: string
@@ -244,6 +290,7 @@ export type Database = {
           title: string | null
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           agency_id: string
           comment: string
@@ -303,6 +350,7 @@ export type Database = {
           id: string
           screenshot_url: string
         }
+        ComputedFields: never
         Insert: {
           analysis_id: string
           created_at?: string
@@ -333,6 +381,7 @@ export type Database = {
           reaction_type: string
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           comment_id: string
           created_at?: string
@@ -369,6 +418,7 @@ export type Database = {
           resolved_by: string | null
           status: string | null
         }
+        ComputedFields: never
         Insert: {
           comment_id: string
           created_at?: string
@@ -401,6 +451,98 @@ export type Database = {
           },
         ]
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_code: string
+          id: string
+          redeemed_at: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          coupon_code: string
+          id?: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          coupon_code?: string
+          id?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_code_fkey"
+            columns: ["coupon_code"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["code"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          code: string
+          created_at: string
+          credits: number
+          expires_at: string | null
+          max_uses: number | null
+          used_count: number
+        }
+        ComputedFields: never
+        Insert: {
+          code: string
+          created_at?: string
+          credits?: number
+          expires_at?: string | null
+          max_uses?: number | null
+          used_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          credits?: number
+          expires_at?: string | null
+          max_uses?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          description: string | null
+          expires_at: string | null
+          id: string
+          stripe_payment_intent_id: string | null
+          type: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          amount: number
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          stripe_payment_intent_id?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          stripe_payment_intent_id?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       curriculum_analysis: {
         Row: {
           analysis_data: Json | null
@@ -413,8 +555,10 @@ export type Database = {
           name: string
           status: Database["public"]["Enums"]["analysis_status"] | null
           university: string | null
+          used_fallback: boolean | null
           user_id: string | null
         }
+        ComputedFields: never
         Insert: {
           analysis_data?: Json | null
           course?: string | null
@@ -426,6 +570,7 @@ export type Database = {
           name: string
           status?: Database["public"]["Enums"]["analysis_status"] | null
           university?: string | null
+          used_fallback?: boolean | null
           user_id?: string | null
         }
         Update: {
@@ -439,6 +584,7 @@ export type Database = {
           name?: string
           status?: Database["public"]["Enums"]["analysis_status"] | null
           university?: string | null
+          used_fallback?: boolean | null
           user_id?: string | null
         }
         Relationships: [
@@ -465,6 +611,7 @@ export type Database = {
           template_name: string | null
           to_email: string
         }
+        ComputedFields: never
         Insert: {
           created_at?: string | null
           error_message?: string | null
@@ -500,13 +647,18 @@ export type Database = {
           email: string
           id: number
           rating: number
+          source: string | null
+          status: string
         }
+        ComputedFields: never
         Insert: {
           comment?: string | null
           created_at?: string
           email: string
           id?: number
           rating: number
+          source?: string | null
+          status?: string
         }
         Update: {
           comment?: string | null
@@ -514,39 +666,242 @@ export type Database = {
           email?: string
           id?: number
           rating?: number
+          source?: string | null
+          status?: string
         }
         Relationships: []
       }
-      resume_analyses: {
+      generated_resumes: {
         Row: {
-          analysis_data: Json | null
+          content: string
           created_at: string
-          form_data: Json | null
           id: string
-          resume_text: string | null
-          status: string | null
-          updated_at: string
-          user_id: string | null
+          profile_data: NonNullable<Json>
+          title: string
+          user_id: string
         }
+        ComputedFields: never
         Insert: {
-          analysis_data?: Json | null
+          content: string
           created_at?: string
-          form_data?: Json | null
           id?: string
-          resume_text?: string | null
-          status?: string | null
-          updated_at?: string
-          user_id?: string | null
+          profile_data: NonNullable<Json>
+          title: string
+          user_id: string
         }
         Update: {
-          analysis_data?: Json | null
+          content?: string
           created_at?: string
-          form_data?: Json | null
           id?: string
-          resume_text?: string | null
-          status?: string | null
+          profile_data?: NonNullable<Json>
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      interview_simulations: {
+        Row: {
+          agency_id: string | null
+          company_name: string | null
+          created_at: string
+          feedback: Json | null
+          id: string
+          interviewer_type: string
+          job_description: string | null
+          job_title: string
+          messages: NonNullable<Json>
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          agency_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interviewer_type: string
+          job_description?: string | null
+          job_title: string
+          messages?: NonNullable<Json>
+          status?: string
           updated_at?: string
-          user_id?: string | null
+          user_id: string
+        }
+        Update: {
+          agency_id?: string | null
+          company_name?: string | null
+          created_at?: string
+          feedback?: Json | null
+          id?: string
+          interviewer_type?: string
+          job_description?: string | null
+          job_title?: string
+          messages?: NonNullable<Json>
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "interview_simulations_agency_id_fkey"
+            columns: ["agency_id"]
+            isOneToOne: false
+            referencedRelation: "agencies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      kanban_applications: {
+        Row: {
+          applied_date: string
+          company: string
+          contact_email: string | null
+          contact_person: string | null
+          contact_phone: string | null
+          created_at: string
+          description: string
+          feedbacks: NonNullable<Json>
+          id: string
+          image_url: string | null
+          location: string
+          next_action: string | null
+          next_action_date: string | null
+          notes: string
+          position: string
+          progress: number
+          salary: string | null
+          status: string
+          status_history: NonNullable<Json>
+          tags: string[]
+          updated_at: string
+          user_id: string
+          website: string | null
+        }
+        ComputedFields: never
+        Insert: {
+          applied_date?: string
+          company: string
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string
+          feedbacks?: NonNullable<Json>
+          id?: string
+          image_url?: string | null
+          location?: string
+          next_action?: string | null
+          next_action_date?: string | null
+          notes?: string
+          position: string
+          progress?: number
+          salary?: string | null
+          status: string
+          status_history?: NonNullable<Json>
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+          website?: string | null
+        }
+        Update: {
+          applied_date?: string
+          company?: string
+          contact_email?: string | null
+          contact_person?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          description?: string
+          feedbacks?: NonNullable<Json>
+          id?: string
+          image_url?: string | null
+          location?: string
+          next_action?: string | null
+          next_action_date?: string | null
+          notes?: string
+          position?: string
+          progress?: number
+          salary?: string | null
+          status?: string
+          status_history?: NonNullable<Json>
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
+      kanban_reminders: {
+        Row: {
+          application_id: string
+          completed: boolean
+          created_at: string
+          date: string
+          description: string
+          id: string
+          title: string
+          type: string
+        }
+        ComputedFields: never
+        Insert: {
+          application_id: string
+          completed?: boolean
+          created_at?: string
+          date: string
+          description?: string
+          id?: string
+          title: string
+          type: string
+        }
+        Update: {
+          application_id?: string
+          completed?: boolean
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kanban_reminders_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referral_invites: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          referrer_id: string
+          status: string
+          updated_at: string
+        }
+        ComputedFields: never
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          referrer_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          referrer_id?: string
+          status?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -556,6 +911,7 @@ export type Database = {
           permission: string
           role: Database["public"]["Enums"]["app_role"]
         }
+        ComputedFields: never
         Insert: {
           id?: number
           permission: string
@@ -568,47 +924,241 @@ export type Database = {
         }
         Relationships: []
       }
+      rover_abuse_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: string | null
+          id: string
+          ip_address: string
+          user_id: string | null
+        }
+        ComputedFields: never
+        Insert: {
+          action: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          ip_address: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: string | null
+          id?: string
+          ip_address?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      rover_messages: {
+        Row: {
+          content: string | null
+          created_at: string
+          id: string
+          name: string | null
+          role: string
+          tool_call_id: string | null
+          tool_calls: Json | null
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          role: string
+          tool_call_id?: string | null
+          tool_calls?: Json | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          id?: string
+          name?: string | null
+          role?: string
+          tool_call_id?: string | null
+          tool_calls?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_profiles: {
         Row: {
           avatar_url: string | null
+          bio: string | null
+          city_state: string | null
+          course: string | null
           created_at: string
-          credits: number | null
+          credits: number
+          education: Json | null
           email: string
+          encrypted_gemini_key: string | null
+          encrypted_openai_key: string | null
+          experiences: Json | null
           full_name: string | null
+          gemini_key_iv: string | null
+          gemini_key_tag: string | null
+          github_url: string | null
           id: string
+          is_currently_interning: boolean | null
+          languages: string[] | null
+          linkedin_url: string | null
           location_enabled: boolean | null
+          openai_key_iv: string | null
+          openai_key_tag: string | null
+          period: string | null
+          phone: string | null
+          portfolio_url: string | null
+          privacy_settings: Json | null
+          raw_import_data: Json | null
+          referral_code: string
+          referred_by: string | null
           role: Database["public"]["Enums"]["user_role"] | null
+          skills: string[] | null
           subscription_status: string | null
           subscription_tier: string | null
+          total_credits_purchased: number
+          total_credits_used: number
+          university: string | null
           updated_at: string
         }
+        ComputedFields: never
         Insert: {
           avatar_url?: string | null
+          bio?: string | null
+          city_state?: string | null
+          course?: string | null
           created_at?: string
-          credits?: number | null
+          credits?: number
+          education?: Json | null
           email: string
+          encrypted_gemini_key?: string | null
+          encrypted_openai_key?: string | null
+          experiences?: Json | null
           full_name?: string | null
+          gemini_key_iv?: string | null
+          gemini_key_tag?: string | null
+          github_url?: string | null
           id: string
+          is_currently_interning?: boolean | null
+          languages?: string[] | null
+          linkedin_url?: string | null
           location_enabled?: boolean | null
+          openai_key_iv?: string | null
+          openai_key_tag?: string | null
+          period?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          privacy_settings?: Json | null
+          raw_import_data?: Json | null
+          referral_code: string
+          referred_by?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          skills?: string[] | null
           subscription_status?: string | null
           subscription_tier?: string | null
+          total_credits_purchased?: number
+          total_credits_used?: number
+          university?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
+          bio?: string | null
+          city_state?: string | null
+          course?: string | null
           created_at?: string
-          credits?: number | null
+          credits?: number
+          education?: Json | null
           email?: string
+          encrypted_gemini_key?: string | null
+          encrypted_openai_key?: string | null
+          experiences?: Json | null
           full_name?: string | null
+          gemini_key_iv?: string | null
+          gemini_key_tag?: string | null
+          github_url?: string | null
           id?: string
+          is_currently_interning?: boolean | null
+          languages?: string[] | null
+          linkedin_url?: string | null
           location_enabled?: boolean | null
+          openai_key_iv?: string | null
+          openai_key_tag?: string | null
+          period?: string | null
+          phone?: string | null
+          portfolio_url?: string | null
+          privacy_settings?: Json | null
+          raw_import_data?: Json | null
+          referral_code?: string
+          referred_by?: string | null
           role?: Database["public"]["Enums"]["user_role"] | null
+          skills?: string[] | null
           subscription_status?: string | null
           subscription_tier?: string | null
+          total_credits_purchased?: number
+          total_credits_used?: number
+          university?: string | null
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "user_profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_reminders: {
+        Row: {
+          candidatura_id: string | null
+          created_at: string
+          description: string
+          id: string
+          reminder_at: string
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          candidatura_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          reminder_at: string
+          status?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          candidatura_id?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          reminder_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_reminders_candidatura_id_fkey"
+            columns: ["candidatura_id"]
+            isOneToOne: false
+            referencedRelation: "kanban_applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -616,6 +1166,7 @@ export type Database = {
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
+        ComputedFields: never
         Insert: {
           id?: number
           role: Database["public"]["Enums"]["app_role"]
@@ -628,117 +1179,85 @@ export type Database = {
         }
         Relationships: []
       }
+      user_tasks: {
+        Row: {
+          claimed: boolean
+          claimed_at: string | null
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          task_key: string
+          updated_at: string
+          user_id: string
+        }
+        ComputedFields: never
+        Insert: {
+          claimed?: boolean
+          claimed_at?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          task_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          claimed?: boolean
+          claimed_at?: string | null
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          task_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      add_credits: {
+        Args: {
+          amount: number
+          description: string
+          stripe_payment_intent_id?: string
+          user_uuid: string
+        }
+        Returns: undefined
+      }
       authorize: {
         Args: {
           requested_permission: Database["public"]["Enums"]["app_permission"]
         }
         Returns: boolean
       }
-      authorize_all: {
+      check_and_trigger_referral_signup_bonus: {
+        Args: { user_uuid: string }
+        Returns: undefined
+      }
+      consume_credits: {
+        Args: { amount: number; description: string; user_uuid: string }
+        Returns: boolean
+      }
+      get_active_credits: { Args: { user_uuid: string }; Returns: number }
+      is_admin: { Args: { user_uuid: string }; Returns: boolean }
+      is_admin_or_moderator: { Args: { user_uuid: string }; Returns: boolean }
+      reward_referrer_bonus: {
         Args: {
-          requested_permissions: Database["public"]["Enums"]["app_permission"][]
+          invited_uuid: string
+          referrer_uuid: string
+          reward_amount: number
+          reward_description: string
         }
-        Returns: boolean
-      }
-      authorize_any: {
-        Args: {
-          requested_permissions: Database["public"]["Enums"]["app_permission"][]
-        }
-        Returns: boolean
-      }
-      bytea_to_text: {
-        Args: { data: string }
-        Returns: string
-      }
-      custom_access_token_hook: {
-        Args: { event: Json }
-        Returns: Json
-      }
-      has_permission: {
-        Args: { required_permission: string }
-        Returns: boolean
-      }
-      has_role: {
-        Args: { required_role: Database["public"]["Enums"]["app_role"] }
-        Returns: boolean
-      }
-      http: {
-        Args: { request: Database["public"]["CompositeTypes"]["http_request"] }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_delete: {
-        Args:
-          | { uri: string }
-          | { uri: string; content: string; content_type: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_get: {
-        Args: { uri: string } | { uri: string; data: Json }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_head: {
-        Args: { uri: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_header: {
-        Args: { field: string; value: string }
-        Returns: Database["public"]["CompositeTypes"]["http_header"]
-      }
-      http_list_curlopt: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          curlopt: string
-          value: string
-        }[]
-      }
-      http_patch: {
-        Args: { uri: string; content: string; content_type: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_post: {
-        Args:
-          | { uri: string; content: string; content_type: string }
-          | { uri: string; data: Json }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_put: {
-        Args: { uri: string; content: string; content_type: string }
-        Returns: Database["public"]["CompositeTypes"]["http_response"]
-      }
-      http_reset_curlopt: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      http_set_curlopt: {
-        Args: { curlopt: string; value: string }
-        Returns: boolean
-      }
-      is_moderator_or_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
-      text_to_bytea: {
-        Args: { data: string }
-        Returns: string
-      }
-      urlencode: {
-        Args: { data: Json } | { string: string } | { string: string }
-        Returns: string
+        Returns: undefined
       }
     }
     Enums: {
-      agency_permission:
-        | "agencies.view"
-        | "agencies.create"
-        | "agencies.update"
-        | "agencies.delete"
-        | "agencies.verify"
-        | "agencies.review"
       agency_status: "pending" | "approved" | "rejected"
       analysis_status: "pending" | "processing" | "completed" | "failed"
       app_permission:
@@ -766,63 +1285,33 @@ export type Database = {
         | "reports.create"
         | "reports.resolve"
       app_role: "student" | "agency" | "admin" | "moderator"
-      content_permission:
-        | "content.view"
-        | "content.create"
-        | "content.update"
-        | "content.delete"
-        | "content.moderate"
-      report_permission: "reports.view" | "reports.create" | "reports.resolve"
-      resume_permission:
-        | "resumes.view"
-        | "resumes.analyze"
-        | "resumes.delete"
-        | "resumes.review"
-      user_permission:
-        | "users.view"
-        | "users.create"
-        | "users.update"
-        | "users.delete"
-        | "users.manage_roles"
       user_role: "student" | "agency" | "admin" | "moderator"
     }
     CompositeTypes: {
-      http_header: {
-        field: string | null
-        value: string | null
-      }
-      http_request: {
-        method: unknown | null
-        uri: string | null
-        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
-        content_type: string | null
-        content: string | null
-      }
-      http_response: {
-        status: number | null
-        content_type: string | null
-        headers: Database["public"]["CompositeTypes"]["http_header"][] | null
-        content: string | null
-      }
+      [_ in never]: never
     }
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -840,14 +1329,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -863,14 +1354,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never) = never,
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -886,14 +1379,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never) = never,
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -901,14 +1396,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never) = never,
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
@@ -916,14 +1413,6 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      agency_permission: [
-        "agencies.view",
-        "agencies.create",
-        "agencies.update",
-        "agencies.delete",
-        "agencies.verify",
-        "agencies.review",
-      ],
       agency_status: ["pending", "approved", "rejected"],
       analysis_status: ["pending", "processing", "completed", "failed"],
       app_permission: [
@@ -952,27 +1441,6 @@ export const Constants = {
         "reports.resolve",
       ],
       app_role: ["student", "agency", "admin", "moderator"],
-      content_permission: [
-        "content.view",
-        "content.create",
-        "content.update",
-        "content.delete",
-        "content.moderate",
-      ],
-      report_permission: ["reports.view", "reports.create", "reports.resolve"],
-      resume_permission: [
-        "resumes.view",
-        "resumes.analyze",
-        "resumes.delete",
-        "resumes.review",
-      ],
-      user_permission: [
-        "users.view",
-        "users.create",
-        "users.update",
-        "users.delete",
-        "users.manage_roles",
-      ],
       user_role: ["student", "agency", "admin", "moderator"],
     },
   },
