@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { AgencyReviewsModal } from '@/components/modals/AgencyReviewsModal'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 
 export interface FilterState {
   search: string
@@ -122,14 +123,35 @@ export default function AgenciasPage() {
   const fetchApprovedAgencies = async () => {
     setLoading(true)
     try {
-      const { data, error } = await supabase
-        .from('agencies')
-        .select('*')
-        .eq('status', 'approved')
-        .order('name', { ascending: true })
+      let allData: Agency[] = []
+      let from = 0
+      let to = 999
+      let hasMore = true
 
-      if (error) throw error
-      setAgencies(data || [])
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('agencies')
+          .select('*')
+          .eq('status', 'approved')
+          .order('name', { ascending: true })
+          .range(from, to)
+
+        if (error) throw error
+        
+        if (data && data.length > 0) {
+          allData = [...allData, ...data]
+          if (data.length < 1000) {
+            hasMore = false
+          } else {
+            from += 1000
+            to += 1000
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      setAgencies(allData)
     } catch (error) {
       console.error('Erro ao buscar agências aprovadas:', error)
       toast.error('Não foi possível carregar as agências.')
@@ -139,14 +161,14 @@ export default function AgenciasPage() {
   }
 
   const { states, cities, types } = useMemo(() => {
-    const states = [...new Set(agencies.map(a => a.state).filter(Boolean))] as string[]
+    const states = ([...new Set(agencies.map(a => a.state).filter(Boolean))] as string[]).sort((a, b) => a.localeCompare(b, 'pt-BR'))
     
     // If a state is selected in the filter, only list cities from that state
     const filteredAgenciesForCities = filters.state 
       ? agencies.filter(a => a.state === filters.state)
       : agencies
       
-    const cities = [...new Set(filteredAgenciesForCities.map(a => a.city).filter(Boolean))] as string[]
+    const cities = ([...new Set(filteredAgenciesForCities.map(a => a.city).filter(Boolean))] as string[]).sort((a, b) => a.localeCompare(b, 'pt-BR'))
     const types = [...new Set(agencies.map(a => a.agency_type).filter(Boolean))] as string[]
     return { states, cities, types }
   }, [agencies, filters.state])
@@ -313,32 +335,24 @@ export default function AgenciasPage() {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="filter-state" className="text-sm font-semibold">Estado</Label>
-                <Select value={filters.state || 'all'} onValueChange={handleStateChange}>
-                  <SelectTrigger id="filter-state">
-                    <SelectValue placeholder="Todos os estados" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos os estados</SelectItem>
-                    {states.map(state => (
-                      <SelectItem key={state} value={state}>{state}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect 
+                  options={states}
+                  value={filters.state}
+                  onValueChange={(val) => handleStateChange(val === 'all' ? '' : val)}
+                  placeholder="Todos os estados"
+                  allOptionLabel="Todos os estados"
+                />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="filter-city" className="text-sm font-semibold">Cidade</Label>
-                <Select value={filters.city || 'all'} onValueChange={(val) => handleFilterChange('city', val)}>
-                  <SelectTrigger id="filter-city">
-                    <SelectValue placeholder="Todas as cidades" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas as cidades</SelectItem>
-                    {cities.map(city => (
-                      <SelectItem key={city} value={city}>{city}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <SearchableSelect 
+                  options={cities}
+                  value={filters.city}
+                  onValueChange={(val) => handleFilterChange('city', val === 'all' ? '' : val)}
+                  placeholder="Todas as cidades"
+                  allOptionLabel="Todas as cidades"
+                />
               </div>
 
               <div className="space-y-2">

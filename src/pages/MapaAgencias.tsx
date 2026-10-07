@@ -8,6 +8,7 @@ import { Search, Filter, X, LocateFixed, Navigation, MapPin, Phone, Mail, Globe 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Switch } from '@/components/ui/switch'
 import { GoogleMap, useJsApiLoader, MarkerF, InfoWindowF } from '@react-google-maps/api';
 import { Card, CardContent } from '@/components/ui/card'
@@ -65,17 +66,23 @@ function FilterSheet({ states, cities, types, filters, onFilterChange, onClearFi
         <div className="space-y-4 py-4">
           <div>
             <Label>Estado</Label>
-            <Select value={filters.state} onValueChange={(v) => onFilterChange('state', v)}>
-              <SelectTrigger><SelectValue placeholder="Todos os estados" /></SelectTrigger>
-              <SelectContent>{states.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-            </Select>
+            <SearchableSelect
+              options={states}
+              value={filters.state}
+              onValueChange={(v) => onFilterChange('state', v === 'all' ? '' : v)}
+              placeholder="Todos os estados"
+              allOptionLabel="Todos os estados"
+            />
           </div>
           <div>
             <Label>Cidade</Label>
-            <Select value={filters.city} onValueChange={(v) => onFilterChange('city', v)}>
-              <SelectTrigger><SelectValue placeholder="Todas as cidades" /></SelectTrigger>
-              <SelectContent>{cities.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}</SelectContent>
-            </Select>
+            <SearchableSelect
+              options={cities}
+              value={filters.city}
+              onValueChange={(v) => onFilterChange('city', v === 'all' ? '' : v)}
+              placeholder="Todas as cidades"
+              allOptionLabel="Todas as cidades"
+            />
           </div>
           <div>
             <Label>Tipo de Agência</Label>
@@ -139,16 +146,42 @@ export default function MapaAgencias() {
   const fetchApprovedAgencies = async () => {
     setLoading(true)
     try {
-      const { data, error } = await supabase.from('agencies').select('*').eq('status', 'approved').order('name', { ascending: true })
-      if (error) throw error
-      setAgencies(data || [])
+      let allData: Agency[] = []
+      let from = 0
+      let to = 999
+      let hasMore = true
+
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('agencies')
+          .select('*')
+          .eq('status', 'approved')
+          .order('name', { ascending: true })
+          .range(from, to)
+
+        if (error) throw error
+        
+        if (data && data.length > 0) {
+          allData = [...allData, ...data]
+          if (data.length < 1000) {
+            hasMore = false
+          } else {
+            from += 1000
+            to += 1000
+          }
+        } else {
+          hasMore = false
+        }
+      }
+
+      setAgencies(allData)
     } catch (error) { toast.error('Não foi possível carregar as agências.') }
     finally { setLoading(false) }
   }
 
   const { states, cities, types } = useMemo(() => ({
-    states: [...new Set(agencies.map(a => a.state).filter(Boolean))] as string[],
-    cities: [...new Set(agencies.map(a => a.city).filter(Boolean))] as string[],
+    states: ([...new Set(agencies.map(a => a.state).filter(Boolean))] as string[]).sort((a, b) => a.localeCompare(b, 'pt-BR')),
+    cities: ([...new Set(agencies.map(a => a.city).filter(Boolean))] as string[]).sort((a, b) => a.localeCompare(b, 'pt-BR')),
     types: [...new Set(agencies.map(a => a.agency_type).filter(Boolean))] as string[],
   }), [agencies])
 
