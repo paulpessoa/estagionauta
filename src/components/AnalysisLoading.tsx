@@ -7,37 +7,37 @@ interface AnalysisLoadingProps {
   isVisible: boolean
 }
 
+const steps = [
+  { 
+    title: "Processando currículo", 
+    description: "Extraindo informações do PDF...",
+    icon: FileText,
+    duration: 2000
+  },
+  { 
+    title: "Analisando conteúdo", 
+    description: "IA analisando experiência e formação...",
+    icon: Brain,
+    duration: 3000
+  },
+  { 
+    title: "Gerando insights", 
+    description: "Criando sugestões personalizadas...",
+    icon: Sparkles,
+    duration: 2500
+  },
+  { 
+    title: "Finalizando análise", 
+    description: "Preparando resultado completo...",
+    icon: CheckCircle,
+    duration: 1500
+  }
+]
+
 export function AnalysisLoading({ isVisible }: AnalysisLoadingProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [progress, setProgress] = useState(0)
   const [showRocket, setShowRocket] = useState(false)
-
-  const steps = [
-    { 
-      title: "Processando currículo", 
-      description: "Extraindo informações do PDF...",
-      icon: FileText,
-      duration: 2000
-    },
-    { 
-      title: "Analisando conteúdo", 
-      description: "IA analisando experiência e formação...",
-      icon: Brain,
-      duration: 3000
-    },
-    { 
-      title: "Gerando insights", 
-      description: "Criando sugestões personalizadas...",
-      icon: Sparkles,
-      duration: 2500
-    },
-    { 
-      title: "Finalizando análise", 
-      description: "Preparando resultado completo...",
-      icon: CheckCircle,
-      duration: 1500
-    }
-  ]
 
   useEffect(() => {
     if (!isVisible) {
