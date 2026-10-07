@@ -1,0 +1,5 @@
+# Pipeline outputs: raw Google data, DB backups, caches, logs
+output-*/
+old-*/
+*.log
+/*.json
