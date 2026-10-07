@@ -23,13 +23,33 @@ export default defineConfig(({ mode }) => ({
     chunkSizeWarningLimit: 2000,
     rollupOptions: {
       output: {
-        manualChunks(id) {
+        manualChunks(id, { getModuleInfo }) {
+          // jspdf, html2canvas and the dependencies only they use go in one chunk that
+          // is loaded with import(), so no page imports it statically.
+          const pdfOnly = new Map<string, boolean>();
+          const isPdfOnly = (moduleId: string): boolean => {
+            const cached = pdfOnly.get(moduleId);
+            if (cached !== undefined) return cached;
+            const visited = new Set<string>(); // a cycle adds no outside importer
+            const walk = (current: string): boolean => {
+              if (/node_modules\/(jspdf|html2canvas)\//.test(current)) return true;
+              if (visited.has(current)) return true;
+              visited.add(current);
+              const info = getModuleInfo(current);
+              if (!info || !current.includes('node_modules') || info.importers.length === 0) return false;
+              return info.importers.every(walk);
+            };
+            const result = walk(moduleId);
+            pdfOnly.set(moduleId, result);
+            return result;
+          };
+
+          // Vite's import() helper must not live in the lazy chunk, or everything would import that chunk.
+          if (id.includes('vite/preload-helper')) return 'vendor';
+
           if (id.includes('node_modules')) {
-            if (id.includes('html2canvas')) {
-              return 'vendor-html2canvas';
-            }
-            if (id.includes('jspdf')) {
-              return 'vendor-jspdf';
+            if (isPdfOnly(id)) {
+              return 'vendor-pdf';
             }
             if (id.includes('framer-motion')) {
               return 'vendor-framer-motion';

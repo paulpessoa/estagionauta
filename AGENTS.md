@@ -129,8 +129,8 @@ This section is automatically loaded into the agent's context via system rules. 
 - **Goal**: Refactor Estagionauta into a monorepo (`/src` frontend, `/api` Hono.js backend, `/shared/types` shared types, `/supabase` migrations).
 - **Security Principles**: No `VITE_` secrets on frontend, credit management and AI calls strictly backend, Supabase RLS enabled on all tables, revoking execution on sensitive database RPCs (e.g. `add_credits`).
 - **Detailed Documents**:
-  - Full specs in [implementation_plan.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/implementation_plan.md)
-  - Detailed task progress in [task.md](file:///C:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/task.md)
+  - Full specs in [implementation_plan.md](docs/implementation_plan.md)
+  - Detailed task progress in [task.md](docs/task.md)
 
 ### 2. Status Checklist
 - [x] **FASE 0: Preparar Beta**: Renomear Kanban para Candidaturas, esconder afiliados, simplificar preços, habilitar PIX no Stripe, créditos de boas-vindas para 5, logs de email no admin.

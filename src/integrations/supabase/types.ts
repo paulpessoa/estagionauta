@@ -600,6 +600,8 @@ export type Database = {
       email_logs: {
         Row: {
           created_at: string | null
+          curriculum_slug: string | null
+          profile_id: string | null
           error_message: string | null
           from_email: string
           id: string
@@ -614,6 +616,8 @@ export type Database = {
         ComputedFields: never
         Insert: {
           created_at?: string | null
+          curriculum_slug?: string | null
+          profile_id?: string | null
           error_message?: string | null
           from_email: string
           id?: string
@@ -627,6 +631,8 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          curriculum_slug?: string | null
+          profile_id?: string | null
           error_message?: string | null
           from_email?: string
           id?: string

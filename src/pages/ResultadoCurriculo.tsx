@@ -14,8 +14,6 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { useCredits } from '@/hooks/useCredits'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { apiClient } from '@/lib/apiClient'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -259,6 +257,10 @@ ${analysis.name}`)
     if (!analysisRef.current) return
     setActionLoading('pdf')
     try {
+      const [{ default: html2canvas }, { default: jsPDF }] = await Promise.all([
+        import('html2canvas'),
+        import('jspdf'),
+      ])
       const element = analysisRef.current
       
       const canvas = await html2canvas(element, {

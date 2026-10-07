@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react'
 
+const COLORS = ['#F472B6', '#7C3AED', '#2563EB', '#FACC15', '#FF5CA7']
+
 export function Starfield() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const stars = useRef<{x: number, y: number, z: number, size: number, speed: number}[]>([])
@@ -13,7 +15,6 @@ export function Starfield() {
   const FLOATING_COUNT = 5
   const SHOOTING_STAR_CHANCE = 0.001
   const ROCKET_CHANCE = 0.0005
-  const COLORS = ['#F472B6', '#7C3AED', '#2563EB', '#FACC15', '#FF5CA7']
 
   useEffect(() => {
     const canvas = canvasRef.current
