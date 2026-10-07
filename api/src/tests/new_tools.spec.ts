@@ -163,6 +163,25 @@ describe('Sprint 1 Rover Tools Tests', () => {
         description: 'Resgate do cupom promocional: ESTAGIO100'
       });
     });
+
+    it.each([
+      ['expired', { expires_at: '2020-01-01T00:00:00Z', max_uses: null, used_count: 0 }, 'expirou'],
+      ['exhausted', { expires_at: null, max_uses: 5, used_count: 5 }, 'limite máximo'],
+    ])('rejects %s coupons without granting credits', async (_label, limits, expectedError) => {
+      const mockSingleCoupon = vi.fn().mockResolvedValue({
+        data: { code: 'UFPE15', credits: 15, ...limits },
+        error: null
+      });
+      vi.mocked(supabaseAdmin.from).mockReturnValue({
+        select: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue({ single: mockSingleCoupon }) })
+      } as any);
+      vi.mocked(supabaseAdmin.rpc).mockClear();
+
+      const result = await runRedeemCoupon('user-123', { code: 'UFPE15' });
+
+      expect(result.error).toContain(expectedError);
+      expect(supabaseAdmin.rpc).not.toHaveBeenCalled();
+    });
   });
 
   describe('update_candidatura tool', () => {
