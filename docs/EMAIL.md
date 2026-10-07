@@ -46,8 +46,4 @@ GROUP BY status;
 | Remetente aparece como `brevosend.com` | Domínio/remetente não verificado no Brevo |
 | 403 ao compartilhar | Usuário logado não é o dono do currículo |
 | 503 ao compartilhar | `BREVO_API_KEY` ausente no ambiente |
-| `/email-logs` vazia | Ver o problema conhecido abaixo |
-
-## Problema conhecido
-
-`saveEmailLog` insere as colunas `profile_id` e `curriculum_slug`, que não existem em `email_logs` nas migrations nem em `src/integrations/supabase/types.ts`. Se também faltarem no banco de produção, todo insert falha (só aparece `Error saving email log to DB` no log da API) e `/email-logs` fica sem dados. Resolver com uma migration que adicione as colunas ou removendo os campos do insert.
+| `/email-logs` vazia | Erros `Error saving email log to DB` no log da API; confira as colunas de `email_logs` |
