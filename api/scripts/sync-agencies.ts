@@ -12,6 +12,7 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') }); // Backend .env
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_BACKEND_KEY || process.env.VITE_GOOGLE_MAPS_API_KEY;
+const GOOGLE_MAPS_FRONTEND_KEY = process.env.VITE_GOOGLE_MAPS_API_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !GOOGLE_MAPS_API_KEY) {
   console.error("Faltam variáveis de ambiente! Verifique SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY e VITE_GOOGLE_MAPS_API_KEY.");
@@ -99,7 +100,7 @@ async function runAudit() {
       // Se tiver foto, monta a URL da foto via Google API
       if (place.photos && place.photos.length > 0) {
         const photoRef = place.photos[0].photo_reference;
-        updateData.logo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_API_KEY}`;
+        updateData.logo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_FRONTEND_KEY}`;
       }
 
       const { error: updateErr } = await supabase
@@ -201,7 +202,9 @@ async function runDiscovery() {
                   website = detailsData.result.website || null;
                   phone = detailsData.result.formatted_phone_number || null;
                 }
-              } catch(e) {}
+              } catch (e) {
+                console.error("Erro ao buscar detalhes da agência", e);
+              }
             }
 
             // Extrair cidade e estado reais do endereço retornado pelo Google
@@ -213,6 +216,11 @@ async function runDiscovery() {
                 realCity = match[1].trim();
                 realState = match[2].trim();
               }
+            }
+            
+            if (realState !== target.state && !place.formatted_address?.includes(`- ${target.state}`) && !place.formatted_address?.includes(` ${target.state},`)) {
+              console.log(`❌ Ignorado (Lixo geográfico - Fora do estado ${target.state}): ${place.name} em ${place.formatted_address}`);
+              continue;
             }
 
             const insertData: any = {
@@ -234,7 +242,7 @@ async function runDiscovery() {
 
             if (place.photos && place.photos.length > 0) {
               const photoRef = place.photos[0].photo_reference;
-              insertData.logo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_API_KEY}`;
+              insertData.logo_url = `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoRef}&key=${GOOGLE_MAPS_FRONTEND_KEY}`;
             }
 
             const { error: insertErr } = await supabase.from('agencies').insert(insertData);
