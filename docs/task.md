@@ -176,7 +176,7 @@
 
 - [x] Backend: Validar e integrar `GEMINI_API_KEY` (obrigatória) e tornar `GROQ_API_KEY` (opcional) no parser de configurações `env.ts`
 - [x] Backend: Atualizar template `api/.env.example` com explicações do Gemini API Free Tier
-- [x] Backend Service: Adaptar `api/src/services/openai.service.ts` para usar a API Gemini e o modelo `gemini-1.5-flash`
+- [x] Backend Service: Adaptar `api/src/services/openai.service.ts` para usar a API Gemini e o modelo `gemini-3.8-flash`
 - [x] Backend Tool: Atualizar `api/src/tools/analyze_candidatura.ts` para usar o Gemini
 - [x] Backend Routes: Configurar o router `api/src/routes/rover.routes.ts` com o cliente `gemini`, ordenando fallbacks (Gemini -> OpenAI -> Groq)
 - [x] Backend Tests: Mockar `GEMINI_API_KEY` nos testes em `api/src/tests/referral_rewards.routes.spec.ts`

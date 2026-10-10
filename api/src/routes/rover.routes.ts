@@ -320,12 +320,12 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
 
     const clientsToTry: { client: OpenAI; model: string; name: string }[] = [];
     if (userGemini) {
-      clientsToTry.push({ client: userGemini, model: 'gemini-1.5-flash', name: 'User Gemini' });
+      clientsToTry.push({ client: userGemini, model: 'gemini-3.8-flash', name: 'User Gemini' });
     }
     if (userOpenai) {
       clientsToTry.push({ client: userOpenai, model: 'gpt-4o-mini', name: 'User OpenAI' });
     }
-    clientsToTry.push({ client: gemini, model: 'gemini-1.5-flash', name: 'System Gemini' });
+    clientsToTry.push({ client: gemini, model: 'gemini-3.8-flash', name: 'System Gemini' });
     if (openaiClient) {
       clientsToTry.push({ client: openaiClient, model: 'gpt-4o-mini', name: 'System OpenAI' });
     }

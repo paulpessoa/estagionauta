@@ -116,7 +116,7 @@ Anotações do Usuário: ${app.notes || 'Nenhuma'}
     // 5. Chamar a LLM
     const client = getLlmClient();
     const model = env.GEMINI_API_KEY 
-      ? 'gemini-1.5-flash' 
+      ? 'gemini-3.8-flash' 
       : (env.OPENAI_API_KEY ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile');
 
     const systemPrompt = `Você é um Recrutador Sênior e Especialista em Carreira.

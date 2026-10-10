@@ -899,16 +899,16 @@ Substituir o uso do Groq API (modelos Llama) pelo Google Gemini (modelos Gemini 
 
 #### [MODIFY] [openai.service.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/services/openai.service.ts)
 - Inicializar o cliente `openai` apontando para o Gemini (`baseURL: 'https://generativelanguage.googleapis.com/v1beta/openai/'` e `apiKey: env.GEMINI_API_KEY`).
-- Substituir o modelo `llama-3.3-70b-versatile` por `gemini-1.5-flash` nas chamadas aos endpoints (análise de currículo, geração de currículo, simulador de entrevistas e comentário de recesso).
+- Substituir o modelo `llama-3.3-70b-versatile` por `gemini-3.8-flash` nas chamadas aos endpoints (análise de currículo, geração de currículo, simulador de entrevistas e comentário de recesso).
 - Remover menções a Groq/Llama nos comentários deste arquivo.
 
 #### [MODIFY] [analyze_candidatura.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/tools/analyze_candidatura.ts)
-- Ajustar a função `getLlmClient` para priorizar `GEMINI_API_KEY` com o endpoint de compatibilidade e o modelo `gemini-1.5-flash`.
+- Ajustar a função `getLlmClient` para priorizar `GEMINI_API_KEY` com o endpoint de compatibilidade e o modelo `gemini-3.8-flash`.
 
 #### [MODIFY] [rover.routes.ts](file:///c:/Users/paulm/OneDrive/Ambiente%20de%20Trabalho/PROJETOS/estagionauta/api/src/routes/rover.routes.ts)
 - Instanciar cliente `gemini` com a chave do Gemini.
 - Manter o cliente `groq` condicionado à presença de `env.GROQ_API_KEY`.
-- Refatorar o laço de execução do Rover Chat e o laço de fallback conversacional para priorizar `gemini-1.5-flash` (Gemini), com fallback primário para `gpt-4o-mini` (OpenAI), e fallback secundário para `llama-3.3-70b-versatile` (Groq).
+- Refatorar o laço de execução do Rover Chat e o laço de fallback conversacional para priorizar `gemini-3.8-flash` (Gemini), com fallback primário para `gpt-4o-mini` (OpenAI), e fallback secundário para `llama-3.3-70b-versatile` (Groq).
 
 ### 3. Testes e Documentação
 
