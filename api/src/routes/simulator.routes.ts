@@ -11,9 +11,7 @@ import { env } from '../config/env.js';
 
 const app = new Hono();
 
-const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-});
+
 
 // Schema for starting a simulation
 const startSimulationSchema = z.object({

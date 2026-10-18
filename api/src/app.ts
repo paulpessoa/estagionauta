@@ -35,8 +35,19 @@ app.use(
   '/api/*',
   cors({
     origin: (origin) => {
-      const allowedOrigins = ['https://estagionauta.com.br', 'https://www.estagionauta.com.br', 'http://localhost:5173', 'http://localhost:8080'];
-      return allowedOrigins.includes(origin) ? origin : 'https://estagionauta.com.br';
+      if (!origin) return 'https://estagionauta.com.br';
+      const allowedOrigins = [
+        'https://estagionauta.com.br',
+        'https://www.estagionauta.com.br',
+        'http://localhost:5173',
+        'http://localhost:8080',
+        'http://localhost:3000',
+        'http://localhost:3001',
+      ];
+      if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        return origin;
+      }
+      return 'https://estagionauta.com.br';
     },
     allowHeaders: ['Content-Type', 'Authorization'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],

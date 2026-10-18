@@ -42,11 +42,9 @@ build
 
 # Local env files
 .env
-.env.*.local
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+.env.render
 
 # System Files
 *.local

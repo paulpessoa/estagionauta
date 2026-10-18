@@ -14,6 +14,7 @@ import { Toaster as ToasterShadcn } from './components/ui/toaster';
 import { CookieConsent } from './components/layout/CookieConsent';
 import RoverDrawer from './components/rover/RoverDrawer';
 import { useCampaign } from './lib/campaign';
+import BackendWakeup from './components/layout/BackendWakeup';
 
 const queryClient = new QueryClient();
 
@@ -81,11 +82,13 @@ function App() {
       >
         <HelmetProvider>
           <BrowserRouter>
-            <AuthProvider>
-              <AppLayout />
-              <Toaster />
-              <ToasterShadcn />
-            </AuthProvider>
+            <BackendWakeup>
+              <AuthProvider>
+                <AppLayout />
+                <Toaster />
+                <ToasterShadcn />
+              </AuthProvider>
+            </BackendWakeup>
           </BrowserRouter>
         </HelmetProvider>
       </ThemeProvider>

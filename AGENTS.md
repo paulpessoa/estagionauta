@@ -63,7 +63,7 @@ Before coding:
 | Payments | Stripe (Checkout + Webhooks) |
 | AI | OpenAI GPT-4 (server-side only) |
 | Email | Brevo (server-side only) |
-| Deploy | Vercel (frontend) + Google Cloud Run (backend) |
+| Deploy | Vercel (frontend) + Render (backend) |
 
 ## Monorepo Structure
 
@@ -164,8 +164,4 @@ This section is automatically loaded into the agent's context via system rules. 
   - Every time we finish a task/phase, we stage files (`git add`), verify diffs, commit, and document the changes here.
 - **Toast Close Button Fix**: Configured Sonner `Toaster` with `closeButton={true}` and adjusted Shadcn's `ToastClose` to be immediately visible (`opacity-100` instead of `opacity-0 group-hover:opacity-100`) so close buttons are persistently visible across all toast notifications.
 - **CI/CD Pipeline Setup**: Configured a complete GitHub Actions CI workflow in `.github/workflows/ci.yml` that performs lint checks, type-checking, builds the frontend/backend, and executes backend integration/unit tests on push and pull requests.
-
-
-
-
-
+- **Render Backend Deployment & Wake-Up Pipeline**: Configured `render.yaml` blueprint for Hono backend on Render (Free tier). Added `BackendWakeup` component and `waitForBackend` in `apiClient.ts` to automatically ping `/api/health` on app load, periodically keep-alive every 10 min while tab is open, and transparently await server wake-up on API calls without throwing network errors. Fixed `api/package.json` compiled start script and removed unused top-level `new OpenAI` constructor in `simulator.routes.ts`.
