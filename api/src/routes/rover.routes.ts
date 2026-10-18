@@ -151,17 +151,23 @@ app.post('/message', authMiddleware, zValidator('json', messageSchema), async (c
       return c.json({ error: 'Erro ao processar mensagem.' }, 500);
     }
 
-    // 3. Fetch past messages for context
-    const { data: dbHistory, error: historyErr } = await supabaseAdmin
+    // 3. Fetch the most recent messages for context (newest first, then restored to chronological order)
+    const { data: recentHistory, error: historyErr } = await supabaseAdmin
       .from('rover_messages')
       .select('role, content, name, tool_calls, tool_call_id')
       .eq('user_id', user.id)
-      .order('created_at', { ascending: true })
+      .order('created_at', { ascending: false })
       .limit(20);
 
     if (historyErr) {
       console.log('Error fetching history:', historyErr);
     }
+
+    // The window may cut through a tool-call exchange; start at the first user message
+    // so no tool result is sent without the assistant message that requested it
+    const chronologicalHistory = (recentHistory || []).reverse();
+    const firstUserIndex = chronologicalHistory.findIndex(msg => msg.role === 'user');
+    const dbHistory = firstUserIndex === -1 ? [] : chronologicalHistory.slice(firstUserIndex);
 
     const now = new Date();
     const currentDateStr = now.toLocaleDateString('pt-BR', {
