@@ -1,12 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/hooks/useAuth'
+import { useDebounce } from '@/hooks/useDebounce'
 import { apiClient } from '@/lib/apiClient'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
 import { Building2, Check, X, Search, Edit, Trash2, Star, Calendar, MessageSquare, ShieldAlert, Mail, Inbox } from 'lucide-react'
 import { toast } from 'sonner'
@@ -14,14 +16,47 @@ import { Agency } from '@/types/agency'
 import { EditAgencyModal } from '@/components/modals/EditAgencyModal'
 import { ConfirmDeleteModal } from '@/components/modals/ConfirmDeleteModal'
 
+type AgencyStatus = Agency['status']
+type AgencySort = 'newest' | 'oldest' | 'name_asc' | 'name_desc'
+
+const AGENCY_SORTS: Record<AgencySort, { label: string; column: 'created_at' | 'name'; ascending: boolean }> = {
+  newest: { label: 'Mais recentes', column: 'created_at', ascending: false },
+  oldest: { label: 'Mais antigas', column: 'created_at', ascending: true },
+  name_asc: { label: 'Nome (A-Z)', column: 'name', ascending: true },
+  name_desc: { label: 'Nome (Z-A)', column: 'name', ascending: false },
+}
+
+const PAGE_SIZE_OPTIONS = [10, 50, 100]
+
+const BRAZIL_STATES = [
+  'AC', 'AL', 'AM', 'AP', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MG', 'MS', 'MT', 'PA',
+  'PB', 'PE', 'PI', 'PR', 'RJ', 'RN', 'RO', 'RR', 'RS', 'SC', 'SE', 'SP', 'TO',
+]
+
+const EMPTY_AGENCY_MESSAGES: Record<AgencyStatus, string> = {
+  pending: 'Nenhuma agência pendente de moderação',
+  approved: 'Nenhuma agência aprovada',
+  rejected: 'Nenhuma agência rejeitada',
+}
+
 export default function ModeracaoAgencias() {
   const { hasPermission, isLoading, profile } = useAuth()
   const navigate = useNavigate()
-  
-  // Agencies state
+
+  // Agencies state (server-side filtered, sorted and paginated — the table has thousands of rows)
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [loadingAgencies, setLoadingAgencies] = useState(true)
+  const [loadingMoreAgencies, setLoadingMoreAgencies] = useState(false)
+  const [hasMoreAgencies, setHasMoreAgencies] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const debouncedSearchTerm = useDebounce(searchTerm, 300)
+  const [agencyStatus, setAgencyStatus] = useState<AgencyStatus>('pending')
+  const [stateFilter, setStateFilter] = useState('all')
+  const [agencySort, setAgencySort] = useState<AgencySort>('newest')
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0])
+  const [agencyCounts, setAgencyCounts] = useState<Record<AgencyStatus, number>>({ pending: 0, approved: 0, rejected: 0 })
+  const agencyRequestId = useRef(0)
+  const loadMoreRef = useRef<HTMLDivElement>(null)
   const [deleteLoading, setDeleteLoading] = useState(false)
 
   // Reviews state
@@ -44,26 +79,95 @@ export default function ModeracaoAgencias() {
       return
     }
 
-    fetchAgencies()
     fetchReviews()
     fetchFeedbacks()
   }, [isLoading, profile])
 
-  const fetchAgencies = async () => {
+  useEffect(() => {
+    if (isLoading || !profile) return
+    fetchAgencies(0)
+  }, [isLoading, profile, agencyStatus, stateFilter, agencySort, pageSize, debouncedSearchTerm])
+
+  useEffect(() => {
+    if (isLoading || !profile) return
+    fetchAgencyCounts()
+  }, [isLoading, profile, stateFilter, debouncedSearchTerm])
+
+  // Infinite scroll: load the next page when the sentinel below the list becomes visible
+  useEffect(() => {
+    const sentinel = loadMoreRef.current
+    if (!sentinel || !hasMoreAgencies || loadingAgencies || loadingMoreAgencies) return
+
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) loadMoreAgencies()
+    }, { rootMargin: '200px' })
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [hasMoreAgencies, loadingAgencies, loadingMoreAgencies, agencies.length])
+
+  const buildAgencyQuery = (status: AgencyStatus, head: boolean) => {
+    let query = supabase
+      .from('agencies')
+      .select('*', { count: 'exact', head })
+      .eq('status', status)
+
+    if (stateFilter !== 'all') query = query.eq('state', stateFilter)
+
+    // Commas and parentheses would break PostgREST's or() syntax
+    const term = debouncedSearchTerm.trim().replace(/[,()]/g, ' ')
+    if (term) {
+      query = query.or(`name.ilike.%${term}%,email.ilike.%${term}%,phone.ilike.%${term}%,city.ilike.%${term}%`)
+    }
+
+    return query
+  }
+
+  const fetchAgencies = async (offset: number) => {
+    const requestId = offset === 0 ? ++agencyRequestId.current : agencyRequestId.current
+    if (offset === 0) setLoadingAgencies(true)
+
     try {
-      const { data, error } = await supabase
-        .from('agencies')
-        .select('*')
-        .order('created_at', { ascending: false })
+      const sort = AGENCY_SORTS[agencySort]
+      const { data, count, error } = await buildAgencyQuery(agencyStatus, false)
+        .order(sort.column, { ascending: sort.ascending })
+        .order('id', { ascending: true })
+        .range(offset, offset + pageSize - 1)
 
       if (error) throw error
+      // Filters changed while this request was in flight
+      if (requestId !== agencyRequestId.current) return
 
-      setAgencies(data || [])
+      const rows = (data || []) as Agency[]
+      setAgencies(prev => offset === 0 ? rows : [...prev, ...rows])
+      setHasMoreAgencies(offset + rows.length < (count ?? 0))
     } catch (error) {
       console.error('Erro ao buscar agências:', error)
       toast.error('Erro ao buscar agências')
     } finally {
-      setLoadingAgencies(false)
+      if (requestId === agencyRequestId.current) setLoadingAgencies(false)
+    }
+  }
+
+  const loadMoreAgencies = async () => {
+    if (loadingMoreAgencies || !hasMoreAgencies) return
+    setLoadingMoreAgencies(true)
+    await fetchAgencies(agencies.length)
+    setLoadingMoreAgencies(false)
+  }
+
+  const fetchAgencyCounts = async () => {
+    try {
+      const statuses: AgencyStatus[] = ['pending', 'approved', 'rejected']
+      const results = await Promise.all(statuses.map(status => buildAgencyQuery(status, true)))
+      const counts = { pending: 0, approved: 0, rejected: 0 }
+      results.forEach(({ count, error }, index) => {
+        if (error) throw error
+        counts[statuses[index]] = count ?? 0
+      })
+      setAgencyCounts(counts)
+    } catch (error) {
+      console.error('Erro ao contar agências:', error)
     }
   }
 
@@ -125,9 +229,16 @@ export default function ModeracaoAgencias() {
 
       if (error) throw error
 
-      setAgencies(agencies.map(agency =>
-        agency.id === agencyId ? { ...agency, status: newStatus } : agency
-      ))
+      // The list only shows the active status tab, so the agency moves to another tab
+      const previousStatus = agencies.find(agency => agency.id === agencyId)?.status
+      if (previousStatus && previousStatus !== newStatus) {
+        setAgencies(agencies.filter(agency => agency.id !== agencyId))
+        setAgencyCounts(counts => ({
+          ...counts,
+          [previousStatus]: Math.max(0, counts[previousStatus] - 1),
+          [newStatus]: counts[newStatus] + 1,
+        }))
+      }
 
       toast.success(`Agência ${newStatus === 'approved' ? 'aprovada' : newStatus === 'rejected' ? 'rejeitada' : 'pendente'} com sucesso`)
     } catch (error) {
@@ -149,6 +260,10 @@ export default function ModeracaoAgencias() {
       if (error) throw error
       
       setAgencies(agencies.filter(a => a.id !== selectedAgency.id))
+      setAgencyCounts(counts => ({
+        ...counts,
+        [selectedAgency.status]: Math.max(0, counts[selectedAgency.status] - 1),
+      }))
       setDeleteModalOpen(false)
       setSelectedAgency(null)
       toast.success('Agência excluída com sucesso')
@@ -217,20 +332,6 @@ export default function ModeracaoAgencias() {
   const handleAgencySaved = (updatedAgency: Agency) => {
     setAgencies(agencies.map(a => a.id === updatedAgency.id ? updatedAgency : a))
   }
-
-  // Filter logic for agencies
-  const filteredAgencies = agencies.filter(agency => {
-    const searchLower = searchTerm.toLowerCase()
-    return (
-      agency.name.toLowerCase().includes(searchLower) ||
-      (agency.email?.toLowerCase().includes(searchLower) ?? false) ||
-      (agency.phone?.toLowerCase().includes(searchLower) ?? false)
-    )
-  })
-
-  const pendingAgencies = filteredAgencies.filter(a => a.status === 'pending')
-  const approvedAgencies = filteredAgencies.filter(a => a.status === 'approved')
-  const rejectedAgencies = filteredAgencies.filter(a => a.status === 'rejected')
 
   // Filter logic for reviews
   const filteredReviews = reviews.filter(review => {
@@ -321,109 +422,105 @@ export default function ModeracaoAgencias() {
               </div>
             </div>
 
-            <Tabs defaultValue="pending" className="space-y-4">
+            <div className="flex flex-wrap items-center gap-3">
+              <Select value={stateFilter} onValueChange={setStateFilter}>
+                <SelectTrigger className="w-[150px] text-xs" aria-label="Filtrar por estado">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Todos os estados</SelectItem>
+                  {BRAZIL_STATES.map(uf => (
+                    <SelectItem key={uf} value={uf}>{uf}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={agencySort} onValueChange={(value) => setAgencySort(value as AgencySort)}>
+                <SelectTrigger className="w-[160px] text-xs" aria-label="Ordenar agências">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {(Object.keys(AGENCY_SORTS) as AgencySort[]).map(sort => (
+                    <SelectItem key={sort} value={sort}>{AGENCY_SORTS[sort].label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Select value={String(pageSize)} onValueChange={(value) => setPageSize(Number(value))}>
+                <SelectTrigger className="w-[120px] text-xs" aria-label="Itens por página">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {PAGE_SIZE_OPTIONS.map(size => (
+                    <SelectItem key={size} value={String(size)}>Exibir {size}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <Tabs value={agencyStatus} onValueChange={(value) => setAgencyStatus(value as AgencyStatus)} className="space-y-4">
               <TabsList>
                 <TabsTrigger value="pending" className="relative">
                   Pendentes
-                  {pendingAgencies.length > 0 && (
+                  {agencyCounts.pending > 0 && (
                     <Badge variant="secondary" className="ml-2">
-                      {pendingAgencies.length}
+                      {agencyCounts.pending}
                     </Badge>
                   )}
                 </TabsTrigger>
                 <TabsTrigger value="approved">
                   Aprovadas
-                  {approvedAgencies.length > 0 && (
+                  {agencyCounts.approved > 0 && (
                     <Badge variant="secondary" className="ml-2">
-                      {approvedAgencies.length}
+                      {agencyCounts.approved}
                     </Badge>
                   )}
                 </TabsTrigger>
                 <TabsTrigger value="rejected">
                   Rejeitadas
-                  {rejectedAgencies.length > 0 && (
+                  {agencyCounts.rejected > 0 && (
                     <Badge variant="secondary" className="ml-2">
-                      {rejectedAgencies.length}
+                      {agencyCounts.rejected}
                     </Badge>
                   )}
                 </TabsTrigger>
               </TabsList>
 
-              <TabsContent value="pending" className="space-y-4">
+              <TabsContent value={agencyStatus} className="space-y-4">
                 {loadingAgencies ? (
                   <div className="flex justify-center py-12">
                     <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
                   </div>
-                ) : pendingAgencies.length === 0 ? (
+                ) : agencies.length === 0 ? (
                   <Card>
                     <CardContent className="flex items-center justify-center h-32">
-                      <p className="text-muted-foreground text-sm">Nenhuma agência pendente de moderação</p>
+                      <p className="text-muted-foreground text-sm">{EMPTY_AGENCY_MESSAGES[agencyStatus]}</p>
                     </CardContent>
                   </Card>
                 ) : (
-                  pendingAgencies.map((agency) => (
-                    <AgencyCard
-                      key={agency.id}
-                      agency={agency}
-                      onApprove={() => handleStatusChange(agency.id, 'approved')}
-                      onReject={() => handleStatusChange(agency.id, 'rejected')}
-                      onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                      onEdit={() => handleEditAgency(agency)}
-                      onDelete={() => handleDeleteClick(agency)}
-                    />
-                  ))
-                )}
-              </TabsContent>
-
-              <TabsContent value="approved" className="space-y-4">
-                {loadingAgencies ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  </div>
-                ) : approvedAgencies.length === 0 ? (
-                  <Card>
-                    <CardContent className="flex items-center justify-center h-32">
-                      <p className="text-muted-foreground text-sm">Nenhuma agência aprovada</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  approvedAgencies.map((agency) => (
-                    <AgencyCard
-                      key={agency.id}
-                      agency={agency}
-                      onApprove={() => handleStatusChange(agency.id, 'approved')}
-                      onReject={() => handleStatusChange(agency.id, 'rejected')}
-                      onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                      onEdit={() => handleEditAgency(agency)}
-                      onDelete={() => handleDeleteClick(agency)}
-                    />
-                  ))
-                )}
-              </TabsContent>
-
-              <TabsContent value="rejected" className="space-y-4">
-                {loadingAgencies ? (
-                  <div className="flex justify-center py-12">
-                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                  </div>
-                ) : rejectedAgencies.length === 0 ? (
-                  <Card>
-                    <CardContent className="flex items-center justify-center h-32">
-                      <p className="text-muted-foreground text-sm">Nenhuma agência rejeitada</p>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  rejectedAgencies.map((agency) => (
-                    <AgencyCard
-                      key={agency.id}
-                      agency={agency}
-                      onApprove={() => handleStatusChange(agency.id, 'approved')}
-                      onReject={() => handleStatusChange(agency.id, 'rejected')}
-                      onSetPending={() => handleStatusChange(agency.id, 'pending')}
-                      onEdit={() => handleEditAgency(agency)}
-                      onDelete={() => handleDeleteClick(agency)}
-                    />
-                  ))
+                  <>
+                    <p className="text-xs text-muted-foreground">
+                      Exibindo {agencies.length} de {agencyCounts[agencyStatus]} agências
+                    </p>
+                    {agencies.map((agency) => (
+                      <AgencyCard
+                        key={agency.id}
+                        agency={agency}
+                        onApprove={() => handleStatusChange(agency.id, 'approved')}
+                        onReject={() => handleStatusChange(agency.id, 'rejected')}
+                        onSetPending={() => handleStatusChange(agency.id, 'pending')}
+                        onEdit={() => handleEditAgency(agency)}
+                        onDelete={() => handleDeleteClick(agency)}
+                      />
+                    ))}
+                    {hasMoreAgencies && (
+                      <div ref={loadMoreRef} className="flex justify-center py-4">
+                        <Button variant="outline" size="sm" disabled={loadingMoreAgencies} onClick={loadMoreAgencies}>
+                          {loadingMoreAgencies ? 'Carregando...' : 'Carregar mais'}
+                        </Button>
+                      </div>
+                    )}
+                  </>
                 )}
               </TabsContent>
             </Tabs>
