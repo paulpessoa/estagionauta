@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { apiClient } from "@/lib/apiClient"
+import { apiClient, waitForBackend } from "@/lib/apiClient"
 import type {
   InterviewSimulation,
   SimulatorMessage
@@ -210,6 +210,7 @@ export default function SimuladorEntrevistas() {
     setIsFetchingAudio(true)
 
     try {
+      await waitForBackend()
       const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
       // apiClient handles auth header internally
       const headers = await (apiClient as any).getHeaders(true) as Record<string, string>
