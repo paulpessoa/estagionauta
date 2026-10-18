@@ -19,8 +19,6 @@ services:
         value: production
       - key: NODE_VERSION
         value: "22"
-      - key: PORT
-        value: "3001"
       - key: CLIENT_URL
         value: https://estagionauta.com.br
       - key: BREVO_SENDER_EMAIL
