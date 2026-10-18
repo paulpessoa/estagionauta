@@ -12,5 +12,6 @@
     "outDir": "./dist",
     "resolveJsonModule": true
   },
-  "include": ["src/**/*", "../shared/**/*"]
+  "include": ["src/**/*", "../shared/**/*"],
+  "exclude": ["src/tests/**/*", "**/*.spec.ts", "**/*.test.ts"]
 }
