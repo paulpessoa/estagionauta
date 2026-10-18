@@ -330,7 +330,7 @@ Comporte-se de forma amigável, neutra, prestativa e objetiva. Chame as ferramen
       clientsToTry.push({ client: openaiClient, model: 'gpt-4o-mini', name: 'System OpenAI' });
     }
     if (groq) {
-      clientsToTry.push({ client: groq, model: 'llama-3.3-70b-versatile', name: 'System Groq' });
+      clientsToTry.push({ client: groq, model: 'openai/gpt-oss-120b', name: 'System Groq' });
     }
 
     while (loopCount < MAX_LOOPS) {

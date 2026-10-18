@@ -117,7 +117,7 @@ Anotações do Usuário: ${app.notes || 'Nenhuma'}
     const client = getLlmClient();
     const model = env.GEMINI_API_KEY 
       ? 'gemini-3.8-flash' 
-      : (env.OPENAI_API_KEY ? 'gpt-4o-mini' : 'llama-3.3-70b-versatile');
+      : (env.OPENAI_API_KEY ? 'gpt-4o-mini' : 'openai/gpt-oss-120b');
 
     const systemPrompt = `Você é um Recrutador Sênior e Especialista em Carreira.
 Sua tarefa é analisar a compatibilidade (fit) entre o perfil do candidato (currículo e dados acadêmicos) e os requisitos da vaga de estágio/trabalho no Kanban.
