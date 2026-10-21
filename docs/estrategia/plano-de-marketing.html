@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano de Marketing — Estagionauta</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main>
+<h1>Plano de Marketing</h1>
+<p class="sub">Estagionauta · versão 1 · outubro/2026 · horizonte: 90 dias · orçamento de mídia: R$ 0 a R$ 300/mês.</p>
+<nav class="toc">
+  <a href="#posicionamento">Posicionamento</a><a href="#personas">Personas</a><a href="#funil">Funil</a>
+  <a href="#canais">Canais</a><a href="#seo">SEO</a><a href="#conteudo">Conteúdo</a>
+  <a href="#parcerias">Parcerias</a><a href="#calendario">Calendário 90 dias</a><a href="#metricas">Métricas</a>
+</nav>
+
+<h2 id="posicionamento">1. Posicionamento</h2>
+<div class="callout"><b>Para</b> estudantes que buscam o primeiro estágio, <b>o Estagionauta é</b> o QG gratuito da busca: <b>salve vagas, controle prazos e encontre agências de estágio verificadas na sua cidade</b>. <b>Diferente de</b> sites de vagas e do ChatGPT, ele organiza a sua jornada e funciona junto com a IA que você já usa.</div>
+<p><b>Slogan curto:</b> "Sua missão rumo ao estágio, organizada." · <b>Tom:</b> irmão mais velho que já passou por isso: direto, prático, sem coach.</p>
+
+<h2 id="personas">2. Personas</h2>
+<div class="grid">
+  <div class="card"><h4>Ana, 19, Adm na UFPE</h4><p>Aplica em 30 vagas pelo celular e não lembra onde aplicou. Quer saber se a vaga do CIEE é confiável. <b>Gancho:</b> kanban + extensão.</p></div>
+  <div class="card"><h4>João, 22, técnico no IFPE</h4><p>Não sabe que agências existem em Caruaru. Usa WhatsApp para tudo. <b>Gancho:</b> mapa de agências + grupos (NUDEP, ABRE).</p></div>
+  <div class="card"><h4>Bia, 21, já estagia</h4><p>Dúvida sobre recesso e renovação do TCE. <b>Gancho:</b> calculadora de recesso (sem cadastro) → vira usuária.</p></div>
+  <div class="card"><h4>Coordenação de estágio</h4><p>Responde as mesmas perguntas toda semana. <b>Gancho:</b> link da calculadora + guia da lei + oficina gratuita.</p></div>
+</div>
+
+<h2 id="funil">3. Funil (AARRR)</h2>
+<div class="wrap"><table>
+<tr><th>Etapa</th><th>Ação principal</th><th>Métrica</th></tr>
+<tr><td>Aquisição</td><td>SEO "agências de estágio em [cidade]" e "calcular recesso estágio"; links com cupom por canal (<code>?cupom=…&amp;utm_source=…</code>, já implementado).</td><td>Visitas por canal</td></tr>
+<tr><td>Ativação</td><td>Primeira vaga salva ou primeira agência favoritada em menos de 2 min, sem pedir cadastro antes do valor.</td><td>% que salva 1 vaga no 1º dia</td></tr>
+<tr><td>Retenção</td><td>Lembrete de prazo (e-mail/WhatsApp) e resumo semanal "suas candidaturas".</td><td>WAU / MAU</td></tr>
+<tr><td>Indicação</td><td>Convite com créditos para os dois lados (já existe), compartilhamento do kanban como "minha jornada".</td><td>Convites aceitos/usuário</td></tr>
+<tr><td>Receita</td><td>Pro (extensão ilimitada + lembretes), agência verificada, oficinas.</td><td>MRR</td></tr>
+</table></div>
+
+<h2 id="canais">4. Canais priorizados</h2>
+<div class="wrap"><table>
+<tr><th>Canal</th><th>Custo</th><th>Esforço</th><th>Por quê</th></tr>
+<tr><td><b>SEO local de agências</b> (1 página por cidade/UF)</td><td>R$ 0</td><td>médio</td><td>Busca com intenção clara e pouca concorrência; a base revisada por UF vira conteúdo.</td></tr>
+<tr><td><b>Grupos de vagas WhatsApp/Telegram</b></td><td>R$ 0</td><td>baixo</td><td>Onde o estagiário já está. Conteúdo antes do link (kit em <code>docs/DIVULGACAO_RECIFE.md</code>).</td></tr>
+<tr><td><b>Agentes de integração parceiros</b> (NUDEP, ABRE, CIEE etc.)</td><td>R$ 0</td><td>médio</td><td>NUDEP atende centenas pelo WhatsApp: um post deles vale mais que anúncio. Oferecer perfil verificado grátis no lançamento.</td></tr>
+<tr><td><b>Centros acadêmicos e empresas júnior</b></td><td>R$ 0</td><td>médio</td><td>Oficina "Currículo que passa no filtro" + cupom da turma.</td></tr>
+<tr><td><b>Instagram/TikTok</b></td><td>R$ 0</td><td>alto</td><td>Vídeos curtos: "3 erros no currículo", "seu recesso em 10 s". Reaproveitar o mesmo roteiro nos dois.</td></tr>
+<tr><td><b>Chrome Web Store</b></td><td>US$ 5</td><td>baixo</td><td>Canal de descoberta próprio depois da extensão.</td></tr>
+<tr><td><b>Anúncios</b> (Meta/Google)</td><td>até R$ 300/mês</td><td>baixo</td><td>Só depois de medir ativação; testar "agência de estágio perto de mim".</td></tr>
+</table></div>
+
+<h2 id="seo">5. SEO: o ativo mais barato</h2>
+<ul>
+  <li><b>Páginas por cidade:</b> <code>/agencias/pe/recife</code> com título "Agências de estágio em Recife (verificadas em out/2026)". Conteúdo gerado da base, sem IA.</li>
+  <li><b>Calculadora:</b> já é o melhor ímã. Adicionar FAQ da Lei 11.788 na própria página (recesso, carga horária, bolsa, seguro).</li>
+  <li><b>Guias evergreen:</b> "Como funciona o CIEE", "O que é agente de integração", "TCE: o que conferir antes de assinar".</li>
+  <li><b>Técnico:</b> SPA em Vite precisa de pré-renderização (ex.: plugin de prerender ou páginas estáticas geradas no build) para essas rotas serem indexadas.</li>
+</ul>
+
+<h2 id="conteudo">6. Pilares de conteúdo (3 posts/semana)</h2>
+<div class="grid">
+  <div class="card"><h4>Direitos (seg)</h4><p>"Você tem direito a recesso remunerado?" → calculadora.</p></div>
+  <div class="card"><h4>Agências (qua)</h4><p>"5 agências de estágio em [cidade] que você não conhecia" → mapa.</p></div>
+  <div class="card"><h4>Método (sex)</h4><p>"Como organizei 40 candidaturas sem planilha" → kanban/extensão.</p></div>
+</div>
+
+<h2 id="parcerias">7. Parcerias com agências (ganha-ganha)</h2>
+<ol>
+  <li>Revisar e completar o perfil da agência no mapa (WhatsApp, Instagram, logo).</li>
+  <li>Mandar mensagem: "Seu perfil está no Estagionauta; quer o selo de verificada grátis no lançamento?"</li>
+  <li>Em troca: divulgar o Estagionauta para os candidatos (link com <code>utm_source=agencia-nome</code>).</li>
+  <li>Prioridade em Recife: <b>NUDEP</b> (atendimento por WhatsApp, @nudepestagios) e <b>ABRE</b>, depois CIEE-PE, IEL-PE e centrais da UFPE/UFRPE/UPE.</li>
+</ol>
+
+<h2 id="calendario">8. Calendário de 90 dias</h2>
+<div class="wrap"><table>
+<tr><th>Semanas</th><th>Foco</th><th>Entregas</th></tr>
+<tr><td>1–2</td><td>Arrumar a casa</td><td>Base de agências de PE revisada; cortes de telas; MCP funcionando; páginas de cidade em PE.</td></tr>
+<tr><td>3–4</td><td>RMR</td><td>2 oficinas (UFPE/IFPE), 10 grupos de vagas, parceria NUDEP/ABRE, 12 posts.</td></tr>
+<tr><td>5–6</td><td>Extensão beta</td><td>Extensão "Salvar vaga" para 50 testadores; resumo semanal por e-mail.</td></tr>
+<tr><td>7–8</td><td>Nordeste</td><td>Base revisada de PB, CE, BA, RN, AL, SE; páginas de cidade; parcerias com 1 agência por capital.</td></tr>
+<tr><td>9–10</td><td>Monetização</td><td>Lançar Pro (anual com desconto); oferta "agência verificada".</td></tr>
+<tr><td>11–12</td><td>Brasil</td><td>27 UFs revisadas; Chrome Web Store pública; campanha de volta às aulas (fev/mar).</td></tr>
+</table></div>
+<p class="sub">Sazonalidade: picos de busca por estágio em fev–mar e jul–ago (início de semestre). Concentrar lançamentos antes desses picos.</p>
+
+<h2 id="metricas">9. Métricas semanais (painel simples)</h2>
+<ul>
+  <li>Visitas por canal (UTM) e páginas de cidade indexadas.</li>
+  <li>Ativação: % de novos usuários que salvam 1 vaga ou favoritam 1 agência.</li>
+  <li>WAU, vagas salvas/semana, lembretes abertos.</li>
+  <li>Agências revisadas / reportes de erro recebidos.</li>
+  <li>Receita: oficinas, Pro, agências.</li>
+</ul>
+
+<footer>Relacionados: <a href="plano-de-negocios.html">Plano de negócios</a> · <a href="revisao-de-produto.html">Revisão de produto e extensão</a> · <a href="../DIVULGACAO_RECIFE.md">Kit de divulgação RMR</a></footer>
+</main>
+</body>
+</html>
