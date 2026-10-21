@@ -1,0 +1,148 @@
+{
+  "uf": "RO",
+  "estado": "Rondônia",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "IEL Rondônia (Núcleo Regional IEL/RO - FIERO)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Porto Velho",
+      "address": "Avenida Rui Barbosa, 1112, Arigolândia, Porto Velho - RO",
+      "atendimento": "misto",
+      "phone": "(69) 3216-3449",
+      "whatsapp": null,
+      "email": "mercadodr@fiero.org.br",
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://trf1.jus.br/sjro/conteudo/files/Contrato n. 15-2019 - Presta__o de Servi_o de Agente de Integra__o de Est_gio - SJRO e SSJs - PA 0000311-79.2019.4.01.8012.pdf",
+        "https://rondonia.ro.gov.br/wp-content/uploads/2023/08/EDITAL-001-2023-DETRAN-RO.pdf",
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/iel-abre-portas-pro-sucesso-15-mil-vagas-de-estagio-no-pais/"
+      ],
+      "observacoes": "Existência confirmada por várias fontes (Justiça Federal, Detran-RO 178 vagas, TRE). Endereço, telefone e e-mail vêm de contrato de 2019: checar se ainda valem. Atende também interior (Ji-Paraná, Cacoal, Vilhena etc.) via processos seletivos."
+    },
+    {
+      "name": "CIEE Rondônia (Porto Velho)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Porto Velho",
+      "address": "Av. Calama, 2472, Sala 3, 1º andar, São João Bosco, Porto Velho - RO, 76803-763",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas",
+        "https://trf1.jus.br/sjro/conteudo/files/Contrato n. 14-2014 - Presta__o de serv. de agente integrador de est_gio - SJRO e SSJs - Centro de Integ. Empresa Escola - CIEE.pdf"
+      ],
+      "observacoes": "Endereço de listagem de terceiros (Migalhas); contrato antigo (2014) com a Justiça Federal. Sem telefone achado. Atendimento online via ciee.org.br."
+    },
+    {
+      "name": "UNIR - PROGRAD (estágios e credenciamento de agentes de integração)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Porto Velho",
+      "address": "Campus BR-364, Porto Velho - RO (Reitoria/PROGRAD)",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.unir.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.unir.br/uploads/13579246/diversos/Edital%20Credenciamento%20de%20Agentes%20de%20Integra%C3%A7%C3%A3o.pdf",
+        "https://dacom.unir.br/uploads/18566584/Resolu%C3%A7%C3%A3o%20N%C2%BA454CONSEA%20da%20UNIR%2C%20de%2021%20de%20setembro%20de%202016%2C%20sobre%20as%20normas%20gerais%20para%20a%20realiza%C3%A7%C3%A3o%20de%20esta%CC%81gios%20dos%20cursos%20de%20gradua%C3%A7%C3%A3o%20da%20UNIR.pdf"
+      ],
+      "observacoes": "PROGRAD credencia agentes de integração (edital possivelmente de 2021, checar vigência). Campi do interior (Vilhena, Ji-Paraná, Ariquemes etc.) têm editais de estágio próprios. Contato da coordenação não encontrado."
+    },
+    {
+      "name": "IFRO - Campus Porto Velho Calama (extensão/estágio)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Porto Velho",
+      "address": "Av. Calama, 4985, Porto Velho - RO",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": "depex.portovelhocalama@ifro.edu.br",
+      "website": "https://portal.ifro.edu.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://portal.ifro.edu.br/processos-seletivos/extensao/extensao-campi/pvhc/edital-n-188-selecao-de-projetos-campus-porto-velho-calama/8355-edital-n-188-selecao-de-projetos-fic/file"
+      ],
+      "observacoes": "E-mail é do Departamento de Extensão (DEPEX), não de coordenação de estágio específica; edital antigo. Precisa de checagem humana."
+    },
+    {
+      "name": "Programa de estágio do Governo de Rondônia (SUPEL/órgãos estaduais)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Porto Velho",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://rondonia.ro.gov.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://rondonia.ro.gov.br/wp-content/uploads/2026/06/SEI_72896025_Termo_de_Referencia.pdf",
+        "https://rondonia.ro.gov.br/wp-content/uploads/2026/06/SEI_71350303_Termo_de_Referencia.pdf"
+      ],
+      "observacoes": "Termos de referência 2026 para contratar agente de integração do estágio estadual; sem canal de atendimento direto encontrado. Seleções passadas (Detran-RO) via IEL/RO."
+    },
+    {
+      "name": "Prefeitura de Porto Velho - Programa de Estágio Remunerado (Lei 1.634/2005)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Porto Velho",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.portovelho.ro.gov.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.portovelho.ro.gov.br/uploads/arquivos/leis/2007/03/150/1518695004decreto-n-10614-07-regulamenta-a-lei-n-1634-05-estagio-remunerado-p-estudantes.pdf"
+      ],
+      "observacoes": "Apenas base legal (lei e decreto); sem seleção atual nem canal de atendimento confirmados."
+    },
+    {
+      "name": "Ministério Público Federal - Procuradoria da República em Rondônia (estágio)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Porto Velho",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.mpf.mp.br/o-mpf/unidades/pr-ro/estagio",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.mpf.mp.br/o-mpf/unidades/pr-ro/estagio/2deg-processo-seletivo-unificado-de-estagiarios-para-a-procuradoria-da-republica-em-rondonia-em-2026"
+      ],
+      "observacoes": "Processo seletivo próprio 2026 (Porto Velho, Ji-Paraná e Vilhena em edições anteriores); bolsa graduação R$ 1.320. Seleção direta, sem agente."
+    }
+  ],
+  "descartadas": [
+    {"name": "NUBE Rondônia", "motivo": "nenhuma unidade ou atuação em RO encontrada nas buscas"},
+    {"name": "Super Estágios (RO)", "motivo": "aparece só em listas de outros estados (UFRGS, IFMG); sem unidade em RO"},
+    {"name": "ISBET (RO)", "motivo": "aparece só em lista da UFRGS; sem unidade em RO"},
+    {"name": "Agiel (RO)", "motivo": "aparece só em lista da UFRGS; sem unidade em RO"},
+    {"name": "CIEE Ji-Paraná / Vilhena / Cacoal", "motivo": "nenhuma unidade física encontrada; atendimento provável via CIEE Porto Velho/online"},
+    {"name": "Perfis de Instagram/WhatsApp de vagas em RO", "motivo": "nenhum perfil ou grupo identificado nas buscas; não inventado"}
+  ],
+  "notas": "Lacunas: telefone/WhatsApp/Instagram do CIEE-RO; contato atual do IEL/RO (dados de 2019); unidades IEL/CIEE em Ji-Paraná, Cacoal e Vilhena; coordenação de estágio de UNIR/IFRO (e-mail/telefone); agências locais privadas e perfis de vagas no Instagram/WhatsApp; rede privada (NUBE, Super Estágios, ISBET, Agiel) sem presença comprovada em RO. Todos precisam de checagem humana nos sites oficiais."
+}
