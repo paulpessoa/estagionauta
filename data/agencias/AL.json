@@ -1,0 +1,90 @@
+{
+  "uf": "AL",
+  "estado": "Alagoas",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas); busca limitada por cota (apenas ~8 buscas executadas)",
+  "agencias": [
+    {
+      "name": "CIEE Alagoas - Maceió",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Maceió",
+      "address": "Avenida Mendonça Júnior, 1.190, Gruta de Lourdes, Maceió - AL",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.online",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.tnh1.com.br/noticia/nid/ciee-disponibiliza-106-vagas-de-estagio-e-aprendizagem-em-alagoas/",
+        "https://www.tnh1.com.br/noticia/nid/ciee-disponibiliza-99-vagas-de-estagio-e-aprendizagem-em-alagoas/"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 9h-16h segundo release do CIEE (set/2026); 106 vagas abertas em AL, todas em Maceió. Nota de 2019 citava 'Av. Mendonça Júnior, 190' (provável erro de digitação). Fontes são do mesmo veículo, por isso não marcada como confirmada. CEP e telefone não encontrados."
+    },
+    {
+      "name": "CIEE Alagoas - Arapiraca",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Arapiraca",
+      "address": "Rua José Jailson Nunes, 493, loja 05A, piso L00, Caititus, Arapiraca - AL",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.online",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.tnh1.com.br/noticia/nid/ciee-disponibiliza-99-vagas-de-estagio-e-aprendizagem-em-alagoas/"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 9h-16h segundo release do CIEE; apenas uma fonte (a de 106 vagas lista só Maceió com vagas). Telefone não encontrado."
+    },
+    {
+      "name": "IEL Alagoas (Sistema FIEA)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Maceió",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://sne.iel.org.br/al",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.tnh1.com.br/noticia/nid/iel-alagoas-divulga-novas-vagas-de-estagio-e-emprego-em-maceio-e-arapiraca/",
+        "https://www.tnh1.com.br/noticia/nid/bolsas-de-estagio-do-iel-em-maceio-e-arapiraca-variam-de-r-400-a-r-1623/",
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/selecao-de-estagiarios-iel-abre-18-mil-vagas-de-estagio-pelo-pais/"
+      ],
+      "observacoes": "Vagas de estágio em Maceió e Arapiraca divulgadas em abr/mai 2026 (bolsas R$ 535,33 a R$ 1.623). Cadastro pelo portal do IEL. Endereço físico e telefone não encontrados (sede FIEA não verificada); o e-mail iel-estagio@findes.org.br aparece em matéria mas é do domínio da FINDES (ES), por isso não foi usado. URL do portal vem de matéria de 2021, verificar."
+    },
+    {
+      "name": "Procuradoria da República em Alagoas (MPF-AL) - Programa de Estágio",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Maceió",
+      "address": "Av. Juca Sampaio, 1800, Barro Duro, Maceió - AL",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.mpf.mp.br/o-mpf/unidades/pr-al/estagio",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.mpf.mp.br/o-mpf/unidades/pr-al/noticias/mpf-abre-selecao-de-estagio-para-maceio-e-arapiraca",
+        "https://www.mpf.mp.br/o-mpf/unidades/pr-al/estagio/edital-pr-al-13_2026-abertura-1.pdf"
+      ],
+      "observacoes": "Processos seletivos próprios (2º de 2026: Administração, Comunicação Social e Direito; Maceió e Arapiraca; bolsa R$ 1.320). Endereço vem de edital de 2019. Seleção é por edital, sem balcão de atendimento contínuo; avaliar se entra no catálogo."
+    }
+  ],
+  "descartadas": [
+    {"name": "MPT em Alagoas", "motivo": "seleção de estágio por edital (jul/2026, encerrada), sem canal de atendimento permanente confirmado nas buscas"},
+    {"name": "Procuradoria de Maceió / Prefeitura de Maceió (editais de estágio)", "motivo": "apenas editais pontuais; programa permanente não confirmado"},
+    {"name": "NUBE, Super Estágios", "motivo": "buscas não retornaram qualquer evidência de unidade/atendimento em AL (não significa que não existam; não verificado)"}
+  ],
+  "notas": "A cota de WebSearch esgotou após ~8 buscas, então o checklist ficou INCOMPLETO. Não pesquisados: ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio em AL; centrais de estágio de UFAL, UNEAL, Uncisal, CESMAC, Unit AL, IFAL; programa de estágio do Governo AL / Prefeitura de Maceió; iniciativas de Instagram/WhatsApp com vagas em AL; endereço e telefone do IEL-AL; telefones/WhatsApp/Instagram do CIEE-AL. Todas as entradas são 'provavel' (nenhuma 'confirmada') e precisam de checagem humana, principalmente o endereço do CIEE Maceió (1.190 vs 190) e o endereço do IEL-AL. Sugere-se rodar nova rodada de buscas."
+}

@@ -1,0 +1,84 @@
+{
+  "uf": "PE",
+  "estado": "Pernambuco",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas) - PARCIAL: limite de buscas da sessão esgotado após ~8 buscas",
+  "agencias": [
+    {
+      "name": "NUDEP - Núcleo de Desenvolvimento Profissional",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Recife",
+      "address": null,
+      "atendimento": "whatsapp",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://nudep.com.br/",
+      "instagram": "@nudepestagios",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://nudep.com.br/",
+        "https://nudep.com.br/nudeo-institucional/",
+        "https://br.linkedin.com/company/nudepbr",
+        "https://www.instagram.com/nudepestagios/",
+        "https://www.ufpe.br/documents/38970/6310663/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+06-04-2026.pdf/1838a0ae-19b8-4d56-9797-ef68396369a9"
+      ],
+      "observacoes": "Nome completo: NUDEP - Núcleo de Desenvolvimento Profissional Ltda; agente de integração/agência consultora em estágios e RH, sociedade civil LTDA, Recife-PE. Conveniado com a UFPE como agente de integração (vigência 19/08/2024 a 18/08/2029, lista de 06/04/2026). Vagas divulgadas no BNE (nutrição, técnico em administração). Cadastros antigos citam sede em Recife (R. João Fernandes Vieira 574, Boa Vista, ou R. Sete de Setembro 158-C, Bairro dos Estados), divergentes e NÃO usados: atendimento ao público é por WhatsApp, address null conforme orientação do projeto. Telefone/WhatsApp oficial não foi extraído (buscas encerradas) - coletar em nudep.com.br ou no Instagram."
+    },
+    {
+      "name": "ABRE - Agência Brasileira de Estágios (a confirmar)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "ABRE",
+      "city": "Recife",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portalabre.com.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://periodicos.unoesc.edu.br/apeusmo/article/download/19687/10449/65199"
+      ],
+      "observacoes": "Única referência achada: artigo acadêmico de 2015 citando 'Agência Brasileira de Estágios' com site portalabre.com.br. Não foi confirmado que é a mesma 'ABRE Recife' citada pelo dono do projeto, nem que o site está ativo, nem a unidade/contato em Recife. Precisa de checagem humana (Instagram/site)."
+    },
+    {
+      "name": "CIEE Pernambuco",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Recife",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [],
+      "observacoes": "Busca de unidades (Recife, Caruaru, Petrolina) falhou por limite de buscas. Rede nacional conhecida; endereço e unidades do interior precisam ser levantados."
+    },
+    {
+      "name": "IEL Pernambuco",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Recife",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.iel.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [],
+      "observacoes": "Busca falhou por limite de buscas. Ligado à FIEPE; endereço e contato precisam ser levantados."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUDEP UFJF / NUDEP-EPJF (Juiz de Fora)", "motivo": "homônimos de outro estado, não são o NUDEP de Recife" }
+  ],
+  "notas": "LISTA INCOMPLETA. O limite de buscas da sessão (WebSearch) esgotou após ~8 buscas, várias em paralelo retornando too_many_requests. Não foram pesquisados: NUBE, Super Estágios, ISBET, Mudes, CEE, Agiel, Estagiar, Uniestágio, Companhia de Estágios; agências em Caruaru/Petrolina; centrais de estágio UFPE, UFRPE, UPE, UNICAP, Uninassau, Unibra, Senac, IFPE, Unifbv, Guararapes; programas do Governo de PE e Prefeitura do Recife; perfis de Instagram de vagas. Dica: a lista de agentes de integração conveniados da UFPE (PDF de 06/04/2026, ver evidências do NUDEP) contém dezenas de agências ativas em PE e é ótimo ponto de partida. Reexecutar o agente com orçamento de buscas renovado."
+}

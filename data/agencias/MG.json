@@ -1,0 +1,108 @@
+{
+  "uf": "MG",
+  "estado": "Minas Gerais",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas); busca limitada pelo orçamento de buscas da sessão (~7 buscas úteis de ~30 planejadas)",
+  "agencias": [
+    {
+      "name": "CIEE Minas Gerais (CIEE/MG)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Belo Horizonte",
+      "address": "Rua Célio de Castro, 79, bairro Floresta, Belo Horizonte - MG, CEP 31110-000",
+      "atendimento": "misto",
+      "phone": "(31) 3429-8100",
+      "whatsapp": null,
+      "email": "cieemg@cieemg.org.br",
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.cieemg.org.br/",
+        "https://www.cieemg.org.br/institucional",
+        "https://www.yelp.com/biz/ciee-belo-horizonte"
+      ],
+      "observacoes": "Sede administrativa/regional BH conforme site oficial. Yelp confirma o endereço, mas lista outro telefone, (31) 3442-9722 (provavelmente desatualizado). Unidades do interior (Uberlândia, Juiz de Fora, Montes Claros etc.) não foram verificadas: precisam de checagem humana."
+    },
+    {
+      "name": "IEL Minas Gerais (IEL-MG / FIEMG) - IEL Carreiras",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Belo Horizonte",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.fiemg.com.br/",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariodocomercio.com.br/vagas/vagas-estagio-iel-mg/",
+        "https://www.fiemg.com.br/?p=1067"
+      ],
+      "observacoes": "Inscrição pelo portal IEL Carreiras (IEL Hub de Carreiras). Notícia recente cita 52 vagas de estágio em 16 cidades de MG. Endereço, telefone e e-mail atuais não apareceram em fonte; o endereço de BH achado era de 2011 e foi descartado como desatualizado."
+    },
+    {
+      "name": "Super Estágios Belo Horizonte",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Belo Horizonte",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=124071"
+      ],
+      "observacoes": "Matéria sem data diz que a rede (franquia) tem uma unidade em BH e outra em Teófilo Otoni. Sem endereço, contato ou site oficial atual: confirmar se as unidades ainda operam."
+    },
+    {
+      "name": "Super Estágios Teófilo Otoni",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Teófilo Otoni",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=124071"
+      ],
+      "observacoes": "Mesma matéria sem data. Pode ter fechado ou mudado; precisa de humano."
+    },
+    {
+      "name": "UFU - Pró-Reitoria de Graduação (Estágio)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Uberlândia",
+      "address": "Av. João Naves de Ávila, 2121, Campus Santa Mônica, bairro Santa Mônica, Uberlândia - MG, CEP 38400-902",
+      "atendimento": "misto",
+      "phone": "(34) 3291-8984",
+      "whatsapp": null,
+      "email": "estagio@prograd.ufu.br",
+      "website": "https://prograd.ufu.br/",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://prograd.ufu.br/sites/prograd.ufu.br/files/media/documento/tce_interno_obrigatorio_3.pdf"
+      ],
+      "observacoes": "Contato de estágio extraído de termo de compromisso oficial da UFU (Prograd). Página atual do setor não foi confirmada."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "IEL Goiás / IEL Pará (contatos que apareceram na busca)",
+      "motivo": "outro estado"
+    }
+  ],
+  "notas": "A cota de buscas web da sessão acabou (erros too_many_requests e depois limite de 200 buscas por turno compartilhado) antes de cobrir o checklist. Só foram confirmados: CIEE/MG (sede BH), IEL-MG (portal), Super Estágios (BH/Teófilo Otoni, não confirmada) e Prograd/UFU. NÃO PESQUISADOS (precisam de nova rodada): unidades do CIEE/MG no interior (Uberlândia, Juiz de Fora, Montes Claros, Uberaba, Ipatinga, Contagem); NUBE, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio, Companhia de Estágios em MG; buscas 'agência de estágio' por cidade; centrais de estágio UFMG, PUC Minas, UFJF, UEMG, Newton Paiva, Una; programas de estágio do Governo de MG e da Prefeitura de BH; iniciativas de Instagram/WhatsApp de vagas em MG. Site de Instagram/WhatsApp de nenhuma entrada foi verificado (null)."
+}

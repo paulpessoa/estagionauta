@@ -1,0 +1,81 @@
+{
+  "uf": "SE",
+  "estado": "Sergipe",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Pesquisa parcial: o orçamento de buscas da sessão esgotou após ~6 consultas.",
+  "agencias": [
+    {
+      "name": "CIEE Sergipe (Aracaju)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Aracaju",
+      "address": "Avenida Doutor José Machado de Souza, 120, Jardins, Aracaju - SE",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://ajn1.com.br/ciee-oferta-141-vagas-de-estagio-e-aprendizagem-em-sergipe/",
+        "https://ajn1.com.br/ciee-oferece-160-vagas-de-estagio-e-aprendizagem-em-sergipe/",
+        "https://ciee.website/ciee-aracaju-se/"
+      ],
+      "observacoes": "Notícias do AJN1 citam atendimento presencial no endereço indicado (seg-sex, 9h-16h) e centenas de vagas de estágio/aprendizagem em SE. Telefone não confirmado. Endereço vem de matéria de portal local; conferir no portal oficial do CIEE."
+    },
+    {
+      "name": "IEL Sergipe (Núcleo Regional)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Aracaju",
+      "address": "Av. Dr. Carlos Rodrigues da Cruz, 826, Edifício Albano Franco, Capucho, Aracaju - SE",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.tre-se.jus.br/transparencia-e-prestacao-de-contas/licitacoes-e-contratos/contratos/contratos-2023/arquivos-contratos-2023/contrato-2-2023-iel-agente-de-integracao",
+        "https://www.tre-se.jus.br/transparencia-e-prestacao-de-contas/licitacoes-e-contratos/contratos/contratos-2023/arquivos-contratos-2023/segundo-aditivo-ct-2-2023",
+        "https://catracalivre.com.br/educacao/instituto-do-senai-abre-vagas-de-estagio-com-bolsas-de-ate-r-28-mil/"
+      ],
+      "observacoes": "Agente de integração do estágio do TRE-SE (contrato 2/2023, aditivo de 2025, CNPJ 13.076.013/0001-96). Endereço consta nos documentos oficiais do TRE-SE. Telefone/site não obtidos."
+    },
+    {
+      "name": "UFS - Coordenação/Setor de Estágios (PROEX)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "São Cristóvão",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://proex.ufs.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://proex.ufs.br/uploads/page_attach/path/16557/Manual_do_Agente_de_Integra__o.pdf"
+      ],
+      "observacoes": "A UFS publica manual para agentes de integração com fluxo de formalização de estágios via SIGAA, indicando setor de estágios ativo. Nome exato do setor, contato e campus de atendimento (São Cristóvão; também Itabaiana e Lagarto) precisam de checagem humana."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "Centro Integrado de Estudos e Programas de Desenvolvimento de Sergipe (listagem guiatelefone)",
+      "motivo": "Aparece em diretório de telefones em Aracaju (São José); nome parecido com CIEE mas não confirmado como a mesma unidade. Checar se é o CIEE-SE ou outra entidade antes de usar."
+    },
+    {
+      "name": "UFS edital estagiários projeto de extensão SEMED Aracaju",
+      "motivo": "Edital pontual de projeto de extensão, não é agência/central de estágio."
+    },
+    {
+      "name": "SEDUC-SE edital de estágio (Pio Décimo e Fama)",
+      "motivo": "Edital pontual da secretaria de educação; sem canal de atendimento de programa permanente confirmado."
+    }
+  ],
+  "notas": "LACUNAS: a cota de buscas esgotou antes de cobrir o checklist. Nao verificados: NUBE, Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio em SE; centrais de estágio de Unit (Universidade Tiradentes), IFS, Estácio Sergipe, FANESE e outras privadas; polos de Itabaiana e Lagarto (UFS campi); programa de estágio do Governo de SE / Prefeitura de Aracaju / TJSE / MPSE; iniciativas de Instagram/WhatsApp com vagas em SE. Telefones, e-mails e Instagram do CIEE-SE e do IEL-SE precisam ser obtidos em fonte oficial. Nenhum FIES/IEL relacionado encontrado."
+}

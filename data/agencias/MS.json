@@ -1,0 +1,66 @@
+{
+  "uf": "MS",
+  "estado": "Mato Grosso do Sul",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas) — PARCIAL: o orçamento de buscas da sessão esgotou após 7 consultas (várias falharam por too_many_requests); checklist incompleto",
+  "agencias": [
+    {
+      "name": "CIEE Mato Grosso do Sul (unidade Campo Grande)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Campo Grande",
+      "address": "Rua Rio Grande do Sul, 210/220, Jardim dos Estados, Campo Grande - MS (CEP não verificado)",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://acritica.net/cidades/ciee-oferece-vagas-de-estagio-em-ms-com-bolsas-de-ate-1-1-mil/",
+        "https://midiamax.com.br/cotidiano/emprego-concurso/2026/procurando-estagio-ms-tem-mais-150-vagas-diferentes-areas/"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 9h-16h segundo reportagens; o endereço veio de resumo da busca (nome da rua não aparecia no trecho da Midiamax). Conferir endereço/telefone no portal CIEE."
+    },
+    {
+      "name": "IEL Mato Grosso do Sul (FIEMS)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Campo Grande",
+      "address": "Avenida Mato Grosso, 5017, Carandá Bosque, Campo Grande - MS (CEP não verificado)",
+      "atendimento": "misto",
+      "phone": "(67) 99277-4574",
+      "whatsapp": "(67) 99277-4574",
+      "email": null,
+      "website": "https://carreiras.iel.org.br/MS",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://acritica.net/educacao/iel-vagas-estagio-ms-bolsa-1650-ensino-medio/",
+        "https://acritica.net/noticias/iel-tem-nove-vagas-de-estagio-abertas-em-ms-com-bolsas-de-r-600-a-r-1-621/"
+      ],
+      "observacoes": "Setor de vagas por telefone/WhatsApp (67) 99277-4574; vagas presenciais em Campo Grande (reportagens ago-set/2026). Dados extraídos de resumo de busca; confirmar no site oficial."
+    },
+    {
+      "name": "CIEE - atendimento Três Lagoas",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Três Lagoas",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.vagas.com.br/vagas/v2826752/instrutor-a-de-aprendizagem"
+      ],
+      "observacoes": "Apenas uma vaga de instrutor de aprendizagem do CIEE sediada em Três Lagoas; não há prova de unidade física de atendimento a estudantes. Precisa de checagem humana."
+    }
+  ],
+  "descartadas": [],
+  "notas": "LACUNAS (buscas não executadas por esgotamento do limite de buscas da sessão): NUBE, Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio em MS; busca genérica 'agência de estágio' Campo Grande; 'agente de integração' estágio MS; centrais de estágio UFMS, UEMS, UCDB, Anhanguera-Uniderp, IFMS; programa de estágio Governo MS / Prefeitura de Campo Grande; iniciativas Instagram/WhatsApp de vagas em MS; CIEE em Dourados e Corumbá (uma busca não achou unidade) e IEL no interior. Pistas surgidas nas buscas, ainda não verificadas e NÃO incluídas como agência: Ministério Público de MS com estágio em Direito (https://jcconcursos.com.br/noticia/universitarios/ministerio-publico-de-ms-abre-estagios-em-direito-4150) e TRE-MS com acordo de cooperação de estágio (https://www.tre-ms.jus.br/transparencia-e-prestacao-de-contas/acesso-a-informacao/arquivos/acordo-de-cooperacao-tecnica-n-6-2019). Telefones/e-mails/Instagram do CIEE e do IEL ficaram null/parciais por falta de fonte. Recomenda-se rodar nova rodada de pesquisa para completar o checklist."
+}

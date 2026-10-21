@@ -1,0 +1,77 @@
+{
+  "uf": "RN",
+  "estado": "Rio Grande do Norte",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Orçamento de buscas esgotou após ~9 consultas; pesquisa INCOMPLETA.",
+  "agencias": [
+    {
+      "name": "CIEE Rio Grande do Norte - Unidade Natal",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Natal",
+      "address": "Av. Amintas Barros, 3700, CTC Torre B, 7º andar, sala 702, Lagoa Nova, Natal - RN",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://agorarn.com.br/?p=2399704",
+        "https://portaln10.com.br/empregos/ciee-abre-66-mil-vagas-de-estagio-no-brasil-rn-tem-49-oportunidades-nesta-semana-346622/",
+        "https://agorarn.com.br/ultimas/secretaria-de-educacao-de-natal-vai-contratar-800-estagiarios-saiba-como-participar/"
+      ],
+      "observacoes": "Endereço vem de uma única matéria (Agora RN, set/2026), que cita atendimento presencial seg-sex 9h-16h. Portal CIEE lista 'Unidade Estadual Natal'. Telefone não localizado. Confirmar no site oficial."
+    },
+    {
+      "name": "CIEE Rio Grande do Norte - Unidade Mossoró",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Mossoró",
+      "address": "Av. Alberto Maranhão, 2070, Centro, Mossoró - RN",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://agorarn.com.br/?p=2399704"
+      ],
+      "observacoes": "Apenas uma fonte (Agora RN, set/2026). Busca por endereço em diretórios não confirmou o CIEE no número 2070 (bairro listado como Belo Horizonte, não Centro). Checar com humano."
+    },
+    {
+      "name": "IEL Rio Grande do Norte (FIERN)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Natal",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/siga-o-mapa-do-futuro-iel-oferece-mais-de-600-vagas-de-estagio-com-bolsas-de-ate-r-28-mil/",
+        "https://agorarn.com.br/ultimas/fiern-experience-inovacao-desenvolvimento/",
+        "https://www.confea.org.br/node/107256"
+      ],
+      "observacoes": "IEL-RN divulga vagas em Natal, Mossoró e Parnamirim e promove o Prêmio IEL de Estágio; endereço, telefone e site da unidade não foram obtidos. Datas das notícias de vagas não claras."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "NUBE (Núcleo Brasileiro de Estágios)",
+      "motivo": "Nenhuma unidade ou atendimento no RN encontrado na busca; só convênios de outros estados. Não entra sem prova de unidade local (pode ser reavaliada)."
+    },
+    {
+      "name": "Super Estágios",
+      "motivo": "Rede com 80+ unidades no país, mas nenhuma unidade no RN encontrada na busca."
+    }
+  ],
+  "notas": "LACUNAS (limite de buscas esgotado): nao foram pesquisados ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio no RN; agências privadas de Natal/Mossoró/Parnamirim; centrais de estágio UFRN, UERN, UFERSA, UnP, IFRN, UNI-RN; programas de estágio do Governo do RN e Prefeitura de Natal (a Secretaria de Educação de Natal contratou ~800 estagiários via CIEE; TJRN e TRE-RN têm programas de estágio, mas sem canal de atendimento verificado); iniciativas Instagram/WhatsApp. Telefones, e-mails e Instagram ficaram null (nada encontrado em fonte). Nenhuma entrada atingiu 'confirmada'. Precisa de nova rodada de busca ou checagem humana."
+}

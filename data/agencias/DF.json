@@ -1,0 +1,111 @@
+{
+  "uf": "DF",
+  "estado": "Distrito Federal",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas); busca interrompida por limite de buscas da sessão e rate limit — cobertura PARCIAL",
+  "agencias": [
+    {
+      "name": "CIEE Distrito Federal (Brasília)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Brasília",
+      "address": "EQSW 304/504, Lote 2, Edifício Atrium, Setor Sudoeste, Brasília - DF (próximo ao Hospital das Forças Armadas)",
+      "atendimento": "misto",
+      "phone": "(61) 3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br/",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.ifb.edu.br/attachments/article/45635/Boletim de Estágio 05.2026_Semana 02.02.2026 a 06.02.2026.pdf",
+        "https://curtamais.com.br/brasilia/2026/07/20/brasilia-tem-mais-de-700-vagas-de-estagio-e-aprendizagem-abertas/",
+        "https://edicao.correiobraziliense.com.br/correiobraziliense/2025/03/09/00010f/pdf/F09-TFP-0903-DIG.pdf"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 8h-17h30 (boletim IFB 2026). Fontes antigas (Correio 2023/2025) citam (61) 3701-4811 e fechamento às 17h; conferir telefone. Em jul/2026 havia 765 vagas abertas no DF (657 estágio, 108 aprendizagem). Vagas também em Ceilândia, Águas Claras, Guará, Asa Sul. CEP não encontrado."
+    },
+    {
+      "name": "IEL-DF (Instituto Euvaldo Lodi - Sistema FIBRA)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Brasília",
+      "address": "SCN, Quadra 1, Bloco E, 14º andar, Edifício Central Park, Setor Comercial Norte, Brasília - DF",
+      "atendimento": "misto",
+      "phone": "(61) 3362-6024",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.sistemafibra.org.br/iel",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://edicao.correiobraziliense.com.br/correiobraziliense/2025/03/09/00010f/pdf/F09-TFP-0903-DIG.pdf",
+        "https://www.correiobraziliense.com.br/euestudante/estagio/2025/05/7153745-instituto-euvaldo-lodi-iel-disponibiliza-45-vagas-de-estagio-no-df.html",
+        "https://www.ifb.edu.br/attachments/article/48413/Boletim 36.2026 Semana 08.09.2026  a 11.09.2026.pdf"
+      ],
+      "observacoes": "Endereço e telefones vêm da listagem do Correio Braziliense (mar/2025): tel. 3362-6024 e 99128-2294 (este último não classificado como WhatsApp); atendimento seg-sex 8h-18h. IEL-DF segue com vagas em boletins do IFB em 2026 (set/2026). Candidatura por e-mail @sistemafibra.org.br com código da vaga. Endereço de fonte única de 2025 — conferir."
+    },
+    {
+      "name": "Estágio Trainee (Brasília)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Brasília",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.estagiotrainee.com/brasilia-df",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.estagiotrainee.com/brasilia-df"
+      ],
+      "observacoes": "Apresenta-se como agência de integração em Brasília (Lei 11.788), atuando desde 2013 com mais de 1.600 projetos de empresas parceiras (autodeclarado). Sem endereço/telefone encontrados; verificar registro/convênios."
+    },
+    {
+      "name": "IFB - Boletim semanal de estágio (PREX)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Brasília",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ifb.edu.br/",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.ifb.edu.br/attachments/article/48413/Boletim 36.2026 Semana 08.09.2026  a 11.09.2026.pdf",
+        "https://www.ifb.edu.br/attachments/article/45635/Boletim de Estágio 05.2026_Semana 02.02.2026 a 06.02.2026.pdf"
+      ],
+      "observacoes": "Instituto Federal de Brasília publica boletim semanal de vagas de estágio (CIEE, IEL-DF etc.) para seus estudantes. Contato/endereço do setor de estágio (campi) não levantado."
+    },
+    {
+      "name": "GDF - Processo seletivo de estagiários (administração pública distrital)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Brasília",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://jornaldebrasilia.com.br/brasilia/gdf-prorroga-inscricoes-para-processo-seletivo-de-estagiarios/",
+        "https://www.metropoles.com/distrito-federal/df-tem-16-mil-vagas-para-estagio-e-257-destinadas-a-aprendizes"
+      ],
+      "observacoes": "GDF realiza processos seletivos de estágio (4.132 vagas em 2024, segundo busca). Órgão gestor e canal de atendimento não identificados — precisa de checagem humana."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "NUBE (Núcleo Brasileiro de Estágios)",
+      "motivo": "Nenhuma unidade/atendimento específico no DF encontrado; endereço achado é a sede em São Paulo. Reavaliar se houver atendimento online dedicado ao DF."
+    }
+  ],
+  "notas": "Cobertura PARCIAL: o limite de buscas da sessão foi atingido após ~7 consultas (várias com erro too_many_requests). NÃO foram pesquisados: Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio no DF; centrais de estágio de UnB, UniCEUB, UCB, IESB, IFB (setor); programas de órgãos federais (CNJ, STJ, ministérios, TJDFT, MPDFT); iniciativas de Instagram/WhatsApp de vagas em Brasília; unidades em Taguatinga/Ceilândia/Águas Claras. Telefone do CIEE diverge entre fontes e endereço do IEL-DF tem fonte única de 2025."
+}

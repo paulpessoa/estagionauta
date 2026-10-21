@@ -1,0 +1,236 @@
+{
+  "uf": "BA",
+  "estado": "Bahia",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas); busca interrompida por limite de chamadas (~8 buscas efetivas)",
+  "agencias": [
+    {
+      "name": "CIEE Bahia - Salvador",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana. Em evento passado (Maratona de Vagas) houve atendimento no CEMPRE, Av. Tancredo Neves, sem confirmar ponto permanente."
+    },
+    {
+      "name": "CIEE Bahia - Camaçari",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Camaçari",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana."
+    },
+    {
+      "name": "CIEE Bahia - Feira de Santana",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Feira de Santana",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana."
+    },
+    {
+      "name": "CIEE Bahia - Vitória da Conquista",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Vitória da Conquista",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana."
+    },
+    {
+      "name": "CIEE Bahia - Itabuna",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Itabuna",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana."
+    },
+    {
+      "name": "CIEE Bahia - Ilhéus",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Ilhéus",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
+        "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+      ],
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana."
+    },
+    {
+      "name": "IEL Bahia (Instituto Euvaldo Lodi / FIEB)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://atarde.com.br/empregos/iel-abre-mais-de-520-vagas-de-estagio-com-bolsas-de-ate-r-1874-1370228",
+        "https://atarde.com.br/empregos/instituto-oferece-630-vagas-de-estagio-e-emprego-em-cidades-da-bahia-1366997",
+        "https://www.correio24horas.com.br/economia/empregos/bolsa-de-ate-r-8-mil-iel-abre-600-vagas-de-estagio-e-emprego-na-bahia-0725",
+        "https://noticias.portaldaindustria.com.br/noticias/trabalho/iel-oferece-791-vagas-de-estagio-com-bolsas-de-ate-r-28-mil/"
+      ],
+      "observacoes": "Agente de integração do Sistema CNI/FIEB com centenas de vagas na BA (Salvador, RMS e interior); inscrição pelo portal do IEL Bahia. Endereço e site oficial não apareceram nos resultados."
+    },
+    {
+      "name": "NUBE (Núcleo Brasileiro de Estágios) - atendimento Bahia",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "NUBE",
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.nube.com.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.correio24horas.com.br/colunistas/empregos-e-solucoes/salvador-oferece-mais-de-10-mil-vagas-de-estagio-em-janeiro-confira-0125"
+      ],
+      "observacoes": "Sede em São Paulo; sem unidade física em Salvador encontrada. Correio cita cerca de 1.554 oportunidades na BA via nube.com.br (matéria de ~jan/2025)."
+    },
+    {
+      "name": "CIDE - Capacitação, Inserção e Desenvolvimento (agente do estágio da Prefeitura de Salvador)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf"
+      ],
+      "observacoes": "Edital 04/2023 da SEMGE cita o CIDE como agente de integração do processo seletivo de estágio superior da Prefeitura; contrato pode ter mudado desde 2023."
+    },
+    {
+      "name": "Programa de Estágio da Prefeitura de Salvador (SEMGE)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://semge.salvador.ba.gov.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf"
+      ],
+      "observacoes": "Seleção de estagiários de nível superior publicada em edital pela SEMGE; edital de 2023, checar edital vigente."
+    },
+    {
+      "name": "Connect Estágios / Super Estágios (atuação junto ao TRE-BA)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Salvador",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.superestagios.com.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.tre-ba.jus.br/transparencia-e-prestacao-de-contas/licitacoes/aditivos-e-contratos/arquivos/2020/tre-ba-ct-033-2020-contratacao-agente-de-integracao"
+      ],
+      "observacoes": "Contrato TRE-BA nº 033/2020 cita Connect Estágios Ltda (e-mail no domínio superestagios.com.br) como agente de integração; sem prova de unidade ou atendimento atual na BA. Site é inferência do domínio do e-mail, conferir."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "Head Estágios",
+      "motivo": "Aparece apenas em convênios do IFBA (2019-2023); sem evidência de unidade/atendimento na BA nas buscas"
+    },
+    {
+      "name": "Instituto CNA",
+      "motivo": "Aparece apenas em convênios do IFBA; sem evidência de unidade na BA"
+    },
+    {
+      "name": "IEL Mato Grosso do Sul",
+      "motivo": "Outro estado (convênio com o IFBA, não é o IEL Bahia)"
+    }
+  ],
+  "notas": "Busca interrompida pelo limite de WebSearch do turno (cerca de 8 buscas efetivas de ~25). NAO cobertos: ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio na BA; centrais de estágio UFBA, UNEB, UEFS, UESB, UESC, Unifacs, Uninassau Salvador, IFBA; Programa de Estágio do Governo da Bahia (SAEB/Estado), TJ-BA e MP-BA; iniciativas de Instagram/WhatsApp de vagas na BA; agências em Juazeiro e Barreiras (CIEE ou outras). Nenhum endereço, telefone ou e-mail de unidade foi encontrado: todos null e precisam de checagem humana (ciee.org.br, portal IEL Bahia). Statuses conservadores: CIEE por matérias de imprensa (provavel); IEL confirmada por 4 fontes independentes."
+}

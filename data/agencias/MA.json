@@ -1,0 +1,115 @@
+{
+  "uf": "MA",
+  "estado": "Maranhão",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "CIEE Maranhão - São Luís",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "São Luís",
+      "address": "Avenida do Vale, nº 8-A, loja 03, Jardim Renascença, São Luís - MA",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://m.imirante.com/servicos/maranhao/2026/09/29/ciee-157-vagas-de-estagio-e-aprendizagem-no-maranhao",
+        "https://m.imirante.com/noticias/sao-luis/2026/09/14/ciee-oferece-mais-de-180-vagas-de-estagio-e-aprendizagem-no-maranhao"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 9h-16h segundo matérias do Imirante (set/2026); fontes são do mesmo veículo. Telefone não confirmado (3003-2433 citado em matéria de 2022, possivelmente desatualizado). CEP não localizado."
+    },
+    {
+      "name": "CIEE Maranhão - Imperatriz",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Imperatriz",
+      "address": "Rua Urbano Santos, 155, sala 1.603, 16º andar, Centro, Imperatriz - MA",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://m.imirante.com/noticias/sao-luis/2026/09/14/ciee-oferece-mais-de-180-vagas-de-estagio-e-aprendizagem-no-maranhao",
+        "https://oimparcial.com.br/noticias/2022/02/ciee-tem-68-vagas-abertas-para-estagio-e-aprendizagem-no-maranhao/"
+      ],
+      "observacoes": "Endereço divergente em matéria de 2022 (R. Maranhão, 300, Centro, CEP 65900-430); o da Rua Urbano Santos é o mais recente (set/2026). Checar qual é o atual."
+    },
+    {
+      "name": "IEL Maranhão (IEL-MA / Sistema FIEMA) - São Luís",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "São Luís",
+      "address": "Av. Jerônimo de Albuquerque, s/n, Casa da Indústria Senador Albano Franco, 2º andar, Bequimão, São Luís - MA",
+      "atendimento": "misto",
+      "phone": "(98) 3031-0104",
+      "whatsapp": "(98) 99971-2297",
+      "email": null,
+      "website": "https://www.ielcarreiras.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://oimparcial.com.br/concursos-e-emprego/2025/01/iel-ma-abre-52-vagas-de-estagio-em-municipios-maranhenses/",
+        "https://oimparcial.com.br/noticias/2026/03/iel-ma-abre-128-vagas-de-estagio-com-bolsas-de-ate-r-1-41500-em-diversas-cidades-do-maranhao/",
+        "https://oimparcial.com.br/noticias/2026/02/iel-ma-abre-127-vagas-de-estagio-com-bolsas-de-ate-r-1-151-em-seis-municipios-do-maranhao/",
+        "https://sistemas.fiema.org.br/seletivos/editais/22231c423a54f3a76ee4d51dacf915dd.pdf"
+      ],
+      "observacoes": "Publica vagas de estágio continuamente (2023 a mar/2026). Endereço de editais FIEMA 2020-21; telefone/WhatsApp de matéria de jan/2025 (checar). Antigo contato (98) 3212-1821 / seletivo@fiema.org.br aparece em editais FIEMA de 2020-21 (processos seletivos FIEMA em geral). Também é o agente de integração do programa de estágio da SEMED São Luís. Vagas também em São José de Ribamar, Balsas, Açailândia e Itapecuru-Mirim."
+    },
+    {
+      "name": "IEL Maranhão - Imperatriz",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Imperatriz",
+      "address": "Casa da Indústria Edilson Baldez, Rua Monte Castelo, Imperatriz - MA (número não localizado)",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ielcarreiras.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://oimparcial.com.br/noticias/2024/10/iel-ma-oferece-novas-vagas-de-estagio-em-imperatriz-e-sao-luis/",
+        "https://oimparcial.com.br/noticias/2023/08/iel-abre-vagas-de-estagio-para-sao-luis-e-imperatriz/",
+        "https://oimparcial.com.br/noticias/2026/03/iel-ma-abre-128-vagas-de-estagio-com-bolsas-de-ate-r-1-41500-em-diversas-cidades-do-maranhao/"
+      ],
+      "observacoes": "Vagas em Imperatriz recorrentes (2023-2026); endereço vem de matéria de 2023, telefone não localizado."
+    },
+    {
+      "name": "UFMA - Coordenadoria Geral de Estágio (PROEN)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "São Luís",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portalpadrao.ufma.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portalpadrao.ufma.br/transparencia/acesso-a-informacao/acoes-e-programas/carta-de-servicos-da-UFMA/ja-sou-ufma/graduacao-e-pos-graduacao_compressed.pdf/@@download/file/Graduação e pós-graduação 03.10.2025.pdf",
+        "https://portalpadrao.ufma.br/dted/documentos/arquivos/INSTRUCAONORMATIVAEstagio.pdf"
+      ],
+      "observacoes": "Carta de Serviços (out/2025) descreve convênios e homologação de vagas via SIGAA pela coordenação de estágio. Contato e localização não levantados."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUBE (Núcleo Brasileiro de Estágios)", "motivo": "sede em São Paulo; nenhuma unidade/atendimento no MA encontrado na busca (atua por convênios online com instituições)" },
+    { "name": "Super Estágios", "motivo": "nenhuma unidade no MA encontrada na busca" },
+    { "name": "ISBET", "motivo": "nenhuma unidade no MA encontrada na busca" },
+    { "name": "Mudes", "motivo": "nenhuma unidade no MA encontrada na busca (aparece só em contexto do RJ)" },
+    { "name": "Agiel", "motivo": "nenhuma unidade no MA encontrada na busca" },
+    { "name": "Abre", "motivo": "nenhuma entidade com esse nome encontrada no MA (só aparece como verbo em títulos do IEL-MA)" }
+  ],
+  "notas": "Limite de buscas do ambiente foi atingido após ~10 buscas; NÃO foram pesquisados: UEMA, IFMA, Ceuma, UNDB (centrais de estágio), programa de estágio do Governo do MA / Prefeitura de São Luís / TJMA / MPMA, agências privadas locais, CEE, Estagiar, Uniestágio, e iniciativas de Instagram/WhatsApp de vagas no MA. Também faltam CEP, telefones atuais do CIEE, e Caxias (nenhuma unidade encontrada). Todos os contatos precisam de checagem humana nos sites oficiais; a lista é provavelmente incompleta."
+}

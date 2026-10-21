@@ -1,0 +1,246 @@
+{
+  "uf": "PB",
+  "estado": "Paraíba",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "CIEE Paraíba - João Pessoa",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "João Pessoa",
+      "address": "Avenida Epitácio Pessoa, 2346, João Pessoa - PB",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://jornaldaparaiba.com.br/_/71056",
+        "https://portalv1.ifpb.edu.br/pre/assuntos/estagio/duvidas/perguntas-frequentes.pdf/@@download/file/Perguntas%20Frequentes.pdf"
+      ],
+      "observacoes": "Endereço vem de matéria do Jornal da Paraíba sem data visível; IFPB cita o CIEE como agente externo usado por estudantes. Telefone e horário atuais não encontrados. Confirmar no site oficial do CIEE."
+    },
+    {
+      "name": "CIEE Paraíba - Campina Grande",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Campina Grande",
+      "address": "Rua João da Mata, 487, Centro, Campina Grande - PB (CEP 58400-245 é o da rua, não confirmado para o número)",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://jornaldaparaiba.com.br/_/71056"
+      ],
+      "observacoes": "Única fonte é matéria sem data clara; pode ter mudado de endereço. Checagem humana recomendada."
+    },
+    {
+      "name": "CIEE - posto de atendimento no campus do Unipê",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://jornaldaparaiba.com.br/_/71056"
+      ],
+      "observacoes": "Matéria antiga cita posto no campus do Unipê (seg-sex, 8h às 20h). Sem prova atual; pode ter sido desativado."
+    },
+    {
+      "name": "IEL Paraíba (Instituto Euvaldo Lodi / sistema FIEP-PB)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ifpb.edu.br/joaopessoa/ensino/estagio/vagas-de-estagio/02-02-2023-cagepa-administracao-eng-civil-eng-eletrica-geoprocessamento-sistema-para-internet.pdf",
+        "https://portalv1.ifpb.edu.br/pre/assuntos/estagio/duvidas/perguntas-frequentes.pdf/@@download/file/Perguntas%20Frequentes.pdf"
+      ],
+      "observacoes": "IEL conduziu a seleção de estagiários da CAGEPA (edital 01/2023) e o IFPB cita CIEE e IEL como agentes externos. Endereço, contatos e site do IEL-PB não apareceram nas buscas; precisa checagem humana."
+    },
+    {
+      "name": "IFPB - Coordenação de Estágio e Relações Empresariais (Reitoria)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "João Pessoa",
+      "address": "Edifício Coriolano de Medeiros, Av. João da Mata, 256, Jaguaribe, João Pessoa - PB",
+      "atendimento": "presencial",
+      "phone": "(83) 3612-9717 / (83) 3612-9714",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ifpb.edu.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portalv1.ifpb.edu.br/pre/assuntos/estagio/duvidas/perguntas-frequentes.pdf/@@download/file/Perguntas%20Frequentes.pdf",
+        "https://www.ifpb.edu.br/campinagrande/assuntos/estagio/formularios/edital-79-2017-pre-e-anexos.pdf"
+      ],
+      "observacoes": "Endereço e horário (seg-sex 8h-17h) vêm de FAQ sem data clara; telefone vem de edital de 2017. Pode estar desatualizado."
+    },
+    {
+      "name": "IFPB Campus João Pessoa - Coordenação de Estágios",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ifpb.edu.br/joaopessoa/ensino/estagio",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://portalv1.ifpb.edu.br/joaopessoa/editais/direcao-geral/2025/edital-no-03-2025-direcao-geral/edital-no-03-2025-dg-jp-selecao-de-estagiarios.pdf",
+        "https://ifpb.edu.br/joaopessoa/editais/direcao-geral/2024-1/edital-no-22-2024/edital-n-o-22-2024-dg-jp-selecao-de-estagiarios.pdf",
+        "https://www.ifpb.edu.br/joaopessoa/ensino/estagio/vagas-de-estagio/edital-no-15-2023-processo-seletivo-estagio-nao-obrigatorio.pdf"
+      ],
+      "observacoes": "Publica editais de seleção de estagiários (2023 a 2025) e divulga vagas de estágio de empresas. Contato direto não encontrado."
+    },
+    {
+      "name": "IFPB Campus Campina Grande - Coordenação de Estágio",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Campina Grande",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ifpb.edu.br/campinagrande/assuntos/estagio",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ifpb.edu.br/campinagrande/assuntos/estagio/formularios/horarios-de-atendimento-2019.pdf",
+        "https://www.ifpb.edu.br/campinagrande/editais/ensino/2019/edital-no-30-2019-direcao-de-ensino/edital-no-30-2019-processo-seletivo-para-estagio-obrigatorio-curricular-proeja.pdf"
+      ],
+      "observacoes": "Há página e horário de atendimento de estágio do campus, mas só documentos de 2017-2019 apareceram."
+    },
+    {
+      "name": "UFCG - Coordenação de Programas e Estágios (CPE/PRE)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Campina Grande",
+      "address": "Rua Aprígio Veloso, 882, Bloco BB, Bairro Universitário, Campina Grande - PB",
+      "atendimento": "presencial",
+      "phone": "(83) 2101-1073 / (83) 2101-1525",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://pre.ufcg.edu.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cct.ufcg.edu.br/wp-content/uploads/2023/06/Edital-PRE-Estagio-Estudante.pdf",
+        "https://ccjs.ufcg.edu.br/images/docs/editais/Edital_35_2023.pdf",
+        "https://portal.pre.ufcg.edu.br/phocadownload/RES_16_2022_Estagio_UFCG.pdf"
+      ],
+      "observacoes": "Conduz seleções de estágio não obrigatório (editais 2023) e regula o estágio pela Res. 16/2022. Endereço e telefone vêm dos editais de 2023; reconferir."
+    },
+    {
+      "name": "UFPB - Estágio (PROGEP e coordenações de curso)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ufpb.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufpb.br/cdsr/contents/documentos/legislacao/item-4-1-estagio-resolucao-consepe-n-47-de-2007.pdf",
+        "https://progep.ufpb.br/progep/contents/noticias/progep-divulga-edital-de-selecao-de-estagiarios-1/editalprogepestagirio2019.pdf"
+      ],
+      "observacoes": "A Res. CONSEPE 47/2007 regula o estágio e prevê agentes de integração; PROGEP já publicou edital de estagiários (2019). Nenhuma central de estágio única com contato foi identificada."
+    },
+    {
+      "name": "UEPB - Coordenação de Estágio",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Campina Grande",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://uepb.edu.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [],
+      "observacoes": "As buscas não encontraram página ou contato de uma central de estágio da UEPB. Entrada mantida só para checagem humana (provavelmente via coordenações de curso e Pró-Reitoria de Graduação)."
+    },
+    {
+      "name": "Governo da Paraíba - SEAD/ESPEP (programa de estágio remunerado)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://concursosnobrasil.com/concursos/pb/2026/02/13/sead-espep-pb-lanca-edital-de-estagio-remunerado-com-ate-146-vagas/",
+        "https://jornaldaparaiba.com.br/_/216299"
+      ],
+      "observacoes": "Edital 001/2026/SEAD/ESPEP: 47 vagas imediatas e 94 em cadastro de reserva, bolsa R$ 1.200, inscrição online. Seleção feita pela Escola de Serviço Público (ESPEP)."
+    },
+    {
+      "name": "MPF - Procuradoria da República na Paraíba (programa de estágio)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "João Pessoa",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.mpf.mp.br/o-mpf/unidades/pr-pb/estagio",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.mpf.mp.br/o-mpf/unidades/pr-pb/estagio/1o-processo-seletivo-de-estagio-de-nivel-superior-do-mpf-na-paraiba-2026-direito-e-area-meio/instituicoes-conveniadas.pdf"
+      ],
+      "observacoes": "Processo seletivo de estágio de nível superior 2026 (Direito e área-meio) com convênios com UFPB, UEPB, IFPB e UFCG. Canal de atendimento não verificado."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUBE", "motivo": "Nenhum resultado de unidade ou atendimento na PB nas buscas. Não significa que não atenda o estado (atuação nacional online); checar." },
+    { "name": "Super Estágios", "motivo": "Nenhum resultado para a PB nas buscas." },
+    { "name": "ISBET", "motivo": "Sede no Rio de Janeiro; sem unidade ou convênio na PB encontrado." },
+    { "name": "Agiel", "motivo": "Sediada em Pará de Minas (MG); sem unidade na PB encontrada." },
+    { "name": "Estagiar", "motivo": "Aparece apenas em lista de agentes da UFRGS (RS); sem atuação na PB comprovada." },
+    { "name": "Mudes", "motivo": "Nenhum resultado para a PB nas buscas." },
+    { "name": "Uniestágio", "motivo": "Nenhum resultado para a PB nas buscas." },
+    { "name": "IEL Pará / FIEPA", "motivo": "Outro estado (Pará); não confundir com IEL Paraíba." },
+    { "name": "UFPB SEAD (Superintendência de Educação a Distância)", "motivo": "Não é programa de estágio; resultado homônimo da sigla SEAD." },
+    { "name": "Prefeitura de João Pessoa - seleção de estágio", "motivo": "Só encontrada seleção de 2016; sem edital ou canal atual." },
+    { "name": "TRE-PB, Prefeitura de Campina Grande (STTP, Obras), CORENPB, CAGEPA", "motivo": "Contratam agente de integração ou fazem seleção própria de estagiários, mas não são agências com atendimento a estudantes. O agente contratado não foi identificado nas fontes." }
+  ],
+  "notas": "Limite de buscas da sessão foi atingido após cerca de 18 consultas; as 4 últimas (CIEE 2026 extended, IEL-PB extended, contratos de agente de integração em órgãos da PB, estágio em Patos) NÃO foram executadas. Lacunas: (1) CIEE PB sem telefone, horário nem confirmação atual dos endereços de JP e CG (fonte única sem data); (2) IEL-PB sem endereço, contato ou site; (3) nenhuma unidade na PB de NUBE, Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar ou Uniestágio foi achada, mas a busca web é fraca para empresas pequenas, então checar no Google Maps/Reclame Aqui e nas listas de convênios de UFPB, UEPB, IFPB e do TRE-PB; (4) Patos sem nenhuma entrada (CIEE, IEL, IFPB campus Patos, UFCG Patos não pesquisados); (5) Unipê e demais privadas (UNIFIP, Faculdade Maurício de Nassau, Facisa, etc.) sem central de estágio verificada; (6) nenhuma iniciativa de Instagram/WhatsApp de vagas de estágio na PB foi encontrada; (7) telefones e e-mails do IFPB e UFCG vêm de documentos de 2017-2023."
+}

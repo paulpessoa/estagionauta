@@ -1,0 +1,146 @@
+{
+  "uf": "CE",
+  "estado": "Ceará",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Cobertura PARCIAL: o limite de buscas da sessão foi atingido após ~9 buscas efetivas.",
+  "agencias": [
+    {
+      "name": "CIEE Ceará - Fortaleza",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Fortaleza",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://nossomeio.com.br/notas-rapidas/ciee-disponibiliza-451-vagas-de-estagio-e-aprendizagem-no-ceara/",
+        "https://www.opovo.com.br/noticias/economia/2026/02/26/mais-de-500-vagas-de-estagio-e-aprendizagem-no-ce.html",
+        "https://mais.opovo.com.br/jornal/farol/2025/06/19/fortaleza-tem-543-vagas-de-estagio-abertas-segundo-ciee.html"
+      ],
+      "observacoes": "Atendimento presencial com agendamento no Vapt Vupt do Antônio Bezerra (endereço completo e telefone não constaram nas fontes). Mutirão de vagas em Fortaleza (centro) em mar/2026. Cadastro e candidatura online pelo portal do CIEE."
+    },
+    {
+      "name": "CIEE Ceará - Juazeiro do Norte",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Juazeiro do Norte",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://nossomeio.com.br/notas-rapidas/ciee-disponibiliza-451-vagas-de-estagio-e-aprendizagem-no-ceara/"
+      ],
+      "observacoes": "Citada como unidade com atendimento presencial no Ceará (Fortaleza, Juazeiro do Norte e Sobral). Endereço e telefone não verificados."
+    },
+    {
+      "name": "CIEE Ceará - Sobral",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Sobral",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://nossomeio.com.br/notas-rapidas/ciee-disponibiliza-451-vagas-de-estagio-e-aprendizagem-no-ceara/"
+      ],
+      "observacoes": "Citada como unidade com atendimento presencial no Ceará. Endereço e telefone não verificados."
+    },
+    {
+      "name": "CIEE - Posto de atendimento Unifor",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Fortaleza",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://unifor.br/-/universidade-de-fortaleza-agora-conta-com-posto-do-ciee-no-campus",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://unifor.br/-/universidade-de-fortaleza-agora-conta-com-posto-do-ciee-no-campus"
+      ],
+      "observacoes": "Posto no Centro de Convivência do campus da Unifor, seg-sex 9h-16h, segundo comunicado de 2023. Pode ter sido desativado; checar."
+    },
+    {
+      "name": "IEL Ceará (Instituto Euvaldo Lodi / FIEC)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Fortaleza",
+      "address": "Av. Barão de Studart, 1980, Aldeota, Fortaleza - CE, CEP 60120-024 (Casa da Indústria / FIEC)",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/iel-tem-18-mil-vagas-de-estagio-com-bolsas-de-ate-r-21-mil/",
+        "https://portal.tjce.jus.br/uploads/2026/01/TR-IEL-03-2026_03.pdf",
+        "https://arquivos.sfiec.org.br/sfiec/files/files/revista-da-fiec_ed-159.pdf"
+      ],
+      "observacoes": "Atua como agente de integração em Fortaleza e interior (ex.: contrato com o TJCE). O endereço é o da sede da FIEC; telefones da Revista da FIEC ((85) 3421-5434/5435) são da federação, não confirmados como linha do estágio, por isso phone=null. Site oficial do IEL-CE não verificado."
+    },
+    {
+      "name": "Agência de Estágios da UFC",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Fortaleza",
+      "address": "Av. da Universidade, 2853, Benfica, Fortaleza - CE (prédio da Reitoria)",
+      "atendimento": "presencial",
+      "phone": "(85) 3366-7413",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://prex.ufc.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://prex.ufc.br/wp-content/uploads/2017/08/ufc-estagios-edital-1-2017-i-encontroestagios.pdf",
+        "https://repositorio.ufc.br/handle/riufc/56181"
+      ],
+      "observacoes": "Coordenadoria da Pró-Reitoria de Extensão (PREX), intermedia convênios e contratos de estágio dos alunos da UFC. Endereço e telefone vêm de documento de 2017; conferir atualidade."
+    },
+    {
+      "name": "UECE - estágios (PROEX / coordenações de curso)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Fortaleza",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.uece.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.uece.br/wp-content/uploads/2019/06/RES-3451-CEPE.pdf"
+      ],
+      "observacoes": "Estrutura de estágio existe (Resolução CEPE 3451; PROEX historicamente), mas não foi achado um setor/contato dedicado atual. Precisa checagem humana."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "NUBE (Núcleo Brasileiro de Estágios)",
+      "motivo": "Busca não achou unidade ou atendimento no Ceará; sede em São Paulo. Reavaliar se houver convênio com UFC/UECE/IFCE."
+    }
+  ],
+  "notas": "Cobertura PARCIAL. O limite de buscas da sessão foi atingido; não foram pesquisados: Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio no CE; centrais de Unifor, IFCE, Uni7, Unichristus, Estácio, UVA (Sobral), URCA/UFCA (Crato/Juazeiro); programa de estágio do Governo do CE / Prefeitura de Fortaleza; iniciativas de Instagram/WhatsApp com vagas. Órgãos públicos que usam o IEL como agente (TJCE, TRE-CE) e a COGERH (seleção de estágio em 2025) apareceram, mas sem canal de atendimento próprio verificado, então não entraram como agência. Endereços e telefones do CIEE (Vapt Vupt Antônio Bezerra, Juazeiro, Sobral) precisam ser obtidos no site oficial. Recomenda-se uma segunda rodada de buscas."
+}
