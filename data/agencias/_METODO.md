@@ -62,3 +62,33 @@ Campos:
 2. Uma entrada por unidade relevante (capital + polos do interior com atendimento próprio).
 3. Rede nacional sem unidade na UF → não entra (ou entra em `descartadas` com o motivo).
 4. Rejeitar nunca apaga no banco: o reconcile só sugere; a decisão é humana.
+
+## Revisão da base existente (`db/` → `review/`)
+
+`db/<UF>.json` é o export da tabela `agencies` (gerado por `api/scripts/agencies/export-for-review.mjs`).
+O agente revisa **cada registro** e escreve `review/<UF>.json`:
+
+```json
+{
+  "uf": "PE",
+  "revisado_em": "2026-10-21",
+  "decisoes": [
+    {
+      "id": "uuid do banco",
+      "name": "nome no banco",
+      "acao": "manter | atualizar | rejeitar | revisar_humano",
+      "motivo": "por que (ex.: 'não existe: nenhuma fonte, telefone de outra empresa')",
+      "campos": { "phone": "...", "is_whatsapp": true, "instagram": "@...", "website": "...", "email": "...", "logo_url": "https://..." },
+      "evidencias": ["https://..."]
+    }
+  ],
+  "novas": [{ "name": "ABRE ...", "city": "Recife", "instagram": "@...", "agency_type": "agencia_privada", "evidencias": ["..."] }]
+}
+```
+
+Critérios:
+- `rejeitar`: sem nenhuma fonte pública de que existe/atende estágio, fechou, duplicada, ou é de outro estado.
+- `atualizar`: existe e há dado novo com fonte (WhatsApp, Instagram, site, e-mail, logo do site/Instagram oficial).
+- `manter`: existe e os dados batem.
+- `revisar_humano`: indícios conflitantes.
+- `novas`: agências da lista de referência `<UF>.json` que não estão no banco (ex.: ABRE Recife, NUDEP).
