@@ -2,7 +2,7 @@
   "uf": "BA",
   "estado": "Bahia",
   "validado_em": "2026-10-21",
-  "metodo": "WebSearch público (sem APIs pagas); busca interrompida por limite de chamadas (~8 buscas efetivas)",
+  "metodo": "WebSearch público (sem APIs pagas); 2 rodadas (~8 + 15 buscas)",
   "agencias": [
     {
       "name": "CIEE Bahia - Salvador",
@@ -20,9 +20,10 @@
       "evidencias": [
         "https://www.correio24horas.com.br/economia/empregos/ciee-abre-mais-de-8-mil-vagas-de-estagio-e-jovem-aprendiz-na-bahia-saiba-como-se-candidatar-1225",
         "https://atarde.com.br/bahia/mais-de-600-vagas-para-estagio-e-jovem-aprendiz-estao-abertas-na-bahia-1400688",
-        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935"
+        "https://atarde.com.br/concursos/ciee-oferece-mais-de-400-vagas-de-estagio-na-bahia-1350935",
+        "https://www.bahianoticias.com.br/noticia/283013-maratona-do-ciee-que-oferece-vagas-de-estagio-na-bahia-registra-filas-em-salvador"
       ],
-      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana. Em evento passado (Maratona de Vagas) houve atendimento no CEMPRE, Av. Tancredo Neves, sem confirmar ponto permanente."
+      "observacoes": "Ponto de atendimento presencial citado em matérias (seg-sex, 9h-16h); endereço e telefone não apareceram nas fontes, precisa de checagem humana. Em evento passado (Maratona de Vagas) houve atendimento no CEMPRE, Av. Tancredo Neves, sem confirmar ponto permanente. Perfil de terceiros (ZoomInfo) cita Av. Tancredo Neves, 620, e (71) 2108-8901, sem fonte oficial: NAO adotado, conferir em ciee.org.br. Maratona de vagas em Salvador registrada por Bahia Notícias."
     },
     {
       "name": "CIEE Bahia - Camaçari",
@@ -129,21 +130,22 @@
       "agency_type": "instituto",
       "rede_nacional": "IEL",
       "city": "Salvador",
-      "address": null,
+      "address": "Sede FIEB: Rua Edístio Pondé, 342, STIEP, Salvador - BA (CEP não confirmado)",
       "atendimento": "misto",
       "phone": null,
       "whatsapp": null,
       "email": null,
-      "website": null,
+      "website": "https://www.fieb.org.br",
       "instagram": null,
       "status_validacao": "confirmada",
       "evidencias": [
         "https://atarde.com.br/empregos/iel-abre-mais-de-520-vagas-de-estagio-com-bolsas-de-ate-r-1874-1370228",
         "https://atarde.com.br/empregos/instituto-oferece-630-vagas-de-estagio-e-emprego-em-cidades-da-bahia-1366997",
         "https://www.correio24horas.com.br/economia/empregos/bolsa-de-ate-r-8-mil-iel-abre-600-vagas-de-estagio-e-emprego-na-bahia-0725",
-        "https://noticias.portaldaindustria.com.br/noticias/trabalho/iel-oferece-791-vagas-de-estagio-com-bolsas-de-ate-r-28-mil/"
+        "https://noticias.portaldaindustria.com.br/noticias/trabalho/iel-oferece-791-vagas-de-estagio-com-bolsas-de-ate-r-28-mil/",
+        "https://www.correio24horas.com.br/economia/empregos/premio-iel-anuncia-vencedores-da-etapa-bahia-em--cerimonia-no-dia-10-de-setembro-0926"
       ],
-      "observacoes": "Agente de integração do Sistema CNI/FIEB com centenas de vagas na BA (Salvador, RMS e interior); inscrição pelo portal do IEL Bahia. Endereço e site oficial não apareceram nos resultados."
+      "observacoes": "Agente de integração do Sistema CNI/FIEB com centenas de vagas na BA (Salvador, RMS e interior); inscrição pelo portal do IEL Bahia. Endereço e site oficial não apareceram nos resultados. Endereço é o da sede da FIEB (local do Prêmio IEL Bahia 2026); setor de estágio do IEL e telefone local não confirmados. Inscrição exclusivamente pelo portal do IEL Bahia. Telefone (61) 3362-6075 e e-mail estagio.iel@sistemafibra.org.br são do IEL nacional (Brasília), não usados."
     },
     {
       "name": "NUBE (Núcleo Brasileiro de Estágios) - atendimento Bahia",
@@ -161,7 +163,7 @@
       "evidencias": [
         "https://www.correio24horas.com.br/colunistas/empregos-e-solucoes/salvador-oferece-mais-de-10-mil-vagas-de-estagio-em-janeiro-confira-0125"
       ],
-      "observacoes": "Sede em São Paulo; sem unidade física em Salvador encontrada. Correio cita cerca de 1.554 oportunidades na BA via nube.com.br (matéria de ~jan/2025)."
+      "observacoes": "Sede em São Paulo; sem unidade física em Salvador encontrada. Correio cita cerca de 1.554 oportunidades na BA via nube.com.br (matéria de ~jan/2025). Correio (mar/2022) citava 95 vagas para Salvador; sede em São Paulo (R. Barão de Itapetininga, 140); sem unidade na BA."
     },
     {
       "name": "CIDE - Capacitação, Inserção e Desenvolvimento (agente do estágio da Prefeitura de Salvador)",
@@ -175,11 +177,13 @@
       "email": null,
       "website": null,
       "instagram": null,
-      "status_validacao": "nao_confirmada",
+      "status_validacao": "provavel",
       "evidencias": [
-        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf"
+        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf",
+        "https://concursosnobrasil.com/concursos/ba/2026/08/19/ba-prefeitura-de-salvador-abre-edital-com-162-vagas-de-estagio/",
+        "https://semge.salvador.ba.gov.br/wp-content/uploads/2024/02/EDITAL-N-01-2024-REPUBLICACAO-DO-EDITAL.pdf"
       ],
-      "observacoes": "Edital 04/2023 da SEMGE cita o CIDE como agente de integração do processo seletivo de estágio superior da Prefeitura; contrato pode ter mudado desde 2023."
+      "observacoes": "CIDE aparece como executor dos processos seletivos de estágio da Prefeitura de Salvador (SEMGE) em editais 2023, 2024, 2025 e 2026 (04/2026 e 05/2026); sem endereço/contato encontrado."
     },
     {
       "name": "Programa de Estágio da Prefeitura de Salvador (SEMGE)",
@@ -195,9 +199,10 @@
       "instagram": null,
       "status_validacao": "provavel",
       "evidencias": [
-        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf"
+        "https://semge.salvador.ba.gov.br/wp-content/uploads/2023/11/EDITAL-04-2023.pdf",
+        "https://concursosnobrasil.com/concursos/ba/2026/08/19/ba-prefeitura-de-salvador-abre-edital-com-162-vagas-de-estagio/"
       ],
-      "observacoes": "Seleção de estagiários de nível superior publicada em edital pela SEMGE; edital de 2023, checar edital vigente."
+      "observacoes": "Editais recorrentes SEMGE (2023-2026); execução pelo CIDE. Editais 04/2026 e 05/2026 com inscrições já encerradas em 21/10/2026."
     },
     {
       "name": "Connect Estágios / Super Estágios (atuação junto ao TRE-BA)",
@@ -216,6 +221,119 @@
         "https://www.tre-ba.jus.br/transparencia-e-prestacao-de-contas/licitacoes/aditivos-e-contratos/arquivos/2020/tre-ba-ct-033-2020-contratacao-agente-de-integracao"
       ],
       "observacoes": "Contrato TRE-BA nº 033/2020 cita Connect Estágios Ltda (e-mail no domínio superestagios.com.br) como agente de integração; sem prova de unidade ou atendimento atual na BA. Site é inferência do domínio do e-mail, conferir."
+    },
+    {
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ba.gov.br",
+      "instagram": null,
+      "rede_nacional": null,
+      "name": "Partiu Estágio - Governo da Bahia (SAEB)",
+      "agency_type": "orgao_publico",
+      "city": "Salvador",
+      "atendimento": "online",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.correio24horas.com.br/minha-bahia/partiu-estagio-abre-inscricoes-para-57-mil-vagas-em-orgaos-publicos-da-bahia-0926",
+        "https://atarde.com.br/bahia/bahia-convoca-535-universitarios-para-estagio-em-orgaos-publicos-1394628",
+        "https://www.bahianoticias.com.br/noticia/290849-partiu-estagio-disponibiliza-1733-vagas-para-salvador"
+      ],
+      "observacoes": "Programa estadual da Secretaria da Administração (Saeb), recorrente; edital 001/2026 com 5.937 vagas, 2ª seleção com 5.718 vagas em 54 órgãos e 309 municípios (inscrições até 2/10/2026). Inscrição e resultado via ba.gov.br / BA.GOV.BR, avisos por WhatsApp. Sem endereço/telefone específico."
+    },
+    {
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.tjba.jus.br",
+      "instagram": null,
+      "rede_nacional": null,
+      "name": "Programa de Estágio do TJ-BA (CODES)",
+      "agency_type": "orgao_publico",
+      "city": "Salvador",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www7.tjba.jus.br/secao/arquivo/9/41898/DECRETO JUDICIARIO N 272, 24 DE MARCO DE 2026.pdf",
+        "https://www.bahianoticias.com.br/justica/noticia/68734-com-vagas-na-capital-e-interior-tj-ba-abre-selecao-para-cadastro-reserva-de-estagiarios-de-graduacao-e-pos-graduacao"
+      ],
+      "observacoes": "Gerido pela Coordenação de Desenvolvimento Organizacional e de Pessoas (CODES/Secretaria de Gestão de Pessoas); Decreto Judiciário 272/2026 define seleção por agente de integração e edital público. Sem canal de contato encontrado."
+    },
+    {
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ceaf.mpba.mp.br/estagios/",
+      "instagram": null,
+      "rede_nacional": null,
+      "name": "Programa de Estágio do MPBA (Unidade de Gestão de Estágios / CEAF)",
+      "agency_type": "orgao_publico",
+      "city": "Salvador",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://ceaf.mpba.mp.br/wp-content/uploads/2022/09/Resolucao-no-31-2022-Regulamenta-o-Programa-de-Estagio-instituido-no-ambito-do-Ministerio-Publico-do-Estado-da-Bahia.pdf",
+        "https://infomail.mpba.mp.br/wp-content/uploads/2022/12/INFORMATIVO-ESTAGIO.pdf"
+      ],
+      "observacoes": "Regulado pela Resolução 31/2022; seleção por edital (bolsa R$ 1.800 em edital anterior, 30h). Telefone/e-mail não encontrados."
+    },
+    {
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://isbet.org.br",
+      "instagram": null,
+      "rede_nacional": "ISBET",
+      "name": "ISBET (Instituto Brasileiro Pró-Educação, Trabalho e Desenvolvimento) - Bahia",
+      "agency_type": "instituto",
+      "city": "Salvador",
+      "atendimento": "misto",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://atarde.com.br/concursos/metro-bahia-e-isbet-oferecem-cadastro-gratuito-para-vagas-de-estagio-e-jovem-aprendiz-1391308"
+      ],
+      "observacoes": "Ponto de cadastro gratuito na estação Rodoviária do Metrô Salvador (ação pontual); relato de ex-funcionário cita processo em Salvador. Sem endereço de unidade permanente."
+    },
+    {
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "rede_nacional": null,
+      "name": "Central de Carreiras Unifacs",
+      "agency_type": "faculdade",
+      "city": "Salvador",
+      "atendimento": "presencial",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://querobolsa.com.br/revista/unifacs-estagio"
+      ],
+      "observacoes": "Central de Carreiras intermedia empresas e alunos, com feiras de oportunidades e parceria com Sine; sem endereço/contato atual."
+    },
+    {
+      "address": "Rua Emídio dos Santos, Barbalho, Salvador - BA",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ifba.edu.br/salvador",
+      "instagram": null,
+      "rede_nacional": null,
+      "name": "IFBA Campus Salvador - Gerência de Estágio e Egressos (GEE/DIREC)",
+      "agency_type": "faculdade",
+      "city": "Salvador",
+      "atendimento": "presencial",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portal.ifba.edu.br/salvador/documentos/extensao/ComunicadoDirec.pdf",
+        "https://portal.ifba.edu.br/salvador/documentos/extensao/Encaminhamento_CEE.pdf"
+      ],
+      "observacoes": "Estágios geridos pela DIREC/GEE e Comissão de Estágios e Egressos (Res. 02/2020); telefone/e-mail não encontrados; coordenador de estágio do curso é o primeiro ponto de contato."
     }
   ],
   "descartadas": [
@@ -230,7 +348,11 @@
     {
       "name": "IEL Mato Grosso do Sul",
       "motivo": "Outro estado (convênio com o IFBA, não é o IEL Bahia)"
+    },
+    {
+      "name": "Super Estágios (unidade Salvador)",
+      "motivo": "Nenhuma unidade na BA encontrada; entrada existente mantida como nao_confirmada (contrato TRE-BA 2020)"
     }
   ],
-  "notas": "Busca interrompida pelo limite de WebSearch do turno (cerca de 8 buscas efetivas de ~25). NAO cobertos: ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio na BA; centrais de estágio UFBA, UNEB, UEFS, UESB, UESC, Unifacs, Uninassau Salvador, IFBA; Programa de Estágio do Governo da Bahia (SAEB/Estado), TJ-BA e MP-BA; iniciativas de Instagram/WhatsApp de vagas na BA; agências em Juazeiro e Barreiras (CIEE ou outras). Nenhum endereço, telefone ou e-mail de unidade foi encontrado: todos null e precisam de checagem humana (ciee.org.br, portal IEL Bahia). Statuses conservadores: CIEE por matérias de imprensa (provavel); IEL confirmada por 4 fontes independentes."
+  "notas": "2 rodadas de WebSearch (~23 buscas). Nenhum telefone/e-mail/WhatsApp/Instagram de unidade foi encontrado em fonte oficial: todos null. Checagem humana: endereço/telefone das unidades CIEE-BA (Salvador, Camaçari, Feira, Conquista, Itabuna, Ilhéus; fonte de terceiros cita Av. Tancredo Neves 620 e (71) 2108-8901, não verificado); setor IEL Bahia dentro da FIEB; unidades Super Estágios/NUBE/ISBET na BA. NAO encontrados: Mudes, Abre, CEE, Agiel, Estagiar na BA; centrais de estágio UFBA, UNEB, UEFS, UESB, UESC, Uninassau (UNEB e Uninassau Pituba só aparecem em convênio com MPBA); perfis Instagram/WhatsApp de vagas (só canais institucionais: SineBahia, SIMM, WhatsApp do Partiu Estágio); agências em Juazeiro/Barreiras; agências privadas locais de Salvador. HEAD Estágios (D M Estágio) e Instituto CNA seguem descartadas por falta de evidência de unidade."
 }
