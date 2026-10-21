@@ -2,7 +2,7 @@
   "uf": "RJ",
   "estado": "Rio de Janeiro",
   "validado_em": "2026-10-21",
-  "metodo": "WebSearch público (sem APIs pagas); busca interrompida por limite de buscas da sessão",
+  "metodo": "WebSearch público (sem APIs pagas); 2 rodadas (~15 + 19 buscas standard)",
   "agencias": [
     {
       "name": "CIEE Rio",
@@ -11,8 +11,8 @@
       "city": "Rio de Janeiro",
       "address": null,
       "atendimento": "misto",
-      "phone": null,
-      "whatsapp": null,
+      "phone": "(21) 3535-4545",
+      "whatsapp": "(21) 3535-4545",
       "email": null,
       "website": "https://www.ciee.org.br",
       "instagram": null,
@@ -20,9 +20,10 @@
       "evidencias": [
         "https://diariodorio.com/nova-sede-do-ciee-rio-e-inaugurada-no-predio-da-abl-no-centro/",
         "https://www.tupi.fm/?p=1723558",
-        "https://portaltj.tjrj.jus.br/documents/d/guest/justi-cham-publ-ciee"
+        "https://portaltj.tjrj.jus.br/documents/d/guest/justi-cham-publ-ciee",
+        "https://www.reclameaqui.com.br/empresa/ciee-rj/"
       ],
-      "observacoes": "Nova sede administrativa no prédio da ABL (Centro, Castelo); a antiga sede na Rua da Constituição estava em reforma. Número exato do atendimento ao estudante não confirmado em fonte; checar no site oficial. Realiza mutirões de cadastro (ex.: estação Carioca do MetrôRio)."
+      "observacoes": "Nova sede administrativa no prédio da ABL (Centro, Castelo); rua/número não confirmados em fonte do CIEE (address null de propósito). Sede antiga na Rua da Constituição em reforma, com retomada do atendimento ao estudante prevista após a obra. Telefone/WhatsApp (21) 3535-4545 (seg-sex, ~8h-18h) vem do Reclame Aqui, não do site oficial: confirmar. Mutirões de cadastro (ex.: estação Carioca). CIEE também tem vagas em Duque de Caxias, Nova Iguaçu e Petrópolis (2022), sem unidade física confirmada."
     },
     {
       "name": "CIEE Rio - Niterói (mutirões / atendimento regional)",
@@ -48,9 +49,9 @@
       "agency_type": "fundacao",
       "rede_nacional": "Mudes",
       "city": "Rio de Janeiro",
-      "address": "Rua México, 119, 12º andar, Centro, Rio de Janeiro - RJ",
+      "address": "Rua México, 119, salas 1202 a 1208, Centro, Rio de Janeiro - RJ, CEP 20031-907",
       "atendimento": "misto",
-      "phone": null,
+      "phone": "(21) 3094-1181",
       "whatsapp": null,
       "email": null,
       "website": "https://www.mudes.org.br",
@@ -58,9 +59,11 @@
       "status_validacao": "provavel",
       "evidencias": [
         "https://portal2015.iff.edu.br/Acesso-a-Informacao/convenios-e-transferencias/arquivos-de-convenios-e-parcerias-vigentes/termo-aditivo-fundacao-mudes.pdf",
-        "https://jcconcursos.com.br/noticia/universitarios/383-vagas-de-estagio-no-rio-de-janeiro-8865"
+        "https://jcconcursos.com.br/noticia/universitarios/383-vagas-de-estagio-no-rio-de-janeiro-8865",
+        "https://www.betterteam.com/br/fundação-mudes",
+        "https://jcconcursos.com.br/noticia/empregos/mudes-vagas-estagio-65287"
       ],
-      "observacoes": "Endereço extraído de termo aditivo de convênio com o IFF (2021); pode ter mudado. Mudes tem postos de atendimento listados no site oficial (não consultado). Parceira da Secretaria de Estado de Trabalho e Renda (2024)."
+      "observacoes": "Endereço/telefone de diretório (Betterteam) e convênio IFF 2021; pode ter mudado. Candidatura por cadastro no site ou postos de atendimento (lista de postos não encontrada). Parceira da Secretaria de Estado de Trabalho e Renda."
     },
     {
       "name": "ISBET Rio de Janeiro",
@@ -80,7 +83,7 @@
         "https://br.indeed.com/cmp/Isbet",
         "https://www.jb.com.br/economia/noticias/2018/04/13/isbet-em-parceria-com-o-senac-abre-vaga-para-estagio.html"
       ],
-      "observacoes": "Matriz da instituição no Rio de Janeiro segundo Indeed/Idealist; endereço da unidade não encontrado. Cadastro pelo site isbet.org.br."
+      "observacoes": "Idealist/Indeed indicam sede no Rio de Janeiro; vagas divulgadas com cadastro em isbet.org.br (jornal O Dia). Endereço/telefone do Rio não encontrados (o único endereço achado é de Teresina-PI, não usado)."
     },
     {
       "name": "NUBE - Núcleo Brasileiro de Estágios (atendimento RJ)",
@@ -89,7 +92,7 @@
       "city": "Rio de Janeiro",
       "address": null,
       "atendimento": "online",
-      "phone": null,
+      "phone": "3004-6290",
       "whatsapp": null,
       "email": null,
       "website": "https://www.nube.com.br",
@@ -97,9 +100,10 @@
       "status_validacao": "nao_confirmada",
       "evidencias": [
         "https://portal2015.iff.edu.br/Acesso-a-Informacao/convenios-e-transferencias/arquivos-de-convenios-e-parcerias-vigentes/2023/estagio-com-agente-integrador-nube",
-        "https://www.diariodorio.com/feira-da-empregabilidade-oferece-mais-de-100-vagas-no-centro-de-niteroi/"
+        "https://www.diariodorio.com/feira-da-empregabilidade-oferece-mais-de-100-vagas-no-centro-de-niteroi/",
+        "https://folha.qconcursos.com/n/nube-oferece-225-vagas-de-estagio-para-o-rio-de-janeiro"
       ],
-      "observacoes": "Tem convênio com o IFF e participa de feira de empregabilidade em Niterói, mas unidade física no RJ não confirmada (sede em São Paulo, Rua Barão de Itapetininga, 140)."
+      "observacoes": "Convênio com IFF, feira em Niterói e divulgação de 200+ vagas no RJ (imprensa); telefone 3004-6290 citado pela imprensa (sem DDD informado). Unidade física no RJ não confirmada (sede SP, Rua Barão de Itapetininga, 140)."
     },
     {
       "name": "Super Estágios (vagas RJ)",
@@ -118,7 +122,7 @@
         "https://jcconcursos.com.br/noticia/empregos/brasil-tem-mais-de-11-mil-vagas-de-estagio-abertas-veja-estados-com-mais-oportunidades-134657",
         "https://mercadoeconsumo.com.br/10/01/2025/gestao/super-estagios-atinge-r-164-milhoes-e-preve-100-unidades-ate-2025/"
       ],
-      "observacoes": "Rede franqueada com milhares de vagas no RJ (levantamento 2025), mas franquia/unidade física no RJ não confirmada."
+      "observacoes": "Rede franqueada (~85 unidades, origem ES), milhares de vagas no RJ em levantamento 2025; franquia/unidade física no RJ não encontrada em busca específica."
     },
     {
       "name": "IEL Rio / Sistema Firjan",
@@ -137,7 +141,7 @@
         "https://en.wikipedia.org/wiki/Euvaldo_Lodi_Institute_of_Rio_de_Janeiro",
         "https://dutchculture.nl/location/firjan"
       ],
-      "observacoes": "Endereço é da sede da Firjan (fonte secundária); balcão específico de estágio do IEL/RJ não confirmado. Precisa de checagem humana."
+      "observacoes": "Endereço é o da sede Firjan (fonte secundária); balcão de estágio IEL/RJ e telefone não confirmados em busca específica. Checar firjan.com.br."
     },
     {
       "name": "UENF - Núcleo de Estágios (NUCEST)",
@@ -192,7 +196,7 @@
       "evidencias": [
         "https://portal.macae.ufrj.br/wp-content/uploads/2025/09/Resolucao-CEG-12_2008-Normas-para-Estagio-UFRJ.pdf"
       ],
-      "observacoes": "Só há a Resolução CEG 12/2008 de normas de estágio; contato da central não encontrado. Checar site da PR-1."
+      "observacoes": "Só a Resolução CEG 12/2008 (normas de estágio); contato da central não encontrado. Checar PR-1."
     },
     {
       "name": "Tribunal de Justiça do RJ - Programa de Estágio",
@@ -248,11 +252,151 @@
         "https://saude.prefeitura.rio/wp-content/uploads/sites/47/2024/07/EDITAL-CDP-98-REGULAMENTADOR-ESTAGIO-DE-GESTAO.pdf"
       ],
       "observacoes": "Edital de 2024; não confirmado se há processo seletivo vigente. Prefeitura do Rio em geral: nenhum programa/portal central localizado."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "UERJ - CETREINA (Departamento de Estágios e Bolsas)",
+      "agency_type": "faculdade",
+      "city": "Rio de Janeiro",
+      "atendimento": "misto",
+      "website": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://antigo.uerj.br/publicacoes/uerj_emdia/771/ARTE_UERJemDia_ed771.pdf",
+        "https://www.saberesnoensinodasartes.uerj.br/wp-content/uploads/2025/09/TERMO-DE-COMPROMISSO-DE-ESTAGIO-OBRIGATARIO-LICENCIATURAS-CAp-UERJ.pdf"
+      ],
+      "observacoes": "Órgão da UERJ (PR-1) que firma convênios/termos de estágio e organiza a Mostra de Estágios. Site oficial atual e contatos não confirmados (só domínio de teste apareceu). Programa Primeira Chance (estágio em órgãos estaduais) é da pró-reitoria de assistência estudantil."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Rua Marquês de São Vicente, 225, Gávea, Rio de Janeiro - RJ, CEP 22451-900 (endereço do campus; sala do CCESP não confirmada)",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "PUC-Rio - Coordenação Central de Estágios e Serviços Profissionais (CCESP)",
+      "agency_type": "faculdade",
+      "city": "Rio de Janeiro",
+      "atendimento": "misto",
+      "website": "http://www.ccesp.puc-rio.br",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://pucurgente.com.puc-rio.br//wp-content/uploads/2021/02/puc_urgente_1204.pdf"
+      ],
+      "observacoes": "Divulga estágios, trainee e vagas; site citado em material antigo (2014), não confirmado como ativo."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "Ibmec Rio - Ibmec Vagas (estágios)",
+      "agency_type": "faculdade",
+      "city": "Rio de Janeiro",
+      "atendimento": "online",
+      "website": "https://jobzi.com/edu/ibmecvagas",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://blog.ibmec.br/wp-content/uploads/2025/03/ManualEstagioIbmec2025.pdf"
+      ],
+      "observacoes": "Manual de estágio Ibmec 2025 cita o portal Ibmec Vagas (Jobzi); empresas conveniadas consultadas nas unidades (Centro e Barra). Telefone não encontrado."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "UFF - Divisão de Estágio (PROGRAD/CAEG)",
+      "agency_type": "faculdade",
+      "city": "Niterói",
+      "atendimento": "presencial",
+      "website": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://uff.br/wp-content/uploads/2024/05/informativo_prograd_dezembro.pdf"
+      ],
+      "observacoes": "Divisão de Estágio citada em informativo PROGRAD e editais de estágio interno; contato atual não encontrado."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "UGB/FERP - Central de Estágio (Volta Redonda)",
+      "agency_type": "faculdade",
+      "city": "Volta Redonda",
+      "atendimento": "presencial",
+      "website": "https://www3.ugb.edu.br",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www3.ugb.edu.br/Arquivossite/CentralEstagio/pdfdoc/RegulamentoDeEstagio.pdf"
+      ],
+      "observacoes": "Regulamento institucional descreve a Central de Estágio; contato não encontrado."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "instagram": null,
+      "name": "Prefeitura do Rio - Programa de Estágio (estagio.prefeitura.rio)",
+      "agency_type": "orgao_publico",
+      "city": "Rio de Janeiro",
+      "atendimento": "online",
+      "website": "https://estagio.prefeitura.rio",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://estagio.prefeitura.rio/wp-content/uploads/sites/55/2024/07/RESPONSABILIDADES-29.07.2024-3.pdf",
+        "https://saude.prefeitura.rio/wp-content/uploads/sites/47/2024/01/Dec-45582_2018.pdf"
+      ],
+      "observacoes": "Programa criado pelo Decreto Rio 45.582/2018; vagas divulgadas no portal pela Coordenadoria de Concursos, Admissão e Acumulação. Telefone/e-mail não encontrados."
     }
   ],
   "descartadas": [
-    { "name": "SuperVia (programa de estágio)", "motivo": "empresa de trens com programa próprio, não é agência; sem relação com a Super Estágios" },
-    { "name": "Prefeitura de Nova Friburgo (processo via CIEE)", "motivo": "processo seletivo pontual intermediado pelo CIEE, não é agência" }
+    {
+      "name": "SuperVia (programa de estágio)",
+      "motivo": "empresa de trens com programa próprio, não é agência; sem relação com a Super Estágios"
+    },
+    {
+      "name": "Prefeitura de Nova Friburgo (processo via CIEE)",
+      "motivo": "processo seletivo pontual intermediado pelo CIEE, não é agência"
+    },
+    {
+      "name": "Agiel (Agência de Integração Empresa Escola)",
+      "motivo": "sede em Pará de Minas-MG, convênios em MG/RS; sem unidade no RJ encontrada"
+    },
+    {
+      "name": "Estagiar (Estagiar Serviços de Integração)",
+      "motivo": "sede em Porto Alegre-RS; só convênio IFF, sem filial carioca comprovada"
+    },
+    {
+      "name": "CEE (Conselho Estadual de Educação)",
+      "motivo": "resultados são a Deliberação CEE/RJ 337/2013 (norma), não agência"
+    },
+    {
+      "name": "Uniestágio",
+      "motivo": "nenhuma fonte encontrada"
+    },
+    {
+      "name": "Companhia de Estágios",
+      "motivo": "nenhuma fonte encontrada no RJ"
+    },
+    {
+      "name": "Abre (Agência Brasileira de Estágios)",
+      "motivo": "só 0800 nacional (agregador) e registro em SP/Osasco; unidade no RJ não comprovada (voltar se surgir fonte)"
+    }
   ],
-  "notas": "Busca encerrada antes do planejado: o limite de buscas da sessão foi atingido após cerca de 15 buscas. Nenhum telefone, e-mail ou Instagram foi encontrado em fonte, então todos estão null (não inventados). Não pesquisados/pendentes: Abre, CEE, Agiel, Estagiar, Uniestágio, Companhia de Estágios no RJ; centrais da UERJ, UFF, PUC-Rio, Estácio e IBMEC; unidades do interior (Duque de Caxias, Nova Iguaçu, Petrópolis, Volta Redonda); iniciativas de Instagram/WhatsApp com vagas de estágio no RJ; confirmação dos endereços do CIEE Rio (ABL, Av. Presidente Wilson, 203, sugerido apenas por fonte indireta) e do IEL/RJ. Fundação Mudes e ISBET precisam de checagem dos postos nos sites oficiais."
+  "notas": "Lacunas: telefones/e-mails/Instagram quase todos null (nenhuma fonte oficial acessível; WebFetch indisponível). Precisam de checagem humana nos sites oficiais: endereço atual do CIEE Rio (ABL, rua/nº) e confirmação do (21) 3535-4545 (veio do Reclame Aqui); postos da Fundação Mudes e telefone (21) 3094-1181 (diretório); endereço/telefone ISBET RJ; balcão IEL/RJ na Firjan; unidades RJ de NUBE (tel 3004-6290 só de imprensa), Super Estágios e Abre; centrais UFRJ, UFF, UERJ (CETREINA), PUC-Rio (CCESP) e Estácio (nada encontrado). Interior: sem unidade física de agência confirmada em Caxias, Nova Iguaçu, Petrópolis, Volta Redonda (CIEE tem vagas nesses municípios); só UENF (Campos) e UGB (Volta Redonda). Agiel, Estagiar, Uniestágio, Companhia de Estágios e CEE sem presença comprovada no RJ (ver descartadas). Iniciativas só de Instagram/WhatsApp não pesquisadas."
 }
