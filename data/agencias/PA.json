@@ -1,0 +1,117 @@
+{
+  "uf": "PA",
+  "estado": "Pará",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "CIEE Pará - Belém",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Belém",
+      "address": "Edifício Síntese 21, Av. Conselheiro Furtado, nº 2865, Loja 2, Cremação, Belém - PA",
+      "atendimento": "misto",
+      "phone": "3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.oliberal.com/emprego/ciee-divulga-vagas-de-estagio-em-belem-maraba-e-santarem-com-bolsas-de-ate-r-900-1.1132136",
+        "https://dol.com.br/noticias/cursos--empregos/934409/belem-e-ananindeua-ciee-abre-vagas-de-estagio-com-bolsas-de-ate-r-1400",
+        "https://diariodopara.com.br/concursos-e-empregos/ciee-abre-158-vagas-em-estagios-e-aprendizagem-no-para-veja-como-se-inscrever/"
+      ],
+      "observacoes": "Atendimento presencial seg-sex 9h-16h. Telefone é a Central nacional CIEE, não linha direta da unidade."
+    },
+    {
+      "name": "CIEE Pará - Marabá",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Marabá",
+      "address": "Folha 32, Quadra 19, Lote Especial, Sala 102, Nova Marabá, Marabá - PA",
+      "atendimento": "presencial",
+      "phone": "3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": ["https://diariodopara.com.br/para/maratona-do-ciee-oferece-87-vagas-no-para-saiba-como-se-inscrever/"],
+      "observacoes": "Endereço de uma única matéria (Maratona de Vagas, mar/2026). Telefone é a Central nacional."
+    },
+    {
+      "name": "CIEE Pará - Santarém",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Santarém",
+      "address": "Travessa Professora Agripina de Matos, 788, Sala 05, Caranazal, Santarém - PA",
+      "atendimento": "presencial",
+      "phone": "3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": ["https://diariodopara.com.br/para/maratona-do-ciee-oferece-87-vagas-no-para-saiba-como-se-inscrever/"],
+      "observacoes": "Endereço de uma única matéria (Maratona de Vagas, mar/2026). Telefone é a Central nacional."
+    },
+    {
+      "name": "IEL Pará (Sistema FIEPA)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Belém",
+      "address": "Rua Quintino Bocaiúva, 1588, Belém - PA, CEP 66035-190",
+      "atendimento": "misto",
+      "phone": "(91) 4009-4700",
+      "whatsapp": null,
+      "email": "encaminhamento@iel-pa.org.br",
+      "website": "https://www.iel-pa.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariodopara.com.br/concursos-e-empregos/estagio-iel-oferta-2-mil-vagas-e-ha-oportunidades-do-para-confira/",
+        "https://www.fiepa.org.br/fiepa/storage/app/public/docs/March2024/9ZDxHx7CuVp37TFFdV9V.pdf"
+      ],
+      "observacoes": "Linha geral FIEPA (91) 4009-4900; estágio: 4009-4700/4712/4713. Fontes de 2022-2024; cadastro via PANDAPÉ. Atende também Santarém, Marabá e Castanhal (castanhal@iel-pa.org.br)."
+    },
+    {
+      "name": "Central de Estágios UFPA (PROEG - Mobilidade, Estágio e Bolsas)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Belém",
+      "address": "Prédio da Reitoria, 2º andar, Campus do Guamá, Belém - PA",
+      "atendimento": "misto",
+      "phone": "(91) 3201-7265",
+      "whatsapp": null,
+      "email": "cadisdensino@ufpa.br",
+      "website": "http://www.centraldeestagios.ufpa.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://www.odontologia.ufpa.br/arquivos/Cartilha de estágio.pdf"],
+      "observacoes": "Dados da cartilha de 2020; checar proeg.ufpa.br."
+    },
+    {
+      "name": "NUBE - Núcleo Brasileiro de Estágios (atendimento online no PA)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "NUBE",
+      "city": "Belém",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.nube.com.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://diariodopara.com.br/concursos-e-empregos/confira-quase-10-mil-vagas-de-estagios-abertas-veja-como-se-inscrever"],
+      "observacoes": "Sem unidade física no PA encontrada; vagas para técnico divulgadas por jornal local. Atende por cadastro online."
+    }
+  ],
+  "descartadas": [
+    {"name": "Agiel", "motivo": "sede em Pará de Minas (MG), não é do Pará; atendimento virtual não confirmado"},
+    {"name": "Super Estágios Belém", "motivo": "nenhuma unidade em Belém encontrada"},
+    {"name": "ISBET / Mudes / Abre Pará", "motivo": "nenhuma unidade ou menção no PA encontrada"}
+  ],
+  "notas": "Lacunas: UEPA (prograd.uepa.br), Unama e Cesupa sem contato de central de estágio encontrado; programa de estágio do Governo do Pará/SEAD e Prefeitura de Belém (possível 'Ponto de Partida') sem canal confirmado; sem perfis de Instagram/WhatsApp de vagas de estágio localizados; agências privadas locais de Belém não encontradas; Instagram oficial do CIEE-PA e IEL-PA não confirmado. Telefones do CIEE são da central nacional. Demais órgãos com estágio citados na imprensa (MPPA, PGE-PA, TRE-PA, SESC-PA, Ministério da Saúde) não adicionados por falta de canal confirmado."
+}
