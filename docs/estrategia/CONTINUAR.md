@@ -44,11 +44,13 @@ Não aplique nada no banco: o Paul roda apply-review.mjs localmente (dry-run pri
 
 ## Progresso das listas de referência (`data/agencias/<UF>.json`)
 
-Rodada 1: 20 UFs com pesquisa parcial (cerca de 8 buscas cada, por causa da cota). As rodadas seguintes completam a lista.
+Todas as 27 UFs têm lista. Entradas (confirmadas) após a rodada indicada.
 
-| UF | Rodada 1 | Pendente |
+| Rodada | UFs | Entradas (confirmadas) |
 |---|---|---|
-| AC, AM, AP, PA, RO, RR, TO | não iniciada | lista inteira |
-| AL, BA, CE, DF, ES, GO, MA, MG, MS, MT, PB, PE, PI, PR, RJ, RN, RS, SC, SE, SP | parcial | agências privadas, centrais das universidades, iniciativas de Instagram/WhatsApp, contatos |
+| 2 (completada) | PE 16 (4) · SP 26 (3) · RJ 19 (2) · MG 14 (3) · BA 17 (2) · RS 20 (4) · PR 22 (14) | PE: NUDEP confirmado, ABRE Recife provável (existe como "Recife Mercado de Trabalho e Serviços Administrativos Ltda", sem contatos) |
+| 1 (Norte, nova) | AC 7 (1) · AM 4 (1) · AP 9 (1) · PA 6 (1) · RO 7 (1) · RR 8 (1) · TO 7 (2) | falta contato quase em todas |
+| 1 (parcial, ainda para a rodada 2) | SC 7 (0) · CE 7 (2) · DF 5 (3) · GO 5 (2) · ES 5 (3) · MA 5 (1) · PI 6 (1) · RN 3 (0) · PB 12 (3) · AL 4 (0) · SE 3 (1) · MT 7 (0) · MS 3 (0) | próxima onda |
 
-Atualize esta tabela a cada onda.
+Pendências conhecidas: WhatsApp do NUDEP; extrair a lista inteira do PDF de agentes conveniados da UFPE; conferir por telefone o endereço do CIEE Curitiba e do CIEE SP (Tabapuã 445 vs 540); validar URL/telefone do portal Imap (Curitiba).
+Contatos vindos de Reclame Aqui, diretórios ou imprensa estão marcados nas `notas` de cada JSON e precisam de checagem humana.
