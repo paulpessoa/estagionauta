@@ -1,0 +1,286 @@
+{
+  "uf": "MG",
+  "estado": "Minas Gerais",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público standard (sem APIs pagas); 16 buscas na 2ª rodada",
+  "agencias": [
+    {
+      "name": "CIEE Minas Gerais (CIEE/MG)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Belo Horizonte",
+      "address": "Rua Célio de Castro, 79, bairro Floresta, Belo Horizonte - MG, CEP 31110-000",
+      "atendimento": "misto",
+      "phone": "(31) 3429-8100",
+      "whatsapp": "(31) 3429-8100",
+      "email": "cieemg@cieemg.org.br",
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.cieemg.org.br/",
+        "https://www.cieemg.org.br/institucional",
+        "https://www.yelp.com/biz/ciee-belo-horizonte",
+        "https://diariodocomercio.com.br/?p=357477"
+      ],
+      "observacoes": "Sede administrativa/regional BH conforme site oficial. Yelp confirma o endereço, mas lista outro telefone, (31) 3442-9722 (provavelmente desatualizado). Unidades do interior (Uberlândia, Juiz de Fora, Montes Claros etc.) não foram verificadas: precisam de checagem humana. WhatsApp (31) 3429-8100 citado em release de imprensa do CIEE/MG (sem data); Sul de Minas tem regional em Varginha."
+    },
+    {
+      "name": "IEL Minas Gerais (IEL-MG / FIEMG) - IEL Carreiras",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Belo Horizonte",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": "estudanteiel@fiemg.com.br",
+      "website": "https://www.fiemg.com.br/",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariodocomercio.com.br/vagas/vagas-estagio-iel-mg/",
+        "https://www.fiemg.com.br/?p=1067",
+        "https://diariodocomercio.com.br/vagas/vagas-estagio-iel-mg/"
+      ],
+      "observacoes": "Inscrição pelo portal IEL Carreiras (IEL Hub de Carreiras). Notícia recente cita 52 vagas de estágio em 16 cidades de MG. Endereço, telefone e e-mail atuais não apareceram em fonte; o endereço de BH achado era de 2011 e foi descartado como desatualizado. E-mails citados em matérias: estudanteiel@fiemg.com.br (dúvidas de estudantes) e ielhubdecarreiras@fiemg.com.br. Endereço antigo (2011): Rua Alagoas, 76, Funcionários, BH - não confirmado hoje."
+    },
+    {
+      "name": "Super Estágios Belo Horizonte",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Belo Horizonte",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=124071"
+      ],
+      "observacoes": "Matéria sem data diz que a rede (franquia) tem uma unidade em BH e outra em Teófilo Otoni. Sem endereço, contato ou site oficial atual: confirmar se as unidades ainda operam."
+    },
+    {
+      "name": "Super Estágios Teófilo Otoni",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Teófilo Otoni",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=124071"
+      ],
+      "observacoes": "Mesma matéria sem data. Pode ter fechado ou mudado; precisa de humano."
+    },
+    {
+      "name": "UFU - Pró-Reitoria de Graduação (Estágio)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Uberlândia",
+      "address": "Av. João Naves de Ávila, 2121, Campus Santa Mônica, bairro Santa Mônica, Uberlândia - MG, CEP 38400-902",
+      "atendimento": "misto",
+      "phone": "(34) 3291-8984",
+      "whatsapp": null,
+      "email": "estagio@prograd.ufu.br",
+      "website": "https://prograd.ufu.br/",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://prograd.ufu.br/sites/prograd.ufu.br/files/media/documento/tce_interno_obrigatorio_3.pdf"
+      ],
+      "observacoes": "Contato de estágio extraído de termo de compromisso oficial da UFU (Prograd). Página atual do setor não foi confirmada."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "name": "CIEE/MG - Unidade Uberlândia (Triângulo Mineiro)",
+      "city": "Uberlândia",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariodocomercio.com.br/parceiros/ciee-estagios/com-a-retomada-do-atendimento-presencial-do-ciee-mg-empresas-voltam-a-contratar-estagiarios-e-aprendizes/",
+        "https://diariodocomercio.com.br/?p=357477"
+      ],
+      "observacoes": "Unidade regional Triângulo (Uberlândia/Uberaba) citada como reaberta ao presencial em 2020. Endereço e telefone não encontrados; consultar cieemg.org.br."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "name": "CIEE/MG - Unidade Varginha (Sul de Minas)",
+      "city": "Varginha",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariodocomercio.com.br/parceiros/ciee-estagios/com-a-retomada-do-atendimento-presencial-do-ciee-mg-empresas-voltam-a-contratar-estagiarios-e-aprendizes/"
+      ],
+      "observacoes": "Regional Sul de Minas sediada em Varginha (matéria de 2020). Sem endereço/telefone em fonte."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "name": "CIEE/MG - Unidade Montes Claros (Norte de Minas)",
+      "city": "Montes Claros",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=357477"
+      ],
+      "observacoes": "Supervisor regional Norte de Minas atua em Montes Claros (cobertura de feira de empregos). Unidade física/endereço não confirmados."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieemg.org.br/",
+      "instagram": null,
+      "name": "CIEE/MG - Unidade Juiz de Fora (Zona da Mata)",
+      "city": "Juiz de Fora",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://diariodocomercio.com.br/?p=357477"
+      ],
+      "observacoes": "Regional Zona da Mata (Juiz de Fora, Leopoldina, Barbacena) citada em release; nenhuma fonte com endereço. Precisa de humano."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "address": "Rua Benedito Valadares, 255, 3º andar, Centro, Pará de Minas - MG, CEP 35660-630",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.agiel.com.br/",
+      "instagram": null,
+      "name": "AGIEL - Agência de Integração Empresa Escola",
+      "city": "Pará de Minas",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.tre-pi.jus.br/transparencia-e-prestacao-de-contas/licitacoes-e-contratos/licitacoes/pregoes/arquivos/2019/tre-pi-pregao-28-2019-impugnacao-1",
+        "https://www.mg.gov.br/servico/fazer-estagio-obrigatorio-na-hemominas"
+      ],
+      "observacoes": "Endereço de documento de 2019 (pode estar desatualizado). Hemominas orienta cadastro de currículo no site agiel.com.br. Conveniada a UFMG em 2012-2017 e listada entre agentes da UFJF. Telefone não achado."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "misto",
+      "phone": "(32) 2102-3776",
+      "whatsapp": null,
+      "email": "estagio.prograd@ufjf.br",
+      "website": "https://www2.ufjf.br/estagio/",
+      "instagram": null,
+      "name": "UFJF - Gerência de Estágios (Prograd)",
+      "city": "Juiz de Fora",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www2.ufjf.br/prograd/institucional/contato-1-2/",
+        "https://www2.ufjf.br/estagio/convenios/agentes-de-integracao/"
+      ],
+      "observacoes": "Contato da página da Prograd; outras páginas usam domínio ufjf.edu.br no e-mail (divergência)."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ufmg.br/prograd/",
+      "instagram": null,
+      "name": "UFMG - Prograd, Diretoria de Mobilidade, Estágios e Bolsas",
+      "city": "Belo Horizonte",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ufmg.br/prograd/wp-content/uploads/2026/06/Estagio26.pdf"
+      ],
+      "observacoes": "Setor de estágios da Prograd; telefone/e-mail específicos não encontrados."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://prefeitura.pbh.gov.br/",
+      "instagram": null,
+      "name": "Prefeitura de Belo Horizonte - Banco de Estágios (GO BH)",
+      "city": "Belo Horizonte",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://prefeitura.pbh.gov.br/noticias/pbh-oferece-58-vagas-de-estagio-em-setembro-com-bolsas-de-ate-r-18-mil",
+        "https://diariodocomercio.com.br/vagas/pbh-vagas-estagio-bolsas/",
+        "https://www.itatiaia.com.br/emprego-e-concursos/pbh-passa-a-ofertar-mais-de-100-vagas-de-estagio-pelo-go-bh-entenda-mudanca/"
+      ],
+      "observacoes": "Inscrição gratuita on-line pela plataforma GO BH; bolsa até ~R$ 1,8 mil; 10% vagas PcD. Sem telefone/e-mail específico."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.mg.gov.br/estagio",
+      "instagram": null,
+      "name": "Governo de Minas - Portal de Estágios (Seplag-MG)",
+      "city": "Belo Horizonte",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.mg.gov.br/estagio/vaga/104855-vaga-de-estagio-administrativodcrs",
+        "https://www.agenciaminas.mg.gov.br/noticia/educacao-esta-com-quase-30-vagas-de-estagio-abertas-para-estudantes-de-nivel-superior-em-minas-gerais/"
+      ],
+      "observacoes": "Vagas do Estado publicadas no portal; SEE-MG usa estagio.universidadepatativa.com.br/vagas (fonte única, 2025). Sem contato direto."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "IEL Goiás / IEL Pará (contatos que apareceram na busca)",
+      "motivo": "outro estado"
+    },
+    {
+      "name": "ISBET (unidade em MG)",
+      "motivo": "InfoJobs a descreve como agente de integração, mas nenhuma fonte mostra unidade/atendimento em MG"
+    },
+    {
+      "name": "NUBE (unidade em MG)",
+      "motivo": "Sede em São Paulo; só há seleção remota para UNIFOR-MG; sem unidade física em MG comprovada"
+    }
+  ],
+  "notas": "2ª rodada (16 buscas). Sem fonte/unidade em MG: Mudes, Abre, CEE, Estagiar, Uniestágio, ISBET, NUBE (descartadas/sem evidência). Pendentes: endereço/telefone das unidades CIEE/MG do interior (Uberlândia, Varginha, Montes Claros, Juiz de Fora, Betim, Gov. Valadares, Pouso Alegre, Vespasiano citadas em 2020); endereço/telefone atual do IEL-MG; confirmar Super Estágios BH/Teófilo Otoni; contatos de PUC Minas, UEMG, Newton Paiva, Una, UFMG (telefone/e-mail); telefone da AGIEL; agências privadas de BH e perfis Instagram/WhatsApp de vagas não encontrados; Instagram de todas as entradas null (não verificado)."
+}

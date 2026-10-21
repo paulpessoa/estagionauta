@@ -1,0 +1,129 @@
+{
+  "uf": "AC",
+  "estado": "Acre",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "IEL Acre (Instituto Euvaldo Lodi)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null, "whatsapp": null, "email": null, "website": null, "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/no-aniversario-do-iel-todo-mundo-ganha-26-mil-vagas-de-estagio-abertas/",
+        "https://concursosnobrasil.com/concursos/ac/2021/09/17/seplag-ac-abre-vagas-de-estagio-em-processo-seletivo-veja-edital-e-como-se-inscrever/",
+        "https://concursosnobrasil.com/concursos/ac/2026/08/19/estagio-mp-ac-publica-edital-de-nivel-superior-em-diversas-areas/"
+      ],
+      "observacoes": "Opera estagio no AC (processos SEAD/SEPLAG, vagas em Rio Branco e Cruzeiro do Sul). Endereco/telefone nao apareceram em fonte: checagem humana."
+    },
+    {
+      "name": "CIEE Acre",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null, "whatsapp": null, "email": null,
+      "website": "https://ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.tre-ac.jus.br/transparencia-e-prestacao-de-contas/gestao-de-pessoas/arquivos-gestao-de-pessoas/edital-no-1-2025-processo-de-selecao-publica-de-estagiarios",
+        "https://concursosnobrasil.com/concursos/ac/2026/07/09/sead-ac-anuncia-edital-de-estagio-de-nivel-superior-com-bolsas-de-ate-r-1-20000/"
+      ],
+      "observacoes": "CIEE aparece como agente em editais TRE-AC 2025 e SEAD-AC jul/2026. Nao confirmei unidade fisica nem contato local."
+    },
+    {
+      "name": "Universidade Patativa do Assaré (UPA) - estágios SEAD-AC",
+      "agency_type": "outro",
+      "rede_nacional": null,
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "online",
+      "phone": null, "whatsapp": null, "email": null,
+      "website": "https://universidadepatativa.com.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://universidadepatativa.com.br/site/wp-content/uploads/2024/09/SEAD-AC-Ed001.24_EDITAL-2.pdf",
+        "https://concursosnobrasil.com/concursos/ac/2026/08/20/sead-upa-ac-anuncia-edital-de-estagio-para-estudantes-de-nivel-superior/"
+      ],
+      "observacoes": "Sede em Juazeiro do Norte-CE; atende o programa de estagio do Governo do AC (SEAD) por inscricao online. Sem unidade no AC. Fontes divergem (CIEE/IEL/UPA) sobre o agente nos editais 2026."
+    },
+    {
+      "name": "SEAD-AC - Programa de Estágio do Governo do Acre",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "online",
+      "phone": null, "whatsapp": null, "email": null,
+      "website": "https://www.ac.gov.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://concursosnobrasil.com/concursos/ac/2026/08/20/sead-upa-ac-anuncia-edital-de-estagio-para-estudantes-de-nivel-superior/",
+        "https://concursosnobrasil.com/concursos/ac/2026/03/23/sead-ac-divulga-processo-seletivo-simplificado-para-selecao-de-estagiarios/"
+      ],
+      "observacoes": "Editais periodicos (2026: bolsa R$800-1.200). Sem canal de atendimento proprio encontrado."
+    },
+    {
+      "name": "Ministério Público do Acre - Estágio",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "online",
+      "phone": null, "whatsapp": null, "email": null, "website": null, "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://concursosnobrasil.com/concursos/ac/2026/08/19/estagio-mp-ac-publica-edital-de-nivel-superior-em-diversas-areas/"],
+      "observacoes": "Edital 03/2026 (40 vagas). Sem canal de atendimento confirmado; provavelmente nao entra como agencia."
+    },
+    {
+      "name": "UFAC - Estágio (PROGRAD / setor de estágio)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null, "whatsapp": null, "email": null,
+      "website": "https://www.ufac.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufac.br/site/ufac/cooperacao-interinstitucional/modelos-de-termos-de-cooperacao/termo-de-cooperacao-estagios.docx"
+      ],
+      "observacoes": "UFAC tem modelos de termo de cooperacao de estagio e campus em Cruzeiro do Sul (Campus Floresta). Nao achei pagina/contato atual de central de estagio."
+    },
+    {
+      "name": "IFAC - Estágio (Reitoria/Campus Rio Branco)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Rio Branco",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null, "whatsapp": null,
+      "email": "reitoria@ifac.edu.br",
+      "website": "https://www.ifac.edu.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ifac.edu.br/orgaos-colegiados/conselhos/consu/resolucoes/2021/resolucoes-2021-1/resolucao-ndeg-51.pdf",
+        "https://www.infoescola.com/noticias/ifac-promove-feira-do-estagio-e-emprego-iniciativa-e-resultado-do-projeto-de-extensao-de-professora-da-instituicao"
+      ],
+      "observacoes": "E-mail e da reitoria (geral), nao do setor de estagio. IFAC tem regulamento de estagio e ja promoveu Feira do Estagio e Emprego."
+    }
+  ],
+  "descartadas": [
+    {"name": "NUBE", "motivo": "sem unidade/atendimento especifico no AC encontrado (sede SP)"},
+    {"name": "Super Estágios", "motivo": "sem unidade no AC encontrada"},
+    {"name": "ISBET", "motivo": "sede RJ; sem unidade no AC encontrada"},
+    {"name": "Agiel", "motivo": "sede Para de Minas-MG; sem unidade no AC encontrada"},
+    {"name": "Sebrae/AC", "motivo": "nao e agencia de estagio"}
+  ],
+  "notas": "Lacunas: nenhum endereco/telefone/WhatsApp/Instagram confirmado para CIEE-AC e IEL-AC (checar ciee.org.br e iel.org.br/fieac); nenhuma agencia local privada, perfil de Instagram/WhatsApp de vagas, programa da Prefeitura de Rio Branco (existe Decreto 1953/2013 Bolsa Estagio municipal, sem edital atual achado) ou central de estagio UFAC/IFAC com contato; Cruzeiro do Sul sem unidade propria localizada (IEL/SEPLAG ja ofertou vagas la). Apenas 11 buscas usadas."
+}

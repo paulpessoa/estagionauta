@@ -22,3 +22,21 @@ Regiões (STATES): Sul PR,SC,RS · Sudeste ES,MG,RJ,SP · Nordeste AL,BA,CE,DF,M
 - Rejeitar nunca apaga: só muda `status` para `rejected` (reversível).
 - Estado vem do endereço do Google, não da busca.
 - `apply.mjs` também zera `logo_url` que contenha `key=`.
+
+## Revisão registro a registro (sem APIs pagas)
+
+Fluxo para revisar **cada agência já cadastrada**, remover as falsas/inexistentes e completar contatos
+(WhatsApp, Instagram, site, e-mail, logo). Detalhes do formato em [`data/agencias/_METODO.md`](../../../data/agencias/_METODO.md).
+
+```bash
+cd api
+node scripts/agencies/export-for-review.mjs PE,PB      # 1. exporta a base atual → data/agencias/db/<UF>.json (commitar)
+# 2. agentes revisam cada registro via busca pública → data/agencias/review/<UF>.json
+node scripts/agencies/apply-review.mjs PE              # 3. dry run: mostra o que mudaria
+node scripts/agencies/apply-review.mjs PE --apply      # 4. grava (faz backup antes em output-review/)
+node scripts/agencies/reconcile-reference.mjs PE       # opcional: compara com a lista de referência data/agencias/<UF>.json
+```
+
+- `rejeitar` não apaga: muda `status` para `rejected` (reversível).
+- `atualizar` só preenche/corrige campos com evidência; nunca apaga um valor existente.
+- `revisar_humano` não altera nada.

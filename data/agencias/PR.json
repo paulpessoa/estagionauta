@@ -1,0 +1,457 @@
+{
+  "uf": "PR",
+  "estado": "Paraná",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Segunda rodada em 2026-10-21 (20 buscas) sobre a lista parcial anterior.",
+  "agencias": [
+    {
+      "name": "CIEE Paraná - Londrina",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Londrina",
+      "address": "Rua Pará, 162, Centro, Londrina - PR, CEP 86020-400",
+      "atendimento": "presencial",
+      "phone": "(43) 3322-4226",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://cieepr.org.br/unidades/londrina/",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/londrina/",
+        "https://www.cieepr.org.br/ciee-pr-inaugura-sua-nova-sede-em-londrina/"
+      ],
+      "observacoes": "Site oficial atual e notícia de inauguração da sede no mesmo endereço. Call center 0800 300 4300. O site ciee.inf.br mostra endereço antigo (Rua Belo Horizonte, 677) - desconsiderado."
+    },
+    {
+      "name": "CIEE Paraná - Curitiba (sede regional)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Curitiba",
+      "address": "Rua Ivo Leão, 42/50, Alto da Glória, Curitiba - PR, CEP 80030-180",
+      "atendimento": "presencial",
+      "phone": "(41) 3313-4300",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieepr.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/curitiba-sede/",
+        "https://cieepr.org.br/unidades/curitiba-espaco-de-capacitacao-e-cidadania-sede-f-fernando-fontana/",
+        "https://cieepr.org.br/canais-de-atendimento/"
+      ],
+      "observacoes": "Sede administrativa (página oficial, expediente 8h-17h30). Atendimento presencial a estudantes também no Espaço de Capacitação e Cidadania, Rua Dr. Faivre, 398, Centro, CEP 80060-140. Postos em instituições (PUCPR, Uninter, Positivo etc.) em cieepr.org.br/canais-de-atendimento/postos-em-instituicoes. Páginas de unidade são antigas: confirmar endereço por telefone. 0800 300 4300 para demais localidades. Canal público de WhatsApp de vagas CIEE-PR citado em buscas (https://www.whatsapp.com/channel/0029Va9NNKkHgZWjolOhKz0s) - titularidade não verificada."
+    },
+    {
+      "name": "CIEE Paraná - Maringá",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Maringá",
+      "address": "Rua Tomé de Souza, 45, Zona 02, Maringá - PR, CEP 87010-380",
+      "atendimento": "presencial",
+      "phone": "(44) 3218-0300",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.cieepr.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/maringa/",
+        "https://www.cieepr.org.br/ciee-pr-inaugura-sede-com-capacidade-para-atender-cerca-de-700-estudantes-em-maringa/",
+        "https://www.bemparana.com.br/noticias/economia/ciee-abre-quase-4-mil-vagas-para-estagio-e-jovem-aprendiz-no-parana-veja-onde/"
+      ],
+      "observacoes": "Sede regional inaugurada em 2022, em frente à Catedral; 8h30-17h seg-sex. Cerca de 356 vagas de estágio (2024)."
+    },
+    {
+      "name": "CIEE Paraná - Foz do Iguaçu",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Foz do Iguaçu",
+      "address": "Avenida Paraná, 417, Centro, Foz do Iguaçu - PR, CEP 85852-000",
+      "atendimento": "presencial",
+      "phone": "(45) 3574-5887",
+      "whatsapp": null,
+      "email": "fozdoiguacu@cieepr.org.br",
+      "website": "https://www.cieepr.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/foz-do-iguacu/",
+        "https://www.cieepr.org.br/ciee-pr-inaugura-nova-sede-em-foz-do-iguacu-e-amplia-atendimento-a-jovens-e-empresas-no-oeste-do-parana/"
+      ],
+      "observacoes": "Nova sede inaugurada (notícia oficial); 8h-17h30 seg-sex."
+    },
+    {
+      "name": "IEL Paraná (Instituto Euvaldo Lodi / FIEP) - Curitiba",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Curitiba",
+      "address": "Avenida Comendador Franco, 1341, Jardim Botânico, Curitiba - PR",
+      "atendimento": "misto",
+      "phone": "(41) 3271-7991",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://talento.ielpr.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2026/termos-de-estagio/termo-de-convenio-n-259810-firmado-entre-o-instituto-euvaldo-lodi-e-a-unespar",
+        "https://uenp.edu.br/ccp-publicacoes/uenp-ccp-convenios-de-estagio/2025-1/31845-termo-de-convenio-para-concessao-de-estagio-iel/file.html",
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/iel-abre-2-mil-oportunidades-de-estagio-pelo-pais/",
+        "https://www.fiepr.org.br/sindicatos/sindbor/uploadAddress/Portfolio-Estagio-2019[90770].pdf"
+      ],
+      "observacoes": "Convênios vigentes (UNESPAR 2026, UENP 2025); CEP 80215-090; candidaturas em talento.ielpr.com.br. Telefone (41) 3271-7991 (Curitiba e região metropolitana) vem de portfólio FIEP de 2019 - confirmar se segue ativo."
+    },
+    {
+      "name": "IEL Paraná - Londrina",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Londrina",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": "(43) 3294-5234",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://talento.ielpr.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2026/termos-de-estagio/termo-de-convenio-n-259810-firmado-entre-o-instituto-euvaldo-lodi-e-a-unespar",
+        "https://uenp.edu.br/ccp-publicacoes/uenp-ccp-convenios-de-estagio/2025-1/31845-termo-de-convenio-para-concessao-de-estagio-iel/file.html",
+        "https://www.fiepr.org.br/sindicatos/sindbor/uploadAddress/Portfolio-Estagio-2019[90770].pdf"
+      ],
+      "observacoes": "Unidade citada em convênio UENP 2025 (com CNPJ próprio) e portfólio FIEP 2019, de onde vem o telefone (confirmar se ativo). Endereço não encontrado."
+    },
+    {
+      "name": "IEL Paraná - Maringá",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Maringá",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": "(44) 3218-5700",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://talento.ielpr.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2026/termos-de-estagio/termo-de-convenio-n-259810-firmado-entre-o-instituto-euvaldo-lodi-e-a-unespar",
+        "https://uenp.edu.br/ccp-publicacoes/uenp-ccp-convenios-de-estagio/2025-1/31845-termo-de-convenio-para-concessao-de-estagio-iel/file.html",
+        "https://www.fiepr.org.br/sindicatos/sindbor/uploadAddress/Portfolio-Estagio-2019[90770].pdf"
+      ],
+      "observacoes": "Unidade citada em convênio UENP 2025 (com CNPJ próprio) e portfólio FIEP 2019, de onde vem o telefone (confirmar se ativo). Endereço não encontrado."
+    },
+    {
+      "name": "IEL Paraná - Ponta Grossa",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Ponta Grossa",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": "(42) 3219-5033",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://talento.ielpr.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2026/termos-de-estagio/termo-de-convenio-n-259810-firmado-entre-o-instituto-euvaldo-lodi-e-a-unespar",
+        "https://uenp.edu.br/ccp-publicacoes/uenp-ccp-convenios-de-estagio/2025-1/31845-termo-de-convenio-para-concessao-de-estagio-iel/file.html",
+        "https://www.fiepr.org.br/sindicatos/sindbor/uploadAddress/Portfolio-Estagio-2019[90770].pdf"
+      ],
+      "observacoes": "Unidade citada em convênio UENP 2025 (com CNPJ próprio) e portfólio FIEP 2019, de onde vem o telefone (confirmar se ativo). Endereço não encontrado."
+    },
+    {
+      "name": "IEL Paraná - Cascavel",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Cascavel",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": "(45) 3220-5410",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://talento.ielpr.com.br/oportunidades",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2026/termos-de-estagio/termo-de-convenio-n-259810-firmado-entre-o-instituto-euvaldo-lodi-e-a-unespar",
+        "https://uenp.edu.br/ccp-publicacoes/uenp-ccp-convenios-de-estagio/2025-1/31845-termo-de-convenio-para-concessao-de-estagio-iel/file.html",
+        "https://www.fiepr.org.br/sindicatos/sindbor/uploadAddress/Portfolio-Estagio-2019[90770].pdf"
+      ],
+      "observacoes": "Unidade citada em convênio UENP 2025 (com CNPJ próprio) e portfólio FIEP 2019, de onde vem o telefone (confirmar se ativo). Endereço não encontrado."
+    },
+    {
+      "name": "Portal de Estágios da Prefeitura de Curitiba (Imap)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Curitiba",
+      "address": null,
+      "atendimento": "online",
+      "phone": "(41) 3350-9591",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://estagio.imap.curitiba.pr.gov.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.bemparana.com.br/noticias/economia/prefeitura-de-curitiba-tem-751-vagas-de-estagio-remunerado-veja-como-se-candidatar/",
+        "https://www.bemparana.com.br/noticias/parana/prefeitura-de-curitiba-tem-94-vagas-de-estagio-remunerado/",
+        "https://www.curitiba.pr.gov.br/noticias/quer-fazer-estagio-na-prefeitura-de-curitiba-estudantes-podem-se-inscrever-em-90-vagas-abertas-em-junho/83475"
+      ],
+      "observacoes": "Inscrição online no Portal de Estágios do Imap (101 vagas em secretarias; 650 de Pedagogia pela Secretaria da Educação em edição de 751 vagas). URL e telefone aparecem em resumo de busca de documentos da prefeitura - checar o domínio ao publicar."
+    },
+    {
+      "name": "Central de Estágio do Governo do Paraná",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Curitiba",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.centraldeestagio.pr.gov.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.parana.pr.gov.br/Galeria-de-Imagens/Governo-do-Parana-tem-quase-400-vagas-de-estagio-abertas-em-todo-o-Estado",
+        "https://www.bemparana.com.br/trabalho-negocios/parana-tem-320-vagas-de-estagios-em-diferentes-orgaos-do-governo-saiba-como-se-candidatar/",
+        "https://www.policiacivil.pr.gov.br/sites/default/arquivos_restritos/files/documento/2026-01/edital_02_2026_-_estagio_nivel_superior.pdf",
+        "https://sites.uel.br/prograd/"
+      ],
+      "observacoes": "Cadastro obrigatório na Central de Estágios do Paraná para vagas em órgãos estaduais (editais Polícia Civil, UNESPAR, UEL). Telefone/e-mail não encontrados."
+    },
+    {
+      "name": "Interage (agência de estágio)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Curitiba",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.jooble.org/jdp/-3136464587403692966"
+      ],
+      "observacoes": "Aparece em vagas de agregador (Jooble) em Curitiba como agência de estágio; sem dados de contato. Checar se é agente de integração registrado. Nova busca (out/2026) não achou site, CNPJ nem convênio; permanece sem confirmação."
+    },
+    {
+      "name": "Evo Estágios Curitiba",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Curitiba",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.jooble.org/jdp/3405689820344334057"
+      ],
+      "observacoes": "Aparece em vagas de agregador (Jooble) como agência de estágios em Curitiba; sem dados de contato. Nova busca (out/2026) não achou site, CNPJ nem convênio; permanece sem confirmação."
+    },
+    {
+      "name": "Vehlor Ltda (agência de estágios)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Curitiba",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.jooble.org/jdp/2085301587516715054"
+      ],
+      "observacoes": "Listada em agregador (Jooble) como agência de estágios em Curitiba; sem dados de contato. Nova busca (out/2026) não achou site, CNPJ nem convênio; permanece sem confirmação."
+    },
+    {
+      "rede_nacional": "CIEE",
+      "address": "Rua Senador Pinheiro Machado, 305, Centro, Ponta Grossa - PR, CEP 84010-310",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://cieepr.org.br/unidades/ponta-grossa/",
+      "instagram": null,
+      "phone": "(42) 3222-6446",
+      "name": "CIEE Paraná - Ponta Grossa",
+      "agency_type": "instituto",
+      "city": "Ponta Grossa",
+      "atendimento": "presencial",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/ponta-grossa/",
+        "https://cieepr.org.br/escritorio-regional-do-ciee-pr-em-ponta-grossa-em-novo-endereco/"
+      ],
+      "observacoes": "Mudou de endereço em 2019; página atual da unidade confirma este endereço. 8h30-12h e 13h30-17h."
+    },
+    {
+      "rede_nacional": "CIEE",
+      "address": "Rua Recife, 1861, Centro, Cascavel - PR, CEP 85810-031",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://cieepr.org.br/unidades/cascavel/",
+      "instagram": null,
+      "phone": "(45) 3220-0200",
+      "name": "CIEE Paraná - Cascavel",
+      "agency_type": "instituto",
+      "city": "Cascavel",
+      "atendimento": "presencial",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/unidades/cascavel/",
+        "https://www.bemparana.com.br/noticias/economia/ciee-abre-quase-4-mil-vagas-para-estagio-e-jovem-aprendiz-no-parana-veja-onde/"
+      ],
+      "observacoes": "Página oficial; um diretório de terceiros (digitei.com) lista outro endereço (Rua Antonio Alves Massaneiro, 154) - desconsiderado, possivelmente antigo."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "whatsapp": null,
+      "email": "estagio@ufpr.br",
+      "website": "https://prograp.ufpr.br/estagios/",
+      "instagram": null,
+      "phone": "(41) 3310-2675",
+      "name": "UFPR - Unidade de Estágios (PROGRAP)",
+      "agency_type": "faculdade",
+      "city": "Curitiba",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://prograp.ufpr.br/estagios/",
+        "https://prograp.ufpr.br/coafe/apresentacao-estagios/"
+      ],
+      "observacoes": "Cadastro e homologação de estágios de alunos UFPR (antiga CGE/COAFE/COAPPE). Cada curso tem Comissão Orientadora de Estágio. Endereço não obtido."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Av. Sete de Setembro, 3165, Rebouças, Curitiba - PR, CEP 80230-901",
+      "whatsapp": null,
+      "email": "estagios-dicad@utfpr.edu.br",
+      "website": "https://www.utfpr.edu.br/estagios",
+      "instagram": null,
+      "phone": "(41) 3310-4541",
+      "name": "UTFPR - Estágios (Curitiba)",
+      "agency_type": "faculdade",
+      "city": "Curitiba",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.utfpr.edu.br/estagios",
+        "https://www.utfpr.edu.br/estagios/estagio-interno"
+      ],
+      "observacoes": "E-mail e telefone são do estágio interno (Curitiba/Reitoria); estágio externo é tratado por coordenação de cada curso. UTFPR divulga listas mensais de vagas em utfpr.edu.br/noticias (Tamo Junto). Endereço é do campus Curitiba."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Térreo do prédio Administrativo, Câmpus Curitiba, PUCPR (Rua Imaculada Conceição, 1155, Prado Velho)",
+      "whatsapp": "(41) 99661-6372",
+      "email": null,
+      "website": "https://www.pucpr.br/estudante/graduacao/estagios-e-carreira/",
+      "instagram": null,
+      "phone": "(41) 3271-2220",
+      "name": "PUCPR - Núcleo de Estágio (PUC Carreiras)",
+      "agency_type": "faculdade",
+      "city": "Curitiba",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.pucpr.br/estudante/graduacao/estagios-e-carreira/",
+        "https://www.pucpr.br/contatos/contatos-campus-curitiba/",
+        "https://www.pucpr.br/noticias/puc-carreiras-realiza-atendimentos-estudantes-e-egressos-em-busca-de-oportunidade-de-trabalho/"
+      ],
+      "observacoes": "Londrina: Núcleo NEO (43) 3372-6003. Telefone diverge entre páginas; WhatsApp na página oficial."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Rodovia Celso Garcia Cid, PR 445, Km 380, Campus Universitário, Londrina - PR, CEP 86057-970",
+      "whatsapp": null,
+      "email": "estagios@uel.br",
+      "website": "https://sites.uel.br/prograd/",
+      "instagram": null,
+      "phone": "(43) 3371-4900",
+      "name": "UEL - Divisão Central de Estágios e Intercâmbios",
+      "agency_type": "faculdade",
+      "city": "Londrina",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://sites.uel.br/prograd/canais-de-atendimento-telefones/",
+        "https://sites.uel.br/prograd/estudante/estagios-e-intercambios/estagios-e-intercambios-convenios-para-estagios/"
+      ],
+      "observacoes": "Páginas com datas variadas e telefones divergentes (também 3371-4373 e PROGRAD 3371-4333); ligar para confirmar. Endereço é o da PROGRAD."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Bloco B33, Sala 001, Av. Colombo, 5790, Jardim Universitário, Maringá - PR, CEP 87020-900",
+      "whatsapp": null,
+      "email": "sec-etg@uem.br",
+      "website": "https://www.pen.uem.br/site/public/etg",
+      "instagram": null,
+      "phone": "(44) 3011-4129",
+      "name": "UEM - Divisão de Estágios (ETG)",
+      "agency_type": "faculdade",
+      "city": "Maringá",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.pen.uem.br/site/public/etg",
+        "https://www.pen.uem.br/site/public/conteudo/8c77517f1aa6219cac0b9c6471b51f83b0b4546f"
+      ],
+      "observacoes": "Atendimento presencial só com agendamento, seg-sex 9h-11h e 14h-16h. Telefone alternativo (44) 3011-4562."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.up.edu.br",
+      "instagram": null,
+      "phone": null,
+      "name": "Universidade Positivo - Central de Carreiras",
+      "agency_type": "faculdade",
+      "city": "Curitiba",
+      "atendimento": "misto",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://cieepr.org.br/postos/universidade-positivo/"
+      ],
+      "observacoes": "Central de Carreiras citada apenas em artigo de 2008; contato próprio não encontrado (campus: Rua Prof. Pedro Viriato Parigot de Souza, 5300, tel. geral (41) 3317-3000 segundo diretório de terceiros, não usado). Existe posto do CIEE-PR na instituição."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "NUBE (Núcleo Brasileiro de Estágios)",
+      "motivo": "Buscas só retornaram a sede em São Paulo (Rua Barão de Itapetininga, 140); sem unidade física comprovada no PR. Atende online - checar com humano se entra como atendimento online."
+    },
+    {
+      "name": "Super Estágios",
+      "motivo": "Franquia nacional (sede Brasília-DF); nenhuma unidade no PR encontrada nas buscas."
+    },
+    {
+      "name": "ISBET",
+      "motivo": "Nenhum resultado relacionado ao PR."
+    },
+    {
+      "name": "Mudes, Abre, CEE, Uniestágio, Companhia de Estágios",
+      "motivo": "Sem evidência de unidade/atendimento no PR nas buscas feitas."
+    },
+    {
+      "name": "Agiel",
+      "motivo": "Aparece apenas em convênios de outros estados (UFMG/UFRGS); sem unidade no PR comprovada."
+    }
+  ],
+  "notas": "Rodada 2: confirmadas CIEE Curitiba, Maringá, Foz do Iguaçu, Ponta Grossa e Cascavel (páginas oficiais cieepr.org.br; páginas de unidade são antigas, confirmar horários), UFPR, UTFPR, PUCPR, UEL, UEM, Central de Estágio estadual. Lacunas: (a) endereço e e-mail das unidades IEL (Londrina, Maringá, Ponta Grossa, Cascavel) e telefones IEL vêm de portfólio FIEP 2019 - checar em ielpr.com.br; (b) Interage, Evo Estágios e Vehlor seguem nao_confirmadas (só anúncios no Jooble, sem site/CNPJ) - checar CNPJ e convênios com universidades; (c) Universidade Positivo sem contato da central; não buscados: UEPG, Unioeste, UniCuritiba, UniBrasil, FAE, Uninter, outras unidades CIEE (Campo Largo, Campo Mourão, Apucarana, Medianeira etc.); (d) URL/telefone do portal Imap (estagio.imap.curitiba.pr.gov.br, 3350-9591) vieram de resumo de busca - validar no navegador; (e) nenhum perfil Instagram/WhatsApp de vagas encontrado, exceto canal WhatsApp público do CIEE (https://www.whatsapp.com/channel/0029Va9NNKkHgZWjolOhKz0s, titularidade não verificada); (f) NUBE e demais redes seguem descartadas sem unidade comprovada no PR."
+}

@@ -1,0 +1,142 @@
+{
+  "uf": "MT",
+  "estado": "Mato Grosso",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Cobertura PARCIAL: o orçamento de buscas da sessão foi esgotado após ~8 chamadas (várias falharam por too_many_requests), então boa parte do checklist não foi executada.",
+  "agencias": [
+    {
+      "name": "CIEE Mato Grosso - Cuiabá",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Cuiabá",
+      "address": "Av. Mato Grosso, nº 226, Centro Norte, Cuiabá - MT",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://leiagora.com.br/ciee-tem-150-vagas-de-estagio-em-mato-grosso/",
+        "https://www.hnt.com.br/empregos-concursos/ciee-oferta-150-vagas-de-estagio-em-mato-grosso/581720",
+        "https://rdmonline.com.br/ciee-oferece-150-vagas-de-estagio-em-mato-grosso/",
+        "https://br.indeed.com/empregos-de-Ciee-Estagio-em-Cuiab%C3%A1,-MT"
+      ],
+      "observacoes": "Endereço vem de notícias que reproduzem release do CIEE (não são fontes independentes entre si); site oficial não pôde ser consultado. Telefone existe em site não oficial (ciee.website), antigo, e não foi copiado. Confirmar endereço/telefone no site oficial."
+    },
+    {
+      "name": "CIEE Mato Grosso - Rondonópolis",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Rondonópolis",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://leiagora.com.br/ciee-tem-150-vagas-de-estagio-em-mato-grosso/",
+        "https://rdmonline.com.br/ciee-oferece-150-vagas-de-estagio-em-mato-grosso/"
+      ],
+      "observacoes": "Notícias citam escritórios do CIEE em Cuiabá, Primavera do Leste, Rondonópolis, Sinop e Sapezal; endereço da unidade não encontrado."
+    },
+    {
+      "name": "CIEE Mato Grosso - Sinop",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Sinop",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://leiagora.com.br/ciee-tem-150-vagas-de-estagio-em-mato-grosso/",
+        "https://rdmonline.com.br/ciee-oferece-150-vagas-de-estagio-em-mato-grosso/"
+      ],
+      "observacoes": "Citada como escritório em notícias; endereço não encontrado."
+    },
+    {
+      "name": "CIEE Mato Grosso - Primavera do Leste",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Primavera do Leste",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://leiagora.com.br/ciee-tem-150-vagas-de-estagio-em-mato-grosso/"
+      ],
+      "observacoes": "Apenas citada em notícia; fora das cidades-alvo principais. Precisa de checagem humana."
+    },
+    {
+      "name": "CIEE Mato Grosso - Sapezal",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Sapezal",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://leiagora.com.br/ciee-tem-150-vagas-de-estagio-em-mato-grosso/"
+      ],
+      "observacoes": "Apenas citada em notícia; fora das cidades-alvo principais. Precisa de checagem humana."
+    },
+    {
+      "name": "Governo de Mato Grosso - Programa de Estágio Remunerado (SEPLAG)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Cuiabá",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://iomat.mt.gov.br/portal/edicoes/download/17151",
+        "https://www.saude.mt.gov.br/storage/old/files/007-[25679-111022-SES-MT].pdf"
+      ],
+      "observacoes": "Base legal: Decreto 121/2015 e IN 007/2022/SEPLAG (estágio remunerado na administração estadual, com agentes de integração). Não há canal de atendimento direto identificado; vagas via órgãos concedentes e Diário Oficial (IOMAT)."
+    },
+    {
+      "name": "IEL Mato Grosso (Sistema FIEMT)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Cuiabá",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://cms.fiemt.ind.br/arquivos/fatecsenai/files/Edital%20FATEC%20SENAI%20MT%20022_2023%20-%20SELE%C3%87%C3%83O%20TRE-MT(1).pdf"
+      ],
+      "observacoes": "Só há indício de que o Sistema FIEMT (FATEC SENAI MT) conduziu seleção de estágio do TRE-MT em 2023. Busca específica do IEL-MT falhou; unidade, endereço e contatos não verificados."
+    }
+  ],
+  "descartadas": [],
+  "notas": "Orçamento de buscas esgotado; NÃO foram pesquisados: IEL MT/FIEMT (contatos), NUBE, Super Estágios, ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio em MT, agências privadas de Cuiabá, centrais de estágio UFMT/Unemat/IFMT/Unic/Univag/UNIVAG/Uniderp, Prefeitura de Cuiabá e iniciativas de Instagram/WhatsApp. Também falta confirmar telefone/e-mail/Instagram do CIEE MT no site oficial. Reexecutar esses itens do checklist com nova sessão de buscas."
+}

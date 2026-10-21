@@ -1,0 +1,140 @@
+{
+  "uf": "TO",
+  "estado": "Tocantins",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "CIEE Tocantins",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Palmas",
+      "address": "401 Sul, Avenida Siqueira Campos, S/N, Conjunto 01, Lote 02, Plano Diretor Sul, Palmas - TO",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.conexaoto.com.br/2026/03/10/no-tocantins-ciee-disponibiliza-35-vagas-de-estagio-para-ensino-medio-tecnico-e-superior",
+        "https://www.conexaoto.com.br/2026/05/05/ciee-esta-com-53-vagas-abertas-para-os-programas-de-estagio-e-aprendizagem-no-tocantins",
+        "https://conexaoto.com.br/2026/02/24/ciee-anuncia-53-vagas-de-estagio-no-tocantins"
+      ],
+      "observacoes": "Atendimento seg-sex 8h-17h30 (nota de mar/2026). Telefone nao apareceu em fonte."
+    },
+    {
+      "name": "IEL Tocantins (Instituto Euvaldo Lodi - Nucleo Regional)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Palmas",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": "(63) 99981-7647",
+      "email": null,
+      "website": "https://sne.iel.org.br/sne/to",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://conexaoto.com.br/2025/10/20/iel-tocantins-oferta-vagas-de-estagio-em-sete-municipios-do-tocantins",
+        "https://conexaoto.com.br/2025/09/15/iel-oferta-estagios-remunerados-em-oito-municipios-do-tocantins",
+        "https://www.conexaoto.com.br/2025/06/23/iel-oferta-vagas-de-estagio-em-15-municipios-bolsas-de-ate-r-1-200-00"
+      ],
+      "observacoes": "WhatsApp divulgado em nota de out/2025. Endereco historico (2012, nao reconfirmado): Quadra 104 Sul, Rua SE 03, Lote 29, Ed. Armando Monteiro, terreo (sede FIETO). Vagas via mural eletronico/SNE. Ofertas em Palmas, Araguaina, Gurupi e outros municipios; nao ha endereco confirmado de unidades proprias em Araguaina/Gurupi."
+    },
+    {
+      "name": "Instituto Fecomercio Tocantins (estagio Sesc/Senac TO)",
+      "agency_type": "fundacao",
+      "rede_nacional": null,
+      "city": "Palmas",
+      "address": "Quadra 301 Norte, Av. Teotonio Segurado, Cj. 01, Lt. 19, Palmas - TO, CEP 77001-226",
+      "atendimento": "misto",
+      "phone": "(63) 3228-1906",
+      "whatsapp": null,
+      "email": "contato@institutofecomercioto.com.br",
+      "website": "https://institutofecomercioto.com.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.sescto.com.br/arquivos-site-sesc/processos_seletivo/02-2020/arquivo_processo_seletivo_637171257074847624.pdf",
+        "https://conexaoto.com.br/2023/06/15/instituto-fecomercio-oferece-vagas-de-estagio"
+      ],
+      "observacoes": "Seleciona estagiarios para unidades proprias (Sesc) em Palmas e Araguaina; nao e agente de integracao aberto. Contatos de editais 2018-2022."
+    },
+    {
+      "name": "Coordenacao de Estagio UFT",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Palmas",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.uft.edu.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://cg.fmrp.usp.br/wp-content/uploads/sites/369/2025/10/UFT-I.E_assinado.pdf"],
+      "observacoes": "Convenios de estagio existem, mas nao foi achada pagina/contato da central. Checar Pro-Reitoria de Graduacao e coordenacoes de curso."
+    },
+    {
+      "name": "Coordenacoes de Estagio Unitins",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Palmas",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.unitins.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": ["https://www.unitins.br/cms/Arquivos/Download/C03067CE9957E1318AA8991E3753F4D270DD4298"],
+      "observacoes": "Regulamento de estagio (Resolucao CONSUNI 033/2019): cada curso tem coordenacao de estagio. Sem central unica nem contato encontrado."
+    },
+    {
+      "name": "IFTO - Coordenacao de Prospeccao de Estagio e Apoio a Egressos (CPEAE)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Palmas",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ifto.edu.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://portal.ifto.edu.br/ifto/egresso/documentos/relatorio-2020-pesquisa-egressos-ifto.pdf/@@download/file/relatorio-2020-pesquisa-egressos-ifto.pdf"],
+      "observacoes": "Citada em relatorio de 2020 (PROAE); estrutura atual e contatos por campus (Palmas, Araguaina, Gurupi) nao confirmados."
+    },
+    {
+      "name": "Governo do Tocantins - Estagio no Executivo (Secad via IEL)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Palmas",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://sne.iel.org.br/sne/to",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": ["https://conexaoto.com.br/2020/08/14/aberto-processo-de-selecao-para-estagiarios-de-nivel-superior-e-tecnico-ao-preenchimento-de-107-vagas"],
+      "observacoes": "Unico registro e de 2020 (107 vagas via IEL). Sem edital vigente encontrado."
+    }
+  ],
+  "descartadas": [
+    {"name": "NUBE", "motivo": "nenhuma unidade/atendimento no TO encontrado; apenas sede em SP"},
+    {"name": "Super Estagios", "motivo": "nenhuma evidencia de unidade no TO"},
+    {"name": "ISBET", "motivo": "nenhuma evidencia de unidade no TO"},
+    {"name": "Agiel", "motivo": "nenhuma evidencia de unidade no TO"},
+    {"name": "Sine Palmas (Setas)", "motivo": "intermediacao de emprego, nao e agencia de estagio"},
+    {"name": "Justica Federal/TRF1 SJTO e MP-TO", "motivo": "editais proprios pontuais, sem canal permanente de agencia"}
+  ],
+  "notas": "Lacunas: telefone do CIEE TO; enderecos/contatos atuais do IEL em Palmas, Araguaina e Gurupi; Instagram de todas; central de estagio UFT, Unitins e IFTO; programa de estagio da Prefeitura de Palmas (nao pesquisado a fundo); agencias privadas locais e perfis de Instagram/WhatsApp de vagas nao encontrados. Precisa checagem humana."
+}

@@ -1,0 +1,502 @@
+{
+  "uf": "SP",
+  "estado": "São Paulo",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Rodada 2: 16 consultas adicionais, mescladas à rodada 1.",
+  "agencias": [
+    {
+      "name": "CIEE São Paulo (sede)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "São Paulo",
+      "address": "Rua Tabapuã, 445, Itaim Bibi, São Paulo - SP, CEP 04533-011",
+      "atendimento": "presencial",
+      "phone": "(11) 3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas",
+        "https://fortaleza.graceslist.org/directory/listing/ciee-fortaleza",
+        "https://portal.ciee.org.br/wp-content/uploads/2023/11/231121-Pref-Itaete_PLANO-DE-TRABALHO.pdf",
+        "https://proplan.unespar.edu.br/a-proplan/diretoria-de-projetos-e-convenios/termos-celebrados/2020/acordo-de-cooperacao/acordo-de-cooperacao-de-estagios-cie-sp.pdf"
+      ],
+      "observacoes": "Endereço da sede citado em divulgação de evento e em diretório (CEP 04533-011). Um registro antigo traz outro número (4696), provavelmente desatualizado. Telefone/WhatsApp não coletados. Telefone (11) 3003-2433 consta em plano de trabalho do próprio portal CIEE (2023); outro doc traz (11) 3040-9800. ATENÇÃO: documentos oficiais citam Rua Tabapuã, 540 (CEP 04533-001) vs 445 (CEP 04533-011) - checar número correto com humano."
+    },
+    {
+      "name": "CIEE Campinas",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Campinas",
+      "address": "Rua Tiradentes, 195, Vila Itapura, Campinas - SP",
+      "atendimento": "presencial",
+      "phone": "(19) 3003-2433",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://jcconcursos.com.br/noticia/empregos/vagas-estagio-sp-campinas-ciee-73692",
+        "https://jcconcursos.com.br/noticia/empregos/ciee-reune-400-vagas-na-regiao-de-campinas-sp-74753"
+      ],
+      "observacoes": "Endereço e telefone vêm de matéria de 2019 (checar atualidade). Também havia posto na PUC-Campinas (Rod. Dom Pedro I, km 136). CIEE segue com vagas em Campinas em 2026. Rodada 2: nenhuma fonte mais recente achada."
+    },
+    {
+      "name": "CIEE Piracicaba",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Piracicaba",
+      "address": "Rua Cristiano Cleopath, 336, Centro, Piracicaba - SP",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.abcdacomunicacao.com.br/ciee-de-piracicaba-anuncia-novo-endereco-na-rua-cristiano-cleopath/"
+      ],
+      "observacoes": "Matéria de 22/10/2025 informa retorno do escritório ao centro. Uma única fonte."
+    },
+    {
+      "name": "CIEE Santos",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Santos",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas",
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Unidade citada em listagem de evento e no Indeed; endereço não encontrado. Rodada 2: endereço ainda não encontrado."
+    },
+    {
+      "name": "CIEE Guarulhos",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Guarulhos",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas"
+      ],
+      "observacoes": "Citada em listagem de evento como funcionando dentro de faculdade (Anhanguera). Sem endereço nem data confiável."
+    },
+    {
+      "name": "CIEE Barueri",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Barueri",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas"
+      ],
+      "observacoes": "Citada apenas em listagem de evento."
+    },
+    {
+      "name": "CIEE Mogi das Cruzes",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Mogi das Cruzes",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas"
+      ],
+      "observacoes": "Citada apenas em listagem de evento."
+    },
+    {
+      "name": "CIEE São Caetano do Sul",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "São Caetano do Sul",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.migalhas.com.br/agenda/391199/maratona-de-vagas"
+      ],
+      "observacoes": "Citada apenas em listagem de evento."
+    },
+    {
+      "name": "CIEE Ribeirão Preto",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Ribeirão Preto",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Aparece apenas na lista de localidades do Indeed. Rodada 2: endereço ainda não encontrado."
+    },
+    {
+      "name": "CIEE São José dos Campos",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "São José dos Campos",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Aparece apenas na lista de localidades do Indeed."
+    },
+    {
+      "name": "CIEE Sorocaba",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Sorocaba",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Aparece apenas na lista de localidades do Indeed."
+    },
+    {
+      "name": "CIEE Bauru",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Bauru",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Aparece apenas na lista de localidades do Indeed."
+    },
+    {
+      "name": "CIEE São Carlos",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "São Carlos",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations/SP"
+      ],
+      "observacoes": "Aparece apenas na lista de localidades do Indeed."
+    },
+    {
+      "name": "IEL São Paulo",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "São Paulo",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/iel-oferece-942-vagas-de-estagio-com-bolsas-de-ate-r-2-mil/"
+      ],
+      "observacoes": "Fonte é nacional (IEL Carreiras). Não foi encontrado endereço/contato atual do IEL-SP; único endereço visto (Rua São Bento, Centro) é de 2011 e não foi usado. Rodada 2: fonte de 2011 cita IEL-SP na Av. Paulista (sem número confiável); sem contato atual."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": "NUBE",
+      "address": "Rua Barão de Itapetininga, 140, Centro/República, São Paulo - SP, CEP 01042-000",
+      "atendimento": "presencial",
+      "phone": "(11) 3154-7676",
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "NUBE - Núcleo Brasileiro de Estágios (São Paulo)",
+      "city": "São Paulo",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portal1.iff.edu.br/Acesso-a-Informacao/convenios-e-transferencias/arquivos-de-convenios-e-parcerias-vigentes/convenio-022019-nube.pdf",
+        "https://www.guiatelefone.com/sao-paulo-sp/comercio-de-produtos-e-servicos/3476143/nube-nucleo-brasileiro-de-estagios"
+      ],
+      "observacoes": "Endereço de sede em convênios públicos (CNPJ 02.704.396/0001-83). Telefone vem de diretório de terceiros (não verificado). Site oficial não localizado."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "address": "Rua Vinte e Quatro de Maio, 35, República, São Paulo - SP",
+      "atendimento": "presencial",
+      "phone": "(11) 2849-5937",
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Espaço Agente de Integração de Estágios",
+      "city": "São Paulo",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.guiatelefone.com/sao-paulo-sp/comercio-de-produtos-e-servicos/3118474/espaco-agente-de-integracao-de-estagios"
+      ],
+      "observacoes": "Apenas diretório de terceiros; sem prova de atividade atual."
+    },
+    {
+      "agency_type": "fundacao",
+      "rede_nacional": "Mudes",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Fundação Mudes (São Paulo)",
+      "city": "São Paulo",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://jcconcursos.com.br/noticia/educacao/nivel-medio-e-superior-471-vagas-de-estagio-11584",
+        "https://jcconcursos.com.br/concurso/fundacao-mudes-11584"
+      ],
+      "observacoes": "Matérias antigas (2007-2021) citam unidades em SP (Centro, Osasco, Santo Amaro, Campinas etc.); nenhuma unidade atual verificada."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": "ABRE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "ABRE - Agência Brasileira de Emprego e Estágio (Osasco)",
+      "city": "Osasco",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.lagoadosino.ufscar.br/ccn/cepex-ls/documentos/convenios_ativos_tab_06_2017.pdf"
+      ],
+      "observacoes": "Constava em lista de convênios UFSCar de 2017; sem endereço nem confirmação atual."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": "ABRE",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "ABRE Campinas",
+      "city": "Campinas",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.prograd.ufscar.br/pt-br/assets/arquivos/estudantes/estagios/convenios-de-estagio-ativos-17-04-2026.pdf"
+      ],
+      "observacoes": "Convênio ativo em 17/04/2026 (UFSCar) como ABRE-Campinas, razão TL Serviços de Apoio Administrativo para Empresas Ltda-ME. Sem endereço/contato."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Agiel",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": "agiel@agiel.com.br",
+      "website": null,
+      "instagram": null,
+      "name": "Agiel - Agência de Integração Empresa Escola (atendimento online)",
+      "city": "São Paulo",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Agiel/about",
+        "https://proeg.unifesspa.edu.br/images/2023/Doc_estagio2023/Concedentes_de_estgio_Unifesspa.pdf"
+      ],
+      "observacoes": "Sede em Pará de Minas (MG); agência virtual com vagas anunciadas em SP no Indeed. Sem unidade física em SP."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": "Rua Boa Vista, 280, 6º andar (DGE), Centro, São Paulo - SP",
+      "atendimento": "presencial",
+      "phone": "3396-7279",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://prefeitura.sp.gov.br/web/gestao/w/portal_de_estagio/319330",
+      "instagram": null,
+      "name": "Prefeitura de São Paulo - Programa de Estágio (SEGES)",
+      "city": "São Paulo",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://prefeitura.sp.gov.br/web/gestao/w/portal_de_estagio/319330",
+        "https://prefeitura.sp.gov.br/web/gestao/w/novo-decreto-moderniza-sistema-de-est%C3%A1gio-da-prefeitura-e-fortalece-a-forma%C3%A7%C3%A3o-de-estudantes"
+      ],
+      "observacoes": "Secretaria Municipal de Gestão; recrutamento com CIEE; decreto 65.314/26 (jul/2026), ~11,8 mil estagiários. Telefone da página oficial sem DDD (presumivelmente 11)."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://estagios.fundap.sp.gov.br",
+      "instagram": null,
+      "name": "Governo do Estado de SP - Programa de Estágio (Fundap)",
+      "city": "São Paulo",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://jcconcursos.com.br/noticia/universitarios/governo-sp-programa-de-estagios-20250",
+        "https://noticiasdemogi.com.br/wp-content/uploads/2019/09/edital-vagas-estagio-governo-sp-2019.pdf"
+      ],
+      "observacoes": "Editais históricos (Fundap/CIEE); nenhum edital 2026 localizado."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": "(19) 3521-0300",
+      "email": "carreiras@unicamp.br",
+      "website": "https://carreiras.unicamp.br/",
+      "instagram": null,
+      "name": "Unicamp - Estágios / Carreiras (DEAPE)",
+      "city": "Campinas",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://dc2.fca.unicamp.br/portal/images/Manual_do_Estágio_Obrigatório_1S2025_-_Engenharias-COMPLETO.pdf",
+        "https://ic.unicamp.br/wp-content/uploads/2025/09/Regras-Gerais-do-Programa-Summer-Internship-2025.pdf"
+      ],
+      "observacoes": "Outro e-mail citado: estagios@unicamp.br (Summer Internship). Confirmar qual está ativo."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": "cga.estagio@mackenzie.br",
+      "website": "https://www.mackenzie.br/aluno-e-antigo-aluno/universidade/area-administrativa-de-estagio/informacoes-para-empresas-e-agentes-de-integracao/como-divulgar-vagas",
+      "instagram": null,
+      "name": "Mackenzie - CGA Setor de Estágio (São Paulo)",
+      "city": "São Paulo",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.mackenzie.br/aluno-e-antigo-aluno/universidade/area-administrativa-de-estagio/informacoes-para-empresas-e-agentes-de-integracao/como-divulgar-vagas"
+      ],
+      "observacoes": "Plataforma Mackenzie Carreiras. Alphaville/Barueri: cga.estagio.alpha@mackenzie.br; Campinas: cga.estagio.campinas@mackenzie.br. Endereço/telefone não coletados."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": "Rua Monte Alegre, 984, Perdizes, São Paulo - SP, CEP 05014-901",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "PUC-SP - Setor de Estágios",
+      "city": "São Paulo",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://pucsp.br/sites/default/files/download/cge/2026/Convenio_1.doc"
+      ],
+      "observacoes": "Endereço é da universidade (modelo de convênio 2026 cita o Setor de Estágios). Sem telefone/e-mail do setor."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": "Rua Quirino de Andrade, 215, São Paulo - SP",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Unesp - Pró-Reitoria de Graduação (estágios)",
+      "city": "São Paulo",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://acervodigital.unesp.br/bitstream/123456789/40393/1/Caderno_Estagio.pdf"
+      ],
+      "observacoes": "Dado de caderno antigo (~2011); telefone omitido por estar desatualizado. Estágio é gerido por unidade/câmpus."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "Super Estágios",
+      "motivo": "Rede de franquias (sede Brasília-DF); nenhuma unidade em SP confirmada nas buscas."
+    },
+    {
+      "name": "ISBET",
+      "motivo": "Sede no Rio de Janeiro; nenhuma unidade em SP encontrada."
+    },
+    {
+      "name": "USP (central de estágios)",
+      "motivo": "Não há central única localizada; estágios são geridos por unidade (EE, IAG, EEFE etc.)."
+    }
+  ],
+  "notas": "PARCIAL após rodada 2. Sem resultado nas buscas (checar humano): Estagiar, Uniestágio, Companhia de Estágios, CEE (nenhuma fonte), IEL-SP (sem contato atual), Mudes/ABRE Osasco (só fontes antigas), endereços e telefones das unidades CIEE dos polos (Santos, Ribeirão Preto, Sorocaba, SJC, Bauru, São Carlos, Guarulhos, Barueri, Mogi, São Caetano, Jundiaí) - usar buscador de unidades em portal.ciee.org.br. Conflito: sede CIEE Tabapuã 445 vs 540. Centrais USP/Unesp/PUC-SP sem contato direto; Unicamp e Mackenzie com e-mail. NUBE: telefone só de diretório terceiro."
+}

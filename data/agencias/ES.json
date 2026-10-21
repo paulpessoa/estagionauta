@@ -1,0 +1,111 @@
+{
+  "uf": "ES",
+  "estado": "Espírito Santo",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Orçamento de buscas da sessão esgotou após ~9 buscas efetivas; checklist incompleto (ver notas).",
+  "agencias": [
+    {
+      "name": "CIEE Espírito Santo",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Vitória",
+      "address": "Avenida Nossa Senhora dos Navegantes, 955, Edifício Global Tower, Bloco A, Sala 2201, Enseada do Suá, Vitória - ES, CEP 29050-335",
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://monitorcnpj.com.br/cnpj/01219199000106/",
+        "https://www.agazeta.com.br/concursos-e-empregos/empregos/ciee-abre-mais-de-360-vagas-de-estagio-e-aprendizagem-no-es-0626",
+        "https://www.folhavitoria.com.br/economia/ciee-abre-286-vagas-de-estagio-em-20-cidades-do-es-veja-as-oportunidades/"
+      ],
+      "observacoes": "Endereço vem de cadastro CNPJ (agregador), não de página oficial; telefone (27) com final 3200 aparece mascarado, por isso null. Operação ativa em jun/2026 (360+ vagas, Vitória com mais vagas). Cadastro pelo portal CIEE / app Meu CIEE; vagas em ~20 cidades do ES (inclui interior)."
+    },
+    {
+      "name": "IEL Espírito Santo (Núcleo de Estágio / Findes)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Vitória",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://sne.iel.org.br/es",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.folhavitoria.com.br/trabalho/vagas-estagio-emprego-iel-es-cariacica-serra-viana-vila-velha-vitoria/",
+        "https://www.folhavitoria.com.br/trabalho/abertas-251-vagas-de-estagio-em-20-cidades-do-espirito-santo/",
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/findes-realiza-seletiva-do-premio-iel-de-talentos-no-espirito-santo/"
+      ],
+      "observacoes": "Portal de inscrição sne.iel.org.br/es; vagas recorrentes em Vitória, Vila Velha, Serra, Cariacica, Viana e Cachoeiro de Itapemirim. Endereço físico/telefone do núcleo (Findes, Vitória) NÃO foi confirmado nas buscas; checar no site da Findes."
+    },
+    {
+      "name": "Super Estágios (atendimento ES)",
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "city": "Vitória",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.superestagios.com.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.folhavitoria.com.br/trabalho/empresa-anuncia-151-vagas-de-estagio-para-estudantes-da-grande-vitoria/",
+        "https://www.agazeta.com.br/concursos-e-empregos/empregos/agencia-abre-147-vagas-de-estagios-com-salarios-de-ate-r-2200-0323",
+        "https://www.folhavitoria.com.br/trabalho/abertas-970-vagas-de-estagio-na-sedu-para-alunos-de-diversos-cursos/"
+      ],
+      "observacoes": "Divulga vagas recorrentes na Grande Vitória, Colatina, Aracruz, Linhares etc. e é a plataforma de inscrição do edital de estágio da Sedu-ES (2026). Endereço físico e telefone não encontrados; não afirmar unidade presencial."
+    },
+    {
+      "name": "Coordenação de Estágios da UFES",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Vitória",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://estagios.ufes.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://estagios.ufes.br/sites/estagios.ufes.br/files/field/anexo/formulario_-_ufes_x_agente_de_integracao_-_editavel_-_08-05-24.pdf"
+      ],
+      "observacoes": "Portal oficial de estágios da UFES (formulários, convênios com agentes de integração). Contato/endereço da coordenação não apareceu nos resultados; confirmar humano."
+    },
+    {
+      "name": "Sedu-ES - Programa de Estágio (Governo do ES)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Vitória",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.folhavitoria.com.br/trabalho/abertas-970-vagas-de-estagio-na-sedu-para-alunos-de-diversos-cursos/",
+        "https://www.folhavitoria.com.br/trabalho/prorrogada-inscricoes-para-970-vagas-de-estagio-na-sedu-com-bolsa-de-r-1-034/"
+      ],
+      "observacoes": "Seleção de 970 vagas de estágio (bolsa ~R$ 1.034,94) com inscrição exclusivamente via Super Estágios. Canal de atendimento = site Super Estágios; avaliar se entra como agência ou apenas como nota."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUBE (Núcleo Brasileiro de Estágios)", "motivo": "Agente nacional com sede em SP; nenhuma unidade ou atendimento específico no ES foi encontrado nas buscas. Reavaliar se houver evidência de atendimento no ES." },
+    { "name": "TRE-ES (estágio da Justiça Eleitoral)", "motivo": "Programa regido pela Resolução 94/2014 e operado via agente de integração contratado; sem canal de atendimento próprio comprovado." },
+    { "name": "Sesc-ES (programa de estágio)", "motivo": "Apenas termo de referência para contratar agente de integração; não é agência de estágio." }
+  ],
+  "notas": "LACUNAS: o orçamento de WebSearch da sessão acabou após ~9 buscas efetivas (várias do primeiro lote falharam por rate limit). NÃO foram pesquisados: ISBET, Mudes, Abre, CEE, Agiel, Estagiar, Uniestágio no ES; buscas por 'agência de estágio' Vitória/Vila Velha (falhou); centrais de estágio IFES, UVV, FAESA, Multivix; programa de estágio da Prefeitura de Vitória/outros órgãos (TJES, MPES); iniciativas Instagram/WhatsApp de vagas no ES; unidades próprias em Cachoeiro de Itapemirim e Linhares (CIEE/IEL só aparecem com vagas nessas cidades, sem unidade confirmada). Telefones, e-mails e Instagram ficaram null por falta de fonte. Precisa de nova rodada de pesquisa e checagem humana."
+}

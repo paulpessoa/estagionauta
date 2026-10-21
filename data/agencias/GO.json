@@ -1,0 +1,110 @@
+{
+  "uf": "GO",
+  "estado": "Goiás",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Pesquisa INCOMPLETA: o orçamento de buscas da sessão esgotou após ~6 buscas bem-sucedidas.",
+  "agencias": [
+    {
+      "name": "CIEE Goiás - Unidade Goiânia",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Goiânia",
+      "address": "Rua 6, Quadra C-4, Lote 16/19-56, sala 03, Edifício Prime Tamandaré Office, Setor Oeste, Goiânia - GO",
+      "atendimento": "misto",
+      "phone": "(62) 4005-0750",
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://tribunadoplanalto.com.br/ciee-goias-vagas-estagio-2026/",
+        "https://tribunadoplanalto.com.br/ciee-go-oferece-208-vagas-de-estagio-em-goias-nesta-primeira-semana-de-outubro/",
+        "https://www.rotajuridica.com.br/?p=15520",
+        "https://goias.gov.br/inovacao/wp-content/uploads/sites/26/2022/05/5.8contrato-013-2019-desenvolvimento-de-programa-de-estagio-ciee-c6f.pdf"
+      ],
+      "observacoes": "Endereço de matéria de out/2026. O telefone (62) 4005-0750 vem de matérias antigas sem data confiável: conferir. Notícias dizem que o CIEE oferece vagas em Goiânia e em 3 cidades do interior, mas as unidades do interior não foram identificadas. Atendimento presencial seg-sex 8h-17h segundo reportagem antiga (conferir)."
+    },
+    {
+      "name": "IEL Goiás (Instituto Euvaldo Lodi - Sistema FIEG)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Goiânia",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/educacao/procurando-estagio-iel-abre-quase-3-mil-vagas-pelo-pais/",
+        "https://ueg.br/convenios/conteudo/9740_estagio",
+        "https://fieg.com.br/repositoriosites/repositorio/portalfieg/download/Publicacoes/Coluna_Marca_Industrial/2018/Coluna_Marca_Industrial_03_15_18.pdf"
+      ],
+      "observacoes": "Fontes indicam atuação do IEL/GO em Goiânia, Anápolis, Catalão, Luziânia, Itumbiara e Rio Verde (notícias de 2018-2022). Convênio com a UEG (Termo de Cooperação nº 47/2018). Endereço, telefone e site oficial atual não encontrados: preencher manualmente (sede FIEG). Unidades de Anápolis e Rio Verde não verificadas individualmente."
+    },
+    {
+      "name": "AGIEL - Agência de Integração Empresa Escola",
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "city": "Goiânia",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://ueg.br/convenios/conteudo/9740_estagio"
+      ],
+      "observacoes": "Única fonte: acordo de cooperação nº 02/2021 com a UEG (agente de integração). Cidade e modalidade de atendimento NÃO verificadas (valores preenchidos como provisórios); precisa checagem humana."
+    },
+    {
+      "name": "Central de Estágios UFG (PROGRAD / Coordenação de Estágios)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Goiânia",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://files.cercomp.ufg.br/weby/up/178/o/Resolucao_CEPEC_2005_0766.pdf",
+        "https://files.cercomp.ufg.br/weby/up/90/o/Modelo_Requerimento_%281%29.docx"
+      ],
+      "observacoes": "A UFG regula estágios (Resolução CEPEC 766/2005) e credencia agentes de integração via PROGRAD. Setor/contato específico para o aluno não identificado."
+    },
+    {
+      "name": "Estágios UEG (Pró-Reitoria de Graduação)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Anápolis",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://ueg.br/prg/conteudo/24406_agentes_de_integracao",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://ueg.br/prg/conteudo/24406_agentes_de_integracao",
+        "https://ueg.br/convenios/conteudo/9740_estagio"
+      ],
+      "observacoes": "Universidade multicampi; a página da PRG orienta sobre agentes de integração e lista convênios (AGIEL, IEL/GO, IEL/DF). Cidade da sede (Anápolis) não verificada nesta busca."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUBE - Núcleo Brasileiro de Estágios", "motivo": "Nenhuma unidade em Goiás encontrada; apenas sede em São Paulo (Rua Barão de Itapetininga, 140). Reavaliar se houver atendimento online declarado para GO." },
+    { "name": "IEL/DF (Instituto Euvaldo Lodi do Distrito Federal)", "motivo": "Outro estado (DF), apesar de ter convênio com a UEG." }
+  ],
+  "notas": "PESQUISA INCOMPLETA: o limite de buscas da sessão esgotou (as 6 primeiras chamadas paralelas falharam por rate limit e, depois de ~6 buscas bem-sucedidas, o orçamento acabou). NÃO FORAM PESQUISADOS: Super Estágios, ISBET, Mudes, Abre, CEE, Estagiar, Uniestágio, Estágio Trainee em GO; agências privadas locais em Goiânia/Anápolis/Rio Verde/Aparecida; centrais de estágio de PUC Goiás, IFG, UniEvangélica; programa de estágio do Governo de Goiás e Prefeitura de Goiânia (há contrato de 2019 do Governo de Goiás com o CIEE, goias.gov.br/inovacao); iniciativas de Instagram/WhatsApp. Também falta endereço/telefone atuais do IEL-GO e a confirmação das unidades do CIEE no interior. Recomenda-se uma nova rodada de buscas."
+}

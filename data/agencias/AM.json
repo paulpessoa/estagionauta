@@ -1,0 +1,92 @@
+{
+  "uf": "AM",
+  "estado": "Amazonas",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas)",
+  "agencias": [
+    {
+      "name": "IEL Amazonas (Instituto Euvaldo Lodi - Sistema FIEAM)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Manaus",
+      "address": "Av. Joaquim Nabuco, 1919, Centro, Manaus - AM (consta em termo de cooperação UFAM-IEL 2024; um 2o endereço, Rua Dom Henrique, 03, Parque 10, também aparece sem esclarecer se é sede ou unidade)",
+      "atendimento": "misto",
+      "phone": "(92) 2125-8800",
+      "whatsapp": null,
+      "email": "atendimento@iel-am.org.br",
+      "website": "https://www.fieam.org.br/iel",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://portalamazonia.com/amazonas/oportunidade-iel-abre-42-vagas-para-estagio-em-manaus/",
+        "https://portalamazonia.com/cidades/iel-abre-10-vagas-de-estagio-para-estudantes-de-nivel-superior-em-manaus/",
+        "https://edoc.ufam.edu.br/bitstream/123456789/9068/1/2%c2%ba%20TERMO%20ADITIVO%20DE%20CONTRATO%20-%20COOPERA%c3%87%c3%83O%20T%c3%89CNICA%20UFAM-IEL%202024.pdf"
+      ],
+      "observacoes": "Cadastro pelo site; não recebe currículo por e-mail nem presencial. Divulga vagas no Instagram/Facebook do IEL (@ não confirmado). Outro telefone (92) 2125-8818 aparece no termo UFAM."
+    },
+    {
+      "name": "CIEE Amazonas",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Manaus",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://catracalivre.com.br/educacao/ciee-oferta-mais-de-11-mil-vagas-em-programas-de-estagio/",
+        "https://jcconcursos.com.br/noticia/empregos/estagio-educacao-ciee-manaus-amazonas-am-48928"
+      ],
+      "observacoes": "CIEE atua no AM (citado entre estados com mais vagas; seleções antigas em Manaus e Seduc-AM via CIEE), mas nenhum endereço/telefone atual foi encontrado. Checar localizador de unidades no site."
+    },
+    {
+      "name": "Coordenação de Estágio UFAM (PROEG)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Manaus",
+      "address": "Av. Gal. Rodrigo Octávio Jordão Ramos, 3000, Coroado, Manaus - AM (Prédio Administrativo da Reitoria)",
+      "atendimento": "misto",
+      "phone": "(92) 3305-1181",
+      "whatsapp": null,
+      "email": "estagioproeg@ufam.edu.br",
+      "website": "https://proeg.ufam.edu.br/estagio",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://edoc.ufam.edu.br/bitstream/123456789/4336/3/nossa-ufam_digital.pdf",
+        "https://www.edoc.ufam.edu.br/bitstream/123456789/2560/60/INSTRU%c3%87%c3%95ES%20BASICAS%20FORMLIZAR%20EST%c3%81GIO.pdf"
+      ],
+      "observacoes": "Contatos vêm de documentos de 2017-2022; ramais 1482/1791. UFAM credencia agentes de integração por chamada pública (064/2017). Confirmar no site."
+    },
+    {
+      "name": "Universidade Patativa do Assaré (UPA) - agente de integração",
+      "agency_type": "outro",
+      "rede_nacional": null,
+      "city": "Manaus",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://universidadepatativa.com.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://trf1.jus.br/sjam/conteudo/files/Contrato n_ 09_2022 - UPA - Estagi_rios Agente Integra__o.pdf",
+        "https://trf1.jus.br/sjam/conteudo/files/2_ Termo Aditivo Contrato 09_2022.pdf"
+      ],
+      "observacoes": "Sede em Juazeiro do Norte (CE). Contrato 09/2022 (aditivo 2023) com a Justiça Federal/AM (Manaus, Tabatinga, Tefé). Vigência atual desconhecida; sem unidade local."
+    }
+  ],
+  "descartadas": [
+    { "name": "NUBE", "motivo": "nenhuma evidência de unidade ou convênio no AM; sede em São Paulo" },
+    { "name": "Super Estágios", "motivo": "nenhuma evidência de atuação no AM" },
+    { "name": "ISBET / Mudes / Agiel", "motivo": "nenhum resultado para o AM" },
+    { "name": "Prefeitura de Manaus (2.672 vagas)", "motivo": "edital de 2020 encerrado; sem programa atual encontrado" }
+  ],
+  "notas": "Lacunas: CIEE-AM sem endereço/contato; IEL sem Instagram/WhatsApp confirmados; centrais de estágio UEA, IFAM e Fametro sem contato específico (Fametro geral (92) 2101-1000 só em diretório, não incluído); programa de estágio do Governo do AM/SEAD/Seduc/Cetam e Prefeitura sem canal atual; agências privadas locais de Manaus e interior (Parintins, Tefé etc.) não encontradas; perfis de Instagram/WhatsApp de vagas não encontrados. Precisa de checagem humana."
+}

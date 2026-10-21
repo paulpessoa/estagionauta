@@ -1,0 +1,127 @@
+{
+  "uf": "PI",
+  "estado": "Piauí",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas); busca interrompida por limite de buscas da sessão (~7 buscas feitas)",
+  "agencias": [
+    {
+      "name": "CIEE Piauí (Teresina)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Teresina",
+      "address": null,
+      "atendimento": "misto",
+      "phone": "4003-5318",
+      "whatsapp": "(11) 3003-2433",
+      "email": null,
+      "website": "https://portal.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://portalclubenews.com/2025/10/18/ciee-oferece-77-vagas-de-estagio-e-aprendizagem-no-piaui-18-sao-em-teresina/",
+        "https://portalclubenews.com/2025/11/10/ciee-oferta-170-vagas-de-estagio-e-aprendizagem-em-teresina-veja-areas/",
+        "https://portalclubenews.com/2024/01/10/ciee-abre-143-vagas-e-divulga-mudanca-de-endereco-em-teresina/",
+        "https://www.yelp.com/biz/ciee-centro-integra%C3%A7%C3%A3o-empresa-escola-teresina"
+      ],
+      "observacoes": "Atuação ativa em 2025 (várias notícias de vagas em Teresina). Endereço antigo: Av. Campos Sales, 1315, Centro (diretórios); em jan/2024 mudou de sede e matéria de 2025 cita sala no The Office Tower, bairro Jóquei, sem endereço completo confirmado - por isso address=null. Telefone 4003-5318 e WhatsApp (11) 3003-2433 são canais centrais citados em matéria de 2025, não necessariamente da unidade local. Cadastro via app Meu CIEE."
+    },
+    {
+      "name": "Prefeitura de Teresina (Semec) - estágio via CIEE",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Teresina",
+      "address": "Rua Magalhães Filho, 1772, Teresina - PI (local dos mutirões de 2025, a confirmar se é o endereço da Semec)",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portalclubenews.com/2025/05/20/ciee-e-semec-ofertam-122-vagas-de-estagio-em-teresina-confira/",
+        "https://portalclubenews.com/2025/09/02/mutirao-de-vagas-do-ciee-seleciona-500-estagiarios-e-aprendizes-para-a-semec/"
+      ],
+      "observacoes": "Programa de estágio da Secretaria Municipal de Educação operado em parceria com o CIEE (mutirões em 2025). Sem canal próprio confirmado; endereço vem de notícia sobre os mutirões."
+    },
+    {
+      "name": "UESPI - Estágio (Universidade Estadual do Piauí)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Teresina",
+      "address": "Rua João Cabral, 2231, Pirajá, Teresina - PI",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://uespi.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://uespi.br/wp-content/uploads/2024/09/SEI_GOV-PI-013037453-Edital.pdf"
+      ],
+      "observacoes": "Aparecem editais de seleção de estagiários remunerados na UESPI, mas não foi confirmada uma central/coordenação de estágio com atendimento a estudantes. Bairro Pirajá não consta nas fontes - checar. Precisa de humano."
+    },
+    {
+      "name": "IFPI - Estágio (campus Teresina Central e Zona Sul)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Teresina",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ifpi.edu.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ifpi.edu.br/noticias/Editalestgioobrigatrio.pdf",
+        "https://www.ifpi.edu.br/teresinacentral/noticias/Edital_72_estgionoobrigatrio.pdf",
+        "https://ifpi.edu.br/teresinazonasul/noticias/EditalestgioobrigatrionoremuneradonoCATZS.pdf"
+      ],
+      "observacoes": "Editais de estágio obrigatório e não obrigatório nos campi Teresina Central e Zona Sul (2024-2025). Central/coordenação de estágio não confirmada com contato. Precisa de humano."
+    },
+    {
+      "name": "TRE-PI - Programa de estágio",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Teresina",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.tre-pi.jus.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://sintse.tse.jus.br/documentos/2026/Mar/2/diario-da-justica-eletronico-tres-destaques/edital-no-6-2026-abertura-da-selecao-de-estagiarias-e-estagiarios-para-a-sede-do-tre-pi-da-area",
+        "https://www.tre-pi.jus.br/legislacao/resolucoes-tre-pi-2/arquivos/resolucao-tre-pi-no-474-2023-compilada"
+      ],
+      "observacoes": "Edital nº 6/2026 de seleção de estagiários para a sede em Teresina; usa agente(s) de integração (plataformas Usina de Talentos / Superestágios citadas nos editais). Canal de atendimento próprio não confirmado."
+    },
+    {
+      "name": "Ministério Público do Piauí - estágio (Direito)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Teresina",
+      "address": null,
+      "atendimento": "online",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://jcconcursos.com.br/noticia/area-juridica/estagios-pi-mp-200-vagas-direito-27862"
+      ],
+      "observacoes": "Notícia sobre ~200 vagas de estágio em Direito no MP-PI; data e canal de atendimento não verificados. Precisa de humano."
+    }
+  ],
+  "descartadas": [
+    { "name": "AGIEL (Agência Virtual de Estágios)", "motivo": "Sediada em Pará de Minas (MG); sem unidade física em Teresina (contestou exigência de escritório em Teresina em pregão do TRE-PI, 2019). Atende online nacionalmente - reavaliar como atendimento online se desejado." }
+  ],
+  "notas": "Busca limitada: o limite de buscas da sessão foi atingido após ~7 consultas. NÃO foram verificadas: IEL/FIEPI Piauí, NUBE, Super Estágios, ISBET, Mudes, Abre, CEE, Estagiar, Uniestágio no PI; centrais de estágio da UFPI, Uninovafapi e Unifsa; programa de estágio do Governo do Piauí (SEADPREV/Governo PI); iniciativas de Instagram/WhatsApp com vagas de estágio; unidades em Parnaíba e Picos. Endereço atual do CIEE Teresina precisa de checagem humana (mudou em 2024 para o bairro Jóquei). Demais redes nacionais podem atender o PI online - checar manualmente."
+}

@@ -1,0 +1,402 @@
+{
+  "uf": "RS",
+  "estado": "Rio Grande do Sul",
+  "validado_em": "2026-10-21",
+  "metodo": "WebSearch público (sem APIs pagas). Segunda rodada em 2026-10-21: 22 buscas.",
+  "agencias": [
+    {
+      "name": "CIEE-RS (sede Porto Alegre)",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Porto Alegre",
+      "address": "Rua Manoel Pereira, 90 (esquina com Rua Coronel Vicente), Centro Histórico, Porto Alegre - RS",
+      "atendimento": "presencial",
+      "phone": "(51) 3363-1000",
+      "whatsapp": "(51) 99992-9255",
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.jornaldocomercio.com/economia/2025/04/1199822-ciee-rs-inaugura-nova-sede-em-porto-alegre.html",
+        "https://www.jornaldocomercio.com/especiais/anuario-de-investimentos-2023/2023/12/1134406-ciee-rs-investe-em-sede-que-concentrara-atuacao-em-porto-alegre.html",
+        "https://prefeitura.poa.br/smap/noticias/aberto-edital-inedito-para-selecao-de-estagiario-por-meio-de-agente-integrador",
+        "https://prefeitura.poa.br/sms/estagios"
+      ],
+      "observacoes": "Nova sede inaugurada em abr/2025 no antigo prédio da Mesbla. Número 90 vem de reportagem de 2023; confirmar endereço/telefone atuais. Parte administrativa e teatro ficam na Rua Dom Pedro II. Telefone (51) 3363-1000 (Central de Relacionamento, 8h-18h) e WhatsApp (51) 99992-9255 vieram de comunicados da Prefeitura de POA sobre seletivos de 2026; e-mail atendimento.prefeiturapoa@cieers.org.br é só do seletivo da prefeitura (não usado). Instagram não confirmado."
+    },
+    {
+      "name": "CIEE-RS Caxias do Sul",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Caxias do Sul",
+      "address": "Rua Dal Canalle, 2186, sala 3026, Exposição, Caxias do Sul - RS",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations",
+        "https://www.jornaldocomercio.com/economia/2026/06/1252763-ciee-rs-inaugura-sede-propria-em-caxias.html"
+      ],
+      "observacoes": "Endereço vindo de diretório de empresas (pode estar desatualizado); Indeed lista unidade em Caxias do Sul. Telefone apareceu só parcialmente (prefixos (54) 3214 / 3221), por isso null. Reportagem JC de 16/06/2026 informa sede própria inaugurada em Caxias (prédio de 5 andares, atende 9 municípios da Serra); endereço novo não encontrado, então o endereço acima pode estar desatualizado."
+    },
+    {
+      "name": "CIEE-RS Santa Maria",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Santa Maria",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://diariosm.com.br/noticias/geral/santa-maria-concentra-mais-de-100-vagas-de-estagios-do-ciee-rs.15439607",
+        "https://agorars.com/empregos/ciee-rs-oferece-mais-de-44-mil-vagas-de-estagio-em-todas-as-regioes-do-estado/"
+      ],
+      "observacoes": "Notícias indicam unidade própria em Santa Maria com vagas divulgadas. Endereço não encontrado."
+    },
+    {
+      "name": "CIEE-RS Pelotas",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Pelotas",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://agorars.com/empregos/ciee-rs-oferece-mais-de-44-mil-vagas-de-estagio-em-todas-as-regioes-do-estado/",
+        "https://coletiva.net/panorama/ciee-rs-inicia-a-semana-com-mais-de-3-mil-vagas-e-bolsas-de-ate-r-15-mil/",
+        "https://concursosnobrasil.com/concursos/rs/2026/07/15/pelotas-rs-anuncia-bolsas-de-ate-r-16-mil-em-seletivo-de-estagio/"
+      ],
+      "observacoes": "Relatórios de vagas por unidade listam Pelotas (~155-166 vagas). Reportagem de 2025 diz que o terreno próprio ainda não tinha obra; endereço de atendimento não encontrado. CIEE-RS operou o seletivo de estágio da Prefeitura de Pelotas (jul/2026) e figura como ponto de atendimento em apresentação institucional."
+    },
+    {
+      "name": "CIEE-RS Passo Fundo",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Passo Fundo",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://agorars.com/empregos/ciee-rs-oferece-mais-de-44-mil-vagas-de-estagio-em-todas-as-regioes-do-estado/",
+        "https://coletiva.net/panorama/ciee-rs-inicia-a-semana-com-mais-de-3-mil-vagas-e-bolsas-de-ate-r-15-mil/"
+      ],
+      "observacoes": "Relatórios de vagas por unidade listam Passo Fundo (~146-231 vagas). Endereço não encontrado."
+    },
+    {
+      "name": "CIEE-RS Canoas",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Canoas",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://br.indeed.com/cmp/Ciee/locations"
+      ],
+      "observacoes": "Aparece só na listagem de locais do Indeed. Precisa de checagem humana."
+    },
+    {
+      "name": "CIEE-RS Gravataí",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Gravataí",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.jornaldocomercio.com/economia/2025/07/1211518-ciee-rs-inaugura-sede-em-gravatai.html"
+      ],
+      "observacoes": "Sede inaugurada em jul/2025 (título da reportagem). Região metropolitana de Porto Alegre."
+    },
+    {
+      "name": "CIEE-RS Novo Hamburgo",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Novo Hamburgo",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://agorars.com/empregos/ciee-rs-oferece-mais-de-44-mil-vagas-de-estagio-em-todas-as-regioes-do-estado/"
+      ],
+      "observacoes": "Reportagem cita unidade própria em Novo Hamburgo. Endereço não encontrado."
+    },
+    {
+      "name": "CIEE-RS Cachoeira do Sul",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Cachoeira do Sul",
+      "address": "Rua Senador Pinheiro Machado, 1.902, Cachoeira do Sul - RS",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.jornaldocomercio.com/especiais/anuario-de-investimentos/2026/10/1266724-ciee-rs-inaugura-sede-em-cachoeira-do-sul-e-triplica-area-de-atendimento.html",
+        "https://www.jornaldocomercio.com/conteudo-publicitario/2026/10/1266641-novo-posto-de-atendimento-fortalece-oportunidades-de-formacao-na-regiao-de-cachoeira-do-sul.html"
+      ],
+      "observacoes": "Nova sede em out/2026 (título das reportagens). Fora das cidades-alvo, mas atende a região. Endereço citado em reportagem de out/2026 (resultado de busca); confirmar."
+    },
+    {
+      "name": "CIEE-RS Frederico Westphalen",
+      "agency_type": "instituto",
+      "rede_nacional": "CIEE",
+      "city": "Frederico Westphalen",
+      "address": null,
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.ciee.org.br",
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.jornaldocomercio.com/jornal-cidades/2026/07/1258147-ciee-inaugura-nova-unidade-na-cidade-de-frederico-westphalen.html",
+        "https://www.jornaldocomercio.com/conteudo-publicitario/2026/07/1258281-novo-espaco-amplia-oportunidades-de-estagio-e-aprendizagem-para-os-jovens-do-medio-alto-uruguai.html"
+      ],
+      "observacoes": "Nova unidade inaugurada em jul/2026. Fora das cidades-alvo, mas atende o Médio Alto Uruguai."
+    },
+    {
+      "name": "IEL-RS (Instituto Euvaldo Lodi do RS / FIERGS)",
+      "agency_type": "instituto",
+      "rede_nacional": "IEL",
+      "city": "Porto Alegre",
+      "address": null,
+      "atendimento": "misto",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://noticias.portaldaindustria.com.br/noticias/vagas/estagio-iel-abre-13-mil-vagas-com-bolsas-de-ate-r-23-mil/",
+        "https://www.ufrgs.br/fce/iel-rs/"
+      ],
+      "observacoes": "IEL-RS divulga vagas de estágio em Porto Alegre e interior (Caxias do Sul, Erechim, Novo Hamburgo, São Leopoldo, Cachoeirinha etc.). Sede FIERGS: Av. Assis Brasil, 8787, Sarandi, Porto Alegre (endereço da FIERGS, não confirmado como balcão de atendimento do IEL). Contato do programa trainee: conectetalentos@ielrs.org.br (não usado como e-mail geral). Site oficial e unidades regionais não verificados. Busca adicional (out/2026): nenhum telefone nem site ielrs.org.br confirmado; vagas IEL-RS em Porto Alegre, Canoas e Caxias do Sul."
+    },
+    {
+      "name": "Integrar/RS (Associação de Integração Empresa Escola)",
+      "agency_type": "instituto",
+      "rede_nacional": null,
+      "city": "Porto Alegre",
+      "address": "R. dos Andradas, 1276, ap 902, Centro, Porto Alegre - RS, CEP 90020-008",
+      "atendimento": "presencial",
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portal2015.iff.edu.br/Acesso-a-Informacao/convenios-e-transferencias/arquivos-de-convenios-e-parcerias-vigentes/2022/convenio-392022-agente-integradorintergrar-rs-assinado.pdf",
+        "https://www.ufrgs.br/prograd/?p=24821"
+      ],
+      "observacoes": "Agente integrador (presidente citado no convênio: Luciano da Silva Teixeira). Endereço do convênio IFF 2022 (sala/apto residencial-comercial, pode estar desatualizado); também listado entre agentes do sistema de estágios da UFRGS (PROGRAD). Sem telefone/site encontrado."
+    },
+    {
+      "name": "Prefeitura de Porto Alegre - Programa de Estágio (SMAP, via agente integrador)",
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "city": "Porto Alegre",
+      "address": null,
+      "atendimento": "online",
+      "phone": "(51) 3363-1000",
+      "whatsapp": "(51) 99992-9255",
+      "email": null,
+      "website": "https://prefeitura.poa.br/smap/noticias/aberto-edital-inedito-para-selecao-de-estagiario-por-meio-de-agente-integrador",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://prefeitura.poa.br/smap/noticias/aberto-edital-inedito-para-selecao-de-estagiario-por-meio-de-agente-integrador",
+        "https://prefeitura.poa.br/smap/noticias/prefeitura-licita-empresa-para-contratacao-de-agente-integrador-de-estagio",
+        "https://prefeitura.poa.br/sms/estagios"
+      ],
+      "observacoes": "Seleções de estagiários da prefeitura operadas pelo CIEE-RS (2026: edital 004/2026 e outros). Canal de dúvidas = CIEE-RS (telefone/WhatsApp ao lado, de comunicados oficiais da prefeitura). Acompanhar editais atuais."
+    },
+    {
+      "name": "PUCRS Carreiras (central de estágios)",
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "city": "Porto Alegre",
+      "address": "Campus PUCRS, Living 360°, sala 102, Porto Alegre - RS (endereço completo não obtido)",
+      "atendimento": "misto",
+      "phone": "(51) 3353-4355",
+      "whatsapp": null,
+      "email": "pucrscarreiras@pucrs.br",
+      "website": "https://portal.pucrs.br/?p=174227",
+      "instagram": null,
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://portal.pucrs.br/?p=160619",
+        "https://portal.pucrs.br/?p=174227",
+        "https://www.baguete.com.br/noticias/puc-rs-portal-de-talentos-com-valorizza"
+      ],
+      "observacoes": "Canal oficial de estágios da PUCRS; agentes de integração e empresas conveniadas divulgam vagas via PUCRS Carreiras. Telefone antigo adicional: (51) 3353-4082. Acesso com login acadêmico."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": "(51) 3308-3371",
+      "whatsapp": null,
+      "email": "estagios@prograd.ufrgs.br",
+      "website": "https://www.ufrgs.br/prograd/",
+      "instagram": null,
+      "name": "UFRGS - Núcleo de Convênios e Estágios (PROGRAD)",
+      "agency_type": "faculdade",
+      "city": "Porto Alegre",
+      "atendimento": "misto",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ufrgs.br/prograd/?p=14331",
+        "https://www.ufrgs.br/prograd/equipe-contato-2/"
+      ],
+      "observacoes": "Contato de nota PROGRAD de mar/2022 (tel. 3308.3371; convênios: convenio.estagios@prograd.ufrgs.br); PROGRAD geral (51) 3308-3191; TUAUFRGS 3308-2000. Confirmar vigência. Sistema de estágios lista agentes conveniados (CIEE, Integrar/RS, ISBET, NUBE, Estagiar, Fundatec, Sucessor RH, IEGE, Fortus RH, Energia Mais RH)."
+    },
+    {
+      "rede_nacional": null,
+      "address": "Rua General Andrade Neves, 106, 15º andar, Porto Alegre - RS",
+      "phone": "(51) 3295-8087",
+      "whatsapp": null,
+      "email": "estagios@mprs.mp.br",
+      "website": "https://www.mprs.mp.br/estagios/",
+      "instagram": null,
+      "name": "Ministério Público do RS - Unidade de Estágios",
+      "agency_type": "orgao_publico",
+      "city": "Porto Alegre",
+      "atendimento": "presencial",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.mprs.mp.br/estagios/"
+      ],
+      "observacoes": "Página oficial; outros telefones (51) 3295-8326 e 3295-8321; atendimento 12h-19h. Seleções próprias por edital (Direito e outras áreas)."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.tjrs.jus.br",
+      "instagram": null,
+      "name": "TJRS - Comissão de Supervisão de Estágio (CSERJSV)",
+      "agency_type": "orgao_publico",
+      "city": "Porto Alegre",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://nae.ucpel.edu.br/wp-content/uploads/2025/03/Edital-001.2025-TJRS_1435-VF2-2.pdf"
+      ],
+      "observacoes": "Edital 001/2025: seleção coordenada pela CSERJSV com apoio do CIEE-RS. Sem contato próprio encontrado."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": "https://www.fundatec.org.br",
+      "instagram": null,
+      "name": "Fundatec (estágios)",
+      "agency_type": "fundacao",
+      "city": "Porto Alegre",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ufrgs.br/prograd/?p=24821",
+        "https://www.ufrgs.br/fce/fundatec-8/"
+      ],
+      "observacoes": "Listada entre agentes no sistema de estágios da UFRGS e divulga vagas (Contábeis) pela UFRGS FCE. Telefone achado (51) 3320-1059 é da Escola Profissional Fundatec, não confirmado como de estágios, por isso null."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "AGIEL - Agência Virtual de Estágios",
+      "agency_type": "agencia_privada",
+      "city": "Porto Alegre",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.ufrgs.br/fce/seguradora-2/",
+        "https://www.ufrgs.br/fce/centro-nacional-de-tecnologia-eletronica-avancada/"
+      ],
+      "observacoes": "Divulga vagas em Porto Alegre via UFRGS FCE (Contábeis, Direito); sede/unidade no RS e contatos não encontrados."
+    },
+    {
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Sucessor RH / IEGE / Fortus RH / Energia Mais RH (agentes conveniados UFRGS)",
+      "agency_type": "agencia_privada",
+      "city": "Porto Alegre",
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufrgs.br/prograd/?p=24821"
+      ],
+      "observacoes": "Quatro agentes privados citados no tutorial PROGRAD/UFRGS; busca por Sucessor RH sem resultado. Separar em entradas individuais após checagem humana."
+    }
+  ],
+  "descartadas": [
+    {
+      "name": "Super Estágios",
+      "motivo": "Busca 'Super Estágios Rio Grande do Sul' não retornou nenhuma agência com esse nome no RS (só supermercados); sem prova de unidade no estado."
+    },
+    {
+      "name": "NUBE no RS",
+      "motivo": "Sede em São Paulo (R. Barão de Itapetininga, 140); atua remoto/convênios (aparece no UFRGS e Coren-RS), sem unidade física comprovada no RS."
+    },
+    {
+      "name": "ISBET no RS",
+      "motivo": "Sede no Rio de Janeiro; só aparece como agente conveniado da UFRGS, sem unidade no RS."
+    }
+  ],
+  "notas": "Rodada 2 (22 buscas). Contatos achados: CIEE-RS POA (tel/WhatsApp via Prefeitura), PUCRS Carreiras, MPRS, UFRGS PROGRAD. Sem evidência no RS: Mudes, Abre, CEE, Uniestágio, Super Estágios. NUBE/ISBET só remotos/conveniados. Lacunas: Instagram de todas; telefones/endereços das unidades CIEE-RS do interior (Caxias tem sede nova jun/2026); site e telefone IEL-RS; Estagiar; Sucessor RH/IEGE/Fortus/Energia Mais; centrais UFSM, UFPel (PRE/PROGEP, contato 2014 antigo (53) 3921-1212 não usado), UCS (tel geral 54 3218-2100 não confirmado) e Unisinos Carreiras; Governo RS/SEPLAG (sem programa achado); perfis Instagram/WhatsApp de vagas (nenhum achado). Checagem humana recomendada."
+}
