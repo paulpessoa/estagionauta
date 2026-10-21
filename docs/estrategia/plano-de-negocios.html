@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano de Negócios — Estagionauta</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main>
+<h1>Plano de Negócios</h1>
+<p class="sub">Estagionauta · versão 1 · outubro/2026 · objetivo: parar de "manter no peito" e tornar o projeto sustentável com custo quase zero.</p>
+<nav class="toc">
+  <a href="#diagnostico">Diagnóstico</a><a href="#tese">Tese</a><a href="#canvas">Lean Canvas</a>
+  <a href="#receita">Modelo de receita</a><a href="#custos">Custos</a><a href="#metas">Metas</a>
+  <a href="#captacao">Captação de recursos</a><a href="#riscos">Riscos</a><a href="#decisoes">Decisões</a>
+</nav>
+
+<h2 id="diagnostico">1. Diagnóstico honesto</h2>
+<div class="grid">
+  <div class="card"><h4 class="bad">O que pesa hoje</h4><ul>
+    <li>Muitas telas (40 rotas) para um produto de 1 pessoa.</li>
+    <li>Receita depende de créditos de IA (R$ 5,97 / R$ 14,97), um produto que o estudante já tem de graça no ChatGPT/Gemini.</li>
+    <li>Custos variáveis de IA (análise, simulador com voz) crescem junto com o uso gratuito.</li>
+    <li>Infra espalhada (Vercel + Render + Supabase + Cloud Run antigo); o MCP ainda apontava para o Cloud Run e estava quebrado (corrigido em PR).</li>
+  </ul></div>
+  <div class="card"><h4 class="ok">O que já é diferencial</h4><ul>
+    <li><b>Mapa de agências de estágio verificadas por cidade</b>: ninguém organiza isso bem no Brasil.</li>
+    <li><b>Kanban de candidaturas</b>: organização é o que falta ao estudante, não IA.</li>
+    <li><b>Calculadora de recesso / Lei 11.788</b>: gratuita, sem cadastro, ótima porta de entrada para SEO.</li>
+    <li><b>BYOK + MCP</b>: o estudante usa a própria IA e o Estagionauta vira o "contexto" dela.</li>
+  </ul></div>
+</div>
+
+<h2 id="tese">2. Tese do produto</h2>
+<div class="callout"><b>Todo mundo tem IA; quase ninguém tem método.</b> O Estagionauta não deve competir com o ChatGPT gerando texto. Ele deve ser o <b>QG do estágio</b>: guarda as vagas, prazos, currículos e agências do estudante, e entrega esse contexto para a IA que ele já usa (extensão, MCP, BYOK).</div>
+<div class="flow">
+  <span class="step">Descobre vaga<br><small>LinkedIn, Gupy, CIEE, NUBE…</small></span><span class="arrow">→</span>
+  <span class="step">Salva com 1 clique<br><small>extensão</small></span><span class="arrow">→</span>
+  <span class="step">Organiza<br><small>kanban + prazos</small></span><span class="arrow">→</span>
+  <span class="step">Aplica melhor<br><small>IA do aluno + perfil</small></span><span class="arrow">→</span>
+  <span class="step">Acompanha<br><small>lembretes + agências</small></span><span class="arrow">→</span>
+  <span class="step">Estagia<br><small>direitos, recesso, TCE</small></span>
+</div>
+
+<h2 id="canvas">3. Lean Canvas</h2>
+<div class="grid">
+  <div class="card"><h4>Problema</h4><ul><li>Candidaturas espalhadas, prazos perdidos.</li><li>Não sabe quais agências existem na cidade nem se são confiáveis.</li><li>Dúvidas sobre direitos (recesso, bolsa, carga horária).</li></ul></div>
+  <div class="card"><h4>Segmento</h4><ul><li>Universitários e técnicos de 17–25 anos em busca do 1º estágio.</li><li>Early adopters: RMR (Recife), cursos de TI, Adm, Direito, Saúde.</li></ul></div>
+  <div class="card"><h4>Proposta de valor</h4><p>"Organize sua busca por estágio em um só lugar e encontre agências verificadas perto de você, de graça."</p></div>
+  <div class="card"><h4>Solução</h4><ul><li>Kanban + extensão "Salvar vaga".</li><li>Mapa de agências verificadas.</li><li>Calculadora/guia da Lei do Estágio.</li><li>IA via BYOK/MCP.</li></ul></div>
+  <div class="card"><h4>Canais</h4><ul><li>SEO (calculadora, "agências de estágio em [cidade]").</li><li>Centros acadêmicos, coordenações, grupos de vagas.</li><li>Chrome Web Store.</li><li>Instagram/TikTok com conteúdo prático.</li></ul></div>
+  <div class="card"><h4>Receitas</h4><ul><li>Plano Pro do estudante (opcional).</li><li>Perfil verificado / destaque para agências.</li><li>Painel para coordenações de estágio (B2B2C).</li></ul></div>
+  <div class="card"><h4>Custos</h4><ul><li>Infra em planos gratuitos.</li><li>IA só quando paga (créditos) ou BYOK.</li><li>Domínio + e-mail.</li></ul></div>
+  <div class="card"><h4>Métricas-chave</h4><ul><li>Vagas salvas por usuário/semana.</li><li>Usuários ativos semanais (WAU).</li><li>Agências verificadas por UF.</li></ul></div>
+  <div class="card"><h4>Vantagem injusta</h4><p>Base de agências verificada por UF + comunidade local + integração com a IA do aluno (MCP), difícil de copiar rápido.</p></div>
+</div>
+
+<h2 id="receita">4. Modelo de receita (do mais rápido ao mais escalável)</h2>
+<div class="wrap"><table>
+<tr><th>Fonte</th><th>Como funciona</th><th>Preço sugerido</th><th>Quando</th></tr>
+<tr><td><b>Créditos (atual)</b></td><td>Mantém só para quem não tem IA própria. Sem simulador por voz no gratuito.</td><td>R$ 5,97 / R$ 14,97</td><td>Já existe</td></tr>
+<tr><td><b>Estagionauta Pro</b></td><td>Extensão com autopreenchimento ilimitado, lembretes por WhatsApp/e-mail, múltiplos currículos, histórico completo.</td><td>R$ 9,90/mês ou R$ 49/ano (preço estudante)</td><td>Após extensão (mês 2–3)</td></tr>
+<tr><td><b>Agência verificada</b></td><td>Agência reivindica o perfil, ganha selo, responde avaliações, publica vagas. Lista básica sempre gratuita.</td><td>R$ 49–99/mês por unidade</td><td>Quando houver ~1.000 visitas/mês no mapa de uma cidade</td></tr>
+<tr><td><b>Painel da coordenação</b></td><td>Faculdade acompanha (com consentimento) quantos alunos buscam estágio, prazos de TCE e recesso.</td><td>R$ 300–1.500/mês por instituição</td><td>Após 2–3 parcerias gratuitas com casos de uso</td></tr>
+<tr><td><b>Oficinas/palestras</b></td><td>"Currículo de estágio que passa no filtro" para empresas júnior, ONGs, prefeituras.</td><td>R$ 300–800 por turma</td><td>Imediato (já existe o kit)</td></tr>
+</table></div>
+<p class="callout"><b>Regra de ouro:</b> o que é <i>organização</i> e <i>informação pública</i> (agências, direitos) fica grátis para sempre; cobra-se por <i>conveniência</i> (automação, lembretes) e de quem tem orçamento (agências, instituições).</p>
+
+<h2 id="custos">5. Custos e ponto de equilíbrio</h2>
+<div class="wrap"><table>
+<tr><th>Item</th><th>Hoje (estimado)</th><th>Alvo</th></tr>
+<tr><td>Frontend (Vercel Hobby)</td><td>R$ 0</td><td>R$ 0</td></tr>
+<tr><td>API (Render free) — dorme e acorda lento</td><td>R$ 0</td><td>R$ 0 → US$ 7/mês só quando houver receita</td></tr>
+<tr><td>Supabase</td><td>R$ 0 (free)</td><td>US$ 25/mês acima de ~50 mil MAU ou 500 MB</td></tr>
+<tr><td>IA (análise + simulador + Rover)</td><td>variável</td><td>só em créditos pagos ou BYOK; modelos baratos (Groq/gpt-oss) no gratuito</td></tr>
+<tr><td>Brevo (e-mail)</td><td>R$ 0 até 300/dia</td><td>R$ 0</td></tr>
+<tr><td>Domínio .com.br</td><td>~R$ 40/ano</td><td>~R$ 40/ano</td></tr>
+<tr><td>Chrome Web Store</td><td>—</td><td>US$ 5 uma vez</td></tr>
+</table></div>
+<p>Com custo fixo &lt; R$ 200/mês, o equilíbrio está em <b>~20 assinantes Pro</b> ou <b>2 agências verificadas</b>. Este é o primeiro marco financeiro, não "escalar".</p>
+
+<h2 id="metas">6. Metas (90 dias)</h2>
+<div class="wrap"><table>
+<tr><th>Marco</th><th>Mês 1</th><th>Mês 2</th><th>Mês 3</th></tr>
+<tr><td>Agências verificadas (todas as UFs)</td><td>Base limpa: PE + 6 maiores UFs</td><td>27 UFs revisadas</td><td>Agências reivindicando perfil</td></tr>
+<tr><td>Usuários ativos semanais</td><td>100</td><td>300</td><td>1.000</td></tr>
+<tr><td>Vagas salvas/semana</td><td>—</td><td>500 (extensão beta)</td><td>2.000</td></tr>
+<tr><td>Receita mensal</td><td>Oficinas</td><td>Primeiros Pro</td><td>R$ 500+ (equilíbrio)</td></tr>
+</table></div>
+
+<h2 id="captacao">7. Captação de recursos (sem diluir cedo)</h2>
+<div class="grid">
+  <div class="card"><h4>Editais e fomento</h4><ul><li>FACEPE / programas de inovação de PE (ex.: Centelha quando abrir edital).</li><li>Sebrae (Startup PE, Catalisa).</li><li>Editais de impacto social em empregabilidade jovem.</li></ul></div>
+  <div class="card"><h4>Ecossistema Recife</h4><ul><li>Porto Digital (programas de pré-aceleração).</li><li>CESAR School / Jump.</li><li>Prêmios universitários de empreendedorismo.</li></ul></div>
+  <div class="card"><h4>Parcerias que pagam</h4><ul><li>Agentes de integração (CIEE, IEL, NUBE, NUDEP, ABRE) como divulgadores: eles ganham candidatos qualificados.</li><li>Prefeituras/governo: programa de estágio público usando o mapa.</li></ul></div>
+  <div class="card"><h4>Créditos de nuvem/IA</h4><ul><li>Programas de startups de provedores de nuvem e de IA (créditos gratuitos) para zerar o custo de IA no 1º ano.</li></ul></div>
+</div>
+<p class="sub">Os nomes de editais mudam a cada ano: confirme datas e regras nos sites oficiais antes de se inscrever.</p>
+
+<h2 id="riscos">8. Riscos e mitigação</h2>
+<div class="wrap"><table>
+<tr><th>Risco</th><th>Mitigação</th></tr>
+<tr><td>Base de agências com cadastros falsos/desatualizados mina a confiança</td><td>Revisão por UF com evidências (pipeline <code>export → review → apply</code>), selo "verificado em DD/MM", botão "reportar erro".</td></tr>
+<tr><td>Custo de IA explodir</td><td>IA paga só via créditos ou BYOK; cortar voz do gratuito.</td></tr>
+<tr><td>Dependência de 1 pessoa</td><td>Menos telas, docs de continuidade (<code>docs/estrategia/CONTINUAR.md</code>), tudo roda localmente.</td></tr>
+<tr><td>LGPD (dados de candidaturas)</td><td>Extensão só salva com clique; exportar/apagar conta em Configurações; nada é compartilhado com a faculdade sem consentimento.</td></tr>
+</table></div>
+
+<h2 id="decisoes">9. Decisões que precisam do Paul</h2>
+<ol>
+  <li>Aprovar o foco "QG do estágio" (organização + agências) e rebaixar IA a recurso opcional.</li>
+  <li>Aprovar os cortes de telas (ver <a href="revisao-de-produto.html">Revisão de produto</a>).</li>
+  <li>Definir se o Rover (chat) continua ou é substituído por MCP + extensão.</li>
+  <li>Escolher o primeiro modelo de receita a testar: Pro do estudante ou agência verificada.</li>
+</ol>
+
+<footer>Relacionados: <a href="plano-de-marketing.html">Plano de marketing</a> · <a href="revisao-de-produto.html">Revisão de produto e extensão</a> · <a href="../PLANO_PROXIMOS_PASSOS.html">Plano de próximos passos (RMR)</a></footer>
+</main>
+</body>
+</html>
