@@ -2,7 +2,7 @@
   "uf": "PE",
   "estado": "Pernambuco",
   "validado_em": "2026-10-21",
-  "metodo": "WebSearch público (sem APIs pagas) - PARCIAL: limite de buscas da sessão esgotado após ~8 buscas",
+  "metodo": "WebSearch público (sem APIs pagas), 22 buscas sequenciais",
   "agencias": [
     {
       "name": "NUDEP - Núcleo de Desenvolvimento Profissional",
@@ -24,10 +24,10 @@
         "https://www.instagram.com/nudepestagios/",
         "https://www.ufpe.br/documents/38970/6310663/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+06-04-2026.pdf/1838a0ae-19b8-4d56-9797-ef68396369a9"
       ],
-      "observacoes": "Nome completo: NUDEP - Núcleo de Desenvolvimento Profissional Ltda; agente de integração/agência consultora em estágios e RH, sociedade civil LTDA, Recife-PE. Conveniado com a UFPE como agente de integração (vigência 19/08/2024 a 18/08/2029, lista de 06/04/2026). Vagas divulgadas no BNE (nutrição, técnico em administração). Cadastros antigos citam sede em Recife (R. João Fernandes Vieira 574, Boa Vista, ou R. Sete de Setembro 158-C, Bairro dos Estados), divergentes e NÃO usados: atendimento ao público é por WhatsApp, address null conforme orientação do projeto. Telefone/WhatsApp oficial não foi extraído (buscas encerradas) - coletar em nudep.com.br ou no Instagram."
+      "observacoes": "Nome completo: NUDEP - Núcleo de Desenvolvimento Profissional Ltda; agente de integração/agência consultora em estágios e RH, sociedade civil LTDA, Recife-PE. Conveniado com a UFPE como agente de integração (vigência 19/08/2024 a 18/08/2029, lista de 06/04/2026). Vagas divulgadas no BNE (nutrição, técnico em administração). Cadastros antigos citam sede em Recife (R. João Fernandes Vieira 574, Boa Vista, ou R. Sete de Setembro 158-C, Bairro dos Estados), divergentes e NÃO usados: atendimento ao público é por WhatsApp, address null conforme orientação do projeto. Telefone/WhatsApp oficial não foi extraído (buscas encerradas) - coletar em nudep.com.br ou no Instagram. Nova rodada de buscas (WebSearch) não localizou telefone/WhatsApp oficial em fonte pública; permanece null - coletar manualmente no site/Instagram."
     },
     {
-      "name": "ABRE - Agência Brasileira de Estágios (a confirmar)",
+      "name": "ABRE Recife (Recife Mercado de Trabalho e Serviços Administrativos Ltda)",
       "agency_type": "agencia_privada",
       "rede_nacional": "ABRE",
       "city": "Recife",
@@ -38,14 +38,16 @@
       "email": null,
       "website": "https://portalabre.com.br",
       "instagram": null,
-      "status_validacao": "nao_confirmada",
+      "status_validacao": "provavel",
       "evidencias": [
+        "https://www.ufmg.br/prograd/wp-content/uploads/2026/06/prograd1.pdf",
+        "https://www2.ufjf.br/estagio/convenios/agentes-de-integracao/",
         "https://periodicos.unoesc.edu.br/apeusmo/article/download/19687/10449/65199"
       ],
-      "observacoes": "Única referência achada: artigo acadêmico de 2015 citando 'Agência Brasileira de Estágios' com site portalabre.com.br. Não foi confirmado que é a mesma 'ABRE Recife' citada pelo dono do projeto, nem que o site está ativo, nem a unidade/contato em Recife. Precisa de checagem humana (Instagram/site)."
+      "observacoes": "Existe: UFMG lista 'ABRE - RECIFE - Agente de integração' = Recife Mercado de Trabalho e Serviços Administrativos LTDA (termo 009/2021, 19/05/2021 a 18/05/2026); UFJF também lista como agente parceiro. Regulamento antigo da UFPE (CC, 2016) cita ABRE entre os conveniados. Site portalabre.com.br de artigo de 2015, não reconfirmado. Telefone, endereço, WhatsApp e Instagram não encontrados."
     },
     {
-      "name": "CIEE Pernambuco",
+      "name": "CIEE Pernambuco (CIEE-PE)",
       "agency_type": "instituto",
       "rede_nacional": "CIEE",
       "city": "Recife",
@@ -54,11 +56,15 @@
       "phone": null,
       "whatsapp": null,
       "email": null,
-      "website": "https://www.ciee.org.br",
+      "website": "https://cieepe.org.br",
       "instagram": null,
-      "status_validacao": "nao_confirmada",
-      "evidencias": [],
-      "observacoes": "Busca de unidades (Recife, Caruaru, Petrolina) falhou por limite de buscas. Rede nacional conhecida; endereço e unidades do interior precisam ser levantados."
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://cieepe.org.br/wp-content/uploads/2026/04/Edital-Estagiarios-2026-.pdf",
+        "https://jcconcursos.com.br/noticia/empregos/ciee-pe-reune-868-vagas-de-estagio-74540",
+        "https://br.indeed.com/cmp/Ciee/locations/PE"
+      ],
+      "observacoes": "CIEE-PE ativo em 2026 (edital CRO/PE de abr/2026 no domínio cieepe.org.br, com delegacia regional em Caruaru). Indeed lista unidades em Recife, Jaboatão, Paulista e Surubim. Endereço e telefone não obtidos em fonte confiável; coletar em cieepe.org.br."
     },
     {
       "name": "IEL Pernambuco",
@@ -72,13 +78,243 @@
       "email": null,
       "website": "https://portal.iel.org.br",
       "instagram": null,
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portaldeprefeitura.com.br/oportunidades/processos-seletivos/iel-pe-anuncia-novas-vagas-de-estagio-para-estudantes-de-nivel-superio/577231/",
+        "https://www.diariodepernambuco.com.br/amp/noticia/vidaurbana/2023/10/iel-abre-45-vagas-de-estagio-no-estado-bolsas-chegam-ate-r-1-5-mil.html"
+      ],
+      "observacoes": "IEL-PE (FIEPE) divulga vagas de estágio na RMR, Caruaru e Petrolina (reportagens 2023-2024). Endereço e telefone oficiais não encontrados; coletar no site do IEL/FIEPE."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": null,
+      "phone": "(81) 3355-8377",
+      "whatsapp": null,
+      "email": "estagiocorporativopcr@recife.pe.gov.br",
+      "website": null,
+      "instagram": null,
+      "name": "Prefeitura do Recife - Unidade de Estágio Corporativo (UESC)",
+      "city": "Recife",
+      "atendimento": "misto",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www2.recife.pe.gov.br/sites/default/files/cartilhaestagio_versaofinal_2024.pdf"
+      ],
+      "observacoes": "Secretaria de Administração, Gestão e Transformação Digital; contatos da cartilha de estágio 2024 (confirmar vigência)."
+    },
+    {
+      "agency_type": "orgao_publico",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Governo de Pernambuco - Simbora Estagiar (SAD-PE)",
+      "city": "Recife",
+      "atendimento": "online",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://www.diariodepernambuco.com.br/vida-urbana/2025/09/11695296-pernambuco-amplia-vagas-de-estagio-para-265-mil-e-reajusta-bolsas-para-estudantes.html",
+        "https://portaldeprefeitura.com.br/pernambuco/raquel-lyra-anuncia-novas-vagas-de-estagio-reajuste-bolsas/603032/"
+      ],
+      "observacoes": "Programa estadual lançado em 08/09/2025: vagas de 2,3 mil para 26,5 mil; bolsas R$ 900 (superior) e R$ 600 (médio/técnico). Canal de inscrição e contato não encontrados."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": "Av. Prof. Moraes Rego, 1235, Cidade Universitária, Recife - PE, CEP 50670-901",
+      "phone": "(81) 2126-3162",
+      "whatsapp": null,
+      "email": "estagio.prograd@ufpe.br",
+      "website": "https://www.ufpe.br/prograd/estagio",
+      "instagram": null,
+      "name": "UFPE - Divisão de Apoio ao Estágio de Graduação (Prograd)",
+      "city": "Recife",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://www.ufpe.br/en/prograd/estagio",
+        "https://www.ufpe.br/documents/38970/5207405/contatos-prograd.pdf/f8fe7871-d672-46db-94ff-9f35475154b3"
+      ],
+      "observacoes": "Páginas da UFPE divergem no telefone (2126-3162 vs 2126-7014). Publica a relação de agentes de integração conveniados (PDF de 06/04/2026)."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "phone": "(81) 3320-6040",
+      "whatsapp": null,
+      "email": "cge.preg@ufrpe.br",
+      "website": "https://www.preg.ufrpe.br/br/cge",
+      "instagram": "@estagios_ufrpe",
+      "name": "UFRPE - Coordenação Geral de Estágios (CGE/PREG)",
+      "city": "Recife",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://preg.ufrpe.br/br/cge",
+        "https://www.preg.ufrpe.br/br/contato"
+      ],
+      "observacoes": "Telefone varia entre páginas (3320-6040 / 3320-6045). Campi: UAST (87) 3929-3052; UACSA (81) 3512-5827; UABJ (87) 3764-5559."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "phone": "(81) 3183-3715",
+      "whatsapp": null,
+      "email": "prograd.estagio@upe.br",
+      "website": "https://upe.br/ensino/estagio/",
+      "instagram": null,
+      "name": "UPE - Coordenação de Estágio (Prograd)",
+      "city": "Recife",
+      "atendimento": "misto",
+      "status_validacao": "confirmada",
+      "evidencias": [
+        "https://upe.br/ensino/estagio/",
+        "https://www.upe.br/petrolina/graduacao/nucleo-de-estagio/"
+      ],
+      "observacoes": "Campi com e-mail próprio: Caruaru estagio.caruaru@upe.br; Garanhuns estagio.multicampi@upe.br; Petrolina petrolina.neac@upe.br."
+    },
+    {
+      "agency_type": "faculdade",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": "diex@recife.ifpe.edu.br",
+      "website": "https://portal.ifpe.edu.br",
+      "instagram": null,
+      "name": "IFPE - Coordenações de Estágio dos campi",
+      "city": "Recife",
+      "atendimento": "misto",
+      "status_validacao": "provavel",
+      "evidencias": [
+        "https://portal.ifpe.edu.br/abreu-e-lima/ensino/",
+        "https://portal.ifpe.edu.br/jaboatao/extensao/estagio/",
+        "https://portal.ifpe.edu.br/igarassu/extensao/estagio/"
+      ],
+      "observacoes": "Estágio é gerido por campus: Recife diex@recife.ifpe.edu.br; Abreu e Lima coordenacao.estagio@abreuelima.ifpe.edu.br; Jaboatão cree@jaboatao.ifpe.edu.br; Igarassu cree@igarassu.ifpe.edu.br. Proden (2125-1618) não tem setor de estágio."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": "ISBET",
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "ISBET (Instituto Superior de Biotecnologia / Estágios) - Recife",
+      "city": "Recife",
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.infojobs.com.br/emprego-isbet__720602.aspx"
+      ],
+      "observacoes": "Apenas anúncios de vaga de estágio em Recife no InfoJobs; sem unidade/contato comprovados."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": "Super Estágios",
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Super Estágios - Pernambuco",
+      "city": "Recife",
+      "atendimento": "online",
       "status_validacao": "nao_confirmada",
       "evidencias": [],
-      "observacoes": "Busca falhou por limite de buscas. Ligado à FIEPE; endereço e contato precisam ser levantados."
+      "observacoes": "Reportagem de dez/2024 cita rede como parceira da Caixa com vagas em Recife e PE; unidade/contato local não comprovados."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "Academia do Universitário Desenvolvimento Profissional Ltda",
+      "city": null,
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufpe.br/documents/38970/6310663/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+06-04-2026.pdf/1838a0ae-19b8-4d56-9797-ef68396369a9"
+      ],
+      "observacoes": "Agente de integração conveniado à UFPE (12/06/2023 a 12/06/2028, CNPJ 32.575.605/0001-05). Sede/atendimento em PE não verificados."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "MAIS ESTAGIOS LTDA",
+      "city": null,
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufpe.br/documents/38970/5209077/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+28-05-2024.pdf/ebd1959a-cd01-4c18-813b-d2e25a1322e7"
+      ],
+      "observacoes": "Agente de integração conveniado à UFPE desde 08/03/2024 (lista 2024). Sede em PE não verificada."
+    },
+    {
+      "agency_type": "instituto",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "ESPRO - Associação de Ensino Social Profissionalizante",
+      "city": null,
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufpe.br/documents/38970/5209077/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+16-10-2024.pdf/a88bd343-6ee6-4e37-932c-388b828a9c94"
+      ],
+      "observacoes": "Agente de integração conveniado à UFPE desde 06/12/2023 (lista 16/10/2024). Atendimento em PE não verificado."
+    },
+    {
+      "agency_type": "agencia_privada",
+      "rede_nacional": null,
+      "address": null,
+      "phone": null,
+      "whatsapp": null,
+      "email": null,
+      "website": null,
+      "instagram": null,
+      "name": "METTA / VAGGON / VGX Gestora de Estágios / QUALI (agentes conveniados UFPE)",
+      "city": null,
+      "atendimento": "online",
+      "status_validacao": "nao_confirmada",
+      "evidencias": [
+        "https://www.ufpe.br/documents/38970/5722801/Rela%C3%A7%C3%A3o+de+Agentes+de+Integra%C3%A7%C3%A3o+e+Concedentes+de+Est%C3%A1gio+Conveniados+-+Divis%C3%A3o+de+Apoio+ao+Est%C3%A1gio+de+Gradua%C3%A7%C3%A3o+12-08-2025.pdf/fee04bdb-2bc0-474d-9a94-5ae6ea95e691"
+      ],
+      "observacoes": "Quatro agentes marcados como AGENTE DE INTEGRAÇÃO nas listas UFPE 2024-2025; agrupados por falta de dados individuais. Separar/verificar sede e contato."
     }
   ],
   "descartadas": [
-    { "name": "NUDEP UFJF / NUDEP-EPJF (Juiz de Fora)", "motivo": "homônimos de outro estado, não são o NUDEP de Recife" }
+    {
+      "name": "NUDEP UFJF / NUDEP-EPJF (Juiz de Fora)",
+      "motivo": "homônimos de outro estado, não são o NUDEP de Recife"
+    },
+    {
+      "name": "NUBE - Núcleo Brasileiro de Estágios",
+      "motivo": "sede em São Paulo; nenhuma unidade em PE encontrada (conveniada à UFPE não confirmada)"
+    }
   ],
-  "notas": "LISTA INCOMPLETA. O limite de buscas da sessão (WebSearch) esgotou após ~8 buscas, várias em paralelo retornando too_many_requests. Não foram pesquisados: NUBE, Super Estágios, ISBET, Mudes, CEE, Agiel, Estagiar, Uniestágio, Companhia de Estágios; agências em Caruaru/Petrolina; centrais de estágio UFPE, UFRPE, UPE, UNICAP, Uninassau, Unibra, Senac, IFPE, Unifbv, Guararapes; programas do Governo de PE e Prefeitura do Recife; perfis de Instagram de vagas. Dica: a lista de agentes de integração conveniados da UFPE (PDF de 06/04/2026, ver evidências do NUDEP) contém dezenas de agências ativas em PE e é ótimo ponto de partida. Reexecutar o agente com orçamento de buscas renovado."
+  "notas": "LACUNAS: telefone/WhatsApp do NUDEP (3 buscas sem resultado; checar nudep.com.br/Instagram); contatos/Instagram da ABRE Recife; endereço e telefone do CIEE-PE (cieepe.org.br) e IEL-PE, incluindo Caruaru e Petrolina; Mudes, Super Estágios e ISBET sem unidade comprovada; UNICAP, Uninassau, Unibra e demais privadas não achadas; perfis Instagram/WhatsApp de vagas no Recife não pesquisados; PDF UFPE (06/04/2026) só lido via trechos de busca, vale extrair a lista inteira manualmente (agentes com sede em PE). Telefones de UFPE e UFRPE divergem entre páginas."
 }
