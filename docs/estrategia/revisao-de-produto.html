@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Revisão de Produto — Estagionauta</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+<main>
+<h1>Revisão de Produto e Extensão</h1>
+<p class="sub">Estagionauta · versão 1 · outubro/2026 · o que manter, fundir e cortar, e como a extensão do navegador se integra ao site.</p>
+<nav class="toc">
+  <a href="#principio">Princípio</a><a href="#mapa">Mapa de funcionalidades</a><a href="#nucleo">Novo núcleo</a>
+  <a href="#extensao">Extensão</a><a href="#arquitetura">Arquitetura</a><a href="#ordem">Ordem de execução</a>
+</nav>
+
+<h2 id="principio">1. Princípio de corte</h2>
+<div class="callout">Uma funcionalidade fica se <b>(a)</b> o estudante não consegue fazer igual no ChatGPT em 1 minuto <b>e (b)</b> não aumenta o custo fixo. Se só gera texto com IA, vira opcional (BYOK/MCP), ou sai.</div>
+
+<h2 id="mapa">2. Mapa das 40 rotas atuais</h2>
+<div class="wrap"><table>
+<tr><th>Funcionalidade</th><th>Rotas</th><th>Decisão</th><th>Motivo</th></tr>
+<tr><td>Candidaturas (kanban)</td><td><code>/candidaturas</code></td><td class="ok">Manter, virar a home logada</td><td>Organização é o diferencial; a extensão alimenta este quadro.</td></tr>
+<tr><td>Agências + avaliações</td><td><code>/agencias</code>, <code>/cadastro-agencia</code></td><td class="ok">Manter e investir</td><td>Base verificada por UF + páginas por cidade (SEO). Adicionar "reportar erro" e selo "verificado em".</td></tr>
+<tr><td>Mapa de agências antigo</td><td><code>MapaAgencias.tsx</code> (sem rota)</td><td class="bad">Apagar</td><td>Importado em <code>src/route.ts</code> mas nenhuma rota usa: 382 linhas de código morto.</td></tr>
+<tr><td>Calculadora de recesso</td><td><code>/calculadora</code></td><td class="ok">Manter, ampliar</td><td>Melhor porta de entrada. Virar "Direitos do estagiário" (recesso + FAQ da Lei 11.788 + checklist do TCE).</td></tr>
+<tr><td>Análise de currículo</td><td><code>/analises</code>, <code>/analises/new</code>, <code>/analise/:id</code>, <code>/analise/exemplo</code> + 4 redirects</td><td class="warn">Simplificar</td><td>Commodity. Manter 1 fluxo: "currículo × vaga salva" (usa a vaga do kanban como contexto). Remover os 4 redirects antigos após 30 dias.</td></tr>
+<tr><td>Simulador de entrevistas</td><td><code>/simulador-entrevistas(/:id)</code> (1.832 linhas)</td><td class="warn">Reduzir</td><td>Maior arquivo e maior custo (voz/TTS). Manter modo texto; voz só com BYOK. Considerar dividir o componente.</td></tr>
+<tr><td>Rover (chat lateral)</td><td>drawer global</td><td class="warn">Substituir aos poucos</td><td>Concorre com a IA do aluno. O MCP já expõe as mesmas ferramentas para Claude/ChatGPT/Gemini. Manter só como "ajuda do site" ou desligar no gratuito.</td></tr>
+<tr><td>Preços / créditos</td><td><code>/precos</code>, <code>/comprar-creditos</code>, <code>/creditos</code>, <code>/sucesso</code>, <code>/analises/sucesso</code></td><td class="warn">Fundir</td><td>1 página "Plano e créditos" e 1 página de sucesso.</td></tr>
+<tr><td>Indicação e recompensas</td><td><code>/convide-amigos</code>, <code>/recompensas</code>, <code>/r/:code</code></td><td class="warn">Fundir</td><td>Uma página "Indique e ganhe" com o saldo de recompensas.</td></tr>
+<tr><td>Perfil / configurações</td><td><code>/perfil</code>, <code>/configuracoes</code></td><td class="ok">Manter</td><td>O perfil alimenta o autopreenchimento da extensão.</td></tr>
+<tr><td>Dashboard</td><td><code>/dashboard</code></td><td class="warn">Fundir com candidaturas</td><td>Um resumo no topo do kanban basta (próximos prazos, nº por etapa).</td></tr>
+<tr><td>Feedback / status</td><td><code>/feedback</code>, <code>/status</code></td><td class="warn">Trocar por widget/link</td><td>Feedback num botão flutuante; status numa página externa gratuita ou no rodapé.</td></tr>
+<tr><td>Admin / e-mail logs</td><td><code>/admin/*</code>, <code>/email-logs</code></td><td class="ok">Manter (interno)</td><td>Mover <code>/email-logs</code> para dentro de <code>/admin</code>.</td></tr>
+<tr><td>Auth e legais</td><td>login, cadastro, senha, termos, privacidade</td><td class="ok">Manter</td><td>Necessário.</td></tr>
+</table></div>
+<p><b>Resultado:</b> de ~40 para ~22 rotas, sem perder nada que o estudante usa para conseguir estágio.</p>
+
+<h2 id="nucleo">3. Novo núcleo do produto (4 pilares)</h2>
+<div class="grid">
+  <div class="card"><h4>1. Minhas vagas</h4><p>Kanban + prazos + lembretes. Alimentado pela extensão. É a home logada.</p></div>
+  <div class="card"><h4>2. Agências</h4><p>Mapa e lista por cidade, verificados, com WhatsApp/Instagram e avaliações de estudantes.</p></div>
+  <div class="card"><h4>3. Direitos</h4><p>Calculadora de recesso, guia da lei, checklist do TCE. Sem cadastro.</p></div>
+  <div class="card"><h4>4. Minha IA</h4><p>Currículo e entrevista usando o contexto do Estagionauta, via créditos, BYOK ou MCP.</p></div>
+</div>
+
+<h2 id="extensao">4. Extensão "Estagionauta" (Chrome/Edge, depois Firefox)</h2>
+<h3>O que faz (MVP em 2–3 semanas)</h3>
+<ol>
+  <li><b>Salvar vaga com 1 clique</b> em LinkedIn, Gupy, CIEE, NUBE, Indeed, Vagas.com, Sólides, InfoJobs: lê título, empresa, cidade, link e prazo, e cria um card em "Candidaturas".</li>
+  <li><b>Painel lateral</b> na página da vaga: "você já aplicou aqui?", agência responsável (se houver no mapa) e avaliações.</li>
+  <li><b>Autopreencher</b> campos comuns do formulário (nome, curso, período, LinkedIn, disponibilidade) a partir do Perfil.</li>
+  <li><b>Ajuda na hora de aplicar:</b> botão "gerar resposta" para perguntas abertas do formulário, usando a vaga + perfil e a IA do aluno (BYOK) ou créditos.</li>
+  <li><b>Lembretes</b> de prazo e de follow-up ("faz 7 dias que você aplicou").</li>
+</ol>
+
+<h3>Fluxo</h3>
+<div class="flow">
+  <span class="step">Página da vaga</span><span class="arrow">→</span>
+  <span class="step">Content script extrai dados<br><small>só ao clicar</small></span><span class="arrow">→</span>
+  <span class="step">Popup confirma/edita</span><span class="arrow">→</span>
+  <span class="step"><code>POST /api/candidaturas</code><br><small>JWT do Supabase</small></span><span class="arrow">→</span>
+  <span class="step">Kanban no site</span><span class="arrow">→</span>
+  <span class="step">Lembrete por e-mail</span>
+</div>
+
+<h3>Exemplo de payload</h3>
+<pre><code>{
+  "titulo": "Estágio em Marketing",
+  "empresa": "Empresa X",
+  "cidade": "Recife",
+  "uf": "PE",
+  "url": "https://www.linkedin.com/jobs/view/123",
+  "fonte": "linkedin",
+  "prazo": "2026-11-10",
+  "status": "salva"
+}</code></pre>
+
+<h3>Privacidade (LGPD)</h3>
+<ul>
+  <li>Permissões mínimas: <code>activeTab</code> + <code>storage</code>; nada de ler todas as abas.</li>
+  <li>Só envia dados quando o aluno clica em "Salvar". Sem rastreamento de navegação.</li>
+  <li>Login: botão "Conectar" abre o site, que devolve um token de curta duração para a extensão (mesmo token já usado no MCP; OAuth fica para depois).</li>
+</ul>
+
+<h2 id="arquitetura">5. Arquitetura (reaproveita o que existe)</h2>
+<div class="wrap"><table>
+<tr><th>Peça</th><th>Onde</th><th>Novo?</th></tr>
+<tr><td>Extensão MV3 (Vite + React, mesmo design system)</td><td>novo repo <code>estagionauta-extension</code> ou pasta <code>extension/</code> no monorepo</td><td>sim</td></tr>
+<tr><td>Endpoint de candidaturas</td><td><code>api/src/routes</code> (Hono, validação Zod)</td><td>sim (o kanban hoje grava pelo frontend)</td></tr>
+<tr><td>Extratores por site</td><td><code>extension/src/extractors/linkedin.ts</code> etc., com fallback por <code>og:title</code>/JSON-LD <code>JobPosting</code></td><td>sim</td></tr>
+<tr><td>Busca de agência por empresa/cidade</td><td><code>GET /api/agencies</code> (já existe)</td><td>não</td></tr>
+<tr><td>Ferramentas para IA do aluno</td><td>MCP <code>estagionauta-mcp</code> (adicionar <code>save_job</code>, <code>list_deadlines</code>)</td><td>parcial</td></tr>
+</table></div>
+<p class="callout">Dica: muitos sites de vaga publicam o schema.org <code>JobPosting</code> em JSON-LD. Um extrator genérico que lê esse JSON cobre dezenas de sites antes de escrever extratores específicos.</p>
+
+<h2 id="ordem">6. Ordem de execução sugerida</h2>
+<ol>
+  <li>Revisar a base de agências (PE primeiro): <code>export-for-review → review → apply-review</code>.</li>
+  <li>Cortes de baixo risco: apagar <code>MapaAgencias.tsx</code>, fundir preços/créditos e indicação/recompensas, mover email-logs para admin.</li>
+  <li>Kanban como home logada + resumo de prazos (absorve o dashboard).</li>
+  <li>Endpoint <code>POST /api/candidaturas</code> + extensão MVP (salvar vaga via JSON-LD).</li>
+  <li>Páginas de agências por cidade com pré-renderização (SEO).</li>
+  <li>Pro: lembretes + autopreenchimento ilimitado.</li>
+</ol>
+
+<footer>Relacionados: <a href="plano-de-negocios.html">Plano de negócios</a> · <a href="plano-de-marketing.html">Plano de marketing</a></footer>
+</main>
+</body>
+</html>
